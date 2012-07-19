@@ -10,6 +10,17 @@ struct Vector {
 
     Vector() : x(0), y(0), z(0) {}
 
+    Vector(std::initializer_list<T> list) : x(0), y(0), z(0)
+    {
+        auto it = list.begin();
+        if (it != list.end())
+            x = *it++;
+        if (it != list.end())
+            y = *it++;
+        if (it != list.end())
+            z = *it++;
+    }
+
     Vector(T ax, T ay = 0, T az = 0) : x(ax), y(ay), z(az) {}
 
     float length() const

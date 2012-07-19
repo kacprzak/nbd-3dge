@@ -4,11 +4,8 @@ Actor::Actor(boost::shared_ptr<Mesh> mesh)
     : m_mesh(mesh)
     , m_state(Idle)
     , m_hasTexture(false)
+    , m_scale({1.0f, 1.0f, 1.0f})
 {
-    m_scale[0] = 1.0f;
-    m_scale[1] = 1.0f;
-    m_scale[2] = 1.0f;
-
     m_color[0] = 1.0f;
     m_color[1] = 1.0f;
     m_color[2] = 1.0f;

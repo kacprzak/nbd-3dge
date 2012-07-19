@@ -23,20 +23,20 @@ void GameTest1::loadData()
     a = new Actor(cube);
     a->setTexture(tex2);
     a->setScale(0.2f);
-    a->moveTo(Vector<float>(10.0f));
+    a->moveTo({10.0f});
     m_gom.add(a);
 
     a = new Actor(cowMesh);
-    a->moveTo(Vector<float>(-10.0f));
+    a->moveTo({-10.0f});
     m_gom.add(a);
 
     a = new Actor(teapotMesh);
-    a->moveTo(Vector<float>(0.0f, 10.0f));
+    a->moveTo({0.0f, 10.0f});
     m_gom.add(a);
 
     a = new Actor(ship);
     a->setTexture(tex1);
     a->setScale(0.1f);
-    a->moveTo(Vector<float>(0.0f, -10.0f));
+    a->moveTo({0.0f, -10.0f});
     m_gom.add(a);
 }

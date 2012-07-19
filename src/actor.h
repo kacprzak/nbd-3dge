@@ -4,9 +4,6 @@
 #include "mesh.h"
 #include "vector.h"
 #include <boost/shared_ptr.hpp>
-//#include <SFML/Graphics.hpp>
-//typedef sf::Texture Texture;
-
 #include "texture.h"
 
 class Actor
