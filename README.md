@@ -4,7 +4,7 @@ nbd-3dge
 No Big Deal 3D Game Engine 
 
 This project is created to have fun while experimenting with modern OpenGL
-and C + +.
+and C++.
 
 Requirements
 ------------
