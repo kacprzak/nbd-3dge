@@ -2,6 +2,7 @@
 
 #include "objloader.h"
 #include "util.h"
+#include <iostream>
 
 Mesh::Mesh(const std::string &objfileName)
     : m_objfileName(objfileName)
@@ -47,11 +48,11 @@ Mesh *Mesh::create(const std::string& objfileName, GLenum shadeModel)
     Mesh *mesh = new Mesh(extractFilename(objfileName));
     mesh->m_shadeModel = shadeModel;
 
-    ObjLoader<GLfloat, GLushort> objLoader;
+    ObjLoader objLoader;
     if (shadeModel == GL_FLAT)
         objLoader.setFlatShadingModel();
 
-    objLoader.load(objfileName);
+    objLoader.loadObj(objfileName);
     std::vector<GLfloat> vertices = objLoader.vertices();
     std::vector<GLfloat> normals = objLoader.normals();
     std::vector<GLfloat> texcoords = objLoader.texCoords();

@@ -17,8 +17,8 @@ set( nbd-3dge_SRCS
     src/gametest1.cpp
     src/util.cpp
     src/texture.cpp
+    src/objloader.cpp
 
-    src/objloader.h
     src/vector.h
 )
 

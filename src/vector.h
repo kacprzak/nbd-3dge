@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include <cassert>
+#include <cmath>
 
 template <typename T>
 struct Vector {
@@ -13,7 +14,7 @@ struct Vector {
 
     float length() const
     {
-        return sqrt(x*x + y*y + z*z);
+        return std::sqrt(x*x + y*y + z*z);
     }
 
     const T& operator[](unsigned int i) const
