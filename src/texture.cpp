@@ -1,5 +1,6 @@
 #include "texture.h"
 #include <iostream>
+#include "util.h"
 
 Texture::Texture()
 {
@@ -19,7 +20,7 @@ void Texture::bind()
 Texture *Texture::create(const std::string &fileName)
 {
     Texture *tex = new Texture;
-    tex->m_filename = fileName;
+    tex->m_filename = extractFilename(fileName);
 
     sf::Image img;
     img.loadFromFile(fileName);
@@ -37,7 +38,7 @@ Texture *Texture::create(const std::string &fileName)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getPixelsPtr());
 
-    std::cout << "Loaded: " << fileName << " texId: "<< tex->m_textureId
+    std::cout << "Loaded: " << tex->m_filename << " texId: "<< tex->m_textureId
               << " (" << w << " x " << h << ")" << std::endl;
 
     return tex;

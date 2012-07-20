@@ -24,7 +24,7 @@ std::string changeExtension(const std::string& path, const std::string& ext)
     return extractDirectory(path) + filename.substr(0, filename.find_last_of('.')) + ext;
 }
 
-std::vector<std::string>&split(const std::string& s, char delim, std::vector<std::string>& elems) {
+std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems) {
     std::stringstream ss(s);
     std::string item;
     while(std::getline(ss, item, delim)) {

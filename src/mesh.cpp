@@ -52,7 +52,7 @@ Mesh *Mesh::create(const std::string& objfileName, GLenum shadeModel)
     if (shadeModel == GL_FLAT)
         objLoader.setFlatShadingModel();
 
-    objLoader.loadObj(objfileName);
+    objLoader.load(objfileName);
     std::vector<GLfloat> vertices = objLoader.vertices();
     std::vector<GLfloat> normals = objLoader.normals();
     std::vector<GLfloat> texcoords = objLoader.texCoords();

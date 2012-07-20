@@ -17,7 +17,9 @@ set( nbd-3dge_SRCS
     src/gametest1.cpp
     src/util.cpp
     src/texture.cpp
+    src/loader.cpp
     src/objloader.cpp
+    src/mtlloader.cpp
 
     src/vector.h
 )

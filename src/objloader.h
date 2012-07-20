@@ -1,11 +1,12 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 
+#include "loader.h"
 #include <string>
 #include <vector>
 #include "vector.h"
 
-class ObjLoader
+class ObjLoader : public Loader
 {
     typedef Vector<float> Vectorf;
     typedef struct {
@@ -17,11 +18,6 @@ class ObjLoader
     enum ShadeModel {
         Flat,
         Smooth
-    };
-
-    struct Material {
-        std::string name;
-        std::string texture;
     };
 
     struct Face {
@@ -50,8 +46,6 @@ public:
         , m_shading(Smooth)
     {}
 
-    void loadObj(const std::string& filename);
-
     void setFlatShadingModel() { m_shading = Flat; }
 
     const std::vector<float> vertices() const;
@@ -59,12 +53,11 @@ public:
     const std::vector<unsigned short> indices() const;
     const std::vector<float> texCoords() const;
 
+protected:
+    void command(const std::string& cmd, const std::vector<std::string>& args);
+    void fileLoaded();
 
 private:
-    void loadMtlLib(const std::string& filename);
-
-    void parseObjLine(const std::string& line);
-    void parseMtlLine(const std::string& line);
     void computeNormals();
     std::vector<float> expandVertices() const;
     std::vector<float> expandTexCoords() const;
@@ -74,9 +67,6 @@ private:
     std::vector<Vectorf> m_normals;
     std::vector<TexCoord> m_texCoords;
 
-    std::vector<Material> m_materials;
-
-    std::string m_folder;
     bool m_precompiledNormals;
     ShadeModel m_shading;
 };

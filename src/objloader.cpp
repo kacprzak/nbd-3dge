@@ -1,10 +1,5 @@
 #include "objloader.h"
 
-#include <iostream>
-#include <fstream>
-#include <boost/algorithm/string.hpp>
-#include <boost/tokenizer.hpp>
-
 #include "util.h"
 
 const std::vector<float> ObjLoader::vertices() const
@@ -64,89 +59,50 @@ const std::vector<float> ObjLoader::texCoords() const
     return texcoords_a;
 }
 
-void ObjLoader::loadObj(const std::string& filename)
+
+void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& args)
 {
-    using namespace std;
-    m_folder = extractDirectory(filename);
-
-    string tmp;
-    ifstream f(filename.c_str());
-
-    if (f.is_open() == true) {
-        while (f.good()) {
-            getline(f, tmp);
-            boost::algorithm::trim(tmp);
-            parseObjLine(tmp);
-        }
-        f.close();
-    } else {
-        cerr << "Error: unable to open " << filename << endl;
-    }
-
-    computeNormals();
-}
-
-
-void ObjLoader::parseObjLine(const std::string& line)
-{
-    using namespace boost;
-
-    // Ignoruj
-    if (line.empty() || algorithm::starts_with(line, "#"))
-        return;
-
-    typedef tokenizer<char_separator<char> >
-            tokenizer;
-
-    char_separator<char> sep(" ");
-    tokenizer tokens(line, sep);
-
-    tokenizer::iterator it = tokens.begin();
-    const std::string command = *it;
-    ++it; // skip command;
-
-    if (command == "mtllib") {
-        loadMtlLib(*it);
-    } else if (command == "v") {
+    if (cmd == "mtllib") {
+        //loadMtlLib(args[0]);
+    } else if (cmd == "v") {
         Vectorf v;
-        v.x = atof(it->c_str()); ++it;
-        v.y = atof(it->c_str()); ++it;
-        v.z = atof(it->c_str()); ++it;
+        v.x = atof(args[0].c_str());
+        v.y = atof(args[1].c_str());
+        v.z = atof(args[2].c_str());
         m_vertices.push_back(v);
 
-    } else if (command == "vn") {
+    } else if (cmd == "vn") {
         m_precompiledNormals = true;
         Vectorf n;
-        n.x = atof(it->c_str()); ++it;
-        n.y = atof(it->c_str()); ++it;
-        n.z = atof(it->c_str()); ++it;
+        n.x = atof(args[0].c_str());
+        n.y = atof(args[1].c_str());
+        n.z = atof(args[2].c_str());
         m_normals.push_back(n);
 
-    } else if (command == "vt") {
+    } else if (cmd == "vt") {
         TexCoord tc;
-        tc.s = atof(it->c_str()); ++it;
-        tc.t = atof(it->c_str()); ++it;
+        tc.s = atof(args[0].c_str());
+        tc.t = atof(args[1].c_str());
         m_texCoords.push_back(tc);
 
-    } else if (command == "f") {
+    } else if (cmd == "f") {
         Face f;
         std::vector<std::string> elems;
 
         for (int i = 0; i < 3; ++i) {
             elems.clear();
-            split(*it, '/', elems);
+            split(args[i], '/', elems);
             f.vertexIndices[i] = atoi(elems[0].c_str()) - 1;
             if (elems.size() > 1)
                 f.texIndices[i] = atoi(elems[1].c_str()) - 1;
-            ++it;
         }
         m_faces.push_back(f);
 
-        // if Quad add Triangle
-        if (it != tokens.end()) {
+        // Quads are not supported, so one more triangle needs to be created
+        if (args.size() > 3) {
             Face f2;
             elems.clear();
-            split(*it, '/', elems);
+            split(args[3], '/', elems);
 
             f2.vertexIndices[0] = f.vertexIndices[2];
             f2.vertexIndices[1] = atoi(elems[0].c_str()) - 1;
@@ -162,57 +118,10 @@ void ObjLoader::parseObjLine(const std::string& line)
     }
 }
 
-
-void ObjLoader::loadMtlLib(const std::string& filename)
+void ObjLoader::fileLoaded()
 {
-    using namespace std;
-
-    string fullpath = m_folder + filename;
-
-    string tmp;
-    ifstream f(fullpath.c_str());
-
-    if (f.is_open() == true) {
-        while (f.good()) {
-            getline(f, tmp);
-            boost::algorithm::trim(tmp);
-            parseMtlLine(tmp);
-        }
-        f.close();
-    } else {
-        cerr << "Error: unable to open " << filename << endl;
-    }
+    computeNormals();
 }
-
-
-void ObjLoader::parseMtlLine(const std::string& line)
-{
-    using namespace boost;
-
-    // Ignoruj
-    if (line.empty() || algorithm::starts_with(line, "#"))
-        return;
-
-    typedef tokenizer<char_separator<char> >
-            tokenizer;
-
-    char_separator<char> sep(" ");
-    tokenizer tokens(line, sep);
-
-    tokenizer::iterator it = tokens.begin();
-    const std::string command = *it;
-    ++it; // skip command;
-
-    if (command == "newmtl") {
-        Material mtl;
-        mtl.name = *it;
-        m_materials.push_back(mtl);
-    } else if (command == "map_Kd") {
-        Material *mtl = &m_materials.back();
-        mtl->texture = *it;
-    }
-}
-
 
 std::vector<float> ObjLoader::expandVertices() const
 {
@@ -229,7 +138,6 @@ std::vector<float> ObjLoader::expandVertices() const
     return expanded;
 }
 
-
 std::vector<float> ObjLoader::expandTexCoords() const
 {
     std::vector<float> expanded;
@@ -243,7 +151,6 @@ std::vector<float> ObjLoader::expandTexCoords() const
     }
     return expanded;
 }
-
 
 void ObjLoader::computeNormals()
 {
