@@ -99,8 +99,6 @@ void GameCore::initGL()
     glEnable(GL_RESCALE_NORMAL);
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 /* function to reset our viewport after a window resize */
@@ -123,7 +121,7 @@ bool GameCore::resizeWindow(int width, int height)
     glLoadIdentity();
 
     /* Set our perspective */
-    gluPerspective(45.0f, ratio, 0.1f, 100.0f);
+    gluPerspective(45.0f, ratio, 0.1f, 200.0f);
     //gluOrtho2D(0.0f, 0.0f, GLdouble(width), GLdouble(height));
 
     /* Make sure we're chaning the model view and not the projection */

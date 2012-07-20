@@ -4,7 +4,18 @@ Actor::Actor(boost::shared_ptr<Mesh> mesh)
     : m_mesh(mesh)
     , m_state(Idle)
     , m_hasTexture(false)
-    , m_scale({1.0f, 1.0f, 1.0f})
+    , m_scale(Vector<float>(1.0f, 1.0f, 1.0f))
+{
+    m_color[0] = 1.0f;
+    m_color[1] = 1.0f;
+    m_color[2] = 1.0f;
+}
+
+Actor::Actor()
+  : m_mesh()
+  , m_state(Idle)
+  , m_hasTexture(false)
+  , m_scale(Vector<float>(1.0f, 1.0f, 1.0f))
 {
     m_color[0] = 1.0f;
     m_color[1] = 1.0f;
@@ -15,6 +26,11 @@ void Actor::setTexture(boost::shared_ptr<Texture> tex)
 {
     m_texture = tex;
     m_hasTexture = true;
+}
+
+void Actor::setMesh(boost::shared_ptr<Mesh> mesh)
+{
+    m_mesh = mesh;
 }
 
 void Actor::move(const Vector<float> &posDelta)

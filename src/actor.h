@@ -16,8 +16,8 @@ public:
     void moveTo(const Vector<float>& pos);
     Vector<float> position() { return m_position ;}
 
-    void draw() const;
-    void update(float delta);
+    void virtual draw() const;
+    void virtual update(float delta);
 
     void setOrientation(float x, float y, float z);
     void rotate(float x, float y, float z);
@@ -30,12 +30,15 @@ public:
     bool isDestroyed() { return m_state == Destroyed; }
 
 protected:
+    Actor();
+
     enum State {
         Idle,
         Active,
         Destroyed
     };
 
+    void setMesh(boost::shared_ptr<Mesh> mesh);
     void setState(State state) { m_state = state; }
 
 private:

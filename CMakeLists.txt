@@ -20,6 +20,7 @@ set( nbd-3dge_SRCS
     src/loader.cpp
     src/objloader.cpp
     src/mtlloader.cpp
+    src/skybox.cpp
 
     src/vector.h
 )

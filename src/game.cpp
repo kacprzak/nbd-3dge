@@ -2,6 +2,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include "texture.h"
+#include "skybox.h"
 
 Game::Game()
 {
@@ -43,8 +44,13 @@ void Game::loadData()
 
     shared_ptr<Texture> tex1(Texture::create("data/ship.jpg"));
     shared_ptr<Texture> tex2(Texture::create("data/texture_I.png"));
+    shared_ptr<Texture> skybox_tex(Texture::create("data/skybox_texture.jpg"));
 
-    Actor *a = new Actor(teddyMesh);
+    Actor *a = new SkyBox();
+    a->setTexture(skybox_tex);
+    m_gom.add(a);
+
+    a = new Actor(teddyMesh);
     a->setScale(0.2f);
     m_gom.add(a);
 
