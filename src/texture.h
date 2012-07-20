@@ -3,19 +3,19 @@
 
 #include <GL/glew.h>
 #include <string>
-#include <SFML/Graphics.hpp>
 
 class Texture
 {
 public:
-    Texture();
     ~Texture();
 
     void bind();
 
-    static Texture *create(const std::string& fileName);
+    static Texture *create(const std::string& filename);
 
 private:
+    Texture();
+
     std::string m_filename;
     GLuint m_textureId;
 };

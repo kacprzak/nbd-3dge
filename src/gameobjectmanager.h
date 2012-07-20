@@ -10,8 +10,12 @@ public:
     GameObjectManager();
     ~GameObjectManager();
 
-    void add(Actor *actor) { m_actors.insert(actor); }
-    void remove(Actor *actor) { m_actors.erase(actor); }
+    void add(Actor *actor) {
+        m_actors.insert(actor);
+    }
+    void remove(Actor *actor) {
+        m_actors.erase(actor);
+    }
 
     void draw();
     void update(float delta);

@@ -1,74 +1,79 @@
 #include "game.h"
 
-#include <iostream>
-//#include <vector>
-#include "fpscounter.h"
-
-void printOpenGlSettings(const sf::Window& window)
-{
-    sf::ContextSettings settings = window.getSettings();
-
-    std::cout << "OpenGL settings:" << std::endl;
-    std::cout << "  depth bits: " << settings.depthBits << std::endl;
-    std::cout << "  stencil bits: " << settings.stencilBits << std::endl;
-    std::cout << "  antialiasing level: " << settings.antialiasingLevel << std::endl;
-    std::cout << "  version: " << settings.majorVersion << "." << settings.minorVersion << std::endl;
-}
+#include <boost/shared_ptr.hpp>
+#include "texture.h"
 
 Game::Game()
 {
-    m_window = new sf::Window(sf::VideoMode(800, 600), "nbd-3dge",
-                              sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
-
-    initGL();
-    printOpenGlSettings(*m_window);
-
-    m_zoom = 20.0f;
+    m_zoom = 40.0f;
     m_elevation = 0.0f;
-    m_azimuth = 0.0f;
+    m_azimuth = 0.0f; 
+  
+    init();
+    loadData();
 }
 
-Game::~Game()
+void Game::init()
 {
-    delete m_window;
+    // Create light components
+    GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+    GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+    GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat position[] = { 50.0f, 50.0f, 50.0f, 1.0f };
+
+    // Assign created components to GL_LIGHT0
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+    glLightfv(GL_LIGHT0, GL_POSITION, position);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 }
 
-void Game::mainLoop()
+void Game::loadData()
 {
-    float delta = 0.0f;
-    FpsCounter fpsCounter;
-    sf::Clock clock;
-    bool running = true;
+    using namespace boost;
 
-    while (running)
-    {
-        delta = clock.restart().asSeconds();
-        fpsCounter.update(delta);
+    shared_ptr<Mesh> teddyMesh(Mesh::create("data/teddy.obj"));
+    //shared_ptr<Mesh> teapotMesh(Mesh::create("data/teapot.obj"));
+    //shared_ptr<Mesh> cowMesh(Mesh::create("data/cow-nonormals.obj"));
+    shared_ptr<Mesh> cube(Mesh::create("data/cube.obj", GL_FLAT));
+    shared_ptr<Mesh> ship(Mesh::create("data/ship.obj", GL_FLAT));
 
-        sf::Event event;
-        while (m_window->pollEvent(event))
-        {
-            switch (event.type) {
-            case sf::Event::Closed:
-                running = false;
-                break;
-            case sf::Event::Resized:
-                resizeWindow(event.size.width, event.size.height);
-                break;
-            case sf::Event::MouseWheelMoved:
-                mouseWheelMoved(event.mouseWheel.delta);
-                break;
-            default:
-                break;
-            }
-        }
+    shared_ptr<Texture> tex1(Texture::create("data/ship.jpg"));
+    shared_ptr<Texture> tex2(Texture::create("data/texture_I.png"));
 
-        update(delta);
-        // Draw to the back buffer
-        draw();
-        // Swap buffers
-        m_window->display();
-    }
+    Actor *a = new Actor(teddyMesh);
+    a->setScale(0.2f);
+    m_gom.add(a);
+
+    a = new Actor(cube);
+    a->setTexture(tex2);
+    a->setScale(0.2f);
+    a->moveTo({10.0f});
+    m_gom.add(a);
+
+//     a = new Actor(cowMesh);
+//     a->moveTo({-10.0f});
+//     m_gom.add(a);
+// 
+//     a = new Actor(teapotMesh);
+//     a->moveTo({0.0f, 10.0f});
+//     m_gom.add(a);
+
+    a = new Actor(ship);
+    a->setTexture(tex1);
+    a->setScale(0.1f);
+    a->moveTo({0.0f, -10.0f});
+    m_gom.add(a);
+}
+
+void Game::polarView()
+{
+    glTranslatef(0.0, 0.0, -m_zoom);
+    glRotatef(-m_elevation, 1.0f, 0.0f, 0.0f);
+    glRotatef(m_azimuth, 0.0f, 1.0f, 0.0f);
 }
 
 void Game::draw()
@@ -77,9 +82,14 @@ void Game::draw()
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     glLoadIdentity();
-    polarView();
+    polarView();  
+  
+    super::draw();
+}
 
-    m_gom.draw();
+void Game::mouseWheelMoved(int wheelDelta)
+{
+    m_zoom -= wheelDelta;  
 }
 
 void Game::update(float delta)
@@ -100,100 +110,7 @@ void Game::update(float delta)
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         m_azimuth += dx * mouseSensity;
         m_elevation += dy * mouseSensity;
-    }
-
-    m_gom.update(delta);
-}
-
-void Game::mouseWheelMoved(int wheelDelta)
-{
-    m_zoom -= wheelDelta;
-}
-
-void Game::polarView()
-{
-    glTranslatef(0.0, 0.0, -m_zoom);
-    glRotatef(-m_elevation, 1.0f, 0.0f, 0.0f);
-    glRotatef(m_azimuth, 0.0f, 1.0f, 0.0f);
-}
-
-void Game::initGL()
-{
-    glewInit();
-
-    /* Enable smooth shading */
-    //glShadeModel( GL_SMOOTH );
-    //glShadeModel( GL_FLAT );
-
-    /* Set the background black */
-    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-
-    /* Depth buffer setup */
-    glClearDepth( 1.0f );
-
-    /* Enables Depth Testing */
-    glEnable( GL_DEPTH_TEST );
-
-    /* The Type Of Depth Test To Do */
-    glDepthFunc( GL_LEQUAL );
-
-    /* Really Nice Perspective Calculations */
-    glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-
-    //glEnable(GL_TEXTURE_2D);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_RESCALE_NORMAL);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    // Light
-
-    // Create light components
-    GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-    GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
-    GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    GLfloat position[] = { 50.0f, 50.0f, 50.0f, 1.0f };
-
-    // Assign created components to GL_LIGHT0
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-    glLightfv(GL_LIGHT0, GL_POSITION, position);
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-}
-
-/* function to reset our viewport after a window resize */
-bool Game::resizeWindow(int width, int height)
-{
-    /* Height / width ration */
-    GLfloat ratio;
-
-    /* Protect against a divide by zero */
-    if (height == 0)
-        height = 1;
-
-    ratio = GLfloat(width) / GLfloat(height);
-
-    /* Setup our viewport. */
-    glViewport(0, 0, GLsizei(width), GLsizei(height));
-
-    /* change to the projection matrix and set our viewing volume. */
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    /* Set our perspective */
-    gluPerspective(45.0f, ratio, 0.1f, 100.0f);
-    //gluOrtho2D(0.0f, 0.0f, GLdouble(width), GLdouble(height));
-
-    /* Make sure we're chaning the model view and not the projection */
-    glMatrixMode(GL_MODELVIEW);
-
-    /* Reset The View */
-    glLoadIdentity();
-
-    return true;
+    }  
+  
+    super::update(delta);
 }

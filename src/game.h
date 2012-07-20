@@ -1,37 +1,28 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <GL/glew.h>
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
+#include "gamecore.h"
 
-#include "gameobjectmanager.h"
-
-class Game
+class Game : public GameCore
 {
+  typedef GameCore super;
+  
 public:
     Game();
-    virtual ~Game();
-
-    void mainLoop();
 
 protected:
-    GameObjectManager m_gom;
+    void draw();
+    void mouseWheelMoved(int wheelDelta);
+    void update(float delta);
 
 private:
-    void initGL();
-    bool resizeWindow(int width, int height);
-    void draw();
-    void update(float delta);
-    void mouseWheelMoved(int wheelDelta);
+    void init();
+    void loadData();
     void polarView();
-
-    sf::Window *m_window;
 
     float m_zoom;
     float m_elevation;
     float m_azimuth;
-
 };
 
 #endif // GAME_H

@@ -6,3 +6,5 @@ install_manifest.txt
 
 *~
 *.user
+.kdev4/
+*.kdev4

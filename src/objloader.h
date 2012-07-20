@@ -46,7 +46,9 @@ public:
         , m_shading(Smooth)
     {}
 
-    void setFlatShadingModel() { m_shading = Flat; }
+    void setFlatShadingModel() {
+        m_shading = Flat;
+    }
 
     const std::vector<float> vertices() const;
     const std::vector<float> normals() const;

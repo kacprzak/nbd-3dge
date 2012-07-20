@@ -1,8 +1,10 @@
 #include "texture.h"
 #include <iostream>
 #include "util.h"
+#include <SFML/Graphics.hpp>
 
 Texture::Texture()
+  : m_textureId(0)
 {
 }
 

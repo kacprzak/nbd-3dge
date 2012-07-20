@@ -13,8 +13,8 @@ set( nbd-3dge_SRCS
     src/actor.cpp
     src/mesh.cpp
     src/gameobjectmanager.cpp
+    src/gamecore.cpp
     src/game.cpp
-    src/gametest1.cpp
     src/util.cpp
     src/texture.cpp
     src/loader.cpp

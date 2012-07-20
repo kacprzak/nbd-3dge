@@ -1,11 +1,9 @@
-#include "gametest1.h"
+#include "game.h"
 
 int main()
 {
-    GameTest1 gt1;
-    gt1.loadData();
-
-    gt1.mainLoop();
+    Game game;
+    game.mainLoop();
 
     return 0;
 }
