@@ -3,8 +3,10 @@
 #include "mesh.h"
 #include <vector>
 
-SkyBox::SkyBox()
+Skybox::Skybox(boost::shared_ptr<Texture> tex)
 {
+    m_texture = tex;
+
     float x = 80.0f;
 
     /*
@@ -122,10 +124,10 @@ SkyBox::SkyBox()
                               texcoords,
                               empty2,
                               GL_FLAT);
-    setMesh(boost::shared_ptr<Mesh>(mesh));
+    m_mesh = boost::shared_ptr<Mesh>(mesh);
 }
 
-void SkyBox::draw()
+void Skybox::draw()
 {
     glPushAttrib(GL_ENABLE_BIT);
 
@@ -133,7 +135,10 @@ void SkyBox::draw()
     glDisable(GL_LIGHTING);
     //glDisable(GL_BLEND);
 
-    super::draw();
+    glEnable(GL_TEXTURE_2D);
+    m_texture->bind();
+    m_mesh->draw();
+    glDisable(GL_TEXTURE_2D);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
@@ -141,11 +146,7 @@ void SkyBox::draw()
     glPopAttrib();
 }
 
-void SkyBox::update(float /*delta*/)
-{
-}
-
-std::vector<float> SkyBox::quadsToTriangles3(const std::vector<float>& v)
+std::vector<float> Skybox::quadsToTriangles3(const std::vector<float>& v)
 {
     std::vector<float> nv;
     for (unsigned int i = 0; i < v.size();) {
@@ -177,7 +178,7 @@ std::vector<float> SkyBox::quadsToTriangles3(const std::vector<float>& v)
     return nv;
 }
 
-std::vector<float> SkyBox::quadsToTriangles2(const std::vector<float>& v)
+std::vector<float> Skybox::quadsToTriangles2(const std::vector<float>& v)
 {
     std::vector<float> nv;
     for (unsigned int i = 0; i < v.size();) {

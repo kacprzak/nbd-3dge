@@ -2,6 +2,7 @@
 #define GAMEOBJECTMANAGER_H
 
 #include "actor.h"
+#include "skybox.h"
 #include <set>
 
 class GameObjectManager
@@ -9,6 +10,10 @@ class GameObjectManager
 public:
     GameObjectManager();
     ~GameObjectManager();
+
+    void setSkybox(Skybox *skybox) {
+        m_skybox = skybox;
+    }
 
     void add(Actor *actor) {
         m_actors.insert(actor);
@@ -22,6 +27,7 @@ public:
 
 private:
     std::set<Actor *> m_actors;
+    Skybox *m_skybox;
 };
 
 #endif // GAMEOBJECTMANAGER_H

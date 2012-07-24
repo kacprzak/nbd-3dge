@@ -46,11 +46,10 @@ void Game::loadData()
     shared_ptr<Texture> tex2(Texture::create("data/texture_I.png"));
     shared_ptr<Texture> skybox_tex(Texture::create("data/skybox_texture.jpg"));
 
-    Actor *a = new SkyBox();
-    a->setTexture(skybox_tex);
-    m_gom.add(a);
+    Skybox *skybox = new Skybox(skybox_tex);
+    m_gom.setSkybox(skybox);
 
-    a = new Actor(teddyMesh);
+    Actor *a = new Actor(teddyMesh);
     a->setScale(0.2f);
     m_gom.add(a);
 

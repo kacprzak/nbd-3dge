@@ -1,11 +1,15 @@
 #include "gameobjectmanager.h"
 
 GameObjectManager::GameObjectManager()
+    : m_skybox(0)
 {
 }
 
 GameObjectManager::~GameObjectManager()
 {
+    if (m_skybox)
+        delete m_skybox;
+
     for (Actor *a : m_actors) {
         delete a;
     }
@@ -14,6 +18,9 @@ GameObjectManager::~GameObjectManager()
 
 void GameObjectManager::draw()
 {
+    if (m_skybox)
+        m_skybox->draw();
+
     for (Actor *a : m_actors) {
         a->draw();
     }

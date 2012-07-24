@@ -1,21 +1,23 @@
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
-#include "actor.h"
+#include "texture.h"
+#include "mesh.h"
+#include <boost/shared_ptr.hpp>
 
-class SkyBox : public Actor
+class Skybox
 {
-    typedef Actor super;
-
 public:
-    SkyBox();
+    Skybox(boost::shared_ptr<Texture> tex);
 
     void draw();
-    void update(float delta);
 
 private:
     std::vector<float> quadsToTriangles3(const std::vector<float>& vertices);
     std::vector<float> quadsToTriangles2(const std::vector<float>& vertices);
+
+    boost::shared_ptr<Texture> m_texture;
+    boost::shared_ptr<Mesh> m_mesh;
 };
 
 #endif // SKYBOX_H
