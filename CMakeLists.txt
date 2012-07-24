@@ -21,6 +21,8 @@ set( nbd-3dge_SRCS
     src/objloader.cpp
     src/mtlloader.cpp
     src/skybox.cpp
+    src/shader.cpp
+    src/shaderprogram.cpp
 
     src/vector.h
 )
@@ -28,6 +30,7 @@ set( nbd-3dge_SRCS
 add_executable( nbd-3dge ${nbd-3dge_SRCS} )
 
 file( COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_BINARY_DIR}/ )
+file( COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR}/ )
 
 # Detect SFML
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})

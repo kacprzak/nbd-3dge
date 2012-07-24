@@ -3,13 +3,15 @@
 #include <boost/shared_ptr.hpp>
 #include "texture.h"
 #include "skybox.h"
+#include "shader.h"
+#include "shaderprogram.h"
 
 Game::Game()
 {
     m_zoom = 40.0f;
     m_elevation = 0.0f;
-    m_azimuth = 0.0f; 
-  
+    m_azimuth = 0.0f;
+
     init();
     loadData();
 }
@@ -45,6 +47,14 @@ void Game::loadData()
     shared_ptr<Texture> tex1(Texture::create("data/ship.jpg"));
     shared_ptr<Texture> tex2(Texture::create("data/texture_I.png"));
     shared_ptr<Texture> skybox_tex(Texture::create("data/skybox_texture.jpg"));
+
+    Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
+    //        Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+
+    ShaderProgram sp;
+    sp.addShared(vs);
+    //        sp.addShared(fs);
+    sp.link();
 
     Skybox *skybox = new Skybox(skybox_tex);
     m_gom.setSkybox(skybox);
@@ -87,14 +97,14 @@ void Game::draw()
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     glLoadIdentity();
-    polarView();  
-  
+    polarView();
+
     super::draw();
 }
 
 void Game::mouseWheelMoved(int wheelDelta)
 {
-    m_zoom -= wheelDelta;  
+    m_zoom -= wheelDelta;
 }
 
 void Game::update(float delta)
@@ -115,7 +125,7 @@ void Game::update(float delta)
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         m_azimuth += dx * mouseSensity;
         m_elevation += dy * mouseSensity;
-    }  
-  
+    }
+
     super::update(delta);
 }

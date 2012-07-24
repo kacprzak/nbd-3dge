@@ -20,12 +20,11 @@ public:
 protected:
     virtual void command(const std::string& cmd, const std::vector<std::string>& args) = 0;
     virtual void fileLoaded();
+    virtual void parseLine(const std::string& line);
 
     const std::string& currentFolder() { return m_folder; }
 
 private:
-    void parseLine(const std::string& line);
-
     std::string m_folder;
 };
 
