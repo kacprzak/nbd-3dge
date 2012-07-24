@@ -17,6 +17,7 @@ Mesh::Mesh(const std::string& name, GLenum drawingMode)
 
 Mesh::~Mesh()
 {
+    glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(NUM_BUFFERS, m_buffers);
 
     std::cout << "Released: " << m_name << std::endl;
@@ -24,25 +25,7 @@ Mesh::~Mesh()
 
 void Mesh::draw() const
 {
-    // Bind Buffers
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffers[VERTICES]);
-    //glVertexPointer(3, GL_FLOAT, 0, 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-    if (m_hasNormals) {
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffers[NORMALS]);
-        glNormalPointer(GL_FLOAT, 0, 0);
-    }
-
-    if (m_hasTexCoords) {
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TEXCOORDS]);
-        glTexCoordPointer(2, GL_FLOAT, 0, 0);
-    }
-
+    glBindVertexArray(m_vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDICES]);
 
     // Draw
@@ -52,13 +35,6 @@ void Mesh::draw() const
         glShadeModel(GL_SMOOTH);
     } else {
         glDrawElements(m_drawingMode, m_numberOfElements, GL_UNSIGNED_SHORT, 0);
-    }
-
-    if (m_hasNormals) {
-        glDisableClientState(GL_NORMAL_ARRAY);
-    }
-    if (m_hasTexCoords) {
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 }
 
@@ -112,20 +88,20 @@ Mesh *Mesh::create(const std::string& name,
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[TEXCOORDS]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texcoords.size(), &texcoords[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+//    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[TEXCOORDS]);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texcoords.size(), &texcoords[0], GL_STATIC_DRAW);
+//    glEnableVertexAttribArray(1);
+//    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[NORMALS]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * normals.size(), &normals[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+//    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[NORMALS]);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * normals.size(), &normals[0], GL_STATIC_DRAW);
+//    glEnableVertexAttribArray(2);
+//    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glBindVertexArray(0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->m_buffers[INDICES]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indices.size(), &indices[0], GL_STATIC_DRAW);
-
-    glBindVertexArray(0);
 
     return mesh;
 }

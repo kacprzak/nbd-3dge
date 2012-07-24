@@ -4,7 +4,7 @@
 
 const std::vector<float> ObjLoader::vertices() const
 {
-    if (m_shading == Flat)
+    if (m_shading == Flat && m_faces.size() > 0)
         return expandVertices();
 
     std::vector<float> vertices_a;
@@ -49,7 +49,7 @@ const std::vector<float> ObjLoader::texCoords() const
     if (m_texCoords.size() == 0)
         return texcoords_a;
 
-    if (m_shading == Flat)
+    if (m_shading == Flat && m_faces.size() > 0)
         return expandTexCoords();
 
     for (const TexCoord& t : m_texCoords) {
@@ -123,7 +123,7 @@ void ObjLoader::fileLoaded()
     computeNormals();
 }
 
-std::vector<float> ObjLoader::expandVertices() const
+const std::vector<float> ObjLoader::expandVertices() const
 {
     std::vector<float> expanded;
 
@@ -138,7 +138,7 @@ std::vector<float> ObjLoader::expandVertices() const
     return expanded;
 }
 
-std::vector<float> ObjLoader::expandTexCoords() const
+const std::vector<float> ObjLoader::expandTexCoords() const
 {
     std::vector<float> expanded;
 

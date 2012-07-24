@@ -45,30 +45,30 @@ void Actor::moveTo(const Vector<float> &pos)
 
 void Actor::draw() const
 {
-    glPushMatrix();
+//    glPushMatrix();
 
-    glColor3f(m_color[0], m_color[1], m_color[2]);
+//    glColor3f(m_color[0], m_color[1], m_color[2]);
 
-    glTranslatef(m_position[0], m_position[1], m_position[2]);
+//    glTranslatef(m_position[0], m_position[1], m_position[2]);
 
-    glRotatef(m_orientation[0], 1.0f, 0.0f, 0.0f);
-    glRotatef(m_orientation[1], 0.0f, 1.0f, 0.0f);
-    glRotatef(m_orientation[2], 0.0f, 0.0f, 1.0f);
+//    glRotatef(m_orientation[0], 1.0f, 0.0f, 0.0f);
+//    glRotatef(m_orientation[1], 0.0f, 1.0f, 0.0f);
+//    glRotatef(m_orientation[2], 0.0f, 0.0f, 1.0f);
 
-    glScalef(m_scale[0], m_scale[1], m_scale[2]);
+//    glScalef(m_scale[0], m_scale[1], m_scale[2]);
 
-    if (m_hasTexture) {
-        glEnable(GL_TEXTURE_2D);
-        m_texture->bind();
-    }
+//    if (m_hasTexture) {
+//        glEnable(GL_TEXTURE_2D);
+//        m_texture->bind();
+//    }
 
     m_mesh->draw();
 
-    if (m_hasTexture) {
-        glDisable(GL_TEXTURE_2D);
-    }
+//    if (m_hasTexture) {
+//        glDisable(GL_TEXTURE_2D);
+//    }
 
-    glPopMatrix();
+//    glPopMatrix();
 }
 
 void Actor::update(float delta)

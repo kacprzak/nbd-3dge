@@ -78,27 +78,29 @@ void GameCore::update(float delta)
 
 void GameCore::initGL()
 {
-    glewInit();
+    GLenum glewInitStatus = glewInit();
 
-    /* Set the background black */
-    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+    if (GLEW_OK != glewInitStatus) {
+        std::cerr << "ERROR: " << glewGetErrorString(glewInitStatus);
+        exit(1);
+    }
+
+    glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
 
     /* Depth buffer setup */
-    glClearDepth( 1.0f );
+    glClearDepth(1.0f);
 
     /* Enables Depth Testing */
-    glEnable( GL_DEPTH_TEST );
+    glEnable(GL_DEPTH_TEST);
 
     /* The Type Of Depth Test To Do */
-    glDepthFunc( GL_LEQUAL );
+    glDepthFunc(GL_LEQUAL);
 
     /* Really Nice Perspective Calculations */
-    glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_RESCALE_NORMAL);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
+    //glEnable(GL_CULL_FACE);
+    //glEnable(GL_RESCALE_NORMAL);
 }
 
 /* function to reset our viewport after a window resize */
@@ -121,7 +123,7 @@ bool GameCore::resizeWindow(int width, int height)
     glLoadIdentity();
 
     /* Set our perspective */
-    gluPerspective(45.0f, ratio, 0.1f, 200.0f);
+    gluPerspective(45.0f, ratio, 5.0f, 100.0f);
     //gluOrtho2D(0.0f, 0.0f, GLdouble(width), GLdouble(height));
 
     /* Make sure we're chaning the model view and not the projection */

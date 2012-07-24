@@ -61,8 +61,8 @@ protected:
 
 private:
     void computeNormals();
-    std::vector<float> expandVertices() const;
-    std::vector<float> expandTexCoords() const;
+    const std::vector<float> expandVertices() const;
+    const std::vector<float> expandTexCoords() const;
 
     std::vector<Vectorf> m_vertices;
     std::vector<Face> m_faces;
