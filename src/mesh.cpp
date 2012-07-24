@@ -4,11 +4,15 @@
 #include "util.h"
 #include <iostream>
 
-Mesh::Mesh(const std::string &name)
-    : m_name(name)
+Mesh::Mesh(const std::string& name, GLenum drawingMode)
+    : m_drawingMode(drawingMode)
+    , m_name(name)
     , m_hasNormals(false)
     , m_hasTexCoords(false)
 {
+    for (int i = 0; i < NUM_BUFFERS; ++i) {
+        m_buffers[i] = 0;
+    }
 }
 
 Mesh::~Mesh()
@@ -23,7 +27,9 @@ void Mesh::draw() const
     // Bind Buffers
 
     glBindBuffer(GL_ARRAY_BUFFER, m_buffers[VERTICES]);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
+    //glVertexPointer(3, GL_FLOAT, 0, 0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     if (m_hasNormals) {
         glEnableClientState(GL_NORMAL_ARRAY);
@@ -42,10 +48,10 @@ void Mesh::draw() const
     // Draw
     if (m_shadeModel == GL_FLAT) {
         glShadeModel(GL_FLAT);
-        glDrawArrays(GL_TRIANGLES, 0, m_numberOfVertices);
+        glDrawArrays(m_drawingMode, 0, m_numberOfVertices);
         glShadeModel(GL_SMOOTH);
     } else {
-        glDrawElements(GL_TRIANGLES, m_numberOfElements, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(m_drawingMode, m_numberOfElements, GL_UNSIGNED_SHORT, 0);
     }
 
     if (m_hasNormals) {
@@ -90,30 +96,36 @@ Mesh *Mesh::create(const std::string& name,
     mesh->m_hasNormals = !normals.empty();
     mesh->m_hasTexCoords = !texcoords.empty();
 
+    glGenVertexArrays(1, &mesh->m_vao);
     glGenBuffers(NUM_BUFFERS, mesh->m_buffers);
 
-    std::cout << "Loaded: " << mesh->m_name << "\n";
+    std::cout << "Loaded: " << mesh->m_name << "\t vaoId: " << mesh->m_vao << "\n";
     std::cout << "  Vertices: " << vertices.size()/3 << "\t id: " << mesh->m_buffers[VERTICES] << "\n";
     std::cout << "  Normals: " << normals.size()/3 << "\t id: " << mesh->m_buffers[NORMALS] << "\n";
     std::cout << "  TexCoords: " << texcoords.size()/2 << "\t id: " << mesh->m_buffers[TEXCOORDS] << "\n";
     std::cout << "  Faces: " << indices.size()/3 << "\t id: " << mesh->m_buffers[INDICES] << std::endl;
 
+    glBindVertexArray(mesh->m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[VERTICES]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(),
-                 &vertices[0], GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[NORMALS]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * normals.size(),
-                 &normals[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[TEXCOORDS]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texcoords.size(),
-                 &texcoords[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texcoords.size(), &texcoords[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[NORMALS]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * normals.size(), &normals[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->m_buffers[INDICES]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indices.size(),
-                 &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indices.size(), &indices[0], GL_STATIC_DRAW);
+
+    glBindVertexArray(0);
 
     return mesh;
 }

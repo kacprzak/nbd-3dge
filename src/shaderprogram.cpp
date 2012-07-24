@@ -44,3 +44,11 @@ void ShaderProgram::link()
     m_linked = true;
     m_shaders.clear();
 }
+
+void ShaderProgram::use(bool activate)
+{
+    if (activate)
+        glUseProgram(m_shaderProgramId);
+    else
+        glUseProgram(0);
+}

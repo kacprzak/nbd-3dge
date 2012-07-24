@@ -24,7 +24,7 @@ Shader::Shader(GLenum type, const std::string& filename)
         cerr << "Error: unable to open " << filename << endl;
     }
 
-    m_shaderId = glCreateShader(GL_VERTEX_SHADER);
+    m_shaderId = glCreateShader(m_type);
 
     const GLchar *shaderSource[1];
     shaderSource[0] = source.c_str();

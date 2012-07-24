@@ -49,12 +49,13 @@ void Game::loadData()
     shared_ptr<Texture> skybox_tex(Texture::create("data/skybox_texture.jpg"));
 
     Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
-    //        Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+    Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");
 
-    ShaderProgram sp;
-    sp.addShared(vs);
-    //        sp.addShared(fs);
-    sp.link();
+    ShaderProgram *sp = new ShaderProgram;
+    sp->addShared(vs);
+    sp->addShared(fs);
+    sp->link();
+    //sp->use();
 
     Skybox *skybox = new Skybox(skybox_tex);
     m_gom.setSkybox(skybox);
