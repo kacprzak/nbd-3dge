@@ -21,20 +21,20 @@ Game::Game()
 
 void Game::init()
 {
-//    // Create light components
-//    GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-//    GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
-//    GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-//    GLfloat position[] = { 50.0f, 50.0f, 50.0f, 1.0f };
+    //    // Create light components
+    //    GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+    //    GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+    //    GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    //    GLfloat position[] = { 50.0f, 50.0f, 50.0f, 1.0f };
 
-//    // Assign created components to GL_LIGHT0
-//    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-//    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-//    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-//    glLightfv(GL_LIGHT0, GL_POSITION, position);
+    //    // Assign created components to GL_LIGHT0
+    //    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+    //    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+    //    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+    //    glLightfv(GL_LIGHT0, GL_POSITION, position);
 
-//    glEnable(GL_LIGHTING);
-//    glEnable(GL_LIGHT0);
+    //    glEnable(GL_LIGHTING);
+    //    glEnable(GL_LIGHT0);
 }
 
 void Game::loadData()
@@ -43,13 +43,15 @@ void Game::loadData()
 
     //shared_ptr<Mesh> triangleMesh(Mesh::create("data/triangle.obj", GL_FLAT));
     shared_ptr<Mesh> teddyMesh(Mesh::create("data/teddy.obj"));
-    //shared_ptr<Mesh> teapotMesh(Mesh::create("data/teapot.obj"));
-    //shared_ptr<Mesh> cowMesh(Mesh::create("data/cow-nonormals.obj"));
-    shared_ptr<Mesh> cube(Mesh::create("data/cube.obj", GL_FLAT));
-    shared_ptr<Mesh> ship(Mesh::create("data/ship.obj", GL_FLAT));
+    shared_ptr<Mesh> teapotMesh(Mesh::create("data/teapot.obj"));
+    shared_ptr<Mesh> cowMesh(Mesh::create("data/cow-nonormals.obj"));
+    shared_ptr<Mesh> cubeMesh(Mesh::create("data/cube.obj", GL_FLAT));
+    shared_ptr<Mesh> shipMesh(Mesh::create("data/ship.obj", GL_FLAT));
+    shared_ptr<Mesh> floorMesh(Mesh::create("data/floor.obj", GL_FLAT));
 
-    shared_ptr<Texture> tex1(Texture::create("data/ship.jpg"));
-    shared_ptr<Texture> tex2(Texture::create("data/texture_I.png"));
+    shared_ptr<Texture> shipTex(Texture::create("data/ship.jpg"));
+    shared_ptr<Texture> tex_I(Texture::create("data/texture_I.png"));
+    shared_ptr<Texture> tex_G(Texture::create("data/texture_H.png"));
     //shared_ptr<Texture> skybox_tex(Texture::create("data/skybox_texture.jpg"));
 
     Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
@@ -60,33 +62,39 @@ void Game::loadData()
     m_sp->addShared(fs);
     m_sp->link();
 
-//    Skybox *skybox = new Skybox(skybox_tex);
-//    m_gom.setSkybox(skybox);
+    //    Skybox *skybox = new Skybox(skybox_tex);
+    //    m_gom.setSkybox(skybox);
 
-    Actor *a = new Actor(teddyMesh);
+    Actor *a = new Actor("teddy", teddyMesh);
     //Actor *a = new Actor(triangleMesh);
     a->setScale(0.2f);
-    m_gom.add(a);
+    gameObjectManager().add(a);
 
-    a = new Actor(cube);
-    a->setTexture(tex2);
-    a->moveTo(glm::vec3(10.0f, 0.0f, 0.0f));
+    a = new Actor("cube", cubeMesh);
+    a->setTexture(tex_I);
+    a->moveTo(10.0f, 0.0f, 0.0f);
     a->setScale(0.2f);
-    m_gom.add(a);
+    gameObjectManager().add(a);
 
-//     a = new Actor(cowMesh);
-//     a->moveTo({-10.0f});
-//     m_gom.add(a);
-// 
-//     a = new Actor(teapotMesh);
-//     a->moveTo({0.0f, 10.0f});
-//     m_gom.add(a);
+    a = new Actor("cow", cowMesh);
+    a->moveTo(-10.0f);
+    gameObjectManager().add(a);
 
-    a = new Actor(ship);
-    a->setTexture(tex1);
-    a->moveTo(glm::vec3(0.0f, -10.0f, 0.0f));
+    a = new Actor("teapot", teapotMesh);
+    a->moveTo(0.0f, 10.0f);
+    gameObjectManager().add(a);
+
+    a = new Actor("ship", shipMesh);
+    a->setTexture(shipTex);
+    a->moveTo(0.0f, -10.0f, 0.0f);
     a->setScale(0.1f);
-    m_gom.add(a);
+    gameObjectManager().add(a);
+
+    a = new Actor("floor", floorMesh);
+    a->setTexture(tex_G);
+    a->setScale(10.0f);
+    a->moveTo(0.0f, -15.0f, 0.0f);
+    gameObjectManager().add(a);
 }
 
 void Game::polarView()
@@ -100,7 +108,7 @@ void Game::polarView()
 void Game::draw()
 {
     /* Clear The Screen And The Depth Buffer */
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     polarView();
 
@@ -113,7 +121,7 @@ void Game::draw()
     glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
 
     //super::draw();
-    m_gom.draw(m_sp);
+    gameObjectManager().draw(m_sp);
 
     m_sp->use(false);
 }
@@ -138,6 +146,11 @@ void Game::update(float delta)
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         m_azimuth += dx * mouseSensity;
         m_elevation += dy * mouseSensity;
+    }
+
+    for (Actor *a : gameObjectManager().actors()) {
+        if (a->name() != "floor")
+            a->rotate(0.0f, delta * 10.0f, 0.0f);
     }
 
     super::update(delta);

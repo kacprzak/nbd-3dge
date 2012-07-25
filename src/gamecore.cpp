@@ -97,10 +97,7 @@ void GameCore::initGL()
     /* The Type Of Depth Test To Do */
     glDepthFunc(GL_LEQUAL);
 
-    /* Really Nice Perspective Calculations */
-    //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     //glEnable(GL_RESCALE_NORMAL);
 }
 
@@ -108,16 +105,13 @@ void GameCore::initGL()
 bool GameCore::resizeWindow(int width, int height)
 {
     std::cout << "resizeWindow " << width << " " << height << std::endl;
-    /* Height / width ration */
-    GLfloat ratio;
 
     /* Protect against a divide by zero */
     if (height == 0)
         height = 1;
 
-    ratio = GLfloat(width) / GLfloat(height);
+    GLfloat ratio = GLfloat(width) / GLfloat(height);
 
-    // Camera
     m_projectionMatrix = glm::perspective(45.0f, ratio, 5.0f, 100.0f);
 
     /* Setup our viewport. */

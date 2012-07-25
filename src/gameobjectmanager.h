@@ -23,8 +23,12 @@ public:
         m_actors.erase(actor);
     }
 
-    void draw();
-    void draw(ShaderProgram *program);
+    const std::set<Actor *>& actors() const {
+        return m_actors;
+    }
+
+    void draw() const;
+    void draw(ShaderProgram *program) const;
     void update(float delta);
 
 private:

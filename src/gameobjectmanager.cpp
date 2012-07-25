@@ -16,7 +16,7 @@ GameObjectManager::~GameObjectManager()
     m_actors.clear();
 }
 
-void GameObjectManager::draw()
+void GameObjectManager::draw() const
 {
     if (m_skybox)
         m_skybox->draw();
@@ -26,7 +26,7 @@ void GameObjectManager::draw()
     }
 }
 
-void GameObjectManager::draw(ShaderProgram *program)
+void GameObjectManager::draw(ShaderProgram *program) const
 {
     if (m_skybox)
         m_skybox->draw();

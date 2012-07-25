@@ -10,11 +10,15 @@
 class Actor
 {
 public:
-    Actor(boost::shared_ptr<Mesh> mesh);
+    Actor(const std::string& name, boost::shared_ptr<Mesh> mesh);
+
+    const std::string& name() { return m_name; }
+
     void setTexture(boost::shared_ptr<Texture> tex);
 
-    void move(const glm::vec3& posDelta);
-    void moveTo(const glm::vec3& pos);
+    void move(float x, float y = 0.0f, float z = 0.0f);
+    void moveTo(float x, float y = 0.0f, float z = 0.0f);
+
     //Vector3<float> position() { return m_position ;}
 
     void virtual draw() const;
@@ -25,16 +29,15 @@ public:
     void rotate(float x, float y, float z);
 
     void setScale(float s);
-    void setScale(float x, float y, float z);
 
     bool isIdle() { return m_state == Idle; }
     bool isActive() { return m_state == Active; }
     bool isDestroyed() { return m_state == Destroyed; }
 
-    const glm::mat4& modelMatrix() { return m_modelMatrix; }
+    //const glm::mat4& modelMatrix() { return m_modelMatrix; }
 
 protected:
-    Actor();
+    Actor(const std::string& name);
 
     enum State {
         Idle,
@@ -46,13 +49,20 @@ protected:
     void setState(State state) { m_state = state; }
 
 private:
+    void rebuildModelMatrix();
+
+    const std::string m_name;
+
     boost::shared_ptr<Mesh> m_mesh;
     boost::shared_ptr<Texture> m_texture;
 
     State m_state;
     bool m_hasTexture;
 
-    float m_color[3];
+    glm::vec3 m_position;
+    glm::vec3 m_orientation;
+    glm::vec3 m_scale;
+
     glm::mat4 m_modelMatrix;
 };
 

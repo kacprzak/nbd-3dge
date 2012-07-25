@@ -3,7 +3,7 @@
 
 #include <GL/glew.h>
 #include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
+//#include <SFML/OpenGL.hpp>
 
 #include "gameobjectmanager.h"
 #include <glm/glm.hpp>
@@ -17,17 +17,19 @@ public:
     void mainLoop();
 
 protected:
-    GameObjectManager m_gom;
     glm::mat4 m_projectionMatrix;
 
     virtual void draw();
     virtual void update(float delta);
     virtual void mouseWheelMoved(int wheelDelta) = 0;
 
+    GameObjectManager& gameObjectManager() { return m_gom; }
+
 private:
     void initGL();
     bool resizeWindow(int width, int height);
 
+    GameObjectManager m_gom;
     sf::Window *m_window;
 };
 

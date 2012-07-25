@@ -26,8 +26,8 @@ private:
     float m_elevation;
     float m_azimuth;
 
-    glm::mat4 m_viewMatrix;
     ShaderProgram *m_sp;
+    glm::mat4 m_viewMatrix;
 };
 
 #endif // GAME_H

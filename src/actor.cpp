@@ -3,25 +3,28 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Actor::Actor(boost::shared_ptr<Mesh> mesh)
-    : m_mesh(mesh)
+Actor::Actor(const std::string& name, boost::shared_ptr<Mesh> mesh)
+    : m_name(name)
+    , m_mesh(mesh)
     , m_state(Idle)
     , m_hasTexture(false)
+    , m_position(glm::vec3(0.0f))
+    , m_orientation(glm::vec3(0.0f))
+    , m_scale(glm::vec3(1.0f))
     , m_modelMatrix(glm::mat4(1.0f))
 {
-    m_color[0] = 1.0f;
-    m_color[1] = 1.0f;
-    m_color[2] = 1.0f;
 }
 
-Actor::Actor()
-  : m_mesh()
-  , m_state(Idle)
-  , m_hasTexture(false)
+Actor::Actor(const std::string& name)
+    : m_name(name)
+    , m_mesh()
+    , m_state(Idle)
+    , m_hasTexture(false)
+    , m_position(glm::vec3(0.0f))
+    , m_orientation(glm::vec3(0.0f))
+    , m_scale(glm::vec3(1.0f))
+    , m_modelMatrix(glm::mat4(1.0f))
 {
-    m_color[0] = 1.0f;
-    m_color[1] = 1.0f;
-    m_color[2] = 1.0f;
 }
 
 void Actor::setTexture(boost::shared_ptr<Texture> tex)
@@ -35,17 +38,29 @@ void Actor::setMesh(boost::shared_ptr<Mesh> mesh)
     m_mesh = mesh;
 }
 
-void Actor::move(const glm::vec3& posDelta)
+void Actor::rebuildModelMatrix()
 {
-    m_modelMatrix = glm::translate(m_modelMatrix, posDelta);
+    m_modelMatrix = glm::mat4(1.0f);
+
+    m_modelMatrix = glm::translate(m_modelMatrix, m_position);
+
+    m_modelMatrix = glm::rotate(m_modelMatrix, m_orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+    m_modelMatrix = glm::rotate(m_modelMatrix, m_orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_modelMatrix = glm::rotate(m_modelMatrix, m_orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    m_modelMatrix = glm::scale(m_modelMatrix, m_scale);
 }
 
-void Actor::moveTo(const glm::vec3& pos)
+void Actor::move(float x, float y, float z)
 {
-    m_modelMatrix[3][0] = 0.0f;
-    m_modelMatrix[3][1] = 0.0f;
-    m_modelMatrix[3][2] = 0.0f;
-    m_modelMatrix = glm::translate(m_modelMatrix, pos);
+    m_position += glm::vec3(x, y, z);
+    rebuildModelMatrix();
+}
+
+void Actor::moveTo(float x, float y, float z)
+{
+    m_position = glm::vec3(x, y, z);
+    rebuildModelMatrix();
 }
 
 void Actor::draw() const
@@ -67,31 +82,25 @@ void Actor::draw(ShaderProgram *program) const
     draw();
 }
 
-void Actor::update(float delta)
+void Actor::update(float /* delta */)
 {
-    rotate(0.0f, delta * 100.0f, 0.0f);
+    // do nothing
 }
 
 void Actor::setOrientation(float x, float y, float z)
 {
-//    m_orientation[0] = x;
-//    m_orientation[1] = y;
-//    m_orientation[2] = z;
+    m_orientation = glm::vec3(x, y, z);
+    rebuildModelMatrix();
 }
 
 void Actor::rotate(float x, float y, float z)
 {
-//    m_orientation[0] += x;
-//    m_orientation[1] += y;
-//    m_orientation[2] += z;
+    m_orientation += glm::vec3(x, y, z);
+    rebuildModelMatrix();
 }
 
 void Actor::setScale(float s)
 {
-    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(s));
-}
-
-void Actor::setScale(float x, float y, float z)
-{
-    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(x, y, z));
+    m_scale = glm::vec3(s);
+    rebuildModelMatrix();
 }
