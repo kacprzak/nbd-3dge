@@ -4,6 +4,7 @@
 #include "actor.h"
 #include "skybox.h"
 #include <set>
+#include "shaderprogram.h"
 
 class GameObjectManager
 {
@@ -23,6 +24,7 @@ public:
     }
 
     void draw();
+    void draw(ShaderProgram *program);
     void update(float delta);
 
 private:

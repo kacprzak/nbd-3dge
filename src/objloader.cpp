@@ -120,7 +120,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
 
 void ObjLoader::fileLoaded()
 {
-    computeNormals();
+    //computeNormals();
 }
 
 const std::vector<float> ObjLoader::expandVertices() const
@@ -152,37 +152,37 @@ const std::vector<float> ObjLoader::expandTexCoords() const
     return expanded;
 }
 
-void ObjLoader::computeNormals()
-{
-    if (m_precompiledNormals)
-        return;
+//void ObjLoader::computeNormals()
+//{
+//    if (m_precompiledNormals)
+//        return;
 
-    if (m_shading == Flat) {
-        for (Face& f : m_faces) {
-            Vectorf n = f.normal(m_vertices);
-            m_normals.push_back(n);
-            m_normals.push_back(n);
-            m_normals.push_back(n);
-        }
-    } else {
-        for (unsigned int i = 0; i < m_vertices.size(); ++i) {
-            std::vector<Face> intersectFaces;
-            for (const Face& f : m_faces) {
-                if (f.vertexIndices[0] == i
-                        || f.vertexIndices[1] == i
-                        || f.vertexIndices[2] == i)
-                {
-                    intersectFaces.push_back(f);
-                }
-            }
+//    if (m_shading == Flat) {
+//        for (Face& f : m_faces) {
+//            Vectorf n = f.normal(m_vertices);
+//            m_normals.push_back(n);
+//            m_normals.push_back(n);
+//            m_normals.push_back(n);
+//        }
+//    } else {
+//        for (unsigned int i = 0; i < m_vertices.size(); ++i) {
+//            std::vector<Face> intersectFaces;
+//            for (const Face& f : m_faces) {
+//                if (f.vertexIndices[0] == i
+//                        || f.vertexIndices[1] == i
+//                        || f.vertexIndices[2] == i)
+//                {
+//                    intersectFaces.push_back(f);
+//                }
+//            }
 
-            Vectorf n;
-            for (const Face& f : intersectFaces) {
-                n = n + f.normal(m_vertices);
-            }
-            n.normalize();
+//            Vectorf n;
+//            for (const Face& f : intersectFaces) {
+//                n = n + f.normal(m_vertices);
+//            }
+//            n.normalize();
 
-            m_normals.push_back(n);
-        }
-    }
-}
+//            m_normals.push_back(n);
+//        }
+//    }
+//}

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "fpscounter.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 void printOpenGlSettings(const sf::Window& window)
 {
@@ -97,7 +98,7 @@ void GameCore::initGL()
     glDepthFunc(GL_LEQUAL);
 
     /* Really Nice Perspective Calculations */
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     //glEnable(GL_CULL_FACE);
     //glEnable(GL_RESCALE_NORMAL);
@@ -106,6 +107,7 @@ void GameCore::initGL()
 /* function to reset our viewport after a window resize */
 bool GameCore::resizeWindow(int width, int height)
 {
+    std::cout << "resizeWindow " << width << " " << height << std::endl;
     /* Height / width ration */
     GLfloat ratio;
 
@@ -115,22 +117,11 @@ bool GameCore::resizeWindow(int width, int height)
 
     ratio = GLfloat(width) / GLfloat(height);
 
+    // Camera
+    m_projectionMatrix = glm::perspective(45.0f, ratio, 5.0f, 100.0f);
+
     /* Setup our viewport. */
     glViewport(0, 0, GLsizei(width), GLsizei(height));
-
-    /* change to the projection matrix and set our viewing volume. */
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    /* Set our perspective */
-    gluPerspective(45.0f, ratio, 5.0f, 100.0f);
-    //gluOrtho2D(0.0f, 0.0f, GLdouble(width), GLdouble(height));
-
-    /* Make sure we're chaning the model view and not the projection */
-    glMatrixMode(GL_MODELVIEW);
-
-    /* Reset The View */
-    glLoadIdentity();
 
     return true;
 }

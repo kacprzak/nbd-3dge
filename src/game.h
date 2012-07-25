@@ -2,6 +2,8 @@
 #define GAME_H
 
 #include "gamecore.h"
+#include "shaderprogram.h"
+#include <glm/glm.hpp>
 
 class Game : public GameCore
 {
@@ -23,6 +25,9 @@ private:
     float m_zoom;
     float m_elevation;
     float m_azimuth;
+
+    glm::mat4 m_viewMatrix;
+    ShaderProgram *m_sp;
 };
 
 #endif // GAME_H

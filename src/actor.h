@@ -2,9 +2,10 @@
 #define ACTOR_H
 
 #include "mesh.h"
-#include "vector.h"
 #include <boost/shared_ptr.hpp>
 #include "texture.h"
+#include <glm/glm.hpp>
+#include "shaderprogram.h"
 
 class Actor
 {
@@ -12,11 +13,12 @@ public:
     Actor(boost::shared_ptr<Mesh> mesh);
     void setTexture(boost::shared_ptr<Texture> tex);
 
-    void move(const Vector<float>& posDelta);
-    void moveTo(const Vector<float>& pos);
-    Vector<float> position() { return m_position ;}
+    void move(const glm::vec3& posDelta);
+    void moveTo(const glm::vec3& pos);
+    //Vector3<float> position() { return m_position ;}
 
     void virtual draw() const;
+    void virtual draw(ShaderProgram *program) const;
     void virtual update(float delta);
 
     void setOrientation(float x, float y, float z);
@@ -28,6 +30,8 @@ public:
     bool isIdle() { return m_state == Idle; }
     bool isActive() { return m_state == Active; }
     bool isDestroyed() { return m_state == Destroyed; }
+
+    const glm::mat4& modelMatrix() { return m_modelMatrix; }
 
 protected:
     Actor();
@@ -48,10 +52,8 @@ private:
     State m_state;
     bool m_hasTexture;
 
-    Vector<float> m_position;
-    Vector<float> m_orientation;
-    Vector<float> m_scale;
     float m_color[3];
+    glm::mat4 m_modelMatrix;
 };
 
 #endif // ACTOR_H

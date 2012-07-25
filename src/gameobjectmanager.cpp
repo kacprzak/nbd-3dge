@@ -26,6 +26,16 @@ void GameObjectManager::draw()
     }
 }
 
+void GameObjectManager::draw(ShaderProgram *program)
+{
+    if (m_skybox)
+        m_skybox->draw();
+
+    for (Actor *a : m_actors) {
+        a->draw(program);
+    }
+}
+
 void GameObjectManager::update(float delta)
 {
     for (Actor *a : m_actors) {

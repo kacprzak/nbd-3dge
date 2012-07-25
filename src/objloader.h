@@ -4,11 +4,15 @@
 #include "loader.h"
 #include <string>
 #include <vector>
-#include "vector.h"
 
 class ObjLoader : public Loader
 {
-    typedef Vector<float> Vectorf;
+    typedef struct {
+        float x;
+        float y;
+        float z;
+    } Vectorf;
+
     typedef struct {
         float s;
         float t;
@@ -24,20 +28,20 @@ class ObjLoader : public Loader
         unsigned short vertexIndices[3];
         unsigned short texIndices[3];
 
-        Vectorf normal(const std::vector<Vectorf>& vertices) const
-        {
-            Vectorf v1 = vertices[vertexIndices[0]];
-            Vectorf v2 = vertices[vertexIndices[1]];
-            Vectorf v3 = vertices[vertexIndices[2]];
+//        Vectorf normal(const std::vector<Vectorf>& vertices) const
+//        {
+//            Vectorf v1 = vertices[vertexIndices[0]];
+//            Vectorf v2 = vertices[vertexIndices[1]];
+//            Vectorf v3 = vertices[vertexIndices[2]];
 
-            // Normal
-            Vectorf e12 = v2 - v1;
-            Vectorf e13 = v3 - v1;
-            Vectorf n = e12.cross(e13);
-            n.normalize();
+//            // Normal
+//            Vectorf e12 = v2 - v1;
+//            Vectorf e13 = v3 - v1;
+//            Vectorf n = e12.cross(e13);
+//            n.normalize();
 
-            return n;
-        }
+//            return n;
+//        }
     };
 
 public:

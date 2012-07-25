@@ -6,6 +6,7 @@
 #include <SFML/OpenGL.hpp>
 
 #include "gameobjectmanager.h"
+#include <glm/glm.hpp>
 
 class GameCore
 {
@@ -17,6 +18,7 @@ public:
 
 protected:
     GameObjectManager m_gom;
+    glm::mat4 m_projectionMatrix;
 
     virtual void draw();
     virtual void update(float delta);

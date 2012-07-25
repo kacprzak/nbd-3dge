@@ -14,6 +14,7 @@ public:
     void addShared(Shader *shader);
     void link();
     void use(bool activate = true);
+    GLuint id() { return m_shaderProgramId; }
 
 private:
     GLuint m_shaderProgramId;
