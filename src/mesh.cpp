@@ -88,15 +88,17 @@ Mesh *Mesh::create(const std::string& name,
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-//    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[TEXCOORDS]);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texcoords.size(), &texcoords[0], GL_STATIC_DRAW);
-//    glEnableVertexAttribArray(1);
-//    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    if (texcoords.size() > 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[TEXCOORDS]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texcoords.size(), &texcoords[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    }
 
-//    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[NORMALS]);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * normals.size(), &normals[0], GL_STATIC_DRAW);
-//    glEnableVertexAttribArray(2);
-//    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    //    glBindBuffer(GL_ARRAY_BUFFER, mesh->m_buffers[NORMALS]);
+    //    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * normals.size(), &normals[0], GL_STATIC_DRAW);
+    //    glEnableVertexAttribArray(2);
+    //    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glBindVertexArray(0);
 

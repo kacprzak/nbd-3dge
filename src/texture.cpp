@@ -16,7 +16,9 @@ Texture::~Texture()
 
 void Texture::bind()
 {
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
+    glBindSampler(0, m_samplerId);
 }
 
 Texture *Texture::create(const std::string &fileName)
@@ -33,15 +35,17 @@ Texture *Texture::create(const std::string &fileName)
     glGenTextures(1, &tex->m_textureId);
     glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
-
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getPixelsPtr());
 
     std::cout << "Loaded: " << tex->m_filename << " texId: "<< tex->m_textureId
               << " (" << w << " x " << h << ")" << std::endl;
+
+    glGenSamplers(1, &tex->m_samplerId);
+
+    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_WRAP_T,     GL_REPEAT);
 
     return tex;
 }

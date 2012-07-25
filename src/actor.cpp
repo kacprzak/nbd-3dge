@@ -50,24 +50,11 @@ void Actor::moveTo(const glm::vec3& pos)
 
 void Actor::draw() const
 {
-//    glPushMatrix();
-
-//    glColor3f(m_color[0], m_color[1], m_color[2]);
-
-//    glScalef(m_scale[0], m_scale[1], m_scale[2]);
-
-//    if (m_hasTexture) {
-//        glEnable(GL_TEXTURE_2D);
-//        m_texture->bind();
-//    }
+    if (m_hasTexture) {
+        m_texture->bind();
+    }
 
     m_mesh->draw();
-
-//    if (m_hasTexture) {
-//        glDisable(GL_TEXTURE_2D);
-//    }
-
-    //    glPopMatrix();
 }
 
 void Actor::draw(ShaderProgram *program) const

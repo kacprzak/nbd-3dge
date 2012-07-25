@@ -48,8 +48,8 @@ void Game::loadData()
     shared_ptr<Mesh> cube(Mesh::create("data/cube.obj", GL_FLAT));
     shared_ptr<Mesh> ship(Mesh::create("data/ship.obj", GL_FLAT));
 
-    //shared_ptr<Texture> tex1(Texture::create("data/ship.jpg"));
-    //shared_ptr<Texture> tex2(Texture::create("data/texture_I.png"));
+    shared_ptr<Texture> tex1(Texture::create("data/ship.jpg"));
+    shared_ptr<Texture> tex2(Texture::create("data/texture_I.png"));
     //shared_ptr<Texture> skybox_tex(Texture::create("data/skybox_texture.jpg"));
 
     Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
@@ -69,7 +69,7 @@ void Game::loadData()
     m_gom.add(a);
 
     a = new Actor(cube);
-//    a->setTexture(tex2);
+    a->setTexture(tex2);
     a->moveTo(glm::vec3(10.0f, 0.0f, 0.0f));
     a->setScale(0.2f);
     m_gom.add(a);
@@ -83,7 +83,7 @@ void Game::loadData()
 //     m_gom.add(a);
 
     a = new Actor(ship);
-//    a->setTexture(tex1);
+    a->setTexture(tex1);
     a->moveTo(glm::vec3(0.0f, -10.0f, 0.0f));
     a->setScale(0.1f);
     m_gom.add(a);

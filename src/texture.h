@@ -18,6 +18,7 @@ private:
 
     std::string m_filename;
     GLuint m_textureId;
+    GLuint m_samplerId;
 };
 
 #endif // TEXTURE_H
