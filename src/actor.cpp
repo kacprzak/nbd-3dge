@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Actor::Actor(const std::string& name, boost::shared_ptr<Mesh> mesh)
+Actor::Actor(const std::string& name, MeshPtr mesh)
     : m_name(name)
     , m_mesh(mesh)
     , m_state(Idle)
@@ -27,13 +27,13 @@ Actor::Actor(const std::string& name)
 {
 }
 
-void Actor::setTexture(boost::shared_ptr<Texture> tex)
+void Actor::setTexture(TexturePtr tex)
 {
     m_texture = tex;
     m_hasTexture = true;
 }
 
-void Actor::setMesh(boost::shared_ptr<Mesh> mesh)
+void Actor::setMesh(MeshPtr mesh)
 {
     m_mesh = mesh;
 }

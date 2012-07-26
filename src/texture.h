@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <string>
+#include <memory>
 
 class Texture
 {
@@ -20,5 +21,7 @@ private:
     GLuint m_textureId;
     GLuint m_samplerId;
 };
+
+typedef std::shared_ptr<Texture> TexturePtr;
 
 #endif // TEXTURE_H

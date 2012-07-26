@@ -1,6 +1,5 @@
 #include "game.h"
 
-#include <boost/shared_ptr.hpp>
 #include "texture.h"
 #include "skybox.h"
 #include "shader.h"
@@ -39,20 +38,19 @@ void Game::init()
 
 void Game::loadData()
 {
-    using namespace boost;
+    //MeshPtr triangleMesh(Mesh::create("data/triangle.obj", GL_FLAT));
+    MeshPtr teddyMesh(Mesh::create("data/teddy2.obj"));
+    MeshPtr teapotMesh(Mesh::create("data/teapot.obj"));
+    //MeshPtr cowMesh(Mesh::create("data/cow-nonormals.obj"));
+    MeshPtr cowMesh(Mesh::create("data/cow.obj"));
+    MeshPtr cubeMesh(Mesh::create("data/cube.obj", GL_FLAT));
+    MeshPtr shipMesh(Mesh::create("data/ship.obj", GL_FLAT));
+    MeshPtr floorMesh(Mesh::create("data/floor.obj", GL_FLAT));
 
-    //shared_ptr<Mesh> triangleMesh(Mesh::create("data/triangle.obj", GL_FLAT));
-    shared_ptr<Mesh> teddyMesh(Mesh::create("data/teddy.obj"));
-    shared_ptr<Mesh> teapotMesh(Mesh::create("data/teapot.obj"));
-    shared_ptr<Mesh> cowMesh(Mesh::create("data/cow-nonormals.obj"));
-    shared_ptr<Mesh> cubeMesh(Mesh::create("data/cube.obj", GL_FLAT));
-    shared_ptr<Mesh> shipMesh(Mesh::create("data/ship.obj", GL_FLAT));
-    shared_ptr<Mesh> floorMesh(Mesh::create("data/floor.obj", GL_FLAT));
-
-    shared_ptr<Texture> shipTex(Texture::create("data/ship.jpg"));
-    shared_ptr<Texture> tex_I(Texture::create("data/texture_I.png"));
-    shared_ptr<Texture> tex_G(Texture::create("data/texture_H.png"));
-    //shared_ptr<Texture> skybox_tex(Texture::create("data/skybox_texture.jpg"));
+    TexturePtr shipTex(Texture::create("data/ship.jpg"));
+    TexturePtr tex_I(Texture::create("data/texture_I.png"));
+    TexturePtr tex_G(Texture::create("data/texture_H.png"));
+    //TexturePtr skybox_tex(Texture::create("data/skybox_texture.jpg"));
 
     Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
     Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");

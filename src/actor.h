@@ -2,7 +2,6 @@
 #define ACTOR_H
 
 #include "mesh.h"
-#include <boost/shared_ptr.hpp>
 #include "texture.h"
 #include <glm/glm.hpp>
 #include "shaderprogram.h"
@@ -10,11 +9,11 @@
 class Actor
 {
 public:
-    Actor(const std::string& name, boost::shared_ptr<Mesh> mesh);
+    Actor(const std::string& name, MeshPtr mesh);
 
     const std::string& name() { return m_name; }
 
-    void setTexture(boost::shared_ptr<Texture> tex);
+    void setTexture(TexturePtr tex);
 
     void move(float x, float y = 0.0f, float z = 0.0f);
     void moveTo(float x, float y = 0.0f, float z = 0.0f);
@@ -45,7 +44,7 @@ protected:
         Destroyed
     };
 
-    void setMesh(boost::shared_ptr<Mesh> mesh);
+    void setMesh(MeshPtr mesh);
     void setState(State state) { m_state = state; }
 
 private:
@@ -53,8 +52,8 @@ private:
 
     const std::string m_name;
 
-    boost::shared_ptr<Mesh> m_mesh;
-    boost::shared_ptr<Texture> m_texture;
+    MeshPtr m_mesh;
+    TexturePtr m_texture;
 
     State m_state;
     bool m_hasTexture;

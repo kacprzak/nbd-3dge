@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 class Mesh
 {
@@ -43,5 +44,7 @@ private:
     unsigned int m_numberOfElements;
     unsigned int m_numberOfVertices;
 };
+
+typedef std::shared_ptr<Mesh> MeshPtr;
 
 #endif // MESH_H
