@@ -17,4 +17,5 @@ Dependencies
 ------------
 
 * SFML 2.0
-* boost
+* Boost
+* GLM (OpenGL Mathematics)
