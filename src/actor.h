@@ -33,8 +33,6 @@ public:
     bool isActive() { return m_state == Active; }
     bool isDestroyed() { return m_state == Destroyed; }
 
-    //const glm::mat4& modelMatrix() { return m_modelMatrix; }
-
 protected:
     Actor(const std::string& name);
 
@@ -43,6 +41,8 @@ protected:
         Active,
         Destroyed
     };
+
+    const glm::mat4& modelMatrix() const { return m_modelMatrix; }
 
     void setMesh(MeshPtr mesh);
     void setState(State state) { m_state = state; }

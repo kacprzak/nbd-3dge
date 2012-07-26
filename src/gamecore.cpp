@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "fpscounter.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 void printOpenGlSettings(const sf::Window& window)
 {
@@ -102,20 +101,10 @@ void GameCore::initGL()
 }
 
 /* function to reset our viewport after a window resize */
-bool GameCore::resizeWindow(int width, int height)
+void GameCore::resizeWindow(int width, int height)
 {
     std::cout << "resizeWindow " << width << " " << height << std::endl;
 
-    /* Protect against a divide by zero */
-    if (height == 0)
-        height = 1;
-
-    GLfloat ratio = GLfloat(width) / GLfloat(height);
-
-    m_projectionMatrix = glm::perspective(45.0f, ratio, 5.0f, 100.0f);
-
     /* Setup our viewport. */
     glViewport(0, 0, GLsizei(width), GLsizei(height));
-
-    return true;
 }

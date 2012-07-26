@@ -4,9 +4,7 @@
 #include <GL/glew.h>
 #include <SFML/Window.hpp>
 //#include <SFML/OpenGL.hpp>
-
 #include "gameobjectmanager.h"
-#include <glm/glm.hpp>
 
 class GameCore
 {
@@ -17,7 +15,7 @@ public:
     void mainLoop();
 
 protected:
-    glm::mat4 m_projectionMatrix;
+    virtual void resizeWindow(int width, int height);
 
     virtual void draw();
     virtual void update(float delta);
@@ -27,7 +25,6 @@ protected:
 
 private:
     void initGL();
-    bool resizeWindow(int width, int height);
 
     GameObjectManager m_gom;
     sf::Window *m_window;

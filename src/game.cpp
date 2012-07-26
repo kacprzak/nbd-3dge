@@ -4,18 +4,25 @@
 #include "skybox.h"
 #include "shader.h"
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 Game::Game()
     : m_sp(0)
-    , m_viewMatrix(glm::mat4(1.0f))
 {
-    m_zoom = 40.0f;
-    m_elevation = 0.0f;
-    m_azimuth = 0.0f;
-
     init();
     loadData();
+}
+
+void Game::resizeWindow(int width, int height)
+{
+    /* Protect against a divide by zero */
+    if (height == 0)
+        height = 1;
+
+    GLfloat ratio = GLfloat(width) / GLfloat(height);
+
+    m_camera->setPerspective(45.0f, ratio, 5.0f, 200.0f);
+
+    GameCore::resizeWindow(width, height);
 }
 
 void Game::init()
@@ -38,6 +45,9 @@ void Game::init()
 
 void Game::loadData()
 {
+    m_camera = new Camera;
+    m_camera->moveTo(0.0f, 0.0f, -40.0f);
+
     //MeshPtr triangleMesh(Mesh::create("data/triangle.obj", GL_FLAT));
     MeshPtr teddyMesh(Mesh::create("data/teddy2.obj"));
     MeshPtr teapotMesh(Mesh::create("data/teapot.obj"));
@@ -95,28 +105,18 @@ void Game::loadData()
     gameObjectManager().add(a);
 }
 
-void Game::polarView()
-{
-    m_viewMatrix = glm::mat4(1.0f);
-    m_viewMatrix = glm::translate(m_viewMatrix, glm::vec3(0.0f, 0.0f, -m_zoom));
-    m_viewMatrix = glm::rotate(m_viewMatrix, -m_elevation, glm::vec3(1.0f, 0.0f, 0.0f));
-    m_viewMatrix = glm::rotate(m_viewMatrix, m_azimuth, glm::vec3(0.0f, 1.0f, 0.0f));
-}
-
 void Game::draw()
 {
     /* Clear The Screen And The Depth Buffer */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    polarView();
-
     m_sp->use();
 
     GLint projectionMatrixUnif = glGetUniformLocation(m_sp->id(), "projectionMatrix");
-    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
+    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_camera->projectionMatrix()));
 
     GLint viewMatrixUnif = glGetUniformLocation(m_sp->id(), "viewMatrix");
-    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
+    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_camera->viewMatrix()));
 
     //super::draw();
     gameObjectManager().draw(m_sp);
@@ -126,7 +126,7 @@ void Game::draw()
 
 void Game::mouseWheelMoved(int wheelDelta)
 {
-    m_zoom -= wheelDelta;
+    m_camera->move(0.0f, 0.0f, wheelDelta);
 }
 
 void Game::update(float delta)
@@ -142,8 +142,7 @@ void Game::update(float delta)
     float mouseSensity = 0.2f;
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        m_azimuth += dx * mouseSensity;
-        m_elevation += dy * mouseSensity;
+        m_camera->rotate(dy * mouseSensity, dx * mouseSensity, 0.0f);
     }
 
     for (Actor *a : gameObjectManager().actors()) {

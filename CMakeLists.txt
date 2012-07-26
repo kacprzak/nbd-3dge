@@ -23,6 +23,7 @@ set( nbd-3dge_SRCS
     src/skybox.cpp
     src/shader.cpp
     src/shaderprogram.cpp
+    src/camera.cpp
 )
 
 add_executable( nbd-3dge ${nbd-3dge_SRCS} )

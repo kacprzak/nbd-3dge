@@ -3,7 +3,7 @@
 
 #include "gamecore.h"
 #include "shaderprogram.h"
-#include <glm/glm.hpp>
+#include "camera.h"
 
 class Game : public GameCore
 {
@@ -13,6 +13,8 @@ public:
     Game();
 
 protected:
+    void resizeWindow(int width, int height);
+
     void draw();
     void mouseWheelMoved(int wheelDelta);
     void update(float delta);
@@ -22,12 +24,8 @@ private:
     void loadData();
     void polarView();
 
-    float m_zoom;
-    float m_elevation;
-    float m_azimuth;
-
     ShaderProgram *m_sp;
-    glm::mat4 m_viewMatrix;
+    Camera *m_camera;
 };
 
 #endif // GAME_H
