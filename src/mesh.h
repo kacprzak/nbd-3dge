@@ -20,6 +20,7 @@ public:
     ~Mesh();
 
     void draw() const;
+    void draw(int start, int count) const;
 
     static Mesh *create(const std::string& objfileName, GLenum shadeModel = GL_SMOOTH);
 

@@ -23,8 +23,10 @@ void Texture::bind()
 
 void Texture::setClampToEdge()
 {
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
@@ -37,7 +39,7 @@ void Texture::setRepeat()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T,     GL_REPEAT);
 }
 
-Texture *Texture::create(const std::string &fileName)
+Texture *Texture::create(const std::string &fileName, bool clamp)
 {
     Texture *tex = new Texture;
     tex->m_filename = extractFilename(fileName);
@@ -58,7 +60,10 @@ Texture *Texture::create(const std::string &fileName)
 
     glGenSamplers(1, &tex->m_samplerId);
 
-    tex->setRepeat();
+    if (clamp)
+        tex->setClampToEdge();
+    else
+        tex->setRepeat();
 
     return tex;
 }

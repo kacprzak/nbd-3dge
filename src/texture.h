@@ -14,7 +14,7 @@ public:
     void setClampToEdge();
     void setRepeat();
 
-    static Texture *create(const std::string& filename);
+    static Texture *create(const std::string& filename, bool clamp = false);
 
 private:
     Texture();

@@ -6,9 +6,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Skybox::Skybox(TexturePtr tex)
+Skybox::Skybox(TexturePtr front, TexturePtr right, TexturePtr back, TexturePtr left, TexturePtr top, TexturePtr bottom)
 {
-    m_texture = tex;
+    m_textures.push_back(front);
+    m_textures.push_back(back);
+    m_textures.push_back(right);
+    m_textures.push_back(left);
+    m_textures.push_back(top);
+    m_textures.push_back(bottom);
+
     m_modelMatrix = glm::mat4(1.0f);
 
     float x = 50.0f;
@@ -24,105 +30,72 @@ Skybox::Skybox(TexturePtr tex)
      */
 
     std::vector<float> vertices = {// front
-                                   x, -x,  x, // 1
+                                    x, -x,  x, // 1
                                    -x, -x,  x, // 2
                                    -x,  x,  x, // 3
-                                   x,  x,  x, // 4
+                                    x,  x,  x, // 4
                                    // back
-                                   x, -x, -x, // 5
-                                   x,  x, -x, // 8
-                                   -x,  x, -x, // 7
                                    -x, -x, -x, // 6
+                                    x, -x, -x, // 5
+                                    x,  x, -x, // 8
+                                   -x,  x, -x, // 7
                                    // left
                                    -x, -x,  x, // 2
                                    -x, -x, -x, // 6
                                    -x,  x, -x, // 7
                                    -x,  x,  x, // 3
                                    // right
-                                   x, -x, -x, // 5
-                                   x, -x,  x, // 1
-                                   x,  x,  x, // 4
-                                   x,  x, -x, // 8
+                                    x, -x, -x, // 5
+                                    x, -x,  x, // 1
+                                    x,  x,  x, // 4
+                                    x,  x, -x, // 8
                                    // top
-                                   x,  x,  x, // 4
+                                    x,  x,  x, // 4
                                    -x,  x,  x, // 3
                                    -x,  x, -x, // 7
-                                   x,  x, -x, // 8
+                                    x,  x, -x, // 8
                                    // bottom
-                                   x, -x,  x, // 1
-                                   x, -x, -x, // 5
+                                    x, -x, -x, // 5
                                    -x, -x, -x, // 6
                                    -x, -x,  x, // 2
+                                    x, -x,  x, // 1
                                   };
 
-    std::vector<float> normals = { // front
-                                   0, 0, -1, // 1
-                                   0, 0, -1, // 2
-                                   0, 0, -1, // 3
-                                   0, 0, -1, // 4
-                                   // back
-                                   0, 0, 1, // 5
-                                   0, 0, 1, // 8
-                                   0, 0, 1, // 7
-                                   0, 0, 1, // 6
-                                   // left
-                                   1, 0, 0, // 2
-                                   1, 0, 0, // 6
-                                   1, 0, 0, // 7
-                                   1, 0, 0, // 3
-                                   // right
-                                   -1, 0, 0, // 5
-                                   -1, 0, 0, // 1
-                                   -1, 0, 0, // 4
-                                   -1, 0, 0, // 8
-                                   // top
-                                   0, -1, 0, // 4
-                                   0, -1, 0, // 3
-                                   0, -1, 0, // 7
-                                   0, -1, 0, // 8
-                                   // bottom
-                                   0, 1, 0, // 1
-                                   0, 1, 0, // 5
-                                   0, 1, 0, // 6
-                                   0, 1, 0};// 2
-
-    float twoBy3 = 2.0 / 3.0;
-    float oneBy3 = 1.0 / 3.0;
-
     std::vector<float> texcoords = { // front
-                                     0,     oneBy3, // 1
-                                     0.25,  oneBy3, // 2
-                                     0.25,  twoBy3, // 3
-                                     0.0,   twoBy3, // 4
+                                     0,  0, // 1
+                                     1,  0, // 2
+                                     1,  1, // 3
+                                     0,  1, // 4
                                      // back
-                                     0.75,  oneBy3, // 5
-                                     0.75,  twoBy3, // 8
-                                     0.5,   twoBy3, // 7
-                                     0.5,   oneBy3, // 6
+                                     0,  0, // 6
+                                     1,  0, // 5
+                                     1,  1, // 8
+                                     0,  1, // 7
                                      // left
-                                     0.25,  oneBy3, // 2
-                                     0.5,   oneBy3, // 6
-                                     0.5,   twoBy3, // 7
-                                     0.25,  twoBy3, // 3
+                                     0,  0, // 2
+                                     1,  0, // 6
+                                     1,  1, // 7
+                                     0,  1, // 3
                                      // right
-                                     0.75,  oneBy3, // 5
-                                     1,     oneBy3, // 1
-                                     1,     twoBy3, // 4
-                                     0.75,  twoBy3, // 8
+                                     0,  0, // 5
+                                     1,  0, // 1
+                                     1,  1, // 4
+                                     0,  1, // 8
                                      // top
-                                     0.25,  1,    // 4
-                                     0.25,  twoBy3, // 3
-                                     0.5,   twoBy3, // 7
-                                     0.5,   1,    // 8
+                                     0,  0, // 4
+                                     1,  0, // 3
+                                     1,  1, // 7
+                                     0,  1, // 8
                                      // bottom
-                                     0.25,  0,    // 1
-                                     0.5,   0,    // 5
-                                     0.5,   oneBy3, // 6
-                                     0.25,  oneBy3};// 2
+                                     0,  0, // 5
+                                     1,  0, // 6
+                                     1,  1, // 2
+                                     0,  1};// 1
+
     vertices = quadsToTriangles3(vertices);
-    normals = quadsToTriangles3(normals);
     texcoords = quadsToTriangles2(texcoords);
 
+    std::vector<float> normals;
     std::vector<unsigned short> empty2;
 
     Mesh *mesh = Mesh::create("skybox.obj",
@@ -142,8 +115,15 @@ void Skybox::draw() const
     glDisable(GL_LIGHTING);
     //glDisable(GL_BLEND);
 
-    m_texture->bind();
-    m_mesh->draw();
+    int start = 0;
+
+    for (TexturePtr tex : m_textures) {
+        if (tex.get() != nullptr) {
+            tex->bind();
+            m_mesh->draw(start, 6);
+            start += 6;
+        }
+    }
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);

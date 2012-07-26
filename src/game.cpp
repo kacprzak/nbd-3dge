@@ -61,8 +61,6 @@ void Game::loadData()
     TexturePtr shipTex(Texture::create("data/ship.jpg"));
     TexturePtr tex_I(Texture::create("data/texture_I.png"));
     TexturePtr tex_G(Texture::create("data/texture_H.png"));
-    TexturePtr skybox_tex(Texture::create("data/skybox_texture.jpg"));
-    skybox_tex->setClampToEdge();
 
     Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
     Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");
@@ -72,7 +70,15 @@ void Game::loadData()
     m_sp->addShared(fs);
     m_sp->link();
 
-    Skybox *skybox = new Skybox(skybox_tex);
+    // SKYBOX
+    TexturePtr sb_front(Texture::create("data/mars/mars_front.jpg", true));
+    TexturePtr sb_right(Texture::create("data/mars/mars_right.jpg", true));
+    TexturePtr sb_back(Texture::create("data/mars/mars_back.jpg", true));
+    TexturePtr sb_left(Texture::create("data/mars/mars_left.jpg", true));
+    TexturePtr sb_top(Texture::create("data/mars/mars_top.jpg", true));
+    TexturePtr sb_bottom;
+
+    Skybox *skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
     gameObjectManager().setSkybox(skybox);
 
     Actor *a = new Actor("teddy", teddyMesh);
@@ -147,12 +153,22 @@ void Game::update(float delta)
         m_camera->rotate(-dy * mouseSensity, -dx * mouseSensity, 0.0f);
     }
 
+    float cameraSpeed = 50.0f;
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        m_camera->moveForward(-delta * 30.0f);
+        m_camera->moveForward(-delta * cameraSpeed);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        m_camera->moveForward(delta * 30.0f);
+        m_camera->moveForward(delta * cameraSpeed);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        m_camera->moveRight(-delta * cameraSpeed);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        m_camera->moveLeft(-delta * cameraSpeed);
     }
 
     for (Actor *a : gameObjectManager().actors()) {

@@ -22,16 +22,25 @@ Mesh::~Mesh()
 
 void Mesh::draw() const
 {
+    if (m_shadeModel == GL_FLAT) {
+        draw(0, m_numberOfVertices);
+    } else {
+        draw(0, m_numberOfElements);
+    }
+}
+
+void Mesh::draw(int start, int count) const
+{
     glBindVertexArray(m_vao);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDICES]);
 
     // Draw
     if (m_shadeModel == GL_FLAT) {
         glShadeModel(GL_FLAT);
-        glDrawArrays(m_drawingMode, 0, m_numberOfVertices);
+        glDrawArrays(m_drawingMode, start, count);
         glShadeModel(GL_SMOOTH);
     } else {
-        glDrawElements(m_drawingMode, m_numberOfElements, GL_UNSIGNED_SHORT, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDICES]);
+        glDrawElements(m_drawingMode, count, GL_UNSIGNED_SHORT, 0);
     }
 }
 

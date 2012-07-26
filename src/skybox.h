@@ -9,7 +9,7 @@
 class Skybox
 {
 public:
-    Skybox(TexturePtr tex);
+    Skybox(TexturePtr front, TexturePtr right, TexturePtr back, TexturePtr left, TexturePtr top, TexturePtr bottom);
 
     void draw() const;
     void draw(ShaderProgram *program) const;
@@ -21,10 +21,11 @@ private:
     static std::vector<float> quadsToTriangles3(const std::vector<float>& vertices);
     static std::vector<float> quadsToTriangles2(const std::vector<float>& vertices);
 
-    TexturePtr m_texture;
-    MeshPtr m_mesh;
+    std::vector<TexturePtr> m_textures;
 
     glm::mat4 m_modelMatrix;
+
+    MeshPtr m_mesh;
 };
 
 #endif // SKYBOX_H

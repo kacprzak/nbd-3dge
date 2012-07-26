@@ -87,6 +87,22 @@ void Actor::moveForward(float distance)
     move(base * distance);
 }
 
+void Actor::moveRight(float distance)
+{
+    glm::vec3 base(-1.0f, 0.0f, 0.0f);
+
+    base = glm::rotateX(base, m_orientation.x);
+    base = glm::rotateY(base, m_orientation.y);
+    base = glm::rotateZ(base, m_orientation.z);
+
+    move(base * distance);
+}
+
+void Actor::moveLeft(float distance)
+{
+    moveRight(-distance);
+}
+
 void Actor::draw() const
 {
     if (m_hasTexture) {

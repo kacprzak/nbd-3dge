@@ -20,6 +20,8 @@ public:
     void moveTo(float x, float y = 0.0f, float z = 0.0f);
     void moveTo(const glm::vec3& pos);
     void moveForward(float distance);
+    void moveRight(float distance);
+    void moveLeft(float distance);
 
     glm::vec3 position() { return m_position ;}
 
