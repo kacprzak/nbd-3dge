@@ -16,9 +16,12 @@ public:
     void setTexture(TexturePtr tex);
 
     void move(float x, float y = 0.0f, float z = 0.0f);
+    void move(const glm::vec3& pos);
     void moveTo(float x, float y = 0.0f, float z = 0.0f);
+    void moveTo(const glm::vec3& pos);
+    void moveForward(float distance);
 
-    //Vector3<float> position() { return m_position ;}
+    glm::vec3 position() { return m_position ;}
 
     void virtual draw() const;
     void virtual draw(ShaderProgram *program) const;
@@ -26,6 +29,8 @@ public:
 
     void setOrientation(float x, float y, float z);
     void rotate(float x, float y, float z);
+
+    glm::vec3 orientation() { return m_orientation ;}
 
     void setScale(float s);
 

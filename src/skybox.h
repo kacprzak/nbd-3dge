@@ -3,21 +3,28 @@
 
 #include "texture.h"
 #include "mesh.h"
-#include <boost/shared_ptr.hpp>
+#include "shaderprogram.h"
+#include <glm/glm.hpp>
 
 class Skybox
 {
 public:
-    Skybox(boost::shared_ptr<Texture> tex);
+    Skybox(TexturePtr tex);
 
-    void draw();
+    void draw() const;
+    void draw(ShaderProgram *program) const;
+
+    void moveTo(float x, float y = 0.0f, float z = 0.0f);
+    void moveTo(const glm::vec3& pos);
 
 private:
-    std::vector<float> quadsToTriangles3(const std::vector<float>& vertices);
-    std::vector<float> quadsToTriangles2(const std::vector<float>& vertices);
+    static std::vector<float> quadsToTriangles3(const std::vector<float>& vertices);
+    static std::vector<float> quadsToTriangles2(const std::vector<float>& vertices);
 
-    boost::shared_ptr<Texture> m_texture;
-    boost::shared_ptr<Mesh> m_mesh;
+    TexturePtr m_texture;
+    MeshPtr m_mesh;
+
+    glm::mat4 m_modelMatrix;
 };
 
 #endif // SKYBOX_H

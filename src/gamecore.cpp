@@ -85,7 +85,7 @@ void GameCore::initGL()
         exit(1);
     }
 
-    glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     /* Depth buffer setup */
     glClearDepth(1.0f);

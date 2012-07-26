@@ -20,7 +20,7 @@ void Game::resizeWindow(int width, int height)
 
     GLfloat ratio = GLfloat(width) / GLfloat(height);
 
-    m_camera->setPerspective(45.0f, ratio, 5.0f, 200.0f);
+    m_camera->setPerspective(45.0f, ratio, 5.0f, 500.0f);
 
     GameCore::resizeWindow(width, height);
 }
@@ -46,7 +46,8 @@ void Game::init()
 void Game::loadData()
 {
     m_camera = new Camera;
-    m_camera->moveTo(0.0f, 0.0f, -40.0f);
+    m_camera->moveTo(0.0f, 0.0f, 80.0f);
+    gameObjectManager().setCamera(m_camera);
 
     //MeshPtr triangleMesh(Mesh::create("data/triangle.obj", GL_FLAT));
     MeshPtr teddyMesh(Mesh::create("data/teddy2.obj"));
@@ -60,7 +61,8 @@ void Game::loadData()
     TexturePtr shipTex(Texture::create("data/ship.jpg"));
     TexturePtr tex_I(Texture::create("data/texture_I.png"));
     TexturePtr tex_G(Texture::create("data/texture_H.png"));
-    //TexturePtr skybox_tex(Texture::create("data/skybox_texture.jpg"));
+    TexturePtr skybox_tex(Texture::create("data/skybox_texture.jpg"));
+    skybox_tex->setClampToEdge();
 
     Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
     Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");
@@ -70,8 +72,8 @@ void Game::loadData()
     m_sp->addShared(fs);
     m_sp->link();
 
-    //    Skybox *skybox = new Skybox(skybox_tex);
-    //    m_gom.setSkybox(skybox);
+    Skybox *skybox = new Skybox(skybox_tex);
+    gameObjectManager().setSkybox(skybox);
 
     Actor *a = new Actor("teddy", teddyMesh);
     //Actor *a = new Actor(triangleMesh);
@@ -126,7 +128,7 @@ void Game::draw()
 
 void Game::mouseWheelMoved(int wheelDelta)
 {
-    m_camera->move(0.0f, 0.0f, wheelDelta);
+    m_camera->moveForward(-wheelDelta);
 }
 
 void Game::update(float delta)
@@ -142,12 +144,22 @@ void Game::update(float delta)
     float mouseSensity = 0.2f;
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        m_camera->rotate(dy * mouseSensity, dx * mouseSensity, 0.0f);
+        m_camera->rotate(-dy * mouseSensity, -dx * mouseSensity, 0.0f);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        m_camera->moveForward(-delta * 30.0f);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        m_camera->moveForward(delta * 30.0f);
     }
 
     for (Actor *a : gameObjectManager().actors()) {
-        if (a->name() != "floor")
+        if (a->name() != "floor") {
             a->rotate(0.0f, delta * 10.0f, 0.0f);
+            a->moveForward(delta * 10.0f);
+        }
     }
 
     super::update(delta);

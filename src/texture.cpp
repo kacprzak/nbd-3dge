@@ -21,6 +21,22 @@ void Texture::bind()
     glBindSampler(0, m_samplerId);
 }
 
+void Texture::setClampToEdge()
+{
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
+void Texture::setRepeat()
+{
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+}
+
 Texture *Texture::create(const std::string &fileName)
 {
     Texture *tex = new Texture;
@@ -42,10 +58,7 @@ Texture *Texture::create(const std::string &fileName)
 
     glGenSamplers(1, &tex->m_samplerId);
 
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_WRAP_S,     GL_REPEAT);
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+    tex->setRepeat();
 
     return tex;
 }

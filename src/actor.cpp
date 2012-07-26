@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 Actor::Actor(const std::string& name, MeshPtr mesh)
     : m_name(name)
@@ -57,10 +58,33 @@ void Actor::move(float x, float y, float z)
     rebuildModelMatrix();
 }
 
+void Actor::move(const glm::vec3& pos)
+{
+    m_position += pos;
+    rebuildModelMatrix();
+}
+
 void Actor::moveTo(float x, float y, float z)
 {
     m_position = glm::vec3(x, y, z);
     rebuildModelMatrix();
+}
+
+void Actor::moveTo(const glm::vec3& pos)
+{
+    m_position = pos;
+    rebuildModelMatrix();
+}
+
+void Actor::moveForward(float distance)
+{
+    glm::vec3 base(0.0f, 0.0f, 1.0f);
+
+    base = glm::rotateX(base, m_orientation.x);
+    base = glm::rotateY(base, m_orientation.y);
+    base = glm::rotateZ(base, m_orientation.z);
+
+    move(base * distance);
 }
 
 void Actor::draw() const

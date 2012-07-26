@@ -3,11 +3,15 @@
 #include "mesh.h"
 #include <vector>
 
-Skybox::Skybox(boost::shared_ptr<Texture> tex)
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+Skybox::Skybox(TexturePtr tex)
 {
     m_texture = tex;
+    m_modelMatrix = glm::mat4(1.0f);
 
-    float x = 80.0f;
+    float x = 50.0f;
 
     /*
      *    7----8     y
@@ -82,36 +86,39 @@ Skybox::Skybox(boost::shared_ptr<Texture> tex)
                                    0, 1, 0, // 6
                                    0, 1, 0};// 2
 
+    float twoBy3 = 2.0 / 3.0;
+    float oneBy3 = 1.0 / 3.0;
+
     std::vector<float> texcoords = { // front
-                                     0,     1.0/3, // 1
-                                     0.25,  1.0/3, // 2
-                                     0.25,  2.0/3, // 3
-                                     0.0,   2.0/3, // 4
+                                     0,     oneBy3, // 1
+                                     0.25,  oneBy3, // 2
+                                     0.25,  twoBy3, // 3
+                                     0.0,   twoBy3, // 4
                                      // back
-                                     0.75,  1.0/3, // 5
-                                     0.75,  2.0/3, // 8
-                                     0.5,   2.0/3, // 7
-                                     0.5,   1.0/3, // 6
+                                     0.75,  oneBy3, // 5
+                                     0.75,  twoBy3, // 8
+                                     0.5,   twoBy3, // 7
+                                     0.5,   oneBy3, // 6
                                      // left
-                                     0.25,  1.0/3, // 2
-                                     0.5,   1.0/3, // 6
-                                     0.5,   2.0/3, // 7
-                                     0.25,  2.0/3, // 3
+                                     0.25,  oneBy3, // 2
+                                     0.5,   oneBy3, // 6
+                                     0.5,   twoBy3, // 7
+                                     0.25,  twoBy3, // 3
                                      // right
-                                     0.75,  1.0/3, // 5
-                                     1,     1.0/3, // 1
-                                     1,     2.0/3, // 4
-                                     0.75,  2.0/3, // 8
+                                     0.75,  oneBy3, // 5
+                                     1,     oneBy3, // 1
+                                     1,     twoBy3, // 4
+                                     0.75,  twoBy3, // 8
                                      // top
                                      0.25,  1,    // 4
-                                     0.25,  2.0/3, // 3
-                                     0.5,   2.0/3, // 7
+                                     0.25,  twoBy3, // 3
+                                     0.5,   twoBy3, // 7
                                      0.5,   1,    // 8
                                      // bottom
                                      0.25,  0,    // 1
                                      0.5,   0,    // 5
-                                     0.5,   1.0/3, // 6
-                                     0.25,  1.0/3};// 2
+                                     0.5,   oneBy3, // 6
+                                     0.25,  oneBy3};// 2
     vertices = quadsToTriangles3(vertices);
     normals = quadsToTriangles3(normals);
     texcoords = quadsToTriangles2(texcoords);
@@ -124,10 +131,10 @@ Skybox::Skybox(boost::shared_ptr<Texture> tex)
                               texcoords,
                               empty2,
                               GL_FLAT);
-    m_mesh = boost::shared_ptr<Mesh>(mesh);
+    m_mesh = MeshPtr(mesh);
 }
 
-void Skybox::draw()
+void Skybox::draw() const
 {
     glPushAttrib(GL_ENABLE_BIT);
 
@@ -135,15 +142,33 @@ void Skybox::draw()
     glDisable(GL_LIGHTING);
     //glDisable(GL_BLEND);
 
-    glEnable(GL_TEXTURE_2D);
     m_texture->bind();
     m_mesh->draw();
-    glDisable(GL_TEXTURE_2D);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 
     glPopAttrib();
+}
+
+void Skybox::draw(ShaderProgram *program) const
+{
+    if (program) {
+        GLint modelMatrixUnif = glGetUniformLocation(program->id(), "modelMatrix");
+        glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
+    }
+
+    draw();
+}
+
+void Skybox::moveTo(float x, float y, float z)
+{
+    m_modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+}
+
+void Skybox::moveTo(const glm::vec3& pos)
+{
+    m_modelMatrix = glm::translate(glm::mat4(1.0f), pos);
 }
 
 std::vector<float> Skybox::quadsToTriangles3(const std::vector<float>& v)

@@ -11,6 +11,8 @@ public:
     ~Texture();
 
     void bind();
+    void setClampToEdge();
+    void setRepeat();
 
     static Texture *create(const std::string& filename);
 

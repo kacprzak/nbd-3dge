@@ -5,6 +5,7 @@
 #include "skybox.h"
 #include <set>
 #include "shaderprogram.h"
+#include "camera.h"
 
 class GameObjectManager
 {
@@ -14,6 +15,10 @@ public:
 
     void setSkybox(Skybox *skybox) {
         m_skybox = skybox;
+    }
+
+    void setCamera(Camera *camera) {
+        m_camera = camera;
     }
 
     void add(Actor *actor) {
@@ -34,6 +39,7 @@ public:
 private:
     std::set<Actor *> m_actors;
     Skybox *m_skybox;
+    Camera *m_camera;
 };
 
 #endif // GAMEOBJECTMANAGER_H
