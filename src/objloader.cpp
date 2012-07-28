@@ -1,6 +1,15 @@
 #include "objloader.h"
 
 #include "util.h"
+#include <boost/lexical_cast.hpp>
+
+static inline float to_float(const std::string& s) {
+    return boost::lexical_cast<float>(s);
+}
+
+static inline int to_int(const std::string& s) {
+    return boost::lexical_cast<int>(s);
+}
 
 const std::vector<float> ObjLoader::vertices() const
 {
@@ -19,6 +28,13 @@ const std::vector<float> ObjLoader::vertices() const
 const std::vector<float> ObjLoader::normals() const
 {
     std::vector<float> normals_a;
+
+    if (m_normals.size() == 0)
+        return normals_a;
+
+    if (m_shading == Flat && m_faces.size() > 0)
+        return expandNormals();
+
     for (const Vectorf& n : m_normals) {
         normals_a.push_back(n.x);
         normals_a.push_back(n.y);
@@ -66,23 +82,22 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
         //loadMtlLib(args[0]);
     } else if (cmd == "v") {
         Vectorf v;
-        v.x = atof(args[0].c_str());
-        v.y = atof(args[1].c_str());
-        v.z = atof(args[2].c_str());
+        v.x = to_float(args[0]);
+        v.y = to_float(args[1]);
+        v.z = to_float(args[2]);
         m_vertices.push_back(v);
 
     } else if (cmd == "vn") {
-        m_precompiledNormals = true;
         Vectorf n;
-        n.x = atof(args[0].c_str());
-        n.y = atof(args[1].c_str());
-        n.z = atof(args[2].c_str());
+        n.x = to_float(args[0]);
+        n.y = to_float(args[1]);
+        n.z = to_float(args[2]);
         m_normals.push_back(n);
 
     } else if (cmd == "vt") {
         TexCoord tc;
-        tc.s = atof(args[0].c_str());
-        tc.t = atof(args[1].c_str());
+        tc.s = to_float(args[0]);
+        tc.t = to_float(args[1]);
         m_texCoords.push_back(tc);
 
     } else if (cmd == "f") {
@@ -92,9 +107,13 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
         for (int i = 0; i < 3; ++i) {
             elems.clear();
             split(args[i], '/', elems);
-            f.vertexIndices[i] = atoi(elems[0].c_str()) - 1;
-            if (elems.size() > 1)
-                f.texIndices[i] = atoi(elems[1].c_str()) - 1;
+            f.vertexIndices[i] = to_int(elems[0]) - 1;
+
+            if (elems.size() > 1 && !elems[1].empty())
+                f.texIndices[i] = to_int(elems[1]) - 1;
+
+            if (elems.size() > 2 && !elems[2].empty())
+                f.normIndices[i] = to_int(elems[2]) - 1;
         }
         m_faces.push_back(f);
 
@@ -105,14 +124,21 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
             split(args[3], '/', elems);
 
             f2.vertexIndices[0] = f.vertexIndices[2];
-            f2.vertexIndices[1] = atoi(elems[0].c_str()) - 1;
+            f2.vertexIndices[1] = to_int(elems[0]) - 1;
             f2.vertexIndices[2] = f.vertexIndices[0];
 
-            if (elems.size() > 1) {
+            if (elems.size() > 1 && !elems[1].empty()) {
                 f2.texIndices[0] = f.texIndices[2];
-                f2.texIndices[1] = atoi(elems[1].c_str()) - 1;
+                f2.texIndices[1] = to_int(elems[1]) - 1;
                 f2.texIndices[2] = f.texIndices[0];
             }
+
+            if (elems.size() > 2 && !elems[2].empty()) {
+                f2.normIndices[0] = f.normIndices[2];
+                f2.normIndices[1] = to_int(elems[2]) - 1;
+                f2.normIndices[2] = f.normIndices[0];
+            }
+
             m_faces.push_back(f2);
         }
     }
@@ -138,6 +164,21 @@ const std::vector<float> ObjLoader::expandVertices() const
     return expanded;
 }
 
+const std::vector<float> ObjLoader::expandNormals() const
+{
+    std::vector<float> expanded;
+
+    for (const Face& f : m_faces) {
+        for (int i = 0; i < 3; ++i) {
+            const Vectorf& v = m_vertices[f.normIndices[i]];
+            expanded.push_back(v.x);
+            expanded.push_back(v.y);
+            expanded.push_back(v.z);
+        }
+    }
+    return expanded;
+}
+
 const std::vector<float> ObjLoader::expandTexCoords() const
 {
     std::vector<float> expanded;
@@ -151,38 +192,3 @@ const std::vector<float> ObjLoader::expandTexCoords() const
     }
     return expanded;
 }
-
-//void ObjLoader::computeNormals()
-//{
-//    if (m_precompiledNormals)
-//        return;
-
-//    if (m_shading == Flat) {
-//        for (Face& f : m_faces) {
-//            Vectorf n = f.normal(m_vertices);
-//            m_normals.push_back(n);
-//            m_normals.push_back(n);
-//            m_normals.push_back(n);
-//        }
-//    } else {
-//        for (unsigned int i = 0; i < m_vertices.size(); ++i) {
-//            std::vector<Face> intersectFaces;
-//            for (const Face& f : m_faces) {
-//                if (f.vertexIndices[0] == i
-//                        || f.vertexIndices[1] == i
-//                        || f.vertexIndices[2] == i)
-//                {
-//                    intersectFaces.push_back(f);
-//                }
-//            }
-
-//            Vectorf n;
-//            for (const Face& f : intersectFaces) {
-//                n = n + f.normal(m_vertices);
-//            }
-//            n.normalize();
-
-//            m_normals.push_back(n);
-//        }
-//    }
-//}

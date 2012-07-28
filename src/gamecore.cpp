@@ -18,6 +18,8 @@ GameCore::GameCore()
 {
     m_window = new sf::Window(sf::VideoMode(800, 600), "nbd-3dge",
                               sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
+    //m_window->setVerticalSyncEnabled(true);
+    //m_window->setFramerateLimit(60);
 
     initGL();
     printOpenGlSettings(*m_window);
@@ -38,6 +40,7 @@ void GameCore::mainLoop()
     while (running)
     {
         delta = clock.restart().asSeconds();
+        //std::cout << delta << "\n";
         fpsCounter.update(delta);
 
         sf::Event event;

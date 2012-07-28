@@ -27,27 +27,12 @@ class ObjLoader : public Loader
     struct Face {
         unsigned short vertexIndices[3];
         unsigned short texIndices[3];
-
-//        Vectorf normal(const std::vector<Vectorf>& vertices) const
-//        {
-//            Vectorf v1 = vertices[vertexIndices[0]];
-//            Vectorf v2 = vertices[vertexIndices[1]];
-//            Vectorf v3 = vertices[vertexIndices[2]];
-
-//            // Normal
-//            Vectorf e12 = v2 - v1;
-//            Vectorf e13 = v3 - v1;
-//            Vectorf n = e12.cross(e13);
-//            n.normalize();
-
-//            return n;
-//        }
+        unsigned short normIndices[3];
     };
 
 public:
     ObjLoader()
-        : m_precompiledNormals(false)
-        , m_shading(Smooth)
+        : m_shading(Smooth)
     {}
 
     void setFlatShadingModel() {
@@ -64,16 +49,15 @@ protected:
     void fileLoaded();
 
 private:
-    void computeNormals();
     const std::vector<float> expandVertices() const;
     const std::vector<float> expandTexCoords() const;
+    const std::vector<float> expandNormals() const;
 
     std::vector<Vectorf> m_vertices;
     std::vector<Face> m_faces;
     std::vector<Vectorf> m_normals;
     std::vector<TexCoord> m_texCoords;
 
-    bool m_precompiledNormals;
     ShadeModel m_shading;
 };
 
