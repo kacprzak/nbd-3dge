@@ -10,6 +10,7 @@ class Actor
 {
 public:
     Actor(const std::string& name, MeshPtr mesh);
+    virtual ~Actor() {};
 
     const std::string& name() { return m_name; }
 
@@ -25,9 +26,9 @@ public:
 
     glm::vec3 position() { return m_position ;}
 
-    void virtual draw() const;
-    void virtual draw(ShaderProgram *program) const;
-    void virtual update(float delta);
+    virtual void draw() const;
+    virtual void draw(ShaderProgram *program) const;
+    virtual void update(float delta);
 
     void setOrientation(float x, float y, float z);
     void rotate(float x, float y, float z);
