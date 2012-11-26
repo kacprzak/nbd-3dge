@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #include "game.h"
 
 #include "texture.h"
@@ -5,8 +6,10 @@
 #include "shader.h"
 #include <glm/gtc/type_ptr.hpp>
 
-Game::Game()
-    : m_sp(0)
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+
+Game::Game() : m_sp(0)
 {
     init();
     loadData();
@@ -45,23 +48,6 @@ void Game::init()
 
 void Game::loadData()
 {
-    m_camera = new Camera;
-    m_camera->moveTo(0.0f, 0.0f, 80.0f);
-    gameObjectManager().setCamera(m_camera);
-
-    //MeshPtr triangleMesh(Mesh::create("data/triangle.obj", GL_FLAT));
-    MeshPtr teddyMesh(Mesh::create("data/teddy2.obj"));
-    MeshPtr teapotMesh(Mesh::create("data/teapot.obj"));
-    //MeshPtr cowMesh(Mesh::create("data/cow-nonormals.obj"));
-    MeshPtr cowMesh(Mesh::create("data/cow.obj"));
-    MeshPtr cubeMesh(Mesh::create("data/cube.obj", GL_FLAT));
-    MeshPtr shipMesh(Mesh::create("data/ship.obj", GL_FLAT));
-    MeshPtr floorMesh(Mesh::create("data/floor.obj", GL_FLAT));
-
-    TexturePtr shipTex(Texture::create("data/ship.jpg"));
-    TexturePtr tex_I(Texture::create("data/texture_I.png"));
-    TexturePtr tex_G(Texture::create("data/texture_H.png"));
-
     Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
     Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");
 
@@ -70,47 +56,78 @@ void Game::loadData()
     m_sp->addShared(fs);
     m_sp->link();
 
-    // SKYBOX
-    TexturePtr sb_front(Texture::create("data/mars/mars_front.jpg", true));
-    TexturePtr sb_right(Texture::create("data/mars/mars_right.jpg", true));
-    TexturePtr sb_back(Texture::create("data/mars/mars_back.jpg", true));
-    TexturePtr sb_left(Texture::create("data/mars/mars_left.jpg", true));
-    TexturePtr sb_top(Texture::create("data/mars/mars_top.jpg", true));
-    TexturePtr sb_bottom;
+    using boost::property_tree::ptree;
+    ptree pt;
 
-    Skybox *skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
-    gameObjectManager().setSkybox(skybox);
+    read_xml("data/config.xml", pt);    
 
-    Actor *a = new Actor("teddy", teddyMesh);
-    //Actor *a = new Actor(triangleMesh);
-    a->setScale(0.2f);
-    gameObjectManager().add(a);
+    for(ptree::value_type &v : pt.get_child("config")) {
+        const std::string& actorType  = v.first;
+        ptree& actorTree = v.second;
 
-    a = new Actor("cube", cubeMesh);
-    a->setTexture(tex_I);
-    a->moveTo(10.0f, 0.0f, 0.0f);
-    a->setScale(0.2f);
-    gameObjectManager().add(a);
+        if (actorType == "camera") {
+            float x = actorTree.get("position.x", 0.0f);
+            float y = actorTree.get("position.y", 0.0f);
+            float z = actorTree.get("position.z", 0.0f);
 
-    a = new Actor("cow", cowMesh);
-    a->moveTo(-10.0f);
-    gameObjectManager().add(a);
+            m_camera = new Camera;
+            m_camera->moveTo(x, y, z);
+            gameObjectManager().setCamera(m_camera);
+        }
+        else if (actorType == "skybox") {
+            const std::string& front = actorTree.get<std::string>("front");
+            const std::string& right = actorTree.get<std::string>("right");
+            const std::string& back = actorTree.get<std::string>("back");
+            const std::string& left = actorTree.get<std::string>("left");
+            const std::string& top = actorTree.get<std::string>("top");
+            const std::string& bottom = actorTree.get<std::string>("bottom");
 
-    a = new Actor("teapot", teapotMesh);
-    a->moveTo(0.0f, 10.0f);
-    gameObjectManager().add(a);
+            // SKYBOX
+            TexturePtr sb_front(Texture::create(front, true));
+            TexturePtr sb_right(Texture::create(right, true));
+            TexturePtr sb_back(Texture::create(back, true));
+            TexturePtr sb_left(Texture::create(left, true));
+            TexturePtr sb_top(Texture::create(top, true));
+            
+            Skybox *skybox;
 
-    a = new Actor("ship", shipMesh);
-    a->setTexture(shipTex);
-    a->moveTo(0.0f, -10.0f, 0.0f);
-    a->setScale(0.1f);
-    gameObjectManager().add(a);
+            if (bottom.empty()) {            
+                skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top);
+            } else {
+                TexturePtr sb_bottom(Texture::create(bottom, true));
+                skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
+            }
 
-    a = new Actor("floor", floorMesh);
-    a->setTexture(tex_G);
-    a->setScale(10.0f);
-    a->moveTo(0.0f, -15.0f, 0.0f);
-    gameObjectManager().add(a);
+            gameObjectManager().setSkybox(skybox);
+        }
+        else if (actorType == "actor") {
+            const std::string& name = actorTree.get<std::string>("name");
+            const std::string& meshFile = actorTree.get<std::string>("mesh");
+            const std::string& meshShadingStr = actorTree.get("mesh.shading", "GL_SMOOTH");
+ 
+            GLenum shading = GL_SMOOTH;
+            if (meshShadingStr == "GL_FLAT")
+                shading = GL_FLAT;
+            
+            const std::string& textureFile = actorTree.get("texture", "");
+            float scale = actorTree.get("scale", 1.0f);
+            float x = actorTree.get("position.x", 0.0f);
+            float y = actorTree.get("position.y", 0.0f);
+            float z = actorTree.get("position.z", 0.0f);
+            
+            MeshPtr mesh(Mesh::create(meshFile, shading));
+            Actor *a = new Actor(name, mesh);
+            a->setScale(scale);
+            a->moveTo(x, y, z);
+ 
+            if (!textureFile.empty()) {
+                TexturePtr texturePtr(Texture::create(textureFile));
+                a->setTexture(texturePtr);
+            }
+           
+            gameObjectManager().add(a);
+         }
+    }
 }
 
 void Game::draw()

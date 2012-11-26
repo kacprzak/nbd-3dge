@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #include "skybox.h"
 
 #include "mesh.h"
@@ -6,7 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Skybox::Skybox(TexturePtr front, TexturePtr right, TexturePtr back, TexturePtr left, TexturePtr top, TexturePtr bottom)
+Skybox::Skybox(TexturePtr front, TexturePtr right, TexturePtr back,
+               TexturePtr left, TexturePtr top, TexturePtr bottom)
 {
     m_textures.push_back(front);
     m_textures.push_back(back);

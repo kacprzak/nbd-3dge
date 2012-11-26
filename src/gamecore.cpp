@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #include "gamecore.h"
 
 #include <iostream>
@@ -106,7 +107,7 @@ void GameCore::initGL()
 /* function to reset our viewport after a window resize */
 void GameCore::resizeWindow(int width, int height)
 {
-    std::cout << "resizeWindow " << width << " " << height << std::endl;
+    //std::cout << "resizeWindow " << width << " " << height << std::endl;
 
     /* Setup our viewport. */
     glViewport(0, 0, GLsizei(width), GLsizei(height));

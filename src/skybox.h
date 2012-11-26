@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
@@ -9,7 +10,8 @@
 class Skybox
 {
 public:
-    Skybox(TexturePtr front, TexturePtr right, TexturePtr back, TexturePtr left, TexturePtr top, TexturePtr bottom);
+    Skybox(TexturePtr front, TexturePtr right, TexturePtr back,
+           TexturePtr left, TexturePtr top, TexturePtr bottom = TexturePtr());
 
     void draw() const;
     void draw(ShaderProgram *program) const;
