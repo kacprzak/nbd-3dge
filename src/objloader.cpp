@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #include "objloader.h"
 
 #include "util.h"
@@ -81,6 +82,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
     if (cmd == "mtllib") {
         //loadMtlLib(args[0]);
     } else if (cmd == "v") {
+        // v -42.209999 19.670004 38.799995
         Vectorf v;
         v.x = to_float(args[0]);
         v.y = to_float(args[1]);
@@ -88,6 +90,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
         m_vertices.push_back(v);
 
     } else if (cmd == "vn") {
+        // vn -0.002913 -0.974373 -0.224919
         Vectorf n;
         n.x = to_float(args[0]);
         n.y = to_float(args[1]);
@@ -95,12 +98,15 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
         m_normals.push_back(n);
 
     } else if (cmd == "vt") {
+        // vt 0.622800 0.226700
         TexCoord tc;
         tc.s = to_float(args[0]);
         tc.t = to_float(args[1]);
         m_texCoords.push_back(tc);
 
     } else if (cmd == "f") {
+        //    v/vt/vn
+        // f 44/61/61 56/62/62 62/63/63 
         Face f;
         std::vector<std::string> elems;
 

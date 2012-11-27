@@ -54,6 +54,8 @@ Mesh *Mesh::create(const std::string& objfileName, GLenum shadeModel)
 
     std::string name = extractFilename(objfileName);
 
+    std::cout << "Loading... " << name << '\n';
+
     return create(name,
                   objLoader.vertices(),
                   objLoader.normals(),
