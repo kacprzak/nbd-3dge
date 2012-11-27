@@ -156,31 +156,34 @@ void Skybox::moveTo(const glm::vec3& pos)
 std::vector<float> Skybox::quadsToTriangles3(const std::vector<float>& v)
 {
     std::vector<float> nv;
-    for (unsigned int i = 0; i < v.size();) {
-        float v1[3] = { v[i++], v[i++], v[i++] };
-        float v2[3] = { v[i++], v[i++], v[i++] };
-        float v3[3] = { v[i++], v[i++], v[i++] };
-        float v4[3] = { v[i++], v[i++], v[i++] };
+    for (size_t i = 0; i < v.size() - 12;) {
+        float va[4][3];
 
-        nv.push_back(v1[0]);
-        nv.push_back(v1[1]);
-        nv.push_back(v1[2]);
-        nv.push_back(v2[0]);
-        nv.push_back(v2[1]);
-        nv.push_back(v2[2]);
-        nv.push_back(v3[0]);
-        nv.push_back(v3[1]);
-        nv.push_back(v3[2]);
+        for (int j = 0; j < 4; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                va[j][k] = v[i++];
+            }
+        }
 
-        nv.push_back(v1[0]);
-        nv.push_back(v1[1]);
-        nv.push_back(v1[2]);
-        nv.push_back(v3[0]);
-        nv.push_back(v3[1]);
-        nv.push_back(v3[2]);
-        nv.push_back(v4[0]);
-        nv.push_back(v4[1]);
-        nv.push_back(v4[2]);
+        nv.push_back(va[0][0]);
+        nv.push_back(va[0][1]);
+        nv.push_back(va[0][2]);
+        nv.push_back(va[1][0]);
+        nv.push_back(va[1][1]);
+        nv.push_back(va[1][2]);
+        nv.push_back(va[2][0]);
+        nv.push_back(va[2][1]);
+        nv.push_back(va[2][2]);
+
+        nv.push_back(va[0][0]);
+        nv.push_back(va[0][1]);
+        nv.push_back(va[0][2]);
+        nv.push_back(va[2][0]);
+        nv.push_back(va[2][1]);
+        nv.push_back(va[2][2]);
+        nv.push_back(va[3][0]);
+        nv.push_back(va[3][1]);
+        nv.push_back(va[3][2]);
     }
     return nv;
 }
@@ -188,25 +191,28 @@ std::vector<float> Skybox::quadsToTriangles3(const std::vector<float>& v)
 std::vector<float> Skybox::quadsToTriangles2(const std::vector<float>& v)
 {
     std::vector<float> nv;
-    for (unsigned int i = 0; i < v.size();) {
-        float v1[2] = { v[i++], v[i++] };
-        float v2[2] = { v[i++], v[i++] };
-        float v3[2] = { v[i++], v[i++] };
-        float v4[2] = { v[i++], v[i++] };
+    for (size_t i = 0; i < v.size() - 8;) {
+        float va[4][2];
+        
+        for (int j = 0; j < 4; ++j) {
+            for (int k = 0; k < 2; ++k) {
+                va[j][k] = v[i++];
+            }
+        }
 
-        nv.push_back(v1[0]);
-        nv.push_back(v1[1]);
-        nv.push_back(v2[0]);
-        nv.push_back(v2[1]);
-        nv.push_back(v3[0]);
-        nv.push_back(v3[1]);
+        nv.push_back(va[0][0]);
+        nv.push_back(va[0][1]);
+        nv.push_back(va[1][0]);
+        nv.push_back(va[1][1]);
+        nv.push_back(va[2][0]);
+        nv.push_back(va[2][1]);
 
-        nv.push_back(v1[0]);
-        nv.push_back(v1[1]);
-        nv.push_back(v3[0]);
-        nv.push_back(v3[1]);
-        nv.push_back(v4[0]);
-        nv.push_back(v4[1]);
+        nv.push_back(va[0][0]);
+        nv.push_back(va[0][1]);
+        nv.push_back(va[2][0]);
+        nv.push_back(va[2][1]);
+        nv.push_back(va[3][0]);
+        nv.push_back(va[3][1]);
     }
     return nv;
 }
