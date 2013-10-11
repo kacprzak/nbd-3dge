@@ -2,9 +2,9 @@
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
-#include "texture.h"
-#include "mesh.h"
-#include "shaderprogram.h"
+#include "Texture.h"
+#include "Mesh.h"
+#include "ShaderProgram.h"
 #include <glm/glm.hpp>
 
 class Skybox

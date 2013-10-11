@@ -1,6 +1,6 @@
-#include "mtlloader.h"
+#include "MtlLoader.h"
 
-#include "util.h"
+#include "Util.h"
 
 void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& args)
 {

@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <SFML/Window.hpp>
 //#include <SFML/OpenGL.hpp>
-#include "gameobjectmanager.h"
+#include "GameObjectManager.h"
 
 class GameCore
 {

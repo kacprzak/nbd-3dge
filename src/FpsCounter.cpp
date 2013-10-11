@@ -1,4 +1,4 @@
-#include "fpscounter.h"
+#include "FpsCounter.h"
 #include <iostream>
 
 FpsCounter::FpsCounter(float printInterval)

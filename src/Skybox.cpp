@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
-#include "skybox.h"
+#include "Skybox.h"
 
-#include "mesh.h"
+#include "Mesh.h"
 #include <vector>
 
 #include <glm/gtc/matrix_transform.hpp>

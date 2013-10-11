@@ -9,21 +9,21 @@ endif()
 
 set( nbd-3dge_SRCS
     src/main.cpp
-    src/fpscounter.cpp
-    src/actor.cpp
-    src/mesh.cpp
-    src/gameobjectmanager.cpp
-    src/gamecore.cpp
-    src/game.cpp
-    src/util.cpp
-    src/texture.cpp
-    src/loader.cpp
-    src/objloader.cpp
-    src/mtlloader.cpp
-    src/skybox.cpp
-    src/shader.cpp
-    src/shaderprogram.cpp
-    src/camera.cpp
+    src/FpsCounter.cpp
+    src/Actor.cpp
+    src/Mesh.cpp
+    src/GameObjectManager.cpp
+    src/GameCore.cpp
+    src/Game.cpp
+    src/Util.cpp
+    src/Texture.cpp
+    src/Loader.cpp
+    src/ObjLoader.cpp
+    src/MtlLoader.cpp
+    src/Skybox.cpp
+    src/Shader.cpp
+    src/ShaderProgram.cpp
+    src/Camera.cpp
 )
 
 add_executable( nbd-3dge ${nbd-3dge_SRCS} )

@@ -1,7 +1,7 @@
-#include "mesh.h"
+#include "Mesh.h"
 
-#include "objloader.h"
-#include "util.h"
+#include "ObjLoader.h"
+#include "Util.h"
 #include <iostream>
 #include <cstring>
 

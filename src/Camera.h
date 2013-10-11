@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "actor.h"
+#include "Actor.h"
 #include <glm/glm.hpp>
 
 class Camera : public Actor

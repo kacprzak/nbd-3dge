@@ -1,4 +1,4 @@
-#include "shaderprogram.h"
+#include "ShaderProgram.h"
 
 ShaderProgram::ShaderProgram()
     : m_linked(false)

@@ -1,9 +1,9 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "gamecore.h"
-#include "shaderprogram.h"
-#include "camera.h"
+#include "GameCore.h"
+#include "ShaderProgram.h"
+#include "Camera.h"
 
 class Game : public GameCore
 {

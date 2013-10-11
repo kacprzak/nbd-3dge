@@ -1,7 +1,7 @@
 #ifndef MTLLOADER_H
 #define MTLLOADER_H
 
-#include "loader.h"
+#include "Loader.h"
 
 #include <vector>
 #include <string>

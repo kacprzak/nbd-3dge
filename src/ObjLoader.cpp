@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
-#include "objloader.h"
+#include "ObjLoader.h"
 
-#include "util.h"
+#include "Util.h"
 #include <boost/lexical_cast.hpp>
 
 static inline float to_float(const std::string& s) {

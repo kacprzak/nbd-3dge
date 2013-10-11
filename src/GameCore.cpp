@@ -1,8 +1,8 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
-#include "gamecore.h"
+#include "GameCore.h"
 
 #include <iostream>
-#include "fpscounter.h"
+#include "FpsCounter.h"
 
 void printOpenGlSettings(const sf::Window& window)
 {

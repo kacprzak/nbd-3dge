@@ -1,4 +1,4 @@
-#include "gameobjectmanager.h"
+#include "GameObjectManager.h"
 
 GameObjectManager::GameObjectManager()
     : m_skybox(0)

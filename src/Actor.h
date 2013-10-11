@@ -1,10 +1,10 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-#include "mesh.h"
-#include "texture.h"
+#include "Mesh.h"
+#include "Texture.h"
 #include <glm/glm.hpp>
-#include "shaderprogram.h"
+#include "ShaderProgram.h"
 
 class Actor
 {

@@ -1,11 +1,11 @@
-#include "loader.h"
+#include "Loader.h"
 
 #include <iostream>
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
 
-#include "util.h"
+#include "Util.h"
 
 Loader::Loader()
 {

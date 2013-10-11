@@ -1,7 +1,7 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 
-#include "loader.h"
+#include "Loader.h"
 #include <string>
 #include <vector>
 

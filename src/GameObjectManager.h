@@ -1,11 +1,11 @@
 #ifndef GAMEOBJECTMANAGER_H
 #define GAMEOBJECTMANAGER_H
 
-#include "actor.h"
-#include "skybox.h"
+#include "Actor.h"
+#include "Skybox.h"
 #include <set>
-#include "shaderprogram.h"
-#include "camera.h"
+#include "ShaderProgram.h"
+#include "Camera.h"
 
 class GameObjectManager
 {

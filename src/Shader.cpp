@@ -1,4 +1,4 @@
-#include "shader.h"
+#include "Shader.h"
 //#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <iostream>

@@ -1,9 +1,9 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
-#include "game.h"
+#include "Game.h"
 
-#include "texture.h"
-#include "skybox.h"
-#include "shader.h"
+#include "Texture.h"
+#include "Skybox.h"
+#include "Shader.h"
 #include <glm/gtc/type_ptr.hpp>
 
 #include <boost/property_tree/ptree.hpp>

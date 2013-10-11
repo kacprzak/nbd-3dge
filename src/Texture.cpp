@@ -1,6 +1,6 @@
-#include "texture.h"
+#include "Texture.h"
 #include <iostream>
-#include "util.h"
+#include "Util.h"
 #include <SFML/Graphics.hpp>
 
 Texture::Texture()
