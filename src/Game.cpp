@@ -4,12 +4,16 @@
 #include "Texture.h"
 #include "Skybox.h"
 #include "Shader.h"
+
+//#define GLM_FORCE_RADIANS
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-Game::Game() : m_sp(0)
+Game::Game()
+    : m_sp(0)
 {
     init();
     loadData();
@@ -54,14 +58,20 @@ void Game::loadData()
     m_sp = new ShaderProgram;
     m_sp->addShared(vs);
     m_sp->addShared(fs);
+
+    // Required in GLSL 120
+    glBindAttribLocation(m_sp->id(), 0, "position");
+    glBindAttribLocation(m_sp->id(), 1, "in_texCoord");
+
     m_sp->link();
 
+    // Load scene
     using boost::property_tree::ptree;
     ptree pt;
 
     read_xml("data/config.xml", pt);    
 
-    for(ptree::value_type &v : pt.get_child("config")) {
+    for (ptree::value_type &v : pt.get_child("config")) {
         const std::string& actorType  = v.first;
         ptree& actorTree = v.second;
 
@@ -138,10 +148,12 @@ void Game::draw()
     m_sp->use();
 
     GLint projectionMatrixUnif = glGetUniformLocation(m_sp->id(), "projectionMatrix");
-    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_camera->projectionMatrix()));
+    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE,
+                       glm::value_ptr(m_camera->projectionMatrix()));
 
     GLint viewMatrixUnif = glGetUniformLocation(m_sp->id(), "viewMatrix");
-    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_camera->viewMatrix()));
+    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE,
+                       glm::value_ptr(m_camera->viewMatrix()));
 
     //super::draw();
     gameObjectManager().draw(m_sp);

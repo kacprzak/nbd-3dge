@@ -12,13 +12,22 @@ void printOpenGlSettings(const sf::Window& window)
     std::cout << "  depth bits: " << settings.depthBits << std::endl;
     std::cout << "  stencil bits: " << settings.stencilBits << std::endl;
     std::cout << "  antialiasing level: " << settings.antialiasingLevel << std::endl;
-    std::cout << "  version: " << settings.majorVersion << "." << settings.minorVersion << std::endl;
+    std::cout << "  version: " << settings.majorVersion << "."
+              << settings.minorVersion << std::endl;
 }
 
 GameCore::GameCore()
 {
+    sf::ContextSettings settings;
+    settings.depthBits = 24;
+    settings.stencilBits = 8;
+    settings.antialiasingLevel = 4;
+    settings.majorVersion = 3;
+    settings.minorVersion = 0;
+
     m_window = new sf::Window(sf::VideoMode(800, 600), "nbd-3dge",
-                              sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
+                              sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize,
+                              settings);
     //m_window->setVerticalSyncEnabled(true);
     //m_window->setFramerateLimit(60);
 
@@ -102,6 +111,8 @@ void GameCore::initGL()
 
     glEnable(GL_CULL_FACE);
     //glEnable(GL_RESCALE_NORMAL);
+
+    //glEnable(GL_TEXTURE_2D);
 }
 
 /* function to reset our viewport after a window resize */

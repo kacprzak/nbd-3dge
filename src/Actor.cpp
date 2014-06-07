@@ -109,17 +109,26 @@ void Actor::draw() const
         m_texture->bind();
     }
 
+    glPushMatrix();
+    glMultMatrixf(glm::value_ptr(m_modelMatrix));
+
     m_mesh->draw();
+
+    glPopMatrix();
 }
 
 void Actor::draw(ShaderProgram *program) const
 {
+    if (m_hasTexture) {
+        m_texture->bind();
+    }
+
     if (program) {
         GLint modelMatrixUnif = glGetUniformLocation(program->id(), "modelMatrix");
         glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
     }
 
-    draw();
+    m_mesh->draw();
 }
 
 void Actor::update(float /* delta */)

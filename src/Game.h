@@ -9,17 +9,17 @@ class Game : public GameCore
 {
   typedef GameCore super;
   
-public:
+ public:
     Game();
 
-protected:
+ protected:
     void resizeWindow(int width, int height);
 
     void draw();
     void mouseWheelMoved(int wheelDelta);
     void update(float delta);
 
-private:
+ private:
     void init();
     void loadData();
     void polarView();

@@ -7,7 +7,7 @@
 
 class ShaderProgram
 {
-public:
+ public:
     ShaderProgram();
     ~ShaderProgram();
 
@@ -16,7 +16,7 @@ public:
     void use(bool activate = true);
     GLuint id() { return m_shaderProgramId; }
 
-private:
+ private:
     GLuint m_shaderProgramId;
     std::vector<Shader *> m_shaders;
     bool m_linked;

@@ -117,6 +117,9 @@ void Skybox::draw() const
     glDisable(GL_LIGHTING);
     //glDisable(GL_BLEND);
 
+    glPushMatrix();
+    glMultMatrixf(glm::value_ptr(m_modelMatrix));
+
     int start = 0;
 
     for (TexturePtr tex : m_textures) {
@@ -126,6 +129,8 @@ void Skybox::draw() const
             start += 6;
         }
     }
+
+    glPopMatrix();
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
@@ -140,7 +145,26 @@ void Skybox::draw(ShaderProgram *program) const
         glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
     }
 
-    draw();
+    glPushAttrib(GL_ENABLE_BIT);
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    //glDisable(GL_BLEND);
+
+    int start = 0;
+
+    for (TexturePtr tex : m_textures) {
+        if (tex.get() != nullptr) {
+            tex->bind();
+            m_mesh->draw(start, 6);
+            start += 6;
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+
+    glPopAttrib();
 }
 
 void Skybox::moveTo(float x, float y, float z)
