@@ -1,4 +1,3 @@
-/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #include "GameCore.h"
 
 #include <iostream>
@@ -23,13 +22,13 @@ GameCore::GameCore()
     settings.stencilBits = 8;
     settings.antialiasingLevel = 4;
     settings.majorVersion = 3;
-    settings.minorVersion = 0;
+    settings.minorVersion = 3;
 
     m_window = new sf::Window(sf::VideoMode(800, 600), "nbd-3dge",
                               sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize,
                               settings);
-    //m_window->setVerticalSyncEnabled(true);
-    //m_window->setFramerateLimit(60);
+    m_window->setVerticalSyncEnabled(true);
+    m_window->setFramerateLimit(60);
 
     initGL();
     printOpenGlSettings(*m_window);
@@ -107,7 +106,7 @@ void GameCore::initGL()
     glEnable(GL_DEPTH_TEST);
 
     /* The Type Of Depth Test To Do */
-    glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LESS);
 
     glEnable(GL_CULL_FACE);
     //glEnable(GL_RESCALE_NORMAL);

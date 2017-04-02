@@ -24,7 +24,7 @@ public:
     void moveRight(float distance);
     void moveLeft(float distance);
 
-    glm::vec3 position() { return m_position ;}
+    glm::vec3 position() { return m_position; }
 
     virtual void draw() const;
     virtual void draw(ShaderProgram *program) const;
@@ -33,7 +33,7 @@ public:
     void setOrientation(float x, float y, float z);
     void rotate(float x, float y, float z);
 
-    glm::vec3 orientation() { return m_orientation ;}
+    glm::vec3 orientation() { return m_orientation; }
 
     void setScale(float s);
 

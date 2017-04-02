@@ -1,0 +1,4 @@
+-*.user*
+-Doxyfile.in
+-/assets
+-/bin

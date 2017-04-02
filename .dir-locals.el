@@ -1,0 +1,8 @@
+((nil . ((indent-tabs-mode . nil)
+         (c-basic-offset . 4)
+         (cmake-ide-build-dir . "~/code/github/nbd-3dge-debug")
+         (compile-command . "cd ~/code/github/nbd-3dge-debug && make")
+         (projectile-project-compilation-cmd . "cd ~/code/github/nbd-3dge-debug && make")
+         (projectile-project-test-cmd . "cd ~/code/github/nbd-3dge-debug && make test")
+         (projectile-project-run-cmd . "cd ~/code/github/nbd-3dge-debug && ./nbd-3dge")
+)))

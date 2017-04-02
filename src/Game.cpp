@@ -136,7 +136,7 @@ void Game::loadData()
             }
            
             gameObjectManager().add(a);
-         }
+        }
     }
 }
 
@@ -168,17 +168,17 @@ void Game::mouseWheelMoved(int wheelDelta)
 
 void Game::update(float delta)
 {
-    static sf::Vector2i lastMousePos = sf::Mouse::getPosition();
-    sf::Vector2i currentMousePos = sf::Mouse::getPosition();
+    static sf::Vector2i lastMousePos = sf::Mouse::getPosition(getWindow());
+    sf::Vector2i currentMousePos = sf::Mouse::getPosition(getWindow());
 
     int dx = currentMousePos.x - lastMousePos.x;
     int dy = currentMousePos.y - lastMousePos.y;
 
     lastMousePos = currentMousePos;
 
-    float mouseSensity = 0.2f;
+    float mouseSensity = 0.01f;
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    if ((dx || dy) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         m_camera->rotate(-dy * mouseSensity, -dx * mouseSensity, 0.0f);
     }
 
@@ -202,8 +202,8 @@ void Game::update(float delta)
 
     for (Actor *a : gameObjectManager().actors()) {
         if (a->name() != "floor") {
-            a->rotate(0.0f, delta * 10.0f, 0.0f);
-            a->moveForward(delta * 10.0f);
+            a->rotate(0.0f, delta * 0.5f, 0.0f);
+            a->moveForward(delta * 20.0f);
         }
     }
 

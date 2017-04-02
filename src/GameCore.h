@@ -22,6 +22,7 @@ protected:
     virtual void mouseWheelMoved(int wheelDelta) = 0;
 
     GameObjectManager& gameObjectManager() { return m_gom; }
+    sf::Window& getWindow() { return *m_window; }
 
 private:
     void initGL();
