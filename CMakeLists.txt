@@ -28,10 +28,7 @@ set( nbd-3dge_SRCS
 
 add_executable( nbd-3dge ${nbd-3dge_SRCS} )
 
-file( COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_BINARY_DIR}/ )
-file( COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR}/ )
-
-file( COPY ${CMAKE_SOURCE_DIR}/data/config.xml DESTINATION ${CMAKE_BINARY_DIR}/data/ )
+configure_file( ${CMAKE_SOURCE_DIR}/config.xml ${CMAKE_BINARY_DIR}/config.xml COPYONLY )
 
 # Detect SFML
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )

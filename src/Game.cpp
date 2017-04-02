@@ -52,26 +52,39 @@ void Game::init()
 
 void Game::loadData()
 {
-    Shader *vs = new Shader(GL_VERTEX_SHADER, "shaders/shader.vert");
-    Shader *fs = new Shader(GL_FRAGMENT_SHADER, "shaders/shader.frag");
-
-    m_sp = new ShaderProgram;
-    m_sp->addShared(vs);
-    m_sp->addShared(fs);
-
-    // Required in GLSL 120
-    glBindAttribLocation(m_sp->id(), 0, "position");
-    glBindAttribLocation(m_sp->id(), 1, "in_texCoord");
-
-    m_sp->link();
-
     // Load scene
     using boost::property_tree::ptree;
     ptree pt;
 
-    read_xml("data/config.xml", pt);    
+    read_xml("config.xml", pt);    
+    const std::string& dataFolder = pt.get<std::string>("config.assets.dataFolder");
+    const std::string& shadersFolder = pt.get<std::string>("config.assets.shadersFolder");
+    
+    for (ptree::value_type &v : pt.get_child("config.assets")) {
+        const std::string& assetType  = v.first;
+        ptree& assetTree = v.second;
 
-    for (ptree::value_type &v : pt.get_child("config")) {
+        if (assetType == "shaderProgram") {
+            const std::string& vertexShaderFile = assetTree.get<std::string>("vertexShader");
+            const std::string& fragmentShaderFile = assetTree.get<std::string>("fragmentShader");
+            Shader *vs = new Shader(GL_VERTEX_SHADER, shadersFolder + vertexShaderFile);
+            Shader *fs = new Shader(GL_FRAGMENT_SHADER, shadersFolder + fragmentShaderFile);
+
+            auto sp = new ShaderProgram;
+            sp->addShared(vs);
+            sp->addShared(fs);
+
+            // Required in GLSL 120
+            glBindAttribLocation(sp->id(), 0, "position");
+            glBindAttribLocation(sp->id(), 1, "in_texCoord");
+
+            sp->link();
+
+            m_sp = sp;
+        }
+    }
+
+    for (ptree::value_type &v : pt.get_child("config.scene")) {
         const std::string& actorType  = v.first;
         ptree& actorTree = v.second;
 
