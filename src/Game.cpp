@@ -59,28 +59,26 @@ void Game::loadData()
     read_xml("config.xml", pt);    
     const std::string& dataFolder = pt.get<std::string>("config.assets.dataFolder");
     const std::string& shadersFolder = pt.get<std::string>("config.assets.shadersFolder");
+
+    m_resourcesMgr = std::make_unique<ResourcesMgr>(dataFolder, shadersFolder);
     
     for (ptree::value_type &v : pt.get_child("config.assets")) {
         const std::string& assetType  = v.first;
         ptree& assetTree = v.second;
 
         if (assetType == "shaderProgram") {
+            const std::string& name = assetTree.get<std::string>("name");
             const std::string& vertexShaderFile = assetTree.get<std::string>("vertexShader");
             const std::string& fragmentShaderFile = assetTree.get<std::string>("fragmentShader");
-            Shader *vs = new Shader(GL_VERTEX_SHADER, shadersFolder + vertexShaderFile);
-            Shader *fs = new Shader(GL_FRAGMENT_SHADER, shadersFolder + fragmentShaderFile);
+            
+            m_resourcesMgr->addShaderProgram(name, vertexShaderFile, fragmentShaderFile);          
+            m_sp = m_resourcesMgr->getShaderProgram(name);
+        }
+        else if (assetType == "texture") {
+            const std::string& textureName = assetTree.get<std::string>("name");
+            const std::string& textureFile = assetTree.get<std::string>("file");
 
-            auto sp = new ShaderProgram;
-            sp->addShared(vs);
-            sp->addShared(fs);
-
-            // Required in GLSL 120
-            glBindAttribLocation(sp->id(), 0, "position");
-            glBindAttribLocation(sp->id(), 1, "in_texCoord");
-
-            sp->link();
-
-            m_sp = sp;
+            m_resourcesMgr->addTexture(textureName, textureFile);
         }
     }
 

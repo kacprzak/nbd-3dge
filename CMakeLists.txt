@@ -4,7 +4,7 @@ project( nbd-3dge )
 if( MSVC )
   #add_definitions( "" )
 else()
-  add_definitions( "-Wall -Wextra -g -std=c++0x" )
+  add_definitions( "-Wall -Wextra -g -std=c++14" )
 endif()
 
 set( nbd-3dge_SRCS
