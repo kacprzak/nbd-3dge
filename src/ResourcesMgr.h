@@ -42,15 +42,23 @@ public:
 
     void addTexture(const std::string& name,
                     const std::string& filename,
-                    bool clamp = false)
+                    const std::string& wrap)
     {
-        std::shared_ptr<Texture> tex{Texture::create(m_dataFolder + filename)};
+        bool clamp = false;
+        if (wrap == "GL_CLAMP_TO_EDGE")
+            clamp = true;
+        
+        std::shared_ptr<Texture> tex{Texture::create(m_dataFolder + filename, clamp)};
         m_textures[name] = tex;
     }
 
-    Texture* getTexture(const std::string& name)
+    std::shared_ptr<Texture> getTexture(const std::string& name)
     {
-        return m_textures[name].get();
+        auto it = m_textures.find(name);
+        if (it == std::end(m_textures))
+            throw std::runtime_error("Texture '" + name + "' not loaded.");
+        else
+            return it->second;
     }
     
 private:

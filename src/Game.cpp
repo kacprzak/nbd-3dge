@@ -75,10 +75,11 @@ void Game::loadData()
             m_sp = m_resourcesMgr->getShaderProgram(name);
         }
         else if (assetType == "texture") {
-            const std::string& textureName = assetTree.get<std::string>("name");
-            const std::string& textureFile = assetTree.get<std::string>("file");
+            const std::string& name = assetTree.get<std::string>("name");
+            const std::string& file = assetTree.get<std::string>("file");
+            const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
 
-            m_resourcesMgr->addTexture(textureName, textureFile);
+            m_resourcesMgr->addTexture(name, file, wrap);
         }
     }
 
@@ -104,18 +105,18 @@ void Game::loadData()
             const std::string& bottom = actorTree.get<std::string>("bottom");
 
             // SKYBOX
-            TexturePtr sb_front(Texture::create(front, true));
-            TexturePtr sb_right(Texture::create(right, true));
-            TexturePtr sb_back(Texture::create(back, true));
-            TexturePtr sb_left(Texture::create(left, true));
-            TexturePtr sb_top(Texture::create(top, true));
+            auto sb_front = m_resourcesMgr->getTexture(front);
+            auto sb_right = m_resourcesMgr->getTexture(right);
+            auto sb_back = m_resourcesMgr->getTexture(back);
+            auto sb_left = m_resourcesMgr->getTexture(left);
+            auto sb_top = m_resourcesMgr->getTexture(top);
             
             Skybox *skybox;
 
             if (bottom.empty()) {            
                 skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top);
             } else {
-                TexturePtr sb_bottom(Texture::create(bottom, true));
+                auto sb_bottom = m_resourcesMgr->getTexture(bottom);
                 skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
             }
 
@@ -142,7 +143,7 @@ void Game::loadData()
             a->moveTo(x, y, z);
  
             if (!textureFile.empty()) {
-                TexturePtr texturePtr(Texture::create(textureFile));
+                auto texturePtr = m_resourcesMgr->getTexture(textureFile);
                 a->setTexture(texturePtr);
             }
            

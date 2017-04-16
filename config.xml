@@ -5,29 +5,34 @@
 
     <shaderProgram>
       <name>default</name>
-      <vertexShader>shader.vert</vertexShader>
-      <fragmentShader>shader.frag</fragmentShader>
+      <vertexShader>shader330.vert</vertexShader>
+      <fragmentShader>shader330.frag</fragmentShader>
     </shaderProgram>
 
     <texture>
       <name>mars_front</name>
       <file>mars/mars_front.jpg</file>
+      <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
       <name>mars_right</name>
       <file>mars/mars_right.jpg</file>
+      <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
       <name>mars_back</name>
       <file>mars/mars_back.jpg</file>
+      <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
       <name>mars_left</name>
       <file>mars/mars_left.jpg</file>
+      <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
       <name>mars_top</name>
       <file>mars/mars_top.jpg</file>
+      <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
    
     <mesh>
@@ -35,6 +40,21 @@
       <file>teddy2.obj</file>
       <shading>GL_SMOOTH</shading>
     </mesh>
+
+    <texture>
+      <name>cube_texture</name>
+      <file>texture_I.png</file>
+    </texture>
+
+    <texture>
+      <name>floor_texture</name>
+      <file>texture_H.png</file>
+    </texture>
+    
+    <texture>
+      <name>ship_texture</name>
+      <file>ship.jpg</file>
+    </texture>
     
   </assets>
   <scene>
@@ -48,11 +68,11 @@
     </camera>
 
     <skybox>
-      <front>data/mars/mars_front.jpg</front>
-      <right>data/mars/mars_right.jpg</right>
-      <back>data/mars/mars_back.jpg</back>
-      <left>data/mars/mars_left.jpg</left>
-      <top>data/mars/mars_top.jpg</top>
+      <front>mars_front</front>
+      <right>mars_right</right>
+      <back>mars_back</back>
+      <left>mars_left</left>
+      <top>mars_top</top>
       <bottom></bottom>
     </skybox>
 
@@ -71,7 +91,7 @@
         <z>0</z>
       </position>
       <mesh>data/cube.obj<shading>GL_FLAT</shading></mesh>
-      <texture>data/texture_I.png</texture>
+      <texture>cube_texture</texture>
     </actor>
 
     <actor>
@@ -93,7 +113,7 @@
         <z>0</z>
       </position>
       <mesh>data/ship.obj<shading>GL_FLAT</shading></mesh>
-      <texture>data/ship.jpg</texture>
+      <texture>ship_texture</texture>
     </actor>
 
     <actor>
@@ -115,7 +135,7 @@
         <z>0</z>
       </position>
       <mesh>data/floor.obj<shading>GL_FLAT</shading></mesh>
-      <texture>data/texture_H.png</texture>
+      <texture>floor_texture</texture>
     </actor>
 
   </scene>
