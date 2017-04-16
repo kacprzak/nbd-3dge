@@ -32,8 +32,7 @@ public:
         return m_actors;
     }
 
-    void draw() const;
-    void draw(ShaderProgram *program) const;
+    void draw(const Camera* camera) const;
     void update(float delta);
 
 private:

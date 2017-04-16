@@ -78,11 +78,6 @@ void GameCore::mainLoop()
     }
 }
 
-void GameCore::draw()
-{
-    m_gom.draw();
-}
-
 void GameCore::update(float delta)
 {
     m_gom.update(delta);

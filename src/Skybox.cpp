@@ -1,6 +1,7 @@
 /* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #include "Skybox.h"
 
+#include "Camera.h"
 #include "Mesh.h"
 #include <vector>
 
@@ -109,62 +110,40 @@ Skybox::Skybox(TexturePtr front, TexturePtr right, TexturePtr back,
     m_mesh = MeshPtr(mesh);
 }
 
-void Skybox::draw() const
+void Skybox::draw(const Camera *camera) const
 {
+    m_shaderProgram->use();
+    
+    GLint projectionMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "projectionMatrix");
+    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE,
+                       glm::value_ptr(camera->projectionMatrix()));
+
+    GLint viewMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "viewMatrix");
+    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE,
+                       glm::value_ptr(camera->viewMatrix()));
+    
+    GLint modelMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "modelMatrix");
+    glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
+
     glPushAttrib(GL_ENABLE_BIT);
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
-    //glDisable(GL_BLEND);
-
-    glPushMatrix();
-    glMultMatrixf(glm::value_ptr(m_modelMatrix));
+    glDisable(GL_BLEND);
 
     int start = 0;
 
-    for (TexturePtr tex : m_textures) {
-        if (tex.get() != nullptr) {
+    for (const TexturePtr& tex : m_textures) {
+        if (tex) {
             tex->bind();
             m_mesh->draw(start, 6);
             start += 6;
         }
     }
 
-    glPopMatrix();
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-
     glPopAttrib();
-}
 
-void Skybox::draw(ShaderProgram *program) const
-{
-    if (program) {
-        GLint modelMatrixUnif = glGetUniformLocation(program->id(), "modelMatrix");
-        glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
-    }
-
-    glPushAttrib(GL_ENABLE_BIT);
-
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    //glDisable(GL_BLEND);
-
-    int start = 0;
-
-    for (TexturePtr tex : m_textures) {
-        if (tex.get() != nullptr) {
-            tex->bind();
-            m_mesh->draw(start, 6);
-            start += 6;
-        }
-    }
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-
-    glPopAttrib();
+    m_shaderProgram->use(false);
 }
 
 void Skybox::moveTo(float x, float y, float z)

@@ -6,15 +6,19 @@
 #include <glm/glm.hpp>
 #include "ShaderProgram.h"
 
+class Camera;
+
 class Actor
 {
 public:
-    Actor(const std::string& name, MeshPtr mesh);
+    Actor(const std::string& name);
     virtual ~Actor() {};
 
     const std::string& name() { return m_name; }
 
-    void setTexture(TexturePtr tex);
+    void setTexture(std::shared_ptr<Texture> tex);
+    void setMesh(std::shared_ptr<Mesh> mesh);
+    void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
 
     void move(float x, float y = 0.0f, float z = 0.0f);
     void move(const glm::vec3& pos);
@@ -24,25 +28,23 @@ public:
     void moveRight(float distance);
     void moveLeft(float distance);
 
-    glm::vec3 position() { return m_position; }
+    glm::vec3 position() const { return m_position; }
 
-    virtual void draw() const;
-    virtual void draw(ShaderProgram *program) const;
+    virtual void draw(const Camera* camera) const;
     virtual void update(float delta);
 
     void setOrientation(float x, float y, float z);
     void rotate(float x, float y, float z);
 
-    glm::vec3 orientation() { return m_orientation; }
+    glm::vec3 orientation() const { return m_orientation; }
 
     void setScale(float s);
 
-    bool isIdle() { return m_state == Idle; }
-    bool isActive() { return m_state == Active; }
-    bool isDestroyed() { return m_state == Destroyed; }
+    bool isIdle() const { return m_state == Idle; }
+    bool isActive() const { return m_state == Active; }
+    bool isDestroyed() const { return m_state == Destroyed; }
 
 protected:
-    Actor(const std::string& name);
 
     enum State {
         Idle,
@@ -52,7 +54,6 @@ protected:
 
     const glm::mat4& modelMatrix() const { return m_modelMatrix; }
 
-    void setMesh(MeshPtr mesh);
     void setState(State state) { m_state = state; }
 
 private:
@@ -60,11 +61,11 @@ private:
 
     const std::string m_name;
 
-    MeshPtr m_mesh;
-    TexturePtr m_texture;
-
+    std::shared_ptr<Mesh> m_mesh;
+    std::shared_ptr<Texture> m_texture;
+    std::shared_ptr<ShaderProgram> m_shaderProgram;
+    
     State m_state;
-    bool m_hasTexture;
 
     glm::vec3 m_position;
     glm::vec3 m_orientation;

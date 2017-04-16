@@ -17,7 +17,7 @@ public:
 protected:
     virtual void resizeWindow(int width, int height);
 
-    virtual void draw();
+    virtual void draw() = 0;
     virtual void update(float delta);
     virtual void mouseWheelMoved(int wheelDelta) = 0;
 

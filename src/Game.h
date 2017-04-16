@@ -3,7 +3,6 @@
 
 #include "GameCore.h"
 #include "ResourcesMgr.h"
-#include "ShaderProgram.h"
 #include "Camera.h"
 
 class Game : public GameCore
@@ -26,7 +25,6 @@ class Game : public GameCore
     void polarView();
 
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
-    ShaderProgram *m_sp;
     Camera *m_camera;
 };
 

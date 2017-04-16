@@ -15,12 +15,12 @@ public:
     void draw() const {}
     void setPerspective(float angle, float ratio, float near, float far);
 
-    const glm::mat4& viewMatrix();
+    const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
 
 private:   
     glm::mat4 m_projectionMatrix;
-    glm::mat4 m_viewMatrix;
+    mutable glm::mat4 m_viewMatrix;
 };
 
 #endif // CAMERA_H

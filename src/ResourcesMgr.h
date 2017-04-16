@@ -37,7 +37,11 @@ public:
 
     std::shared_ptr<ShaderProgram> getShaderProgram(const std::string& name)
     {
-        return m_shaderPrograms[name];
+        auto it = m_shaderPrograms.find(name);
+        if (it == std::end(m_shaderPrograms))
+            throw std::runtime_error("Shader '" + name + "' not loaded.");
+        else
+            return it->second;
     }
 
     void addTexture(const std::string& name,

@@ -20,23 +20,13 @@ GameObjectManager::~GameObjectManager()
     m_actors.clear();
 }
 
-void GameObjectManager::draw() const
+void GameObjectManager::draw(const Camera* camera) const
 {
     if (m_skybox)
-        m_skybox->draw();
+        m_skybox->draw(camera);
 
     for (Actor *a : m_actors) {
-        a->draw();
-    }
-}
-
-void GameObjectManager::draw(ShaderProgram *program) const
-{
-    if (m_skybox)
-        m_skybox->draw(program);
-
-    for (Actor *a : m_actors) {
-        a->draw(program);
+        a->draw(camera);
     }
 }
 

@@ -7,7 +7,7 @@ void Camera::setPerspective(float angle, float ratio, float near, float far)
     m_projectionMatrix = glm::perspective(angle, ratio, near, far);
 }
 
-const glm::mat4& Camera::viewMatrix()
+const glm::mat4& Camera::viewMatrix() const
 {
     m_viewMatrix = glm::mat4(1.0f);
     glm::vec3 orien = orientation();

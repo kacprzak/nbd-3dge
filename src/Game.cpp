@@ -13,7 +13,6 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 Game::Game()
-    : m_sp(0)
 {
     init();
     loadData();
@@ -85,8 +84,6 @@ void Game::loadData()
         }
     }
 
-    m_sp = m_resourcesMgr->getShaderProgram("default").get();
-    
     for (ptree::value_type &v : pt.get_child("config.scene")) {
         const std::string& actorType  = v.first;
         ptree& actorTree = v.second;
@@ -107,6 +104,7 @@ void Game::loadData()
             const std::string& left = actorTree.get<std::string>("left");
             const std::string& top = actorTree.get<std::string>("top");
             const std::string& bottom = actorTree.get<std::string>("bottom");
+            const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
 
             // SKYBOX
             auto sb_front = m_resourcesMgr->getTexture(front);
@@ -116,34 +114,42 @@ void Game::loadData()
             auto sb_top = m_resourcesMgr->getTexture(top);
             
             Skybox *skybox;
-
+            
             if (bottom.empty()) {            
                 skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top);
             } else {
                 auto sb_bottom = m_resourcesMgr->getTexture(bottom);
                 skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
             }
+            skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
             gameObjectManager().setSkybox(skybox);
         }
         else if (actorType == "actor") {
             const std::string& name = actorTree.get<std::string>("name");
-            const std::string& texture = actorTree.get("texture", "");
             const std::string& mesh = actorTree.get("mesh", "");
+            const std::string& texture = actorTree.get("texture", "");
+            const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
             float scale = actorTree.get("scale", 1.0f);
             float x = actorTree.get("position.x", 0.0f);
             float y = actorTree.get("position.y", 0.0f);
             float z = actorTree.get("position.z", 0.0f);
             
-            auto meshPtr = m_resourcesMgr->getMesh(mesh);
-            Actor *a = new Actor(name, meshPtr);
+            Actor *a = new Actor{name};
             a->setScale(scale);
             a->moveTo(x, y, z);
+
+            if (!mesh.empty()) {
+                auto meshPtr = m_resourcesMgr->getMesh(mesh);
+                a->setMesh(meshPtr);
+            }
  
             if (!texture.empty()) {
                 auto texturePtr = m_resourcesMgr->getTexture(texture);
                 a->setTexture(texturePtr);
             }
+
+            a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
            
             gameObjectManager().add(a);
         }
@@ -155,20 +161,8 @@ void Game::draw()
     /* Clear The Screen And The Depth Buffer */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_sp->use();
-
-    GLint projectionMatrixUnif = glGetUniformLocation(m_sp->id(), "projectionMatrix");
-    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE,
-                       glm::value_ptr(m_camera->projectionMatrix()));
-
-    GLint viewMatrixUnif = glGetUniformLocation(m_sp->id(), "viewMatrix");
-    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE,
-                       glm::value_ptr(m_camera->viewMatrix()));
-
     //super::draw();
-    gameObjectManager().draw(m_sp);
-
-    m_sp->use(false);
+    gameObjectManager().draw(m_camera);
 }
 
 void Game::mouseWheelMoved(int wheelDelta)

@@ -1,26 +1,14 @@
 #include "Actor.h"
 
+#include "Camera.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-Actor::Actor(const std::string& name, MeshPtr mesh)
-    : m_name(name)
-    , m_mesh(mesh)
-    , m_state(Idle)
-    , m_hasTexture(false)
-    , m_position(glm::vec3(0.0f))
-    , m_orientation(glm::vec3(0.0f))
-    , m_scale(glm::vec3(1.0f))
-    , m_modelMatrix(glm::mat4(1.0f))
-{
-}
-
 Actor::Actor(const std::string& name)
-    : m_name(name)
-    , m_mesh()
-    , m_state(Idle)
-    , m_hasTexture(false)
+    : m_name{name}
+    , m_state{Idle}
     , m_position(glm::vec3(0.0f))
     , m_orientation(glm::vec3(0.0f))
     , m_scale(glm::vec3(1.0f))
@@ -31,12 +19,16 @@ Actor::Actor(const std::string& name)
 void Actor::setTexture(TexturePtr tex)
 {
     m_texture = tex;
-    m_hasTexture = true;
 }
 
 void Actor::setMesh(MeshPtr mesh)
 {
     m_mesh = mesh;
+}
+
+void Actor::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
+{
+    m_shaderProgram = shaderProgram;
 }
 
 void Actor::rebuildModelMatrix()
@@ -103,32 +95,28 @@ void Actor::moveLeft(float distance)
     moveRight(-distance);
 }
 
-void Actor::draw() const
+void Actor::draw(const Camera* camera) const
 {
-    if (m_hasTexture) {
+    m_shaderProgram->use();
+    
+    if (m_texture) {
         m_texture->bind();
     }
 
-    glPushMatrix();
-    glMultMatrixf(glm::value_ptr(m_modelMatrix));
+    GLint projectionMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "projectionMatrix");
+    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE,
+                       glm::value_ptr(camera->projectionMatrix()));
+
+    GLint viewMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "viewMatrix");
+    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE,
+                       glm::value_ptr(camera->viewMatrix()));
+    
+    GLint modelMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "modelMatrix");
+    glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
 
     m_mesh->draw();
 
-    glPopMatrix();
-}
-
-void Actor::draw(ShaderProgram *program) const
-{
-    if (m_hasTexture) {
-        m_texture->bind();
-    }
-
-    if (program) {
-        GLint modelMatrixUnif = glGetUniformLocation(program->id(), "modelMatrix");
-        glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
-    }
-
-    m_mesh->draw();
+    m_shaderProgram->use(false);
 }
 
 void Actor::update(float /* delta */)
