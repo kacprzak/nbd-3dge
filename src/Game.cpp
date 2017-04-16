@@ -69,20 +69,24 @@ void Game::loadData()
         if (assetType == "shaderProgram") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& vertexShaderFile = assetTree.get<std::string>("vertexShader");
-            const std::string& fragmentShaderFile = assetTree.get<std::string>("fragmentShader");
-            
+            const std::string& fragmentShaderFile = assetTree.get<std::string>("fragmentShader");           
             m_resourcesMgr->addShaderProgram(name, vertexShaderFile, fragmentShaderFile);          
-            m_sp = m_resourcesMgr->getShaderProgram(name);
         }
         else if (assetType == "texture") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
             const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
-
             m_resourcesMgr->addTexture(name, file, wrap);
+        } else if (assetType == "mesh") {
+            const std::string& name = assetTree.get<std::string>("name");
+            const std::string& file = assetTree.get<std::string>("file");
+            const std::string& shading = assetTree.get<std::string>("shading", "GL_SMOOTH");
+            m_resourcesMgr->addMesh(name, file, shading);
         }
     }
 
+    m_sp = m_resourcesMgr->getShaderProgram("default").get();
+    
     for (ptree::value_type &v : pt.get_child("config.scene")) {
         const std::string& actorType  = v.first;
         ptree& actorTree = v.second;
@@ -124,26 +128,20 @@ void Game::loadData()
         }
         else if (actorType == "actor") {
             const std::string& name = actorTree.get<std::string>("name");
-            const std::string& meshFile = actorTree.get<std::string>("mesh");
-            const std::string& meshShadingStr = actorTree.get("mesh.shading", "GL_SMOOTH");
- 
-            GLenum shading = GL_SMOOTH;
-            if (meshShadingStr == "GL_FLAT")
-                shading = GL_FLAT;
-            
-            const std::string& textureFile = actorTree.get("texture", "");
+            const std::string& texture = actorTree.get("texture", "");
+            const std::string& mesh = actorTree.get("mesh", "");
             float scale = actorTree.get("scale", 1.0f);
             float x = actorTree.get("position.x", 0.0f);
             float y = actorTree.get("position.y", 0.0f);
             float z = actorTree.get("position.z", 0.0f);
             
-            MeshPtr mesh(Mesh::create(meshFile, shading));
-            Actor *a = new Actor(name, mesh);
+            auto meshPtr = m_resourcesMgr->getMesh(mesh);
+            Actor *a = new Actor(name, meshPtr);
             a->setScale(scale);
             a->moveTo(x, y, z);
  
-            if (!textureFile.empty()) {
-                auto texturePtr = m_resourcesMgr->getTexture(textureFile);
+            if (!texture.empty()) {
+                auto texturePtr = m_resourcesMgr->getTexture(texture);
                 a->setTexture(texturePtr);
             }
            

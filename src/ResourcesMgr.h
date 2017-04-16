@@ -27,17 +27,17 @@ public:
         sp->addShared(fs);
 
         // Required in GLSL 120
-        glBindAttribLocation(sp->id(), 0, "position");
-        glBindAttribLocation(sp->id(), 1, "in_texCoord");
+        //glBindAttribLocation(sp->id(), 0, "position");
+        //glBindAttribLocation(sp->id(), 1, "in_texCoord");
 
         sp->link();
      
         m_shaderPrograms[name] = sp;
     }
 
-    ShaderProgram* getShaderProgram(const std::string& name)
+    std::shared_ptr<ShaderProgram> getShaderProgram(const std::string& name)
     {
-        return m_shaderPrograms[name].get();
+        return m_shaderPrograms[name];
     }
 
     void addTexture(const std::string& name,
@@ -60,6 +60,28 @@ public:
         else
             return it->second;
     }
+
+    void addMesh(const std::string& name,
+                 const std::string& filename,
+                 const std::string& shading)
+    {
+        GLenum shadingEnum = GL_SMOOTH;
+        if (shading == "GL_FLAT")
+            shadingEnum = GL_FLAT;
+        
+        std::shared_ptr<Mesh> mesh{Mesh::create(m_dataFolder + filename, shadingEnum)};
+        m_meshes[name] = mesh;
+    }
+
+    std::shared_ptr<Mesh> getMesh(const std::string& name)
+    {
+        auto it = m_meshes.find(name);
+        if (it == std::end(m_meshes))
+            throw std::runtime_error("Mesh '" + name + "' not loaded.");
+        else
+            return it->second;
+    }
+
     
 private:
     const std::string m_dataFolder, m_shadersFolder;
