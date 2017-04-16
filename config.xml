@@ -5,8 +5,8 @@
 
     <shaderProgram>
       <name>default</name>
-      <vertexShader>shader330.vert</vertexShader>
-      <fragmentShader>shader330.frag</fragmentShader>
+      <vertexShader>default.vert</vertexShader>
+      <fragmentShader>default.frag</fragmentShader>
     </shaderProgram>
 
     <texture>
