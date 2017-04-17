@@ -5,9 +5,8 @@
 #include <iostream>
 #include <cstring>
 
-Mesh::Mesh(const std::string& name, GLenum drawingMode)
+Mesh::Mesh(const std::string& name)
     : m_name(name)
-    , m_drawingMode(drawingMode)
 {
     memset(m_buffers, 0, sizeof(m_buffers));
 }
@@ -22,7 +21,7 @@ Mesh::~Mesh()
 
 void Mesh::draw() const
 {
-    if (m_shadeModel == GL_FLAT) {
+    if (m_numberOfElements == 0) {
         draw(0, m_numberOfVertices);
     } else {
         draw(0, m_numberOfElements);
@@ -34,22 +33,17 @@ void Mesh::draw(int start, int count) const
     glBindVertexArray(m_vao);
 
     // Draw
-    if (m_shadeModel == GL_FLAT) {
-        glShadeModel(GL_FLAT);
-        glDrawArrays(m_drawingMode, start, count);
-        glShadeModel(GL_SMOOTH);
+    if (m_numberOfElements == 0) {
+        glDrawArrays(GL_TRIANGLES, start, count);
     } else {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDICES]);
-        glDrawElements(m_drawingMode, count, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
     }
 }
 
-Mesh *Mesh::create(const std::string& objfileName, GLenum shadeModel)
+Mesh *Mesh::create(const std::string& objfileName)
 {
     ObjLoader objLoader;
-
-    if (shadeModel == GL_FLAT)
-        objLoader.setFlatShadingModel();
     objLoader.load(objfileName);
 
     std::string name = extractFilename(objfileName);
@@ -60,19 +54,16 @@ Mesh *Mesh::create(const std::string& objfileName, GLenum shadeModel)
                   objLoader.vertices(),
                   objLoader.normals(),
                   objLoader.texCoords(),
-                  objLoader.indices(),
-                  shadeModel);
+                  objLoader.indices());
 }
 
 Mesh *Mesh::create(const std::string& name,
                    const std::vector<GLfloat> &vertices,
                    const std::vector<GLfloat> &normals,
                    const std::vector<GLfloat> &texcoords,
-                   const std::vector<GLushort> &indices,
-                   GLenum shadeModel)
+                   const std::vector<GLushort> &indices)
 {
     Mesh *mesh = new Mesh(name);
-    mesh->m_shadeModel = shadeModel;
 
     mesh->m_numberOfVertices = vertices.size();
     mesh->m_numberOfElements = indices.size();

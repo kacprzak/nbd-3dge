@@ -18,47 +18,34 @@ class ObjLoader : public Loader
         float t;
     } TexCoord;
 
-
-    enum ShadeModel {
-        Flat,
-        Smooth
-    };
-
     struct Face {
         unsigned short vertexIndices[3];
         unsigned short texIndices[3];
         unsigned short normIndices[3];
     };
 
-public:
+ public:
     ObjLoader()
-        : m_shading(Smooth)
-    {}
+        {}
 
-    void setFlatShadingModel() {
-        m_shading = Flat;
-    }
+    std::vector<float> vertices() const;
+    std::vector<float> normals() const;
+    std::vector<unsigned short> indices() const;
+    std::vector<float> texCoords() const;
 
-    const std::vector<float> vertices() const;
-    const std::vector<float> normals() const;
-    const std::vector<unsigned short> indices() const;
-    const std::vector<float> texCoords() const;
-
-protected:
+ protected:
     void command(const std::string& cmd, const std::vector<std::string>& args);
     void fileLoaded();
 
-private:
-    const std::vector<float> expandVertices() const;
-    const std::vector<float> expandTexCoords() const;
-    const std::vector<float> expandNormals() const;
+ private:
+    std::vector<float> expandVertices() const;
+    std::vector<float> expandTexCoords() const;
+    std::vector<float> expandNormals() const;
 
     std::vector<Vectorf> m_vertices;
     std::vector<Face> m_faces;
     std::vector<Vectorf> m_normals;
     std::vector<TexCoord> m_texCoords;
-
-    ShadeModel m_shading;
 };
 
 

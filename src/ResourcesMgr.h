@@ -66,14 +66,9 @@ public:
     }
 
     void addMesh(const std::string& name,
-                 const std::string& filename,
-                 const std::string& shading)
+                 const std::string& filename)
     {
-        GLenum shadingEnum = GL_SMOOTH;
-        if (shading == "GL_FLAT")
-            shadingEnum = GL_FLAT;
-        
-        std::shared_ptr<Mesh> mesh{Mesh::create(m_dataFolder + filename, shadingEnum)};
+        std::shared_ptr<Mesh> mesh{Mesh::create(m_dataFolder + filename)};
         m_meshes[name] = mesh;
     }
 

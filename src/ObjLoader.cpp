@@ -12,10 +12,10 @@ static inline int to_int(const std::string& s) {
     return boost::lexical_cast<int>(s);
 }
 
-const std::vector<float> ObjLoader::vertices() const
+std::vector<float> ObjLoader::vertices() const
 {
-    if (m_shading == Flat && m_faces.size() > 0)
-        return expandVertices();
+    //if (m_faces.size() > 0)
+    //  return expandVertices();
 
     std::vector<float> vertices_a;
     for (const Vectorf& v : m_vertices) {
@@ -26,15 +26,15 @@ const std::vector<float> ObjLoader::vertices() const
     return vertices_a;
 }
 
-const std::vector<float> ObjLoader::normals() const
+std::vector<float> ObjLoader::normals() const
 {
     std::vector<float> normals_a;
 
     if (m_normals.size() == 0)
         return normals_a;
 
-    if (m_shading == Flat && m_faces.size() > 0)
-        return expandNormals();
+    //if (m_faces.size() > 0)
+    //  return expandNormals();
 
     for (const Vectorf& n : m_normals) {
         normals_a.push_back(n.x);
@@ -44,13 +44,9 @@ const std::vector<float> ObjLoader::normals() const
     return normals_a;
 }
 
-const std::vector<unsigned short> ObjLoader::indices() const
+std::vector<unsigned short> ObjLoader::indices() const
 {
     std::vector<unsigned short> indices_a;
-
-    if (m_shading == Flat)
-        return indices_a;
-
     for (const Face& f : m_faces) {
         indices_a.push_back(f.vertexIndices[0]);
         indices_a.push_back(f.vertexIndices[1]);
@@ -59,15 +55,15 @@ const std::vector<unsigned short> ObjLoader::indices() const
     return indices_a;
 }
 
-const std::vector<float> ObjLoader::texCoords() const
+std::vector<float> ObjLoader::texCoords() const
 {
     std::vector<float> texcoords_a;
 
     if (m_texCoords.size() == 0)
         return texcoords_a;
 
-    if (m_shading == Flat && m_faces.size() > 0)
-        return expandTexCoords();
+    //if (m_faces.size() > 0)
+    //  return expandTexCoords();
 
     for (const TexCoord& t : m_texCoords) {
         texcoords_a.push_back(t.s);
@@ -155,7 +151,7 @@ void ObjLoader::fileLoaded()
     //computeNormals();
 }
 
-const std::vector<float> ObjLoader::expandVertices() const
+std::vector<float> ObjLoader::expandVertices() const
 {
     std::vector<float> expanded;
 
@@ -170,7 +166,7 @@ const std::vector<float> ObjLoader::expandVertices() const
     return expanded;
 }
 
-const std::vector<float> ObjLoader::expandNormals() const
+std::vector<float> ObjLoader::expandNormals() const
 {
     std::vector<float> expanded;
 
@@ -185,7 +181,7 @@ const std::vector<float> ObjLoader::expandNormals() const
     return expanded;
 }
 
-const std::vector<float> ObjLoader::expandTexCoords() const
+std::vector<float> ObjLoader::expandTexCoords() const
 {
     std::vector<float> expanded;
 

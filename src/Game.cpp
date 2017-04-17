@@ -79,8 +79,7 @@ void Game::loadData()
         } else if (assetType == "mesh") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
-            const std::string& shading = assetTree.get<std::string>("shading", "GL_SMOOTH");
-            m_resourcesMgr->addMesh(name, file, shading);
+            m_resourcesMgr->addMesh(name, file);
         }
     }
 

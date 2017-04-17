@@ -65,37 +65,31 @@
     <mesh>
       <name>teddy</name>
       <file>teddy2.obj</file>
-      <shading>GL_SMOOTH</shading>
     </mesh>
 
     <mesh>
       <name>cow</name>
       <file>cow.obj</file>
-      <shading>GL_SMOOTH</shading>
     </mesh>
 
     <mesh>
       <name>teapot</name>
       <file>teapot.obj</file>
-      <shading>GL_SMOOTH</shading>
     </mesh>
 
     <mesh>
       <name>ship</name>
       <file>ship.obj</file>
-      <shading>GL_FLAT</shading>
     </mesh>
 
     <mesh>
       <name>cube</name>
       <file>cube.obj</file>
-      <shading>GL_FLAT</shading>
     </mesh>
 
     <mesh>
       <name>floor</name>
       <file>floor.obj</file>
-      <shading>GL_FLAT</shading>
     </mesh>
     
   </assets>

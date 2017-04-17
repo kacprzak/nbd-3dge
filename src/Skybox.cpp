@@ -105,8 +105,7 @@ Skybox::Skybox(TexturePtr front, TexturePtr right, TexturePtr back,
                               vertices,
                               normals,
                               texcoords,
-                              empty2,
-                              GL_FLAT);
+                              empty2);
     m_mesh = MeshPtr(mesh);
 }
 
