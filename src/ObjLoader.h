@@ -7,16 +7,26 @@
 
 class ObjLoader : public Loader
 {
-    typedef struct {
+    struct Vectorf {
         float x;
         float y;
         float z;
-    } Vectorf;
 
-    typedef struct {
+        bool operator==(const Vectorf& other) const
+        {
+            return x == other.x && y == other.y && z == other.z;
+        }
+    };
+
+    struct TexCoord {
         float s;
         float t;
-    } TexCoord;
+
+        bool operator==(const TexCoord& other) const
+        {
+            return s == other.s && t == other.t;
+        }
+    };
 
     struct Face {
         unsigned short vertexIndices[3];
@@ -24,9 +34,23 @@ class ObjLoader : public Loader
         unsigned short normIndices[3];
     };
 
+    struct OpenGlVertex
+    {
+        Vectorf p, n;
+        TexCoord t;
+
+        bool operator==(const OpenGlVertex& other) const
+        {
+            return p == other.p && n == other.n && t == other.t;
+        }
+    };
+    
+    struct OpenGlFace {
+        unsigned indices[3];
+    };
+
  public:
-    ObjLoader()
-        {}
+    ObjLoader() {}
 
     std::vector<float> vertices() const;
     std::vector<float> normals() const;
@@ -38,14 +62,13 @@ class ObjLoader : public Loader
     void fileLoaded();
 
  private:
-    std::vector<float> expandVertices() const;
-    std::vector<float> expandTexCoords() const;
-    std::vector<float> expandNormals() const;
-
     std::vector<Vectorf> m_vertices;
     std::vector<Face> m_faces;
     std::vector<Vectorf> m_normals;
     std::vector<TexCoord> m_texCoords;
+
+    std::vector<OpenGlVertex> m_oglVertices;
+    std::vector<OpenGlFace> m_oglFaces;
 };
 
 

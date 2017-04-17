@@ -3,6 +3,7 @@
 
 #include "Util.h"
 #include <boost/lexical_cast.hpp>
+#include <algorithm>
 
 static inline float to_float(const std::string& s) {
     return boost::lexical_cast<float>(s);
@@ -14,10 +15,17 @@ static inline int to_int(const std::string& s) {
 
 std::vector<float> ObjLoader::vertices() const
 {
-    //if (m_faces.size() > 0)
-    //  return expandVertices();
-
     std::vector<float> vertices_a;
+
+    if (m_oglFaces.size() > 0) {
+        for(const auto& v : m_oglVertices) {
+            vertices_a.push_back(v.p.x);
+            vertices_a.push_back(v.p.y);
+            vertices_a.push_back(v.p.z);
+        }
+        return vertices_a;
+    }
+    
     for (const Vectorf& v : m_vertices) {
         vertices_a.push_back(v.x);
         vertices_a.push_back(v.y);
@@ -33,8 +41,14 @@ std::vector<float> ObjLoader::normals() const
     if (m_normals.size() == 0)
         return normals_a;
 
-    //if (m_faces.size() > 0)
-    //  return expandNormals();
+    if (m_oglFaces.size() > 0) {
+        for(const auto& v : m_oglVertices) {
+            normals_a.push_back(v.n.x);
+            normals_a.push_back(v.n.y);
+            normals_a.push_back(v.n.z);
+        }
+        return normals_a;
+    }
 
     for (const Vectorf& n : m_normals) {
         normals_a.push_back(n.x);
@@ -47,10 +61,10 @@ std::vector<float> ObjLoader::normals() const
 std::vector<unsigned short> ObjLoader::indices() const
 {
     std::vector<unsigned short> indices_a;
-    for (const Face& f : m_faces) {
-        indices_a.push_back(f.vertexIndices[0]);
-        indices_a.push_back(f.vertexIndices[1]);
-        indices_a.push_back(f.vertexIndices[2]);
+    for (const auto& f : m_oglFaces) {
+        indices_a.push_back(f.indices[0]);
+        indices_a.push_back(f.indices[1]);
+        indices_a.push_back(f.indices[2]);
     }
     return indices_a;
 }
@@ -62,9 +76,14 @@ std::vector<float> ObjLoader::texCoords() const
     if (m_texCoords.size() == 0)
         return texcoords_a;
 
-    //if (m_faces.size() > 0)
-    //  return expandTexCoords();
-
+    if (m_oglFaces.size() > 0) {
+        for(const auto& v : m_oglVertices) {
+            texcoords_a.push_back(v.t.s);
+            texcoords_a.push_back(v.t.t);
+        }
+        return texcoords_a;
+    }
+    
     for (const TexCoord& t : m_texCoords) {
         texcoords_a.push_back(t.s);
         texcoords_a.push_back(t.t);
@@ -148,49 +167,25 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
 
 void ObjLoader::fileLoaded()
 {
-    //computeNormals();
-}
+    m_oglVertices.reserve(m_vertices.size());
+    m_oglFaces.reserve(m_faces.size());
 
-std::vector<float> ObjLoader::expandVertices() const
-{
-    std::vector<float> expanded;
+    for(const Face& f : m_faces) {
+        OpenGlFace face;
+        for (int i = 0; i < 3; ++i) {        
+            OpenGlVertex vert;
+            vert.p = m_vertices[f.vertexIndices[i]];
+            vert.n = (m_normals.size() > 0) ? m_normals[f.normIndices[i]] : Vectorf{0.0f, 0.0f, 0.0f};
+            vert.t = (m_texCoords.size() > 0) ? m_texCoords[f.texIndices[i]] : TexCoord{0.0f, 0.0f};
 
-    for (const Face& f : m_faces) {
-        for (int i = 0; i < 3; ++i) {
-            const Vectorf& v = m_vertices[f.vertexIndices[i]];
-            expanded.push_back(v.x);
-            expanded.push_back(v.y);
-            expanded.push_back(v.z);
+            const auto& it = std::find(std::begin(m_oglVertices), std::end(m_oglVertices), vert);
+            if (it != std::end(m_oglVertices)) {
+                face.indices[i] = std::distance(begin(m_oglVertices), it);
+            } else {
+                m_oglVertices.push_back(vert);
+                face.indices[i] = m_oglVertices.size() - 1;
+            }
         }
+        m_oglFaces.push_back(face);
     }
-    return expanded;
-}
-
-std::vector<float> ObjLoader::expandNormals() const
-{
-    std::vector<float> expanded;
-
-    for (const Face& f : m_faces) {
-        for (int i = 0; i < 3; ++i) {
-            const Vectorf& v = m_vertices[f.normIndices[i]];
-            expanded.push_back(v.x);
-            expanded.push_back(v.y);
-            expanded.push_back(v.z);
-        }
-    }
-    return expanded;
-}
-
-std::vector<float> ObjLoader::expandTexCoords() const
-{
-    std::vector<float> expanded;
-
-    for (const Face& f : m_faces) {
-        for (int i = 0; i < 3; ++i) {
-            const TexCoord& tc = m_texCoords[f.texIndices[i]];
-            expanded.push_back(tc.s);
-            expanded.push_back(tc.t);
-        }
-    }
-    return expanded;
 }
