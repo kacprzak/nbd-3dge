@@ -1,5 +1,8 @@
 #include "ShaderProgram.h"
 
+#include <iostream>
+#include <iterator>
+
 ShaderProgram::ShaderProgram()
     : m_linked(false)
 {
@@ -17,13 +20,18 @@ void ShaderProgram::addShared(Shader *shader)
 }
 
 void ShaderProgram::link()
-{
+{    
     for (Shader *s : m_shaders) {
         glAttachShader(m_shaderProgramId, s->id());
     }
 
     glLinkProgram(m_shaderProgramId);
 
+    std::cout << "Linking: ";
+    for (const auto& s : m_shaders)
+        std::cout << s->id() << " ";
+    std::cout << "\tid: " << m_shaderProgramId << std::endl;
+    
     GLint status;
     glGetProgramiv(m_shaderProgramId, GL_LINK_STATUS, &status);
     if (status == GL_FALSE)

@@ -1,4 +1,6 @@
 #include "Shader.h"
+
+#include "Util.h"
 //#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
@@ -25,6 +27,8 @@ Shader::Shader(GLenum type, const std::string& filename)
     }
 
     m_shaderId = glCreateShader(m_type);
+
+    std::cout << "Compiling: " << extractFilename(filename) << "\tid: " << m_shaderId << std::endl;
 
     const GLchar *shaderSource[1];
     shaderSource[0] = source.c_str();

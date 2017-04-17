@@ -9,6 +9,12 @@
       <fragmentShader>default.frag</fragmentShader>
     </shaderProgram>
 
+    <shaderProgram>
+      <name>light</name>
+      <vertexShader>light.vert</vertexShader>
+      <fragmentShader>light.frag</fragmentShader>
+    </shaderProgram>
+    
     <texture>
       <name>mars_front</name>
       <file>mars/mars_front.jpg</file>
@@ -110,6 +116,7 @@
       <name>teddy</name>
       <scale>0.2</scale>
       <mesh>teddy</mesh>
+      <shaderProgram>light</shaderProgram>
     </actor>
     
     <actor>
