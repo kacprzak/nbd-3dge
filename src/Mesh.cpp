@@ -36,7 +36,6 @@ void Mesh::draw(int start, int count) const
     if (m_numberOfElements == 0) {
         glDrawArrays(GL_TRIANGLES, start, count);
     } else {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDICES]);
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
     }
 }
@@ -98,12 +97,12 @@ Mesh *Mesh::create(const std::string& name,
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
     }
 
-    glBindVertexArray(0);
-
     if (indices.size() > 0) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->m_buffers[INDICES]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indices.size(), &indices[0], GL_STATIC_DRAW);
     }
 
+    glBindVertexArray(0);
+       
     return mesh;
 }
