@@ -63,7 +63,8 @@ void main()
     vec3 vertexToEye = normalize(-position_eye.xyz);
     vec3 specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), mtl.shininess);
 
-    color = mtl.ambient * sun.ambient + mtl.diffuse * diffuse + mtl.specular * specular;
+    //color = mtl.ambient * sun.ambient + mtl.diffuse * diffuse + mtl.specular * specular;
+    color = normalize(in_normal);
     
     gl_Position = projectionMatrix * position_eye;
     texCoord = in_texCoord;

@@ -187,6 +187,7 @@ void Game::update(float delta)
     }
 
     float cameraSpeed = 50.0f;
+    static bool pauseAnim = false;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         m_camera->moveForward(-delta * cameraSpeed);
@@ -204,10 +205,16 @@ void Game::update(float delta)
         m_camera->moveLeft(-delta * cameraSpeed);
     }
 
-    for (Actor *a : gameObjectManager().actors()) {
-        if (a->name() != "floor") {
-            a->rotate(0.0f, delta * 0.5f, 0.0f);
-            a->moveForward(delta * 20.0f);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+        pauseAnim = !pauseAnim;
+    }
+
+    if (!pauseAnim) {
+        for (Actor *a : gameObjectManager().actors()) {
+            if (a->name() != "floor") {
+                a->rotate(0.0f, delta * 0.5f, 0.0f);
+                a->moveForward(delta * 20.0f);
+            }
         }
     }
 
