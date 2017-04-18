@@ -9,7 +9,7 @@ class Camera : public Actor
  public:
     Camera();
 
-    void draw() const {}
+    void draw(const Camera* /*c*/) const override {}
     void setPerspective(float angle, float ratio, float near, float far);
 
     const glm::mat4& viewMatrix() const;
@@ -20,7 +20,7 @@ class Camera : public Actor
     
  private:   
     glm::mat4 m_projectionMatrix;
-    mutable glm::mat4 m_viewMatrix;
+    glm::mat4 m_viewMatrix;
 };
 
 #endif // CAMERA_H

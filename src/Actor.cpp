@@ -16,12 +16,12 @@ Actor::Actor(const std::string& name)
 {
 }
 
-void Actor::setTexture(TexturePtr tex)
+void Actor::setTexture(std::shared_ptr<Texture> tex)
 {
     m_texture = tex;
 }
 
-void Actor::setMesh(MeshPtr mesh)
+void Actor::setMesh(std::shared_ptr<Mesh> mesh)
 {
     m_mesh = mesh;
 }
@@ -96,27 +96,27 @@ void Actor::moveLeft(float distance)
 }
 
 void Actor::draw(const Camera* camera) const
-{
-    m_shaderProgram->use();
-    
+{        
     if (m_texture) {
         m_texture->bind();
     }
 
-    GLint projectionMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "projectionMatrix");
-    glUniformMatrix4fv(projectionMatrixUnif, 1, GL_FALSE,
-                       glm::value_ptr(camera->projectionMatrix()));
+    if (m_shaderProgram) {
+        m_shaderProgram->use();
 
-    GLint viewMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "viewMatrix");
-    glUniformMatrix4fv(viewMatrixUnif, 1, GL_FALSE,
-                       glm::value_ptr(camera->viewMatrix()));
-    
-    GLint modelMatrixUnif = glGetUniformLocation(m_shaderProgram->id(), "modelMatrix");
-    glUniformMatrix4fv(modelMatrixUnif, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
+        GLint pMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "projectionMatrix");
+        GLint vMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "viewMatrix");
+        GLint mMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "modelMatrix");
 
-    m_mesh->draw();
+        glUniformMatrix4fv(pMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix()));
+        glUniformMatrix4fv(vMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
+        glUniformMatrix4fv(mMtxLoc, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
+    } else {
+        m_shaderProgram->use(false);
+    }
 
-    m_shaderProgram->use(false);
+    if (m_mesh)
+        m_mesh->draw();
 }
 
 void Actor::update(float /* delta */)

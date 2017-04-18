@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "Skybox.h"
 #include "Shader.h"
+#include "Terrain.h"
 
 //#define GLM_FORCE_RADIANS
 
@@ -110,6 +111,17 @@ void Game::loadData()
             skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
             gameObjectManager().setSkybox(skybox);
+        }
+        else if (actorType == "terrain") {
+            const std::string& name = actorTree.get<std::string>("name");
+            const std::string& map = actorTree.get<std::string>("heightMap");
+            const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
+
+            Actor *a = new Terrain{name, dataFolder + map};
+
+            a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
+
+            gameObjectManager().add(a);
         }
         else if (actorType == "actor") {
             const std::string& name = actorTree.get<std::string>("name");

@@ -1,4 +1,3 @@
-/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
@@ -11,9 +10,13 @@ class Camera;
 
 class Skybox
 {
-public:
-    Skybox(TexturePtr front, TexturePtr right, TexturePtr back,
-           TexturePtr left, TexturePtr top, TexturePtr bottom = TexturePtr());
+ public:
+    Skybox(std::shared_ptr<Texture> front,
+           std::shared_ptr<Texture> right,
+           std::shared_ptr<Texture> back,
+           std::shared_ptr<Texture> left,
+           std::shared_ptr<Texture> top,
+           std::shared_ptr<Texture> bottom = std::shared_ptr<Texture>{});
 
     void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
     {
@@ -25,16 +28,16 @@ public:
     void moveTo(float x, float y = 0.0f, float z = 0.0f);
     void moveTo(const glm::vec3& pos);
 
-private:
+ private:
     static std::vector<float> quadsToTriangles3(const std::vector<float>& vertices);
     static std::vector<float> quadsToTriangles2(const std::vector<float>& vertices);
 
     std::shared_ptr<ShaderProgram> m_shaderProgram;
-    std::vector<TexturePtr> m_textures;
+    std::vector<std::shared_ptr<Texture>> m_textures;
 
     glm::mat4 m_modelMatrix;
 
-    MeshPtr m_mesh;
+    std::shared_ptr<Mesh> m_mesh;
 };
 
 #endif // SKYBOX_H

@@ -112,6 +112,12 @@
       <bottom></bottom>
     </skybox>
 
+    <terrain>
+      <name>terrain</name>
+      <heightMap>terrain-heightmap-01.png</heightMap>
+      <shaderProgram>light</shaderProgram>
+    </terrain>
+
     <actor>
       <name>teddy</name>
       <scale>0.2</scale>

@@ -24,6 +24,4 @@ private:
     GLuint m_samplerId;
 };
 
-typedef std::shared_ptr<Texture> TexturePtr;
-
 #endif // TEXTURE_H

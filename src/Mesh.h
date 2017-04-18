@@ -42,6 +42,4 @@ private:
     unsigned int m_numberOfVertices;
 };
 
-typedef std::shared_ptr<Mesh> MeshPtr;
-
 #endif // MESH_H
