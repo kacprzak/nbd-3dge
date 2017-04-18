@@ -1,4 +1,3 @@
-/* -*- c-basic-offset: 4; indent-tabs-mode: nil; -*- */
 #include "ObjLoader.h"
 
 #include "Util.h"
@@ -17,8 +16,10 @@ std::vector<float> ObjLoader::vertices() const
 {
     std::vector<float> vertices_a;
 
-    if (m_oglFaces.size() > 0) {
-        for(const auto& v : m_oglVertices) {
+    if (!m_oglFaces.empty()) {
+        vertices_a.reserve(m_oglVertices.size() * 3);
+
+        for (const auto& v : m_oglVertices) {
             vertices_a.push_back(v.p.x);
             vertices_a.push_back(v.p.y);
             vertices_a.push_back(v.p.z);
@@ -38,10 +39,9 @@ std::vector<float> ObjLoader::normals() const
 {
     std::vector<float> normals_a;
 
-    if (m_normals.size() == 0)
-        return normals_a;
+    if (!m_oglFaces.empty()) {
+        normals_a.reserve(m_oglVertices.size() * 3);
 
-    if (m_oglFaces.size() > 0) {
         for(const auto& v : m_oglVertices) {
             normals_a.push_back(v.n.x);
             normals_a.push_back(v.n.y);
@@ -61,6 +61,12 @@ std::vector<float> ObjLoader::normals() const
 std::vector<unsigned short> ObjLoader::indices() const
 {
     std::vector<unsigned short> indices_a;
+
+    if (m_oglFaces.empty())
+        return indices_a;
+    
+    indices_a.reserve(m_oglFaces.size() * 3);
+    
     for (const auto& f : m_oglFaces) {
         indices_a.push_back(f.indices[0]);
         indices_a.push_back(f.indices[1]);
@@ -73,11 +79,10 @@ std::vector<float> ObjLoader::texCoords() const
 {
     std::vector<float> texcoords_a;
 
-    if (m_texCoords.size() == 0)
-        return texcoords_a;
-
-    if (m_oglFaces.size() > 0) {
-        for(const auto& v : m_oglVertices) {
+    if (!m_oglFaces.empty()) {
+        texcoords_a.reserve(m_oglVertices.size() * 2);
+        
+        for (const auto& v : m_oglVertices) {
             texcoords_a.push_back(v.t.s);
             texcoords_a.push_back(v.t.t);
         }
@@ -167,25 +172,32 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
 
 void ObjLoader::fileLoaded()
 {
-    m_oglVertices.reserve(m_vertices.size());
-    m_oglFaces.reserve(m_faces.size());
+    if (!m_faces.empty()) {
+        m_oglVertices.reserve(m_faces.size()/3);
+        m_oglFaces.reserve(m_faces.size());
 
-    for(const Face& f : m_faces) {
-        OpenGlFace face;
-        for (int i = 0; i < 3; ++i) {        
-            OpenGlVertex vert;
-            vert.p = m_vertices[f.vertexIndices[i]];
-            vert.n = (m_normals.size() > 0) ? m_normals[f.normIndices[i]] : Vectorf{0.0f, 0.0f, 0.0f};
-            vert.t = (m_texCoords.size() > 0) ? m_texCoords[f.texIndices[i]] : TexCoord{0.0f, 0.0f};
+        for(const Face& f : m_faces) {
+            OpenGlFace face;
+            for (int i = 0; i < 3; ++i) {        
+                OpenGlVertex vert;
+                vert.p = m_vertices[f.vertexIndices[i]];
+                vert.n = (!m_normals.empty()) ? m_normals[f.normIndices[i]] : Vectorf{0.0f, 0.0f, 0.0f};
+                vert.t = (!m_texCoords.empty()) ? m_texCoords[f.texIndices[i]] : TexCoord{0.0f, 0.0f};
 
-            const auto& it = std::find(std::begin(m_oglVertices), std::end(m_oglVertices), vert);
-            if (it != std::end(m_oglVertices)) {
-                face.indices[i] = std::distance(begin(m_oglVertices), it);
-            } else {
-                m_oglVertices.push_back(vert);
-                face.indices[i] = m_oglVertices.size() - 1;
+                const auto& it = std::find(std::cbegin(m_oglVertices), std::cend(m_oglVertices), vert);
+                if (it != std::cend(m_oglVertices)) {
+                    face.indices[i] = std::distance(cbegin(m_oglVertices), it);
+                } else {
+                    m_oglVertices.push_back(vert);
+                    face.indices[i] = m_oglVertices.size() - 1;
+                }
             }
+            m_oglFaces.push_back(face);
         }
-        m_oglFaces.push_back(face);
+
+        m_faces.clear();
+        m_vertices.clear();
+        m_normals.clear();
+        m_texCoords.clear();
     }
 }
