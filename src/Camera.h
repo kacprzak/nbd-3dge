@@ -6,11 +6,8 @@
 
 class Camera : public Actor
 {
-public:
-    Camera() : Actor("camera") {
-        float ratio = 800 / float(600);
-        setPerspective(45.0f, ratio, 1.0f, 200.0f);
-    }
+ public:
+    Camera();
 
     void draw() const {}
     void setPerspective(float angle, float ratio, float near, float far);
@@ -18,7 +15,10 @@ public:
     const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
 
-private:   
+ protected:
+    void refresh() override;
+    
+ private:   
     glm::mat4 m_projectionMatrix;
     mutable glm::mat4 m_viewMatrix;
 };

@@ -56,6 +56,10 @@ protected:
 
     void setState(State state) { m_state = state; }
 
+    virtual void refresh();
+
+    bool m_dirty = true;
+
 private:
     void rebuildModelMatrix();
 

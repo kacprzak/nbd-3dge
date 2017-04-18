@@ -47,25 +47,25 @@ void Actor::rebuildModelMatrix()
 void Actor::move(float x, float y, float z)
 {
     m_position += glm::vec3(x, y, z);
-    rebuildModelMatrix();
+    m_dirty = true;
 }
 
 void Actor::move(const glm::vec3& pos)
 {
     m_position += pos;
-    rebuildModelMatrix();
+    m_dirty = true;
 }
 
 void Actor::moveTo(float x, float y, float z)
 {
     m_position = glm::vec3(x, y, z);
-    rebuildModelMatrix();
+    m_dirty = true;
 }
 
 void Actor::moveTo(const glm::vec3& pos)
 {
     m_position = pos;
-    rebuildModelMatrix();
+    m_dirty = true;
 }
 
 void Actor::moveForward(float distance)
@@ -121,23 +121,31 @@ void Actor::draw(const Camera* camera) const
 
 void Actor::update(float /* delta */)
 {
-    // do nothing
+    if (m_dirty) {
+        refresh();
+        m_dirty = false;
+    }
+}
+
+void Actor::refresh()
+{
+    rebuildModelMatrix();
 }
 
 void Actor::setOrientation(float x, float y, float z)
 {
     m_orientation = glm::vec3(x, y, z);
-    rebuildModelMatrix();
+    m_dirty = true;
 }
 
 void Actor::rotate(float x, float y, float z)
 {
     m_orientation += glm::vec3(x, y, z);
-    rebuildModelMatrix();
+    m_dirty = true;
 }
 
 void Actor::setScale(float s)
 {
     m_scale = glm::vec3(s);
-    rebuildModelMatrix();
+    m_dirty = true;
 }

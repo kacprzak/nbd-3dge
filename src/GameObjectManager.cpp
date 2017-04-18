@@ -31,9 +31,11 @@ void GameObjectManager::draw(const Camera* camera) const
 }
 
 void GameObjectManager::update(float delta)
-{
-    if (m_camera && m_skybox) {
-        m_skybox->moveTo(m_camera->position());
+{  
+    if (m_camera) {
+        m_camera->update(delta);
+        if (m_skybox)
+            m_skybox->moveTo(m_camera->position());
     }
 
     for (Actor *a : m_actors) {
