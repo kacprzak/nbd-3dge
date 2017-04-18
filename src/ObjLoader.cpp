@@ -181,8 +181,8 @@ void ObjLoader::fileLoaded()
             for (int i = 0; i < 3; ++i) {        
                 OpenGlVertex vert;
                 vert.p = m_vertices[f.vertexIndices[i]];
-                vert.n = (!m_normals.empty()) ? m_normals[f.normIndices[i]] : Vectorf{0.0f, 0.0f, 0.0f};
-                vert.t = (!m_texCoords.empty()) ? m_texCoords[f.texIndices[i]] : TexCoord{0.0f, 0.0f};
+                vert.n = !m_normals.empty() ? m_normals[f.normIndices[i]] : Vectorf{0.0f, 0.0f, 0.0f};
+                vert.t = !m_texCoords.empty() ? m_texCoords[f.texIndices[i]] : TexCoord{0.0f, 0.0f};
 
                 const auto& it = std::find(std::cbegin(m_oglVertices), std::cend(m_oglVertices), vert);
                 if (it != std::cend(m_oglVertices)) {

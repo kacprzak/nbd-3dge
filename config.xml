@@ -72,10 +72,10 @@
       <file>cow.obj</file>
     </mesh>
 
-    <mesh>
+    <!--mesh>
       <name>teapot</name>
       <file>teapot.obj</file>
-    </mesh>
+    </mesh-->
 
     <mesh>
       <name>ship</name>
@@ -167,7 +167,7 @@
       <texture>ship_texture</texture>
     </actor>
 
-    <actor>
+    <!--actor>
       <name>teapot</name>
       <position>
         <x>0</x>
@@ -176,7 +176,7 @@
       </position>
       <mesh>teapot</mesh>
       <shaderProgram>light</shaderProgram>
-    </actor>
+    </actor-->
 
     <actor>
       <name>floor</name>

@@ -4,7 +4,9 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
-out vec3 color;
+out vec3 ambient;
+out vec3 diffuse;
+out vec3 specular;
 out vec2 texCoord;
 //out vec3 normal;
 
@@ -30,8 +32,8 @@ struct light
 
 const light sun = light(
     vec4(1, -1, -1, 0),
-    vec3(1.0, 0.6, 0.0),
-    vec3(1.0, 0.6, 0.0),
+    vec3(1.0, 0.8863, 0.8078),
+    vec3(1.0, 0.8863, 0.8078),
     vec3(1, 1, 1)
 );
 
@@ -56,16 +58,15 @@ void main()
     else {
         surfaceToLight = normalize(sun.position.xyz - position_world.xyz);
     }
+
+    ambient = sun.ambient;
     
-    vec3 diffuse = sun.diffuse * max(dot(normal_world, surfaceToLight), 0.0);
+    diffuse = sun.diffuse * max(dot(normal_world, surfaceToLight), 0.0);
 
     vec3 reflection = -reflect(surfaceToLight, normal_world);
     vec3 vertexToEye = normalize(-position_eye.xyz);
-    vec3 specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), mtl.shininess);
+    specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), mtl.shininess);
 
-    //color = mtl.ambient * sun.ambient + mtl.diffuse * diffuse + mtl.specular * specular;
-    color = normalize(in_normal);
-    
     gl_Position = projectionMatrix * position_eye;
     texCoord = in_texCoord;
 }
