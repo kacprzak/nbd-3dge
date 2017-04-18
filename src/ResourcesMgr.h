@@ -19,16 +19,12 @@ public:
                           const std::string& vertexShaderFile,
                           const std::string& fragmentShaderFile)
     {
-        Shader *vs = new Shader(GL_VERTEX_SHADER, m_shadersFolder + vertexShaderFile);
-        Shader *fs = new Shader(GL_FRAGMENT_SHADER, m_shadersFolder + fragmentShaderFile);
+        auto vs = std::make_unique<Shader>(GL_VERTEX_SHADER, m_shadersFolder + vertexShaderFile);
+        auto fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER, m_shadersFolder + fragmentShaderFile);
 
         auto sp = std::make_shared<ShaderProgram>();
-        sp->addShared(vs);
-        sp->addShared(fs);
-
-        // Required in GLSL 120
-        //glBindAttribLocation(sp->id(), 0, "position");
-        //glBindAttribLocation(sp->id(), 1, "in_texCoord");
+        sp->addShared(vs.get());
+        sp->addShared(fs.get());
 
         sp->link();
      

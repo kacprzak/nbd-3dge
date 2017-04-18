@@ -39,7 +39,6 @@ Shader::Shader(GLenum type, const std::string& filename)
     GLint status;
     glGetShaderiv(m_shaderId, GL_COMPILE_STATUS, &status);
 
-
     if (status == GL_FALSE)
     {
         GLint infoLogLength;

@@ -34,6 +34,7 @@ void ShaderProgram::link()
     
     GLint status;
     glGetProgramiv(m_shaderProgramId, GL_LINK_STATUS, &status);
+    
     if (status == GL_FALSE)
     {
         GLint infoLogLength;
