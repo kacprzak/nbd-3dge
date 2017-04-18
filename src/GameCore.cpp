@@ -45,6 +45,7 @@ void GameCore::mainLoop()
     FpsCounter fpsCounter;
     sf::Clock clock;
     bool running = true;
+    bool paused = false;
 
     while (running)
     {
@@ -62,15 +63,28 @@ void GameCore::mainLoop()
             case sf::Event::Resized:
                 resizeWindow(event.size.width, event.size.height);
                 break;
+            case sf::Event::LostFocus:
+                paused = true;
+                break;
+            case sf::Event::GainedFocus:
+                paused = false;
+                break;
             case sf::Event::MouseWheelMoved:
                 mouseWheelMoved(event.mouseWheel.delta);
+                break;
+            case sf::Event::KeyPressed:
+                keyPressed(event.key);
+                break;
+            case sf::Event::KeyReleased:
+                keyReleased(event.key);
                 break;
             default:
                 break;
             }
         }
 
-        update(delta);
+        if (!paused)
+            update(delta);
         // Draw to the back buffer
         draw();
         // Swap buffers

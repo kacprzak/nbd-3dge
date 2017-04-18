@@ -27,7 +27,7 @@ void Game::resizeWindow(int width, int height)
 
     m_camera->setPerspective(45.0f, ratio, 5.0f, 500.0f);
 
-    GameCore::resizeWindow(width, height);
+    super::resizeWindow(width, height);
 }
 
 void Game::init()
@@ -151,13 +151,10 @@ void Game::draw()
     gameObjectManager().draw(m_camera);
 }
 
-void Game::mouseWheelMoved(int wheelDelta)
-{
-    m_camera->moveForward(-wheelDelta);
-}
-
 void Game::update(float delta)
 {
+    super::update(delta);
+    
     static sf::Vector2i lastMousePos = sf::Mouse::getPosition(getWindow());
     sf::Vector2i currentMousePos = sf::Mouse::getPosition(getWindow());
 
@@ -173,7 +170,6 @@ void Game::update(float delta)
     }
 
     float cameraSpeed = 50.0f;
-    static bool pauseAnim = false;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         m_camera->moveForward(-delta * cameraSpeed);
@@ -191,11 +187,7 @@ void Game::update(float delta)
         m_camera->moveLeft(-delta * cameraSpeed);
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-        pauseAnim = !pauseAnim;
-    }
-
-    if (!pauseAnim) {
+    if (!m_animationPaused) {
         for (Actor *a : gameObjectManager().actors()) {
             if (a->name() != "floor") {
                 a->rotate(0.0f, delta * 0.5f, 0.0f);
@@ -203,6 +195,18 @@ void Game::update(float delta)
             }
         }
     }
+}
 
-    super::update(delta);
+void Game::mouseWheelMoved(int wheelDelta)
+{
+    m_camera->moveForward(-wheelDelta);
+}
+
+void Game::keyPressed(const sf::Event::KeyEvent& /*e*/)
+{}
+
+void Game::keyReleased(const sf::Event::KeyEvent& e)
+{
+    if (e.code == sf::Keyboard::Space)
+        m_animationPaused = !m_animationPaused;
 }

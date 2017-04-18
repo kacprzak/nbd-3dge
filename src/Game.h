@@ -7,17 +7,19 @@
 
 class Game : public GameCore
 {
-  typedef GameCore super;
+    typedef GameCore super;
   
  public:
     Game();
 
  protected:
-    void resizeWindow(int width, int height);
+    void resizeWindow(int width, int height) override;
 
-    void draw();
-    void mouseWheelMoved(int wheelDelta);
-    void update(float delta);
+    void draw() override;
+    void update(float delta) override;
+    void mouseWheelMoved(int wheelDelta) override;
+    void keyPressed(const sf::Event::KeyEvent& e) override;
+    void keyReleased(const sf::Event::KeyEvent& e) override;
 
  private:
     void init();
@@ -26,6 +28,7 @@ class Game : public GameCore
 
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
     Camera *m_camera;
+    bool m_animationPaused = false;
 };
 
 #endif // GAME_H
