@@ -19,24 +19,24 @@ Mesh::~Mesh()
     std::cout << "Released: " << m_name << std::endl;
 }
 
-void Mesh::draw() const
+void Mesh::draw(GLenum mode) const
 {
     if (m_numberOfElements == 0) {
-        draw(0, m_numberOfVertices);
+        draw(0, m_numberOfVertices, mode);
     } else {
-        draw(0, m_numberOfElements);
+        draw(0, m_numberOfElements, mode);
     }
 }
 
-void Mesh::draw(int start, int count) const
+void Mesh::draw(int start, int count, GLenum mode) const
 {
     glBindVertexArray(m_vao);
 
     // Draw
     if (m_numberOfElements == 0) {
-        glDrawArrays(GL_TRIANGLES, start, count);
+        glDrawArrays(mode, start, count);
     } else {
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(mode, count, GL_UNSIGNED_SHORT, 0);
     }
 }
 

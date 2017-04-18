@@ -19,8 +19,8 @@ class Mesh
 public:
     ~Mesh();
 
-    void draw() const;
-    void draw(int start, int count) const;
+    void draw(GLenum mode = GL_TRIANGLES) const;
+    void draw(int start, int count, GLenum mode = GL_TRIANGLES) const;
 
     static Mesh *create(const std::string& objfileName);
 

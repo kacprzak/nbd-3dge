@@ -96,9 +96,6 @@ Skybox::Skybox(std::shared_ptr<Texture> front,
         1,  1, // 2
         0,  1};// 1
 
-    vertices = quadsToTriangles3(vertices);
-    texcoords = quadsToTriangles2(texcoords);
-
     std::vector<float> normals;
     std::vector<unsigned short> empty2;
 
@@ -141,74 +138,10 @@ void Skybox::draw(const Camera *camera) const
     for (const std::shared_ptr<Texture>& tex : m_textures) {
         if (tex) {
             tex->bind();
-            m_mesh->draw(start, 6);
-            start += 6;
+            m_mesh->draw(start, 4, GL_QUADS);
+            start += 4;
         }
     }
 
     glPopAttrib();
-}
-
-std::vector<float> Skybox::quadsToTriangles3(const std::vector<float>& v)
-{
-    std::vector<float> nv;
-    for (size_t i = 0; i < v.size() - 12;) {
-        float va[4][3];
-
-        for (int j = 0; j < 4; ++j) {
-            for (int k = 0; k < 3; ++k) {
-                va[j][k] = v[i++];
-            }
-        }
-
-        nv.push_back(va[0][0]);
-        nv.push_back(va[0][1]);
-        nv.push_back(va[0][2]);
-        nv.push_back(va[1][0]);
-        nv.push_back(va[1][1]);
-        nv.push_back(va[1][2]);
-        nv.push_back(va[2][0]);
-        nv.push_back(va[2][1]);
-        nv.push_back(va[2][2]);
-
-        nv.push_back(va[0][0]);
-        nv.push_back(va[0][1]);
-        nv.push_back(va[0][2]);
-        nv.push_back(va[2][0]);
-        nv.push_back(va[2][1]);
-        nv.push_back(va[2][2]);
-        nv.push_back(va[3][0]);
-        nv.push_back(va[3][1]);
-        nv.push_back(va[3][2]);
-    }
-    return nv;
-}
-
-std::vector<float> Skybox::quadsToTriangles2(const std::vector<float>& v)
-{
-    std::vector<float> nv;
-    for (size_t i = 0; i < v.size() - 8;) {
-        float va[4][2];
-        
-        for (int j = 0; j < 4; ++j) {
-            for (int k = 0; k < 2; ++k) {
-                va[j][k] = v[i++];
-            }
-        }
-
-        nv.push_back(va[0][0]);
-        nv.push_back(va[0][1]);
-        nv.push_back(va[1][0]);
-        nv.push_back(va[1][1]);
-        nv.push_back(va[2][0]);
-        nv.push_back(va[2][1]);
-
-        nv.push_back(va[0][0]);
-        nv.push_back(va[0][1]);
-        nv.push_back(va[2][0]);
-        nv.push_back(va[2][1]);
-        nv.push_back(va[3][0]);
-        nv.push_back(va[3][1]);
-    }
-    return nv;
 }
