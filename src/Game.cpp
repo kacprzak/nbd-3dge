@@ -12,6 +12,29 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+class RotationScript : public Script
+{
+public:
+    void execute(float delta, Actor *a) override
+    {
+        if (m_paused)
+            return;
+        
+        a->rotate(0.0f, delta * 0.5f, 0.0f);
+        a->moveForward(delta * 20.0f);
+    }
+
+    void togglePause()
+    {
+        m_paused = !m_paused;
+    }
+
+private:
+    bool m_paused = false;
+};
+
+//------------------------------------------------------------------------------
+
 Game::Game()
 {
     init();
@@ -48,6 +71,9 @@ void Game::loadData()
     const std::string& shadersFolder = pt.get<std::string>("config.assets.shadersFolder");
 
     m_resourcesMgr = std::make_unique<ResourcesMgr>(dataFolder, shadersFolder);
+
+    auto rotationScript = std::make_shared<RotationScript>();
+    m_resourcesMgr->addScript("rotationScript", rotationScript);
     
     for (ptree::value_type &v : pt.get_child("config.assets")) {
         const std::string& assetType  = v.first;
@@ -148,6 +174,9 @@ void Game::loadData()
             }
 
             a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
+
+            if (a->name() != "floor")
+                a->setScript(rotationScript);
            
             gameObjectManager().add(a);
         }
@@ -197,15 +226,6 @@ void Game::update(float delta)
         m_camera->moveLeft(-delta * cameraSpeed);
     }
 
-    if (!m_animationPaused) {
-        for (Actor *a : gameObjectManager().actors()) {
-            if (a->name() != "floor") {
-                a->rotate(0.0f, delta * 0.5f, 0.0f);
-                a->moveForward(delta * 20.0f);
-            }
-        }
-    }
-
     super::update(delta);
 }
 
@@ -219,6 +239,8 @@ void Game::keyPressed(const sf::Event::KeyEvent& /*e*/)
 
 void Game::keyReleased(const sf::Event::KeyEvent& e)
 {
-    if (e.code == sf::Keyboard::Space)
-        m_animationPaused = !m_animationPaused;
+    if (e.code == sf::Keyboard::Space) {
+        auto s = m_resourcesMgr->getScript("rotationScript");
+        std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
+    }
 }

@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Mesh.h"
+#include "Script.h"
 
 #include <string>
 #include <map>
@@ -77,6 +78,21 @@ public:
             return it->second;
     }
 
+    void addScript(const std::string& name,
+                   std::shared_ptr<Script> script)
+    {
+        m_scripts[name] = script;
+    }
+
+    std::shared_ptr<Script> getScript(const std::string& name)
+    {
+        auto it = m_scripts.find(name);
+        if (it == std::end(m_scripts))
+            throw std::runtime_error("Script '" + name + "' not loaded.");
+        else
+            return it->second;
+    }
+
     
 private:
     const std::string m_dataFolder, m_shadersFolder;
@@ -84,6 +100,7 @@ private:
     std::map<std::string, std::shared_ptr<Mesh>> m_meshes;
     std::map<std::string, std::shared_ptr<Texture>> m_textures;
     std::map<std::string, std::shared_ptr<ShaderProgram>> m_shaderPrograms;
+    std::map<std::string, std::shared_ptr<Script>> m_scripts;
 };
 
 #endif

@@ -28,7 +28,6 @@ class Game : public GameCore
 
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
     Camera *m_camera;
-    bool m_animationPaused = false;
 };
 
 #endif // GAME_H

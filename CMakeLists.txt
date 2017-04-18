@@ -25,6 +25,7 @@ set( nbd-3dge_SRCS
     src/ShaderProgram.cpp
     src/Camera.cpp
     src/Terrain.cpp
+    src/Script.cpp
 )
 
 add_executable( nbd-3dge ${nbd-3dge_SRCS} )

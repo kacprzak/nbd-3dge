@@ -31,6 +31,11 @@ void Actor::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
     m_shaderProgram = shaderProgram;
 }
 
+void Actor::setScript(std::shared_ptr<Script> script)
+{
+    m_script = script;
+}
+
 void Actor::rebuildModelMatrix()
 {
     m_modelMatrix = glm::mat4(1.0f);
@@ -119,8 +124,11 @@ void Actor::draw(const Camera* camera) const
         m_mesh->draw();
 }
 
-void Actor::update(float /* delta */)
+void Actor::update(float deltaTime)
 {
+    if (m_script)
+        m_script->execute(deltaTime, this);
+    
     if (m_dirty) {
         refresh();
         m_dirty = false;

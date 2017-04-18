@@ -3,8 +3,10 @@
 
 #include "Mesh.h"
 #include "Texture.h"
-#include <glm/glm.hpp>
 #include "ShaderProgram.h"
+#include "Script.h"
+
+#include <glm/glm.hpp>
 
 class Camera;
 
@@ -19,6 +21,7 @@ public:
     void setTexture(std::shared_ptr<Texture> tex);
     void setMesh(std::shared_ptr<Mesh> mesh);
     void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
+    void setScript(std::shared_ptr<Script> script);
 
     void move(float x, float y = 0.0f, float z = 0.0f);
     void move(const glm::vec3& pos);
@@ -68,6 +71,7 @@ private:
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<Texture> m_texture;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
+    std::shared_ptr<Script> m_script;
     
     State m_state;
 
