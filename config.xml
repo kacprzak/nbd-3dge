@@ -10,6 +10,12 @@
     </shaderProgram>
 
     <shaderProgram>
+      <name>skybox</name>
+      <vertexShader>skybox.vert</vertexShader>
+      <fragmentShader>skybox.frag</fragmentShader>
+    </shaderProgram>
+    
+    <shaderProgram>
       <name>light</name>
       <vertexShader>light.vert</vertexShader>
       <fragmentShader>light.frag</fragmentShader>
@@ -110,6 +116,7 @@
       <left>mars_left</left>
       <top>mars_top</top>
       <bottom></bottom>
+      <shaderProgram>skybox</shaderProgram>
     </skybox>
 
     <terrain>

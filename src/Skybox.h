@@ -25,17 +25,12 @@ class Skybox
     
     void draw(const Camera* camera) const;
 
-    void moveTo(float x, float y = 0.0f, float z = 0.0f);
-    void moveTo(const glm::vec3& pos);
-
  private:
     static std::vector<float> quadsToTriangles3(const std::vector<float>& vertices);
     static std::vector<float> quadsToTriangles2(const std::vector<float>& vertices);
 
     std::shared_ptr<ShaderProgram> m_shaderProgram;
     std::vector<std::shared_ptr<Texture>> m_textures;
-
-    glm::mat4 m_modelMatrix;
 
     std::shared_ptr<Mesh> m_mesh;
 };

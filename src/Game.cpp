@@ -165,8 +165,6 @@ void Game::draw()
 
 void Game::update(float delta)
 {
-    super::update(delta);
-    
     static sf::Vector2i lastMousePos = sf::Mouse::getPosition(getWindow());
     sf::Vector2i currentMousePos = sf::Mouse::getPosition(getWindow());
 
@@ -207,6 +205,8 @@ void Game::update(float delta)
             }
         }
     }
+
+    super::update(delta);
 }
 
 void Game::mouseWheelMoved(int wheelDelta)

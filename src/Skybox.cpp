@@ -21,8 +21,6 @@ Skybox::Skybox(std::shared_ptr<Texture> front,
     m_textures.push_back(top);
     m_textures.push_back(bottom);
 
-    m_modelMatrix = glm::mat4(1.0f);
-
     float x = 50.0f;
 
     /*
@@ -118,13 +116,16 @@ void Skybox::draw(const Camera *camera) const
     if (m_shaderProgram) {
         m_shaderProgram->use();
 
+        // Move skybox with the camera
+        glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), camera->position());
+
         GLint pMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "projectionMatrix");
         GLint vMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "viewMatrix");
         GLint mMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "modelMatrix");
 
         glUniformMatrix4fv(pMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix()));
         glUniformMatrix4fv(vMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
-        glUniformMatrix4fv(mMtxLoc, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
+        glUniformMatrix4fv(mMtxLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
     } else {
         m_shaderProgram->use(false);
     }
@@ -146,16 +147,6 @@ void Skybox::draw(const Camera *camera) const
     }
 
     glPopAttrib();
-}
-
-void Skybox::moveTo(float x, float y, float z)
-{
-    m_modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
-}
-
-void Skybox::moveTo(const glm::vec3& pos)
-{
-    m_modelMatrix = glm::translate(glm::mat4(1.0f), pos);
 }
 
 std::vector<float> Skybox::quadsToTriangles3(const std::vector<float>& v)
