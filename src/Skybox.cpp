@@ -103,7 +103,8 @@ Skybox::Skybox(std::shared_ptr<Texture> front,
                               vertices,
                               normals,
                               texcoords,
-                              empty2);
+                              empty2,
+                              4);
     
     m_mesh = std::shared_ptr<Mesh>{mesh};
 }
@@ -138,7 +139,7 @@ void Skybox::draw(const Camera *camera) const
     for (const std::shared_ptr<Texture>& tex : m_textures) {
         if (tex) {
             tex->bind();
-            m_mesh->draw(start, 4, GL_QUADS);
+            m_mesh->draw(start, 4);
             start += 4;
         }
     }

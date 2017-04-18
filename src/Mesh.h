@@ -19,8 +19,8 @@ class Mesh
 public:
     ~Mesh();
 
-    void draw(GLenum mode = GL_TRIANGLES) const;
-    void draw(int start, int count, GLenum mode = GL_TRIANGLES) const;
+    void draw() const;
+    void draw(int start, int count) const;
 
     static Mesh *create(const std::string& objfileName);
 
@@ -28,15 +28,18 @@ public:
                         const std::vector<GLfloat>& vertices,
                         const std::vector<GLfloat>& normals,
                         const std::vector<GLfloat>& texcoords,
-                        const std::vector<GLushort>& indices);
+                        const std::vector<GLushort>& indices,
+                        int vertPerFace = 3);
 
 private:
-    Mesh(const std::string& name);
+    Mesh(const std::string& name, GLenum mode);
 
     const std::string m_name;
 
     GLuint m_buffers[NUM_BUFFERS];
     GLuint m_vao;
+
+    GLenum m_mode;
 
     unsigned int m_numberOfElements;
     unsigned int m_numberOfVertices;

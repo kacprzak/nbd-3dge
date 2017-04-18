@@ -5,8 +5,8 @@
 #include <iostream>
 #include <cstring>
 
-Mesh::Mesh(const std::string& name)
-    : m_name(name)
+Mesh::Mesh(const std::string& name, GLenum mode)
+    : m_name{name}, m_mode{mode}
 {
     memset(m_buffers, 0, sizeof(m_buffers));
 }
@@ -19,24 +19,24 @@ Mesh::~Mesh()
     std::cout << "Released: " << m_name << std::endl;
 }
 
-void Mesh::draw(GLenum mode) const
+void Mesh::draw() const
 {
     if (m_numberOfElements == 0) {
-        draw(0, m_numberOfVertices, mode);
+        draw(0, m_numberOfVertices);
     } else {
-        draw(0, m_numberOfElements, mode);
+        draw(0, m_numberOfElements);
     }
 }
 
-void Mesh::draw(int start, int count, GLenum mode) const
+void Mesh::draw(int start, int count) const
 {
     glBindVertexArray(m_vao);
 
     // Draw
     if (m_numberOfElements == 0) {
-        glDrawArrays(mode, start, count);
+        glDrawArrays(m_mode, start, count);
     } else {
-        glDrawElements(mode, count, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(m_mode, count, GL_UNSIGNED_SHORT, 0);
     }
 }
 
@@ -53,16 +53,23 @@ Mesh *Mesh::create(const std::string& objfileName)
                   objLoader.vertices(),
                   objLoader.normals(),
                   objLoader.texCoords(),
-                  objLoader.indices());
+                  objLoader.indices(),
+                  objLoader.vertPerFace());
 }
 
 Mesh *Mesh::create(const std::string& name,
                    const std::vector<GLfloat> &vertices,
                    const std::vector<GLfloat> &normals,
                    const std::vector<GLfloat> &texcoords,
-                   const std::vector<GLushort> &indices)
+                   const std::vector<GLushort> &indices,
+                   int vertPerFace)
 {
-    Mesh *mesh = new Mesh(name);
+    GLenum mode = GL_TRIANGLES;
+
+    if (vertPerFace == 4)
+        mode = GL_QUADS;
+    
+    Mesh *mesh = new Mesh(name, mode);
 
     mesh->m_numberOfVertices = vertices.size();
     mesh->m_numberOfElements = indices.size();
@@ -74,7 +81,8 @@ Mesh *Mesh::create(const std::string& name,
     std::cout << "  Vertices: " << vertices.size()/3 << "\t id: " << mesh->m_buffers[VERTICES] << "\n";
     std::cout << "  TexCoords: " << texcoords.size()/2 << "\t id: " << mesh->m_buffers[TEXCOORDS] << "\n";
     std::cout << "  Normals: " << normals.size()/3 << "\t id: " << mesh->m_buffers[NORMALS] << "\n";
-    std::cout << "  Faces: " << indices.size()/3 << "\t id: " << mesh->m_buffers[INDICES] << std::endl;
+    std::cout << "  Faces: " << indices.size()/vertPerFace << "\t id: " << mesh->m_buffers[INDICES] << "\n";
+    std::cout << "  VertPerFace: " << vertPerFace << std::endl;
 
     glBindVertexArray(mesh->m_vao);
 
