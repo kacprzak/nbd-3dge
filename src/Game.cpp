@@ -125,15 +125,9 @@ void Game::loadData()
             auto sb_back = m_resourcesMgr->getTexture(back);
             auto sb_left = m_resourcesMgr->getTexture(left);
             auto sb_top = m_resourcesMgr->getTexture(top);
+            auto sb_bottom = m_resourcesMgr->getTexture(bottom);
             
-            Skybox *skybox;
-            
-            if (bottom.empty()) {            
-                skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top);
-            } else {
-                auto sb_bottom = m_resourcesMgr->getTexture(bottom);
-                skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
-            }
+            Skybox *skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
             skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
             gameObjectManager().setSkybox(skybox);

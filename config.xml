@@ -28,31 +28,36 @@
     </shaderProgram>
     
     <texture>
-      <name>mars_front</name>
-      <file>mars/mars_front.jpg</file>
+      <name>skybox_front</name>
+      <file>envmap_stormydays/stormydays_ft.tga</file>
       <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
-      <name>mars_right</name>
-      <file>mars/mars_right.jpg</file>
+      <name>skybox_right</name>
+      <file>envmap_stormydays/stormydays_rt.tga</file>
       <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
-      <name>mars_back</name>
-      <file>mars/mars_back.jpg</file>
+      <name>skybox_back</name>
+      <file>envmap_stormydays/stormydays_bk.tga</file>
       <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
-      <name>mars_left</name>
-      <file>mars/mars_left.jpg</file>
+      <name>skybox_left</name>
+      <file>envmap_stormydays/stormydays_lf.tga</file>
       <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     <texture>
-      <name>mars_top</name>
-      <file>mars/mars_top.jpg</file>
+      <name>skybox_top</name>
+      <file>envmap_stormydays/stormydays_up.tga</file>
       <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
-   
+    <texture>
+      <name>skybox_bottom</name>
+      <file>envmap_stormydays/stormydays_dn.tga</file>
+      <wrap>GL_CLAMP_TO_EDGE</wrap>
+    </texture>
+    
     <texture>
       <name>cube_texture</name>
       <file>texture_I.png</file>
@@ -110,12 +115,12 @@
     </camera>
 
     <skybox>
-      <front>mars_front</front>
-      <right>mars_right</right>
-      <back>mars_back</back>
-      <left>mars_left</left>
-      <top>mars_top</top>
-      <bottom></bottom>
+      <front>skybox_right</front>
+      <right>skybox_front</right>
+      <back>skybox_left</back>
+      <left>skybox_back</left>
+      <top>skybox_top</top>
+      <bottom>skybox_bottom</bottom>
       <shaderProgram>skybox</shaderProgram>
     </skybox>
 
