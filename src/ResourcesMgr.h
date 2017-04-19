@@ -53,6 +53,22 @@ public:
         m_textures[name] = tex;
     }
 
+    void addTexture(const std::string& name,
+                    std::array<std::string, 6> filenames,
+                    const std::string& wrap)
+    {
+        bool clamp = false;
+        if (wrap == "GL_CLAMP_TO_EDGE")
+            clamp = true;
+
+        for (auto& filename : filenames) {
+            filename = m_dataFolder + filename;
+        }
+        
+        std::shared_ptr<Texture> tex{Texture::create(filenames, clamp)};
+        m_textures[name] = tex;
+    }
+    
     std::shared_ptr<Texture> getTexture(const std::string& name)
     {
         auto it = m_textures.find(name);

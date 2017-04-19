@@ -87,9 +87,20 @@ void Game::loadData()
         }
         else if (assetType == "texture") {
             const std::string& name = assetTree.get<std::string>("name");
-            const std::string& file = assetTree.get<std::string>("file");
             const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
-            m_resourcesMgr->addTexture(name, file, wrap);
+            if (assetTree.get_child("file").size() == 0) {
+                const std::string& file = assetTree.get<std::string>("file");
+                m_resourcesMgr->addTexture(name, file, wrap);
+            } else {
+                std::array<std::string, 6> files;
+                files[0] = assetTree.get<std::string>("file.right");
+                files[1] = assetTree.get<std::string>("file.left");
+                files[2] = assetTree.get<std::string>("file.top");
+                files[3] = assetTree.get<std::string>("file.bottom");
+                files[4] = assetTree.get<std::string>("file.back");
+                files[5] = assetTree.get<std::string>("file.front");
+                m_resourcesMgr->addTexture(name, files, wrap);
+            }
         } else if (assetType == "mesh") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
@@ -111,23 +122,10 @@ void Game::loadData()
             gameObjectManager().setCamera(m_camera);
         }
         else if (actorType == "skybox") {
-            const std::string& front = actorTree.get<std::string>("front");
-            const std::string& right = actorTree.get<std::string>("right");
-            const std::string& back = actorTree.get<std::string>("back");
-            const std::string& left = actorTree.get<std::string>("left");
-            const std::string& top = actorTree.get<std::string>("top");
-            const std::string& bottom = actorTree.get<std::string>("bottom");
+            const std::string& texture = actorTree.get<std::string>("texture");
             const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
 
-            // SKYBOX
-            auto sb_front = m_resourcesMgr->getTexture(front);
-            auto sb_right = m_resourcesMgr->getTexture(right);
-            auto sb_back = m_resourcesMgr->getTexture(back);
-            auto sb_left = m_resourcesMgr->getTexture(left);
-            auto sb_top = m_resourcesMgr->getTexture(top);
-            auto sb_bottom = m_resourcesMgr->getTexture(bottom);
-            
-            Skybox *skybox = new Skybox(sb_front, sb_right, sb_back, sb_left, sb_top, sb_bottom);
+            Skybox *skybox = new Skybox{m_resourcesMgr->getTexture(texture)};
             skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
             gameObjectManager().setSkybox(skybox);

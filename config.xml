@@ -28,33 +28,15 @@
     </shaderProgram>
     
     <texture>
-      <name>skybox_front</name>
-      <file>envmap_stormydays/stormydays_ft.tga</file>
-      <wrap>GL_CLAMP_TO_EDGE</wrap>
-    </texture>
-    <texture>
-      <name>skybox_right</name>
-      <file>envmap_stormydays/stormydays_rt.tga</file>
-      <wrap>GL_CLAMP_TO_EDGE</wrap>
-    </texture>
-    <texture>
-      <name>skybox_back</name>
-      <file>envmap_stormydays/stormydays_bk.tga</file>
-      <wrap>GL_CLAMP_TO_EDGE</wrap>
-    </texture>
-    <texture>
-      <name>skybox_left</name>
-      <file>envmap_stormydays/stormydays_lf.tga</file>
-      <wrap>GL_CLAMP_TO_EDGE</wrap>
-    </texture>
-    <texture>
-      <name>skybox_top</name>
-      <file>envmap_stormydays/stormydays_up.tga</file>
-      <wrap>GL_CLAMP_TO_EDGE</wrap>
-    </texture>
-    <texture>
-      <name>skybox_bottom</name>
-      <file>envmap_stormydays/stormydays_dn.tga</file>
+      <name>skybox_cubemap</name>
+      <file>
+        <right>envmap_stormydays/stormydays_ft.tga</right>
+        <left>envmap_stormydays/stormydays_bk.tga</left>
+        <top>envmap_stormydays/stormydays_up.tga</top>
+        <bottom>envmap_stormydays/stormydays_dn.tga</bottom>
+        <front>envmap_stormydays/stormydays_lf.tga</front>
+        <back>envmap_stormydays/stormydays_rt.tga</back>
+      </file>
       <wrap>GL_CLAMP_TO_EDGE</wrap>
     </texture>
     
@@ -115,12 +97,7 @@
     </camera>
 
     <skybox>
-      <front>skybox_right</front>
-      <right>skybox_front</right>
-      <back>skybox_left</back>
-      <left>skybox_back</left>
-      <top>skybox_top</top>
-      <bottom>skybox_bottom</bottom>
+      <texture>skybox_cubemap</texture>
       <shaderProgram>skybox</shaderProgram>
     </skybox>
 

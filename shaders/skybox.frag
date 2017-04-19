@@ -1,12 +1,12 @@
 #version 330
 
-uniform sampler2D colorTexture;
+uniform samplerCube colorCube;
 
-in vec2 texCoord;
+in vec3 texCoord;
 
 out vec4 fragColor;
 
 void main()
 {
-    fragColor = texture2D(colorTexture, texCoord);
+    fragColor = texture(colorCube, texCoord);
 }

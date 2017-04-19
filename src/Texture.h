@@ -10,16 +10,18 @@ class Texture
 public:
     ~Texture();
 
-    void bind();
+    void bind(GLenum textureUnit);
     void setClampToEdge();
     void setRepeat();
 
     static Texture *create(const std::string& filename, bool clamp = false);
-
+    static Texture *create(const std::array<std::string, 6> filenames, bool clamp = false);
+    
 private:
-    Texture();
+    Texture(GLenum target);
 
     std::string m_filename;
+    GLenum m_target;
     GLuint m_textureId;
     GLuint m_samplerId;
 };
