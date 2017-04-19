@@ -245,8 +245,21 @@ void Game::keyPressed(const sf::Event::KeyEvent& /*e*/)
 
 void Game::keyReleased(const sf::Event::KeyEvent& e)
 {
-    if (e.code == sf::Keyboard::Space) {
-        auto s = m_resourcesMgr->getScript("rotationScript");
-        std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
+    switch (e.code) { 
+    case sf::Keyboard::Space:
+        {
+            auto s = m_resourcesMgr->getScript("rotationScript");
+            std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
+        }
+        break;
+    case sf::Keyboard::Z:
+        {
+            GLint polygonMode;
+            glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
+            polygonMode = polygonMode == GL_FILL ? GL_LINE : GL_FILL;
+            glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+        }
+    default:
+        break;
     }
 }
