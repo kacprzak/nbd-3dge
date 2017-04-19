@@ -1,8 +1,6 @@
 #ifndef FONT_H
 #define FONT_H
 
-#include <glm/glm.hpp>
-
 #include <vector>
 #include <string>
 #include <map>
@@ -12,56 +10,50 @@ class FontLoader;
 class Font
 {
     friend class FontLoader;
-
-    struct Char
-    {
-        int id;
-        int x;
-        int y;
-        int width;
-        int height;
-        int xoffset;
-        int yoffset;
-        int xadvance;
-        int page;
-        int chnl;
-    };
     
  public:
     Font(const std::string& filename);
 
  private:
     struct Info {
+        uint16_t size;
+        uint8_t bitField; //< bit 0: smooth, bit 1: unicode, bit 2: italic, bit 3: bold, bit 4: fixedHeigth, bits 5-7: reserved
+        uint8_t charset;
+        uint16_t strechH;
+        uint8_t aa;
+        uint8_t padding[4]; //< up, right, down, left
+        uint8_t spacing[2]; //< horiz, vert
+        uint8_t outline;
         std::string face;
-        std::string charset;
-        unsigned size;
-        bool bold;
-        bool italic;
-        bool unicode;
-        bool smooth;
-        bool aa;
-        int strechH;
-        glm::ivec4 padding;
-        glm::ivec4 spacing;
     } m_info;
 
     struct Common {
-        int lineHeight;
-        int base;
-        int scaleW;
-        int scaleH;
-        int pages;
-        bool packed;
+        uint16_t lineHeight;
+        uint16_t base;
+        uint16_t scaleW;
+        uint16_t scaleH;
+        uint16_t pages;
+        uint8_t bitField; //< bits 0-6: reserved, bit 7: packed
     } m_common;
 
-    struct Page {
-        int id;
-        std::string file;
-    };
+    std::vector<std::string> m_pages; //< texture files for each page
 
-    std::vector<Page> m_pages;    
-    std::map<int, Char> m_chars;
-    std::map<std::pair<int, int>, char> m_kerning;
+    struct Char
+    {
+        uint32_t id;
+        uint16_t x;
+        uint16_t y;
+        uint16_t width;
+        uint16_t height;
+        int16_t xoffset;
+        int16_t yoffset;
+        int16_t xadvance;
+        uint8_t page;
+        uint8_t chnl;
+    };
+    
+    std::map<uint32_t, Char> m_chars; //< char.id -> char
+    std::map<std::pair<uint32_t, uint32_t>, uint16_t> m_kerning; //< (first, second) -> amount
 };
 
 #endif // FONT_H
