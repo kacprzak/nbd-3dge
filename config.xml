@@ -127,7 +127,14 @@
     <terrain>
       <name>terrain</name>
       <heightMap>terrain-heightmap-01.png</heightMap>
-      <shaderProgram>light</shaderProgram>
+      <shaderProgram>lightAndTex</shaderProgram>
+      <scale>5</scale>
+      <position>
+        <x>0</x>
+        <y>-15</y>
+        <z>0</z>
+      </position>
+      <texture>floor_texture</texture>
     </terrain>
 
     <actor>
@@ -196,7 +203,7 @@
       <shaderProgram>light</shaderProgram>
     </actor-->
 
-    <actor>
+    <!--actor>
       <name>floor</name>
       <scale>25</scale>
       <position>
@@ -206,7 +213,7 @@
       </position>
       <mesh>floor</mesh>
       <texture>floor_texture</texture>
-    </actor>
+    </actor-->
 
   </scene>
 </config>

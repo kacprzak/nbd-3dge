@@ -135,10 +135,22 @@ void Game::loadData()
         else if (actorType == "terrain") {
             const std::string& name = actorTree.get<std::string>("name");
             const std::string& map = actorTree.get<std::string>("heightMap");
+            const std::string& texture = actorTree.get("texture", "");
             const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
+            float scale = actorTree.get("scale", 1.0f);
+            float x = actorTree.get("position.x", 0.0f);
+            float y = actorTree.get("position.y", 0.0f);
+            float z = actorTree.get("position.z", 0.0f);
 
             Actor *a = new Terrain{name, dataFolder + map};
+            a->setScale(scale);
+            a->moveTo(x, y, z);
 
+            if (!texture.empty()) {
+                auto texturePtr = m_resourcesMgr->getTexture(texture);
+                a->setTexture(texturePtr);
+            }
+            
             a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
             gameObjectManager().add(a);

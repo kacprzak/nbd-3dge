@@ -5,8 +5,8 @@
 #include <iostream>
 #include <cstring>
 
-Mesh::Mesh(const std::string& name, GLenum mode)
-    : m_name{name}, m_mode{mode}
+Mesh::Mesh(const std::string& name, GLenum primitive)
+    : m_name{name}, m_primitive{primitive}
 {
     memset(m_buffers, 0, sizeof(m_buffers));
 }
@@ -34,9 +34,9 @@ void Mesh::draw(int start, int count) const
 
     // Draw
     if (m_numberOfElements == 0) {
-        glDrawArrays(m_mode, start, count);
+        glDrawArrays(m_primitive, start, count);
     } else {
-        glDrawElements(m_mode, count, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(m_primitive, count, GL_UNSIGNED_SHORT, 0);
     }
 }
 
@@ -54,7 +54,7 @@ Mesh *Mesh::create(const std::string& objfileName)
                   objLoader.normals(),
                   objLoader.texCoords(),
                   objLoader.indices(),
-                  objLoader.vertPerFace());
+                  objLoader.primitive());
 }
 
 Mesh *Mesh::create(const std::string& name,
@@ -62,14 +62,9 @@ Mesh *Mesh::create(const std::string& name,
                    const std::vector<GLfloat> &normals,
                    const std::vector<GLfloat> &texcoords,
                    const std::vector<GLushort> &indices,
-                   int vertPerFace)
+                   GLenum primitive)
 {
-    GLenum mode = GL_TRIANGLES;
-
-    if (vertPerFace == 4)
-        mode = GL_QUADS;
-    
-    Mesh *mesh = new Mesh(name, mode);
+    Mesh *mesh = new Mesh(name, primitive);
 
     mesh->m_numberOfVertices = vertices.size();
     mesh->m_numberOfElements = indices.size();
@@ -81,8 +76,8 @@ Mesh *Mesh::create(const std::string& name,
     std::cout << "  Vertices: " << vertices.size()/3 << "\t id: " << mesh->m_buffers[VERTICES] << "\n";
     std::cout << "  TexCoords: " << texcoords.size()/2 << "\t id: " << mesh->m_buffers[TEXCOORDS] << "\n";
     std::cout << "  Normals: " << normals.size()/3 << "\t id: " << mesh->m_buffers[NORMALS] << "\n";
-    std::cout << "  Faces: " << indices.size()/vertPerFace << "\t id: " << mesh->m_buffers[INDICES] << "\n";
-    std::cout << "  VertPerFace: " << vertPerFace << std::endl;
+    std::cout << "  Indices: " << indices.size() << "\t id: " << mesh->m_buffers[INDICES] << "\n";
+    std::cout << "  Primitive: " << primitive << std::endl;
 
     glBindVertexArray(mesh->m_vao);
 

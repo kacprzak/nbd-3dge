@@ -29,17 +29,17 @@ public:
                         const std::vector<GLfloat>& normals,
                         const std::vector<GLfloat>& texcoords,
                         const std::vector<GLushort>& indices,
-                        int vertPerFace = 3);
+                        GLenum primitive = GL_TRIANGLES);
 
 private:
-    Mesh(const std::string& name, GLenum mode);
+    Mesh(const std::string& name, GLenum primitive);
 
     const std::string m_name;
 
     GLuint m_buffers[NUM_BUFFERS];
     GLuint m_vao;
 
-    GLenum m_mode;
+    GLenum m_primitive;
 
     unsigned int m_numberOfElements;
     unsigned int m_numberOfVertices;

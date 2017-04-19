@@ -104,7 +104,7 @@ Skybox::Skybox(std::shared_ptr<Texture> front,
                               normals,
                               texcoords,
                               empty2,
-                              4);
+                              GL_QUADS);
     
     m_mesh = std::shared_ptr<Mesh>{mesh};
 }

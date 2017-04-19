@@ -2,6 +2,7 @@
 #define OBJLOADER_H
 
 #include "Loader.h"
+#include <GL/glew.h>
 #include <string>
 #include <vector>
 
@@ -56,14 +57,14 @@ class ObjLoader : public Loader
     std::vector<float> normals() const;
     std::vector<unsigned short> indices() const;
     std::vector<float> texCoords() const;
-    int vertPerFace() const { return m_vertPerFace; }
+    int primitive() const { return m_primitive; }
 
  protected:
     void command(const std::string& cmd, const std::vector<std::string>& args);
     void fileLoaded();
 
  private:
-    int m_vertPerFace = 3; //< triangles by deafult
+    GLenum m_primitive = GL_TRIANGLES; //< triangles by deafult
     
     std::vector<Vectorf> m_vertices;
     std::vector<Face> m_faces;
