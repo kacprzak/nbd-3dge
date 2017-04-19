@@ -27,7 +27,7 @@ class Game : public GameCore
     void polarView();
 
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
-    Camera *m_camera;
+    std::shared_ptr<Camera> m_camera;
 };
 
 #endif // GAME_H

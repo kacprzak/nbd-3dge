@@ -13,22 +13,22 @@ public:
     GameObjectManager();
     ~GameObjectManager();
 
-    void setSkybox(Skybox *skybox) {
+    void setSkybox(std::shared_ptr<Skybox> skybox) {
         m_skybox = skybox;
     }
 
-    void setCamera(Camera *camera) {
+    void setCamera(std::shared_ptr<Camera> camera) {
         m_camera = camera;
     }
 
-    void add(Actor *actor) {
+    void add(std::shared_ptr<Actor> actor) {
         m_actors.insert(actor);
     }
-    void remove(Actor *actor) {
+    void remove(std::shared_ptr<Actor> actor) {
         m_actors.erase(actor);
     }
 
-    const std::set<Actor *>& actors() const {
+    const std::set<std::shared_ptr<Actor>>& actors() const {
         return m_actors;
     }
 
@@ -36,9 +36,9 @@ public:
     void update(float delta);
 
 private:
-    std::set<Actor *> m_actors;
-    Skybox *m_skybox;
-    Camera *m_camera;
+    std::set<std::shared_ptr<Actor>> m_actors;
+    std::shared_ptr<Skybox> m_skybox;
+    std::shared_ptr<Camera> m_camera;
 };
 
 #endif // GAMEOBJECTMANAGER_H

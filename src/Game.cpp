@@ -117,7 +117,7 @@ void Game::loadData()
             float y = actorTree.get("position.y", 0.0f);
             float z = actorTree.get("position.z", 0.0f);
 
-            m_camera = new Camera;
+            m_camera = std::make_shared<Camera>();
             m_camera->moveTo(x, y, z);
             gameObjectManager().setCamera(m_camera);
         }
@@ -125,7 +125,7 @@ void Game::loadData()
             const std::string& texture = actorTree.get<std::string>("texture");
             const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
 
-            Skybox *skybox = new Skybox{m_resourcesMgr->getTexture(texture)};
+            auto skybox = std::make_shared<Skybox>(m_resourcesMgr->getTexture(texture));
             skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
             gameObjectManager().setSkybox(skybox);
@@ -140,7 +140,7 @@ void Game::loadData()
             float y = actorTree.get("position.y", 0.0f);
             float z = actorTree.get("position.z", 0.0f);
 
-            Actor *a = new Terrain{name, dataFolder + map};
+            auto a = std::make_shared<Terrain>(name, dataFolder + map);
             a->setScale(scale);
             a->moveTo(x, y, z);
 
@@ -163,7 +163,7 @@ void Game::loadData()
             float y = actorTree.get("position.y", 0.0f);
             float z = actorTree.get("position.z", 0.0f);
             
-            Actor *a = new Actor{name};
+            auto a = std::make_shared<Actor>(name);
             a->setScale(scale);
             a->moveTo(x, y, z);
 
@@ -193,7 +193,7 @@ void Game::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //super::draw();
-    gameObjectManager().draw(m_camera);
+    gameObjectManager().draw(m_camera.get());
 }
 
 void Game::update(float delta)
