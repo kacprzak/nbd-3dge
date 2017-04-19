@@ -5,6 +5,7 @@
 #include "Texture.h"
 #include "Mesh.h"
 #include "Script.h"
+#include "Font.h"
 
 #include <string>
 #include <map>
@@ -94,6 +95,21 @@ public:
             return it->second;
     }
 
+    void addFont(const std::string& name,
+                 const std::string& filename)
+    {
+        m_fonts[name] = std::make_shared<Font>(m_dataFolder + filename);
+    }
+
+    std::shared_ptr<Font> getFont(const std::string& name)
+    {
+        auto it = m_fonts.find(name);
+        if (it == std::end(m_fonts))
+            throw std::runtime_error("Font '" + name + "' not loaded.");
+        else
+            return it->second;
+    }
+    
     void addScript(const std::string& name,
                    std::shared_ptr<Script> script)
     {
@@ -115,6 +131,7 @@ private:
 
     std::map<std::string, std::shared_ptr<Mesh>> m_meshes;
     std::map<std::string, std::shared_ptr<Texture>> m_textures;
+    std::map<std::string, std::shared_ptr<Font>> m_fonts;
     std::map<std::string, std::shared_ptr<ShaderProgram>> m_shaderPrograms;
     std::map<std::string, std::shared_ptr<Script>> m_scripts;
 };

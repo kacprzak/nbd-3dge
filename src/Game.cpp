@@ -101,6 +101,10 @@ void Game::loadData()
                 files[5] = assetTree.get<std::string>("file.front");
                 m_resourcesMgr->addTexture(name, files, wrap);
             }
+        } else if (assetType == "font") {
+            const std::string& name = assetTree.get<std::string>("name");
+            const std::string& file = assetTree.get<std::string>("file");
+            m_resourcesMgr->addFont(name, file);
         } else if (assetType == "mesh") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");

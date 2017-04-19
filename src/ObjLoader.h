@@ -2,9 +2,8 @@
 #define OBJLOADER_H
 
 #include "Loader.h"
+
 #include <GL/glew.h>
-#include <string>
-#include <vector>
 
 class ObjLoader : public Loader
 {
@@ -60,8 +59,8 @@ class ObjLoader : public Loader
     int primitive() const { return m_primitive; }
 
  protected:
-    void command(const std::string& cmd, const std::vector<std::string>& args);
-    void fileLoaded();
+    void command(const std::string& cmd, const std::vector<std::string>& args) override;
+    void fileLoaded() override;
 
  private:
     GLenum m_primitive = GL_TRIANGLES; //< triangles by deafult

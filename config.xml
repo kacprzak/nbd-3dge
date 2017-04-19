@@ -55,6 +55,11 @@
       <file>ship.jpg</file>
     </texture>
 
+    <font>
+      <name>ubuntu</name>
+      <file>ubuntu.fnt</file>
+    </font>
+
     <mesh>
       <name>teddy</name>
       <file>teddy2.obj</file>

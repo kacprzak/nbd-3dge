@@ -20,6 +20,8 @@ set( nbd-3dge_SRCS
     src/Loader.cpp
     src/ObjLoader.cpp
     src/MtlLoader.cpp
+    src/FontLoader.cpp
+    src/Font.cpp
     src/Skybox.cpp
     src/Shader.cpp
     src/ShaderProgram.cpp
