@@ -13,24 +13,24 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
     float x = 50.0f;
 
     /*
-     *    7----8     y
+     *    6----7     y
      *   /|   /|     |
-     *  3----4 |     o--x
-     *  | 6--|-5    /
+     *  2----3 |     o--x
+     *  | 5--|-4    /
      *  |/   |/    z
-     *  2----1
+     *  1----0
      *
      */
 
     std::vector<float> vertices = {
-        x, -x,  x, // 1
-        -x, -x,  x, // 2
-        -x,  x,  x, // 3
-        x,  x,  x, // 4
-        x, -x, -x, // 5
-        -x, -x, -x, // 6
-        x,  x, -x, // 8
-        -x,  x, -x, // 7
+        x, -x,  x,
+        -x, -x,  x,
+        -x,  x,  x,
+        x,  x,  x,
+        x, -x, -x,
+        -x, -x, -x,
+        -x,  x, -x,
+        x,  x, -x
     };
 
     std::vector<GLushort> indices = {
@@ -88,6 +88,6 @@ void Skybox::draw(const Camera *camera) const
         m_mesh->draw();
     }
 
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
 }
