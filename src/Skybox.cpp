@@ -22,41 +22,41 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
      *
      */
 
-    std::vector<float> vertices = {// front
+    std::vector<float> vertices = {
         x, -x,  x, // 1
         -x, -x,  x, // 2
         -x,  x,  x, // 3
         x,  x,  x, // 4
+        x, -x, -x, // 5
+        -x, -x, -x, // 6
+        x,  x, -x, // 8
+        -x,  x, -x, // 7
+    };
+
+    std::vector<GLushort> indices = {
+        // front
+        0, 1, 3,
+        1, 2, 3,
         // back
-        -x, -x, -x, // 6
-        x, -x, -x, // 5
-        x,  x, -x, // 8
-        -x,  x, -x, // 7
+        4, 7, 5,
+        5, 7, 6,
         // left
-        -x, -x,  x, // 2
-        -x, -x, -x, // 6
-        -x,  x, -x, // 7
-        -x,  x,  x, // 3
+        1, 5, 2,
+        2, 5, 6,
         // right
-        x, -x, -x, // 5
-        x, -x,  x, // 1
-        x,  x,  x, // 4
-        x,  x, -x, // 8
+        0, 3, 4,
+        4, 3, 7,
         // top
-        x,  x,  x, // 4
-        -x,  x,  x, // 3
-        -x,  x, -x, // 7
-        x,  x, -x, // 8
+        6, 7, 3,
+        3, 2, 6,
         // bottom
-        x, -x, -x, // 5
-        -x, -x, -x, // 6
-        -x, -x,  x, // 2
-        x, -x,  x, // 1
+        0, 4, 5,
+        5, 1, 0
     };
 
     Mesh *mesh = Mesh::create("skybox.obj",
-                              vertices, {}, {}, {},
-                              GL_QUADS);
+                              vertices, {}, {}, indices,
+                              GL_TRIANGLES);
     
     m_mesh = std::shared_ptr<Mesh>{mesh};
 }
