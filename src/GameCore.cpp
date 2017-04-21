@@ -3,6 +3,12 @@
 #include <iostream>
 #include "FpsCounter.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#define APIENTRY
+#endif
+
 void printOpenGlSettings(const sf::Window& window)
 {
     sf::ContextSettings settings = window.getSettings();
@@ -15,15 +21,36 @@ void printOpenGlSettings(const sf::Window& window)
               << settings.minorVersion << std::endl;
 }
 
+static void APIENTRY openglCallbackFunction(GLenum source,
+                                            GLenum type,
+                                            GLuint id,
+                                            GLenum severity,
+                                            GLsizei length,
+                                            const GLchar* message,
+                                            const void* userParam)
+{
+    if (type != 33361) {
+        fprintf(stderr, "%i %i %i %s\n", type, id, severity, message);
+        if (severity == GL_DEBUG_SEVERITY_HIGH) {
+            fprintf(stderr, "Aborting...\n");
+            abort();
+        }
+    }
+}
+
 GameCore::GameCore()
 {
     sf::ContextSettings settings;
     settings.depthBits = 24;
     settings.stencilBits = 8;
     settings.antialiasingLevel = 4;
-    settings.majorVersion = 3;
+    settings.majorVersion = 4;
     settings.minorVersion = 3;
-
+    settings.attributeFlags = sf::ContextSettings::Core;
+#ifndef NDEBUG
+    settings.attributeFlags |= sf::ContextSettings::Debug;
+#endif
+    
     m_window = new sf::Window(sf::VideoMode(800, 600), "nbd-3dge",
                               sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize,
                               settings);
@@ -31,6 +58,15 @@ GameCore::GameCore()
     m_window->setFramerateLimit(60);
 
     initGL();
+
+#ifndef NDEBUG
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openglCallbackFunction, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE,
+                          0, NULL, true);
+#endif
+
     printOpenGlSettings(*m_window);
 }
 
@@ -47,15 +83,13 @@ void GameCore::mainLoop()
     bool running = true;
     bool paused = false;
 
-    while (running)
-    {
+    while (running) {
         delta = clock.restart().asSeconds();
         //std::cout << delta << "\n";
         fpsCounter.update(delta);
 
         sf::Event event;
-        while (m_window->pollEvent(event))
-        {
+        while (m_window->pollEvent(event)) {
             switch (event.type) {
             case sf::Event::Closed:
                 running = false;

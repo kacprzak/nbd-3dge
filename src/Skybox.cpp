@@ -80,10 +80,7 @@ void Skybox::draw(const Camera *camera) const
         m_shaderProgram->use(false);
     }
 
-    glPushAttrib(GL_ENABLE_BIT);
-
     glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
     glDisable(GL_BLEND);
 
     if (m_texture) {
@@ -91,5 +88,6 @@ void Skybox::draw(const Camera *camera) const
         m_mesh->draw();
     }
 
-    glPopAttrib();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
 }
