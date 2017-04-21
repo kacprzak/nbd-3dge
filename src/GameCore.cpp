@@ -29,8 +29,8 @@ static void APIENTRY openglCallbackFunction(GLenum source,
                                             const GLchar* message,
                                             const void* userParam)
 {
-    if (type != 33361) {
-        fprintf(stderr, "%i %i %i %s\n", type, id, severity, message);
+    if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) {
+        fprintf(stderr, "%s\n", message);
         if (severity == GL_DEBUG_SEVERITY_HIGH) {
             fprintf(stderr, "Aborting...\n");
             abort();
