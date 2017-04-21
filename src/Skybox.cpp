@@ -87,7 +87,7 @@ void Skybox::draw(const Camera *camera) const
     glDisable(GL_BLEND);
 
     if (m_texture) {
-        m_texture->bind(GL_TEXTURE0);
+        m_texture->bind(0);
         m_mesh->draw();
     }
 

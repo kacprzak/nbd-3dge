@@ -10,7 +10,7 @@ class Texture
 public:
     ~Texture();
 
-    void bind(GLenum textureUnit);
+    void bind(int textureUnit);
     void setClampToEdge();
     void setRepeat();
 

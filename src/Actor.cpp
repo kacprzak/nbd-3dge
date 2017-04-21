@@ -103,7 +103,7 @@ void Actor::moveLeft(float distance)
 void Actor::draw(const Camera* camera) const
 {        
     if (m_texture) {
-        m_texture->bind(GL_TEXTURE0);
+        m_texture->bind(0);
     }
 
     if (m_shaderProgram) {

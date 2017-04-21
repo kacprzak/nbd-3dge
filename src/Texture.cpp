@@ -18,11 +18,11 @@ Texture::~Texture()
     std::cout << "Released: " << m_filename << " texId: "<< m_textureId << std::endl;
 }
 
-void Texture::bind(GLenum textureUnit)
+void Texture::bind(int textureUnit)
 {
-    glActiveTexture(textureUnit);
+    glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(m_target, m_textureId);
-    glBindSampler(0, m_samplerId);
+    glBindSampler(textureUnit, m_samplerId);
 }
 
 void Texture::setClampToEdge()
