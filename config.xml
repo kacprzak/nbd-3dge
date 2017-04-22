@@ -10,6 +10,13 @@
     </shaderProgram>
 
     <shaderProgram>
+      <name>normals</name>
+      <!--vertexShader>default.vert</vertexShader-->
+      <geometryShader>normals.geom</geometryShader>
+      <!--fragmentShader>default.frag</fragmentShader-->
+    </shaderProgram>
+    
+    <shaderProgram>
       <name>skybox</name>
       <vertexShader>skybox.vert</vertexShader>
       <fragmentShader>skybox.frag</fragmentShader>

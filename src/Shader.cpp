@@ -23,7 +23,7 @@ Shader::Shader(GLenum type, const std::string& filename)
                       (istreambuf_iterator<char>()  ));
         f.close();
     } else {
-        cerr << "Error: unable to open " << filename << endl;
+        throw std::runtime_error{"File not found: " + filename};
     }
 
     m_shaderId = glCreateShader(m_type);

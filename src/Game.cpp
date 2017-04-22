@@ -81,9 +81,10 @@ void Game::loadData()
 
         if (assetType == "shaderProgram") {
             const std::string& name = assetTree.get<std::string>("name");
-            const std::string& vertexShaderFile = assetTree.get<std::string>("vertexShader");
-            const std::string& fragmentShaderFile = assetTree.get<std::string>("fragmentShader");           
-            m_resourcesMgr->addShaderProgram(name, vertexShaderFile, fragmentShaderFile);          
+            const std::string& vertexShaderFile = assetTree.get("vertexShader", "");
+            const std::string& geometryShaderFile = assetTree.get("geometryShader", "");
+            const std::string& fragmentShaderFile = assetTree.get("fragmentShader", "");
+            m_resourcesMgr->addShaderProgram(name, vertexShaderFile, geometryShaderFile, fragmentShaderFile);
         }
         else if (assetType == "texture") {
             const std::string& name = assetTree.get<std::string>("name");

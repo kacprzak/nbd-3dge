@@ -20,14 +20,29 @@ public:
 
     void addShaderProgram(const std::string& name,
                           const std::string& vertexShaderFile,
+                          const std::string& geometryShaderFile,
                           const std::string& fragmentShaderFile)
     {
-        auto vs = std::make_unique<Shader>(GL_VERTEX_SHADER, m_shadersFolder + vertexShaderFile);
-        auto fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER, m_shadersFolder + fragmentShaderFile);
+        std::unique_ptr<Shader> vs;
+        std::unique_ptr<Shader> gs;
+        std::unique_ptr<Shader> fs;
 
         auto sp = std::make_shared<ShaderProgram>();
-        sp->addShared(vs.get());
-        sp->addShared(fs.get());
+
+        if (!vertexShaderFile.empty()) {
+            vs = std::make_unique<Shader>(GL_VERTEX_SHADER, m_shadersFolder + vertexShaderFile);
+            sp->addShared(vs.get());
+        }
+
+        if (!geometryShaderFile.empty()) {
+            gs = std::make_unique<Shader>(GL_GEOMETRY_SHADER, m_shadersFolder + geometryShaderFile);
+            sp->addShared(gs.get());
+        }
+        
+        if (!fragmentShaderFile.empty()) {
+            fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER, m_shadersFolder + fragmentShaderFile);
+            sp->addShared(fs.get());
+        }
 
         sp->link();
      

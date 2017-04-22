@@ -41,7 +41,7 @@ void ShaderProgram::link()
 
         GLchar *strInfoLog = new GLchar[infoLogLength + 1];
         glGetProgramInfoLog(m_shaderProgramId, infoLogLength, 0, strInfoLog);
-        fprintf(stderr, "Linker failure: %s\n", strInfoLog);
+        std::cout << "Linker failure: " << strInfoLog << std::endl;
         delete [] strInfoLog;
     }
 
