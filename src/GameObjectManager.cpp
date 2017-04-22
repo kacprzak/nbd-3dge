@@ -21,6 +21,19 @@ void GameObjectManager::draw(const Camera* camera) const
     }
 }
 
+void GameObjectManager::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+{
+    //if (m_skybox)
+    //    m_skybox->draw(shaderProgram, camera);
+
+    //if (m_camera)
+    //    m_camera->draw(shaderProgram, camera);
+
+    for (const auto& a : m_actors) {
+        a->draw(shaderProgram, camera);
+    }
+}
+
 void GameObjectManager::update(float delta)
 {  
     if (m_camera) {

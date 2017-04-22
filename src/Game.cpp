@@ -198,6 +198,11 @@ void Game::draw()
 
     //super::draw();
     gameObjectManager().draw(m_camera.get());
+
+    if (m_showNormals) {
+        const auto& normalsShader = m_resourcesMgr->getShaderProgram("normals");
+        gameObjectManager().draw(normalsShader.get(), m_camera.get());
+    }
 }
 
 void Game::update(float delta)
@@ -261,6 +266,8 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
             polygonMode = polygonMode == GL_FILL ? GL_LINE : GL_FILL;
             glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
         }
+    case sf::Keyboard::N:
+        m_showNormals = !m_showNormals;
     default:
         break;
     }

@@ -33,6 +33,8 @@ public:
     }
 
     void draw(const Camera* camera) const;
+    void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
+
     void update(float delta);
 
 private:

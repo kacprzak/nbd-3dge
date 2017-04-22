@@ -28,6 +28,8 @@ class Game : public GameCore
 
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
     std::shared_ptr<Camera> m_camera;
+
+    bool m_showNormals = false;
 };
 
 #endif // GAME_H
