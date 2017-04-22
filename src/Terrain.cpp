@@ -91,7 +91,7 @@ float Terrain::getHeight(int x, int y) const
 
 glm::vec3 Terrain::getNormal(int x, int y) const
 {
-    auto n =  glm::vec3{0.0f, 1.0f, 0.0};
+    auto n =  glm::vec3{0.0f, 0.0f, 2.0};
 
     float center = getHeight(x, y);
 
@@ -105,7 +105,10 @@ glm::vec3 Terrain::getNormal(int x, int y) const
 
     n[1] = top - bottom;
 
-    n[2] = 2.0f;
+    // W have normal in texture space where z is up but in OpenGL y is up
+    n[0] = -n[0];
+    n[2] = -n[1];
+    n[1] = 2.0f;
 
     return glm::normalize(n);
 }
