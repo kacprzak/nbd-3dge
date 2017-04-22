@@ -11,9 +11,9 @@
 
     <shaderProgram>
       <name>normals</name>
-      <!--vertexShader>default.vert</vertexShader-->
+      <vertexShader>normals.vert</vertexShader>
       <geometryShader>normals.geom</geometryShader>
-      <!--fragmentShader>default.frag</fragmentShader-->
+      <fragmentShader>normals.frag</fragmentShader>
     </shaderProgram>
     
     <shaderProgram>

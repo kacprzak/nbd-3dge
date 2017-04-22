@@ -267,8 +267,10 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
             polygonMode = polygonMode == GL_FILL ? GL_LINE : GL_FILL;
             glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
         }
+        break;
     case sf::Keyboard::N:
         m_showNormals = !m_showNormals;
+        break;
     default:
         break;
     }
