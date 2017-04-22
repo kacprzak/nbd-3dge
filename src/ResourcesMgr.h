@@ -103,6 +103,14 @@ public:
         loader.load(m_dataFolder + filename);
 
         auto font = std::shared_ptr<Font>{loader.getFont()};
+
+        std::vector<std::shared_ptr<Texture>> textures;
+        for (const auto& texFilename : font->getTexturesFilenames())
+        {
+            textures.emplace_back(Texture::create(m_dataFolder + texFilename));
+        }
+        font->setTextures(textures);
+        
         m_fonts[name] = font;
     }
 

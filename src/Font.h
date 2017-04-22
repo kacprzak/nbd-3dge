@@ -1,6 +1,8 @@
 #ifndef FONT_H
 #define FONT_H
 
+#include "Texture.h"
+
 #include <vector>
 #include <string>
 #include <map>
@@ -13,6 +15,16 @@ class Font final
     
  public:
     Font();
+
+    std::vector<std::string> getTexturesFilenames() const
+    {
+        return m_pages;
+    }
+
+    void setTextures(const std::vector<std::shared_ptr<Texture>>& textures)
+    {
+        m_textures = textures;
+    }
 
  private:
     struct Info {
@@ -37,6 +49,7 @@ class Font final
     } m_common;
 
     std::vector<std::string> m_pages; //< texture files for each page
+    std::vector<std::shared_ptr<Texture>> m_textures; //< texture per page
 
     struct Char
     {
