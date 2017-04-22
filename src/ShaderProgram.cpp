@@ -35,8 +35,7 @@ void ShaderProgram::link()
     GLint status;
     glGetProgramiv(m_shaderProgramId, GL_LINK_STATUS, &status);
     
-    if (status == GL_FALSE)
-    {
+    if (status == GL_FALSE) {
         GLint infoLogLength;
         glGetProgramiv(m_shaderProgramId, GL_INFO_LOG_LENGTH, &infoLogLength);
 
@@ -54,10 +53,7 @@ void ShaderProgram::link()
     m_shaders.clear();
 }
 
-void ShaderProgram::use(bool activate)
+void ShaderProgram::use()
 {
-    if (activate)
-        glUseProgram(m_shaderProgramId);
-    else
-        glUseProgram(0);
+    glUseProgram(m_shaderProgramId);
 }

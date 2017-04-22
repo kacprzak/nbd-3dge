@@ -77,7 +77,7 @@ void Skybox::draw(const Camera *camera) const
         glUniformMatrix4fv(vMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
         glUniformMatrix4fv(mMtxLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
     } else {
-        m_shaderProgram->use(false);
+        glUseProgram(0);
     }
 
     glDisable(GL_DEPTH_TEST);

@@ -34,6 +34,7 @@ public:
     glm::vec3 position() const { return m_position; }
 
     virtual void draw(const Camera* camera) const;
+    virtual void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
     virtual void update(float delta);
 
     void setOrientation(float x, float y, float z);

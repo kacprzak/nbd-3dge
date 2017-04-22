@@ -102,11 +102,16 @@ void Actor::moveLeft(float distance)
 
 void Actor::draw(const Camera* camera) const
 {        
+    draw(m_shaderProgram.get(), camera);
+}
+
+void Actor::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+{        
     if (m_texture) {
         m_texture->bind(0);
     }
 
-    if (m_shaderProgram) {
+    if(shaderProgram) {
         m_shaderProgram->use();
 
         GLint pMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "projectionMatrix");
@@ -117,9 +122,9 @@ void Actor::draw(const Camera* camera) const
         glUniformMatrix4fv(vMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
         glUniformMatrix4fv(mMtxLoc, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
     } else {
-        m_shaderProgram->use(false);
+        glUseProgram(0);
     }
-
+    
     if (m_mesh)
         m_mesh->draw();
 }
