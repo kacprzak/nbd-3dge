@@ -53,7 +53,7 @@ Texture *Texture::create(const std::string &filename, bool clamp)
 
     glBindTexture(target, tex->m_textureId);
 
-    glTexImage2D(target, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getPixelsPtr());
+    glTexImage2D(target, 0, GL_SRGB8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getPixelsPtr());
     glGenerateMipmap(GL_TEXTURE_2D);
     
     std::cout << "Loaded: " << tex->m_filename << " texId: "<< tex->m_textureId
@@ -86,7 +86,7 @@ Texture *Texture::create(const std::array<std::string, 6> filenames, bool clamp)
         int h = img.getSize().y;
 
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                     0, GL_RGB8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getPixelsPtr());
+                     0, GL_SRGB8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getPixelsPtr());
     
         std::cout << "Loaded: " << extractFilename(filenames[i]) << " texId: "<< tex->m_textureId
                   << " (" << w << " x " << h << ")" << std::endl;

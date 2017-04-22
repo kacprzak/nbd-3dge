@@ -155,6 +155,8 @@ void GameCore::initGL()
     //glEnable(GL_RESCALE_NORMAL);
 
     //glEnable(GL_TEXTURE_2D);
+    /* Gamma correction */
+    glEnable(GL_FRAMEBUFFER_SRGB);
 }
 
 /* function to reset our viewport after a window resize */
