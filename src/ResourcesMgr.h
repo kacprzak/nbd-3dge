@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Script.h"
 #include "Font.h"
+#include "FontLoader.h"
 
 #include <string>
 #include <map>
@@ -98,7 +99,11 @@ public:
     void addFont(const std::string& name,
                  const std::string& filename)
     {
-        m_fonts[name] = std::make_shared<Font>(m_dataFolder + filename);
+        FontLoader loader;
+        loader.load(m_dataFolder + filename);
+
+        auto font = std::shared_ptr<Font>{loader.getFont()};
+        m_fonts[name] = font;
     }
 
     std::shared_ptr<Font> getFont(const std::string& name)

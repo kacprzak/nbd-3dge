@@ -1,5 +1,6 @@
 #include "Font.h"
+#include "FontLoader.h"
 
-Font::Font(const std::string& filename)
+Font::Font()
 {
 }

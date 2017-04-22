@@ -7,22 +7,22 @@
 
 class FontLoader;
 
-class Font
+class Font final
 {
     friend class FontLoader;
     
  public:
-    Font(const std::string& filename);
+    Font();
 
  private:
     struct Info {
         uint16_t size;
-        uint8_t bitField; //< bit 0: smooth, bit 1: unicode, bit 2: italic, bit 3: bold, bit 4: fixedHeigth, bits 5-7: reserved
+        uint8_t bitField = 0; //< bit 0: smooth, bit 1: unicode, bit 2: italic, bit 3: bold, bit 4: fixedHeigth, bits 5-7: reserved
         uint8_t charset;
         uint16_t strechH;
         uint8_t aa;
         uint8_t padding[4]; //< up, right, down, left
-        uint8_t spacing[2]; //< horiz, vert
+        int8_t spacing[2]; //< horiz, vert (in AngelFont doc it's uint8_t but Hiero can output ints )
         uint8_t outline;
         std::string face;
     } m_info;
@@ -33,7 +33,7 @@ class Font
         uint16_t scaleW;
         uint16_t scaleH;
         uint16_t pages;
-        uint8_t bitField; //< bits 0-6: reserved, bit 7: packed
+        uint8_t bitField = 0; //< bits 0-6: reserved, bit 7: packed
     } m_common;
 
     std::vector<std::string> m_pages; //< texture files for each page
@@ -53,7 +53,7 @@ class Font
     };
     
     std::map<uint32_t, Char> m_chars; //< char.id -> char
-    std::map<std::pair<uint32_t, uint32_t>, uint16_t> m_kerning; //< (first, second) -> amount
+    std::map<std::pair<uint32_t, uint32_t>, int16_t> m_kerning; //< (first, second) -> amount
 };
 
 #endif // FONT_H
