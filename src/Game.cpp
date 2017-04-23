@@ -200,9 +200,8 @@ void Game::draw()
     //super::draw();
     gameObjectManager().draw(m_camera.get());
 
-    if (m_showNormals) {
-        const auto& normalsShader = m_resourcesMgr->getShaderProgram("normals");
-        gameObjectManager().draw(normalsShader.get(), m_camera.get());
+    if (m_normalsShader) {
+        gameObjectManager().draw(m_normalsShader.get(), m_camera.get());
     }
 }
 
@@ -269,7 +268,13 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
         }
         break;
     case sf::Keyboard::N:
-        m_showNormals = !m_showNormals;
+        {
+            m_showNormals = !m_showNormals;
+            if (m_showNormals)
+                m_normalsShader = m_resourcesMgr->getShaderProgram("normals");
+            else
+                m_normalsShader.reset();
+        }
         break;
     case sf::Keyboard::V:
         toggleVSync();

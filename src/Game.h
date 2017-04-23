@@ -30,6 +30,7 @@ class Game : public GameCore
     std::shared_ptr<Camera> m_camera;
 
     bool m_showNormals = false;
+    std::shared_ptr<ShaderProgram> m_normalsShader;
 };
 
 #endif // GAME_H

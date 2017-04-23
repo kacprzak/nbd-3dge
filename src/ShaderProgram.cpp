@@ -1,5 +1,7 @@
 #include "ShaderProgram.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 #include <iterator>
 
@@ -56,4 +58,10 @@ void ShaderProgram::link()
 void ShaderProgram::use()
 {
     glUseProgram(m_shaderProgramId);
+}
+
+void ShaderProgram::setUniform(const char* name, const glm::mat4& matrix)
+{
+    GLint loc = glGetUniformLocation(m_shaderProgramId, name);
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
 }

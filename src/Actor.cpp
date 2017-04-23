@@ -113,14 +113,9 @@ void Actor::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 
     if(shaderProgram) {
         shaderProgram->use();
-
-        GLint pMtxLoc = glGetUniformLocation(shaderProgram->id(), "projectionMatrix");
-        GLint vMtxLoc = glGetUniformLocation(shaderProgram->id(), "viewMatrix");
-        GLint mMtxLoc = glGetUniformLocation(shaderProgram->id(), "modelMatrix");
-
-        glUniformMatrix4fv(pMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix()));
-        glUniformMatrix4fv(vMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
-        glUniformMatrix4fv(mMtxLoc, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
+        shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
+        shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
+        shaderProgram->setUniform("modelMatrix", m_modelMatrix);
     } else {
         glUseProgram(0);
     }

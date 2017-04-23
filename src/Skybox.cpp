@@ -69,13 +69,9 @@ void Skybox::draw(const Camera *camera) const
         // Move skybox with the camera
         glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), camera->position());
 
-        GLint pMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "projectionMatrix");
-        GLint vMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "viewMatrix");
-        GLint mMtxLoc = glGetUniformLocation(m_shaderProgram->id(), "modelMatrix");
-
-        glUniformMatrix4fv(pMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix()));
-        glUniformMatrix4fv(vMtxLoc, 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
-        glUniformMatrix4fv(mMtxLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        m_shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
+        m_shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
+        m_shaderProgram->setUniform("modelMatrix", modelMatrix);
     } else {
         glUseProgram(0);
     }

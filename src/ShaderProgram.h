@@ -2,8 +2,10 @@
 #define SHADERPROGRAM_H
 
 #include "Shader.h"
-#include <vector>
+
+#include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <vector>
 
 class ShaderProgram
 {
@@ -14,7 +16,9 @@ class ShaderProgram
     void addShared(Shader *shader);
     void link();
     void use();
-    GLuint id() { return m_shaderProgramId; }
+    //GLuint id() { return m_shaderProgramId; }
+
+    void setUniform(const char* name, const glm::mat4& matrix);
 
  private:
     GLuint m_shaderProgramId;
