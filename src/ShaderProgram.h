@@ -19,6 +19,7 @@ class ShaderProgram
     //GLuint id() { return m_shaderProgramId; }
 
     void setUniform(const char* name, const glm::mat4& matrix);
+    void setUniform(const char* name, float value);
 
  private:
     GLuint m_shaderProgramId;

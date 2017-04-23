@@ -269,11 +269,27 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
         break;
     case sf::Keyboard::N:
         {
-            m_showNormals = !m_showNormals;
-            if (m_showNormals)
-                m_normalsShader = m_resourcesMgr->getShaderProgram("normals");
-            else
-                m_normalsShader.reset();
+            static bool showNormals = false;
+            static int magnitude = 2;
+            
+            const auto& shader = m_resourcesMgr->getShaderProgram("normals");
+            if (e.shift) {
+                magnitude = std::abs(++magnitude);
+                shader->setUniform("magnitude", 0.5f * magnitude);
+            }
+            else if (e.control) {
+                magnitude = std::abs(--magnitude);
+                if (magnitude == 0)
+                    magnitude = 1;
+                shader->setUniform("magnitude", 0.5f * magnitude);
+            }
+            else {
+                showNormals = !showNormals;
+                if (showNormals)
+                    m_normalsShader = shader;               
+                else
+                    m_normalsShader.reset();
+            }
         }
         break;
     case sf::Keyboard::V:
