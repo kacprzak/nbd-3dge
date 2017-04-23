@@ -4,7 +4,11 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 
+GPATH
+GRTAGS
+GTAGS
+
 *~
-*.user
+*.user*
 .kdev4/
 *.kdev4
