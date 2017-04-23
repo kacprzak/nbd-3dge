@@ -71,3 +71,9 @@ void ShaderProgram::setUniform(const char *name, float value)
     GLint loc = glGetUniformLocation(m_shaderProgramId, name);
     glUniform1f(loc, value);
 }
+
+void ShaderProgram::setUniform(const char *name, int value)
+{
+    GLint loc = glGetUniformLocation(m_shaderProgramId, name);
+    glUniform1i(loc, value);
+}

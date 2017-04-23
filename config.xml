@@ -33,6 +33,12 @@
       <vertexShader>lightAndTex.vert</vertexShader>
       <fragmentShader>lightAndTex.frag</fragmentShader>
     </shaderProgram>
+
+    <shaderProgram>
+      <name>terrain</name>
+      <vertexShader>terrain.vert</vertexShader>
+      <fragmentShader>terrain.frag</fragmentShader>
+    </shaderProgram>
     
     <texture>
       <name>skybox_cubemap</name>
@@ -53,8 +59,18 @@
     </texture>
 
     <texture>
-      <name>floor_texture</name>
-      <file>texture_H.png</file>
+      <name>grass_diffuse</name>
+      <file>terrain/grass_green_d.jpg</file>
+    </texture>
+
+    <texture>
+      <name>snow_diffuse</name>
+      <file>terrain/snow_grass_d.jpg</file>
+    </texture>
+
+    <texture>
+      <name>rocky_diffuse</name>
+      <file>terrain/grass_rocky_d.jpg</file>
     </texture>
     
     <texture>
@@ -92,10 +108,10 @@
       <file>cube.obj</file>
     </mesh>
 
-    <mesh>
+    <!--mesh>
       <name>floor</name>
       <file>floor.obj</file>
-    </mesh>
+    </mesh-->
     
   </assets>
   <scene>
@@ -103,7 +119,7 @@
     <camera>
       <position>
         <x>0</x>
-        <y>0</y>
+        <y>100</y>
         <z>80</z>
       </position>
     </camera>
@@ -116,19 +132,28 @@
     <terrain>
       <name>terrain</name>
       <heightMap>terrain-heightmap-01.png</heightMap>
-      <shaderProgram>lightAndTex</shaderProgram>
+      <shaderProgram>terrain</shaderProgram>
       <scale>5</scale>
       <position>
         <x>0</x>
-        <y>-15</y>
+        <y>30</y>
         <z>0</z>
       </position>
-      <texture>floor_texture</texture>
+      <textures>
+        <texture>grass_diffuse</texture>
+        <texture>snow_diffuse</texture>
+        <texture>rocky_diffuse</texture>
+      </textures>
     </terrain>
 
     <actor>
       <name>teddy</name>
       <scale>0.2</scale>
+      <position>
+        <x>10</x>
+        <y>100</y>
+        <z>0</z>
+      </position>
       <mesh>teddy</mesh>
       <shaderProgram>light</shaderProgram>
     </actor>
@@ -138,7 +163,7 @@
       <scale>0.2</scale>
       <position>
         <x>10</x>
-        <y>0</y>
+        <y>80</y>
         <z>0</z>
       </position>
       <mesh>cube</mesh>
@@ -149,7 +174,7 @@
       <name>cow</name>
       <position>
         <x>-10</x>
-        <y>0</y>
+        <y>100</y>
         <z>0</z>
       </position>
       <mesh>cow</mesh>
@@ -161,7 +186,7 @@
       <scale>0.1</scale>
       <position>
         <x>0</x>
-        <y>-10</y>
+        <y>90</y>
         <z>0</z>
       </position>
       <mesh>ship</mesh>
@@ -174,7 +199,7 @@
       <scale>0.1</scale>
       <position>
         <x>10</x>
-        <y>100</y>
+        <y>120</y>
         <z>0</z>
       </position>
       <mesh>ship</mesh>

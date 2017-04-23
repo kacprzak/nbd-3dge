@@ -8,7 +8,8 @@ out vec3 ambient;
 out vec3 diffuse;
 out vec3 specular;
 out vec2 texCoord;
-//out vec3 normal;
+out vec3 normal;
+out float height;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
@@ -40,8 +41,8 @@ const light sun = light(
 const material mtl = material(
     vec3(1, 1, 1) * 0.1,
     vec3(1, 1, 1) * 0.9,
-    vec3(1, 1, 1) * 0.4,
-    32
+    vec3(1, 1, 1) * 0.1,
+    1
 );
 
 void main()
@@ -69,4 +70,6 @@ void main()
 
     gl_Position = projectionMatrix * position_eye;
     texCoord = in_texCoord;
+    normal = normal_world;
+    height = position_world.y;
 }

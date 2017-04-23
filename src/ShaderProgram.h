@@ -16,11 +16,11 @@ class ShaderProgram
     void addShared(Shader *shader);
     void link();
     void use();
-    //GLuint id() { return m_shaderProgramId; }
 
     void setUniform(const char* name, const glm::mat4& matrix);
     void setUniform(const char* name, float value);
-
+    void setUniform(const char* name, int value);
+    
  private:
     GLuint m_shaderProgramId;
     std::vector<Shader *> m_shaders;

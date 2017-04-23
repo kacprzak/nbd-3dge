@@ -16,9 +16,14 @@ Actor::Actor(const std::string& name)
 {
 }
 
-void Actor::setTexture(std::shared_ptr<Texture> tex)
+void Actor::setTextures(std::vector<std::shared_ptr<Texture>> textures)
 {
-    m_texture = tex;
+    m_textures = textures;
+}
+
+void Actor::addTexture(std::shared_ptr<Texture> texture)
+{
+    m_textures.push_back(texture);
 }
 
 void Actor::setMesh(std::shared_ptr<Mesh> mesh)
@@ -106,9 +111,9 @@ void Actor::draw(const Camera* camera) const
 }
 
 void Actor::draw(ShaderProgram* shaderProgram, const Camera* camera) const
-{        
-    if (m_texture) {
-        m_texture->bind(0);
+{
+    for (size_t i = 0; i < m_textures.size(); ++i) {
+        m_textures[i]->bind(i);
     }
 
     if(shaderProgram) {
@@ -116,6 +121,11 @@ void Actor::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
         shaderProgram->setUniform("modelMatrix", m_modelMatrix);
+
+        for (size_t i = 0; i < m_textures.size(); ++i) {
+            const std::string& name = "sampler" + std::to_string(i);
+            shaderProgram->setUniform(name.c_str(), int(i));
+        }
     } else {
         glUseProgram(0);
     }

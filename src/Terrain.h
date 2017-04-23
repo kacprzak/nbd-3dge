@@ -16,7 +16,7 @@ class Terrain : public Actor
     int m_x = 0;
     int m_y = 0;
 
-    float m_amplitude = 120.0f;
+    float m_amplitude = 80.0f;
     float m_textureStrech = 10.0;
 
     std::vector<unsigned char> m_heights;

@@ -18,7 +18,9 @@ public:
 
     const std::string& name() { return m_name; }
 
-    void setTexture(std::shared_ptr<Texture> tex);
+    void setTextures(std::vector<std::shared_ptr<Texture>> textures);
+    void addTexture(std::shared_ptr<Texture> texture);
+    
     void setMesh(std::shared_ptr<Mesh> mesh);
     void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
     void setScript(std::shared_ptr<Script> script);
@@ -70,9 +72,9 @@ private:
     const std::string m_name;
 
     std::shared_ptr<Mesh> m_mesh;
-    std::shared_ptr<Texture> m_texture;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
     std::shared_ptr<Script> m_script;
+    std::vector<std::shared_ptr<Texture>> m_textures;
     
     State m_state;
 

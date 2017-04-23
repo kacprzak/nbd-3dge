@@ -21,13 +21,13 @@ void printOpenGlSettings(const sf::Window& window)
               << settings.minorVersion << std::endl;
 }
 
-static void APIENTRY openglCallbackFunction(GLenum source,
-                                            GLenum type,
-                                            GLuint id,
+static void APIENTRY openglCallbackFunction(GLenum /*source*/,
+                                            GLenum /*type*/,
+                                            GLuint /*id*/,
                                             GLenum severity,
-                                            GLsizei length,
+                                            GLsizei /*length*/,
                                             const GLchar* message,
-                                            const void* userParam)
+                                            const void* /*userParam*/)
 {
     if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) {
         fprintf(stderr, "%s\n", message);
@@ -151,10 +151,9 @@ void GameCore::initGL()
     /* The Type Of Depth Test To Do */
     glDepthFunc(GL_LESS);
 
+    /* Render only front of polygon */
     glEnable(GL_CULL_FACE);
-    //glEnable(GL_RESCALE_NORMAL);
 
-    //glEnable(GL_TEXTURE_2D);
     /* Gamma correction */
     glEnable(GL_FRAMEBUFFER_SRGB);
 }

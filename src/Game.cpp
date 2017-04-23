@@ -49,7 +49,7 @@ void Game::resizeWindow(int width, int height)
 
     GLfloat ratio = GLfloat(width) / GLfloat(height);
 
-    m_camera->setPerspective(45.0f, ratio, 5.0f, 500.0f);
+    m_camera->setPerspective(45.0f, ratio, 5.0f, 1250.0f);
 
     super::resizeWindow(width, height);
 }
@@ -113,7 +113,7 @@ void Game::loadData()
         }
     }
 
-    for (ptree::value_type &v : pt.get_child("config.scene")) {
+    for (ptree::value_type& v : pt.get_child("config.scene")) {
         const std::string& actorType  = v.first;
         ptree& actorTree = v.second;
 
@@ -138,7 +138,6 @@ void Game::loadData()
         else if (actorType == "terrain") {
             const std::string& name = actorTree.get<std::string>("name");
             const std::string& map = actorTree.get<std::string>("heightMap");
-            const std::string& texture = actorTree.get("texture", "");
             const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
             float scale = actorTree.get("scale", 1.0f);
             float x = actorTree.get("position.x", 0.0f);
@@ -149,9 +148,10 @@ void Game::loadData()
             a->setScale(scale);
             a->moveTo(x, y, z);
 
-            if (!texture.empty()) {
+            for (ptree::value_type& v : actorTree.get_child("textures")) {
+                const std::string& texture = v.second.data();
                 auto texturePtr = m_resourcesMgr->getTexture(texture);
-                a->setTexture(texturePtr);
+                a->addTexture(texturePtr);
             }
             
             a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
@@ -179,7 +179,7 @@ void Game::loadData()
  
             if (!texture.empty()) {
                 auto texturePtr = m_resourcesMgr->getTexture(texture);
-                a->setTexture(texturePtr);
+                a->addTexture(texturePtr);
             }
 
             a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
@@ -221,22 +221,20 @@ void Game::update(float delta)
         m_camera->rotate(-dy * mouseSensity, -dx * mouseSensity, 0.0f);
     }
 
-    float cameraSpeed = 50.0f;
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        m_camera->moveForward(-delta * cameraSpeed);
+        m_camera->moveForward(-delta * m_cameraSpeed);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        m_camera->moveForward(delta * cameraSpeed);
+        m_camera->moveForward(delta * m_cameraSpeed);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        m_camera->moveRight(-delta * cameraSpeed);
+        m_camera->moveRight(-delta * m_cameraSpeed);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        m_camera->moveLeft(-delta * cameraSpeed);
+        m_camera->moveLeft(-delta * m_cameraSpeed);
     }
 
     super::update(delta);
@@ -247,11 +245,17 @@ void Game::mouseWheelMoved(int wheelDelta)
     m_camera->moveForward(-wheelDelta);
 }
 
-void Game::keyPressed(const sf::Event::KeyEvent& /*e*/)
-{}
+void Game::keyPressed(const sf::Event::KeyEvent& e)
+{
+    if (e.shift)
+        m_cameraSpeed = 200.0f;
+}
 
 void Game::keyReleased(const sf::Event::KeyEvent& e)
 {
+    if (e.shift)
+        m_cameraSpeed = 50.0f;
+
     switch (e.code) { 
     case sf::Keyboard::Space:
         {

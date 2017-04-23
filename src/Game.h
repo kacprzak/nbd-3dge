@@ -29,6 +29,8 @@ class Game : public GameCore
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<ShaderProgram> m_normalsShader;
+
+    float m_cameraSpeed = 50.0f;
 };
 
 #endif // GAME_H
