@@ -208,8 +208,8 @@ void Game::draw()
 
 void Game::update(float delta)
 {
-    static sf::Vector2i lastMousePos = sf::Mouse::getPosition(getWindow());
-    sf::Vector2i currentMousePos = sf::Mouse::getPosition(getWindow());
+    static sf::Vector2i lastMousePos = getMousePosition();
+    sf::Vector2i currentMousePos = getMousePosition();
 
     int dx = currentMousePos.x - lastMousePos.x;
     int dy = currentMousePos.y - lastMousePos.y;
@@ -270,6 +270,9 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
         break;
     case sf::Keyboard::N:
         m_showNormals = !m_showNormals;
+        break;
+    case sf::Keyboard::V:
+        toggleVSync();
         break;
     default:
         break;

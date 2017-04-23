@@ -54,8 +54,8 @@ GameCore::GameCore()
     m_window = new sf::Window(sf::VideoMode(800, 600), "nbd-3dge",
                               sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize,
                               settings);
-    m_window->setVerticalSyncEnabled(true);
-    m_window->setFramerateLimit(60);
+
+    toggleVSync();
 
     initGL();
 
@@ -167,3 +167,16 @@ void GameCore::resizeWindow(int width, int height)
     /* Setup our viewport. */
     glViewport(0, 0, GLsizei(width), GLsizei(height));
 }
+
+sf::Vector2i GameCore::getMousePosition() const
+{
+    return sf::Mouse::getPosition(*m_window);
+}
+
+ void GameCore::toggleVSync()
+ {
+     m_vSyncEnabled = !m_vSyncEnabled;
+     
+     //m_window->setFramerateLimit(60);
+     m_window->setVerticalSyncEnabled(m_vSyncEnabled);
+ }
