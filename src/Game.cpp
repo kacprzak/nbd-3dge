@@ -279,12 +279,14 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
             const auto& shader = m_resourcesMgr->getShaderProgram("normals");
             if (e.shift) {
                 magnitude = std::abs(++magnitude);
+                shader->use();
                 shader->setUniform("magnitude", 0.5f * magnitude);
             }
             else if (e.control) {
                 magnitude = std::abs(--magnitude);
                 if (magnitude == 0)
                     magnitude = 1;
+                shader->use();
                 shader->setUniform("magnitude", 0.5f * magnitude);
             }
             else {
