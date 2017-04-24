@@ -1,6 +1,8 @@
 cmake_minimum_required( VERSION 2.8 )
 project( nbd-3dge )
 
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+
 if( MSVC )
   #add_definitions( "" )
 else()
