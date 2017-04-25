@@ -1,47 +1,53 @@
 cmake_minimum_required( VERSION 2.8 )
 project( nbd-3dge )
 
+set( VERSION_MAJOR 0 )
+set( VERSION_MINOR 1 )
+
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 if( MSVC )
-  #add_definitions( "" )
+  #add_definitions( "/W2" )
 else()
   add_definitions( "-Wall -Wextra -g -std=c++14" )
 endif()
 
-set( nbd-3dge_SRCS
-    src/main.cpp
-    src/FpsCounter.cpp
-    src/Actor.cpp
-    src/Mesh.cpp
-    src/GameObjectManager.cpp
-    src/GameCore.cpp
-    src/Game.cpp
-    src/Util.cpp
-    src/Texture.cpp
-    src/Loader.cpp
-    src/ObjLoader.cpp
-    src/MtlLoader.cpp
-    src/FontLoader.cpp
-    src/Font.cpp
-    src/Skybox.cpp
-    src/Shader.cpp
-    src/ShaderProgram.cpp
-    src/Camera.cpp
-    src/Terrain.cpp
-    src/Script.cpp
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
+
+find_package( SDL2 REQUIRED )
+find_package( SDL2_image REQUIRED )
+find_package( OpenGL REQUIRED )
+find_package( Boost REQUIRED )
+if( UNIX )
+  find_package( Boost COMPONENTS unit_test_framework )
+endif()
+#find_package( Lua53 REQUIRED )
+
+include_directories(
+  ${PROJECT_BINARY_DIR}
+  src
+  ${SDL2_INCLUDE_DIR}
+  ${SDL2IMAGE_INCLUDE_DIR}
+  ${OPENGL_INCLUDE_DIR}
+  ${Boost_INCLUDE_DIR}
+  ${LUA53_INCLUDE_DIR}
+  ${SFML_INCLUDE_DIR}
 )
 
-add_executable( nbd-3dge ${nbd-3dge_SRCS} )
+if( Boost_UNIT_TEST_FRAMEWORK_FOUND )
+#  enable_testing()
+#  add_subdirectory( tests )
+endif()
 
 configure_file( ${CMAKE_SOURCE_DIR}/config.xml ${CMAKE_BINARY_DIR}/config.xml COPYONLY )
 
 # Detect SFML
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
+
 find_package( SFML 2 COMPONENTS system window graphics audio REQUIRED )
 if( SFML_FOUND )
-    include_directories( ${SFML_INCLUDE_DIR} )
-    target_link_libraries( nbd-3dge ${SFML_LIBRARIES} GL GLU GLEW )
+  set( LINK_LIBS ${LINK_LIBS} ${SFML_LIBRARIES} GL GLU GLEW )
 endif()
+
+add_subdirectory( src )
 
 
