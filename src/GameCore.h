@@ -1,40 +1,49 @@
 #ifndef GAMECORE_H
 #define GAMECORE_H
 
+#include "GameView.h"
+
 #include <GL/glew.h>
-#include <SFML/Window.hpp>
+//#include <SFML/Window.hpp>
 #include "GameObjectManager.h"
 
-class GameCore
+class GameCore : public GameView
 {
 public:
-    GameCore();
+    GameCore(const std::string& title, int screenWidth,
+             int screenHeight, bool screenFull);
     virtual ~GameCore();
 
-    void mainLoop();
+    void update(float delta) override;
 
 protected:
-    virtual void resizeWindow(int width, int height);
-
-    virtual void draw() = 0;
-    virtual void update(float delta);
+    bool processInput(const SDL_Event& event) override;
     
-    virtual void mouseWheelMoved(int wheelDelta) = 0;
-    virtual void keyPressed(const sf::Event::KeyEvent& e) = 0;
-    virtual void keyReleased(const sf::Event::KeyEvent& e) = 0;
+    virtual void resizeWindow(int width, int height);
+    
+    virtual void mouseMoved(const SDL_Event& event) = 0;
+    virtual void keyPressed(const SDL_Event& event) = 0;
+    virtual void keyReleased(const SDL_Event& event) = 0;
 
     GameObjectManager& gameObjectManager() { return m_gom; }
-    //sf::Window& getWindow() { return *m_window; }
-    sf::Vector2i getMousePosition() const;
-    void toggleVSync();
 
-private:
-    void initGL();
+    void preDraw();
+    void postDraw();
+
+ private:
+    void createSDLWindow();
+
+    void initializeOpenGL();
+
+    std::string m_title;
+    int m_screenWidth;
+    int m_screenHeight;
+    bool m_screenFull;
+
+    SDL_Window* m_window;
+    SDL_GLContext m_glContext;
 
     GameObjectManager m_gom;
-    sf::Window *m_window;
-
-    bool m_vSyncEnabled = false;
 };
 
 #endif // GAMECORE_H

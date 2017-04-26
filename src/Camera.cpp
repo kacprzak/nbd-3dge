@@ -5,7 +5,7 @@
 Camera::Camera() : Actor{"camera"}
 {
     float ratio = 800 / float(600);
-    setPerspective(45.0f, ratio, 1.0f, 200.0f);
+    setPerspective(45.0f, ratio, 1.0f, 1200.0f);
 }
   
 

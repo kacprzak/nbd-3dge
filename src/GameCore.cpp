@@ -1,5 +1,8 @@
 #include "GameCore.h"
 
+
+#include "Engine.h"
+
 #include <iostream>
 #include "FpsCounter.h"
 
@@ -8,18 +11,6 @@
 #else
 #define APIENTRY
 #endif
-
-void printOpenGlSettings(const sf::Window& window)
-{
-    sf::ContextSettings settings = window.getSettings();
-
-    std::cout << "OpenGL settings:" << std::endl;
-    std::cout << "  depth bits: " << settings.depthBits << std::endl;
-    std::cout << "  stencil bits: " << settings.stencilBits << std::endl;
-    std::cout << "  antialiasing level: " << settings.antialiasingLevel << std::endl;
-    std::cout << "  version: " << settings.majorVersion << "."
-              << settings.minorVersion << std::endl;
-}
 
 static void APIENTRY openglCallbackFunction(GLenum /*source*/,
                                             GLenum /*type*/,
@@ -38,92 +29,74 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/,
     }
 }
 
-GameCore::GameCore()
+GameCore::GameCore(const std::string& title, int screenWidth,
+           int screenHeight, bool screenFull)
+    : m_title{title}, m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_screenFull{screenFull}
 {
-    sf::ContextSettings settings;
-    settings.depthBits = 24;
-    settings.stencilBits = 8;
-    settings.antialiasingLevel = 4;
-    settings.majorVersion = 4;
-    settings.minorVersion = 3;
-    settings.attributeFlags = sf::ContextSettings::Core;
-#ifndef NDEBUG
-    settings.attributeFlags |= sf::ContextSettings::Debug;
-#endif
-    
-    m_window = new sf::Window(sf::VideoMode(800, 600), "nbd-3dge",
-                              sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize,
-                              settings);
+   try {
+        createSDLWindow();
+    } catch (EngineError /*e*/) {
+        SDL_Quit();
+        throw;
+   }
+}
 
-    toggleVSync();
+void GameCore::createSDLWindow()
+{
+    int screen_flags = SDL_WINDOW_OPENGL;
 
-    initGL();
+    if (m_screenFull)
+        screen_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-#ifndef NDEBUG
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(openglCallbackFunction, nullptr);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE,
-                          0, NULL, true);
-#endif
+    // Screen surface
+    m_window = SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED,
+                                SDL_WINDOWPOS_CENTERED, m_screenWidth,
+                                m_screenHeight, screen_flags);
 
-    printOpenGlSettings(*m_window);
+    if (!m_window) {
+        throw EngineError("Creating window failed", SDL_GetError());
+    }
+
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  8);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetSwapInterval(1);
+
+    m_glContext = SDL_GL_CreateContext(m_window);
+    if (!m_glContext) {
+        SDL_DestroyWindow(m_window);
+        throw EngineError("Creating OpenGL context failed", SDL_GetError());
+    }
+
+    // No SDL related stuff
+    initializeOpenGL();
 }
 
 GameCore::~GameCore()
 {
-    delete m_window;
+    SDL_GL_DeleteContext(m_glContext);
+    SDL_DestroyWindow(m_window);
 }
 
-void GameCore::mainLoop()
+bool GameCore::processInput(const SDL_Event& event)
 {
-    float delta = 0.0f;
-    FpsCounter fpsCounter;
-    sf::Clock clock;
-    bool running = true;
-    bool paused = false;
-
-    while (running) {
-        delta = clock.restart().asSeconds();
-        //std::cout << delta << "\n";
-        fpsCounter.update(delta);
-
-        sf::Event event;
-        while (m_window->pollEvent(event)) {
-            switch (event.type) {
-            case sf::Event::Closed:
-                running = false;
-                break;
-            case sf::Event::Resized:
-                resizeWindow(event.size.width, event.size.height);
-                break;
-            case sf::Event::LostFocus:
-                paused = true;
-                break;
-            case sf::Event::GainedFocus:
-                paused = false;
-                break;
-            case sf::Event::MouseWheelMoved:
-                mouseWheelMoved(event.mouseWheel.delta);
-                break;
-            case sf::Event::KeyPressed:
-                keyPressed(event.key);
-                break;
-            case sf::Event::KeyReleased:
-                keyReleased(event.key);
-                break;
-            default:
-                break;
-            }
+        switch (event.type) {
+        case SDL_KEYUP:
+            keyReleased(event);
+            break;
+        case SDL_KEYDOWN:
+            keyPressed(event);
+            break;
+        case SDL_MOUSEMOTION:
+            mouseMoved(event);
+            break;
         }
-
-        if (!paused)
-            update(delta);
-        // Draw to the back buffer
-        draw();
-        // Swap buffers
-        m_window->display();
-    }
 }
 
 void GameCore::update(float delta)
@@ -131,7 +104,7 @@ void GameCore::update(float delta)
     m_gom.update(delta);
 }
 
-void GameCore::initGL()
+void GameCore::initializeOpenGL()
 {
     GLenum glewInitStatus = glewInit();
 
@@ -156,6 +129,12 @@ void GameCore::initGL()
 
     /* Gamma correction */
     glEnable(GL_FRAMEBUFFER_SRGB);
+
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openglCallbackFunction, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE,
+                          0, NULL, true);
 }
 
 /* function to reset our viewport after a window resize */
@@ -167,15 +146,16 @@ void GameCore::resizeWindow(int width, int height)
     glViewport(0, 0, GLsizei(width), GLsizei(height));
 }
 
-sf::Vector2i GameCore::getMousePosition() const
+//------------------------------------------------------------------------------
+
+void GameCore::preDraw()
 {
-    return sf::Mouse::getPosition(*m_window);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
- void GameCore::toggleVSync()
- {
-     m_vSyncEnabled = !m_vSyncEnabled;
-     
-     //m_window->setFramerateLimit(60);
-     m_window->setVerticalSyncEnabled(m_vSyncEnabled);
- }
+//------------------------------------------------------------------------------
+
+void GameCore::postDraw()
+{
+    SDL_GL_SwapWindow(m_window);
+}

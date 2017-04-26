@@ -39,13 +39,19 @@ if( Boost_UNIT_TEST_FRAMEWORK_FOUND )
 #  add_subdirectory( tests )
 endif()
 
+configure_file(
+  ${PROJECT_SOURCE_DIR}/config.h.in
+  ${PROJECT_BINARY_DIR}/config.h
+)
+
 configure_file( ${CMAKE_SOURCE_DIR}/config.xml ${CMAKE_BINARY_DIR}/config.xml COPYONLY )
 
 # Detect SFML
+set( EXTRA_LIBS ${SFML_LIBRARIES} GL GLU GLEW )
 
 find_package( SFML 2 COMPONENTS system window graphics audio REQUIRED )
 if( SFML_FOUND )
-  set( LINK_LIBS ${LINK_LIBS} ${SFML_LIBRARIES} GL GLU GLEW )
+  set( EXTRA_LIBS ${EXTRA_LIBS} ${SFML_LIBRARIES})
 endif()
 
 add_subdirectory( src )

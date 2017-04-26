@@ -10,19 +10,20 @@ class Game : public GameCore
     typedef GameCore super;
   
  public:
-    Game();
+    Game(const std::string& title, int screenWidth,
+         int screenHeight, bool screenFull);
 
  protected:
     void resizeWindow(int width, int height) override;
 
     void draw() override;
     void update(float delta) override;
-    void mouseWheelMoved(int wheelDelta) override;
-    void keyPressed(const sf::Event::KeyEvent& e) override;
-    void keyReleased(const sf::Event::KeyEvent& e) override;
+
+    void mouseMoved(const SDL_Event& event) override;
+    void keyPressed(const SDL_Event& event) override;
+    void keyReleased(const SDL_Event& event) override;
 
  private:
-    void init();
     void loadData();
     void polarView();
 
@@ -31,6 +32,11 @@ class Game : public GameCore
     std::shared_ptr<ShaderProgram> m_normalsShader;
 
     float m_cameraSpeed = 50.0f;
+
+    bool m_wPressed = false;
+    bool m_sPressed = false;
+    bool m_aPressed = false;
+    bool m_dPressed = false;
 };
 
 #endif // GAME_H

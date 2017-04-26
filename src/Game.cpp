@@ -33,13 +33,16 @@ private:
     bool m_paused = false;
 };
 
-//------------------------------------------------------------------------------
+//==============================================================================
 
-Game::Game()
+Game::Game(const std::string& title, int screenWidth,
+           int screenHeight, bool screenFull)
+    : GameCore{title, screenWidth, screenHeight, screenFull}
 {
-    init();
     loadData();
 }
+
+//------------------------------------------------------------------------------
 
 void Game::resizeWindow(int width, int height)
 {
@@ -54,11 +57,7 @@ void Game::resizeWindow(int width, int height)
     super::resizeWindow(width, height);
 }
 
-void Game::init()
-{
-    // glEnable(GL_LIGHTING);
-    // glEnable(GL_LIGHT0);
-}
+//------------------------------------------------------------------------------
 
 void Game::loadData()
 {
@@ -192,10 +191,11 @@ void Game::loadData()
     }
 }
 
+//------------------------------------------------------------------------------
+
 void Game::draw()
 {
-    /* Clear The Screen And The Depth Buffer */
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    preDraw();
 
     //super::draw();
     gameObjectManager().draw(m_camera.get());
@@ -203,67 +203,86 @@ void Game::draw()
     if (m_normalsShader) {
         gameObjectManager().draw(m_normalsShader.get(), m_camera.get());
     }
+
+    postDraw();
 }
+
+//------------------------------------------------------------------------------
 
 void Game::update(float delta)
 {
-    static sf::Vector2i lastMousePos = getMousePosition();
-    sf::Vector2i currentMousePos = getMousePosition();
-
-    int dx = currentMousePos.x - lastMousePos.x;
-    int dy = currentMousePos.y - lastMousePos.y;
-
-    lastMousePos = currentMousePos;
-
-    float mouseSensity = 0.01f;
-
-    if ((dx || dy) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        m_camera->rotate(-dy * mouseSensity, -dx * mouseSensity, 0.0f);
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    if (m_wPressed) {
         m_camera->moveForward(-delta * m_cameraSpeed);
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    if (m_sPressed) {
         m_camera->moveForward(delta * m_cameraSpeed);
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if (m_dPressed) {
         m_camera->moveRight(-delta * m_cameraSpeed);
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (m_aPressed) {
         m_camera->moveLeft(-delta * m_cameraSpeed);
     }
 
     super::update(delta);
 }
 
-void Game::mouseWheelMoved(int wheelDelta)
+//------------------------------------------------------------------------------
+
+void Game::mouseMoved(const SDL_Event& event)
 {
-    m_camera->moveForward(-wheelDelta);
+    float mouseSensity = 0.01f;
+    
+    m_camera->rotate(-event.motion.yrel * mouseSensity,
+                     -event.motion.xrel * mouseSensity, 0.0f);
 }
 
-void Game::keyPressed(const sf::Event::KeyEvent& e)
+void Game::keyPressed(const SDL_Event& event)
 {
-    if (e.shift)
-        m_cameraSpeed = 200.0f;
+    switch(event.key.keysym.sym) {
+    case SDLK_w:
+        m_wPressed = true;
+        break;
+    case SDLK_s:
+        m_sPressed = true;
+        break;
+    case SDLK_a:
+        m_aPressed = true;
+        break;
+    case SDLK_d:
+        m_dPressed = true;
+        break;
+    }
 }
 
-void Game::keyReleased(const sf::Event::KeyEvent& e)
+void Game::keyReleased(const SDL_Event& event)
 {
-    if (e.shift)
-        m_cameraSpeed = 50.0f;
+    switch(event.key.keysym.sym) {
+    case SDLK_w:
+        m_wPressed = false;
+        break;
+    case SDLK_s:
+        m_sPressed = false;
+        break;
+    case SDLK_a:
+        m_aPressed = false;
+        break;
+    case SDLK_d:
+        m_dPressed = false;
+        break;
+    }
 
-    switch (e.code) { 
-    case sf::Keyboard::Space:
+    switch(event.key.keysym.scancode) {
+    case SDL_SCANCODE_SPACE:
         {
             auto s = m_resourcesMgr->getScript("rotationScript");
             std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
         }
         break;
-    case sf::Keyboard::Z:
+    case SDL_SCANCODE_Z:
         {
             GLint polygonMode;
             glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
@@ -271,18 +290,18 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
             glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
         }
         break;
-    case sf::Keyboard::N:
+    case SDL_SCANCODE_N:
         {
             static bool showNormals = false;
             static int magnitude = 2;
             
             const auto& shader = m_resourcesMgr->getShaderProgram("normals");
-            if (e.shift) {
+            if (event.key.keysym.mod & KMOD_SHIFT) {
                 magnitude = std::abs(++magnitude);
                 shader->use();
                 shader->setUniform("magnitude", 0.5f * magnitude);
             }
-            else if (e.control) {
+            else if (event.key.keysym.mod & KMOD_CTRL) {
                 magnitude = std::abs(--magnitude);
                 if (magnitude == 0)
                     magnitude = 1;
@@ -297,11 +316,6 @@ void Game::keyReleased(const sf::Event::KeyEvent& e)
                     m_normalsShader.reset();
             }
         }
-        break;
-    case sf::Keyboard::V:
-        toggleVSync();
-        break;
-    default:
         break;
     }
 }

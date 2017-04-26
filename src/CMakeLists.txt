@@ -21,6 +21,18 @@ set( nbd-3dge_SRCS
     Camera.cpp
     Terrain.cpp
     Script.cpp
+    Engine.cpp
+    Logger.cpp
+)
+
+set( LINK_LIBS
+  ${SDL2_LIBRARY}
+  ${SDL2MAIN_LIBRARY}
+  ${SDL2IMAGE_LIBRARY}
+  ${OPENGL_LIBRARIES}
+#  ${LUA53_LIBRARIES}
+#  ${Boost_LIBRARIES}
+  ${EXTRA_LIBS}
 )
 
 # Add winsock lib
