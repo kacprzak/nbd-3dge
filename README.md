@@ -9,13 +9,13 @@ and C++.
 Requirements
 ------------
 
-* C++11
-* OpengGL 3.3
+* C++14
+* OpengGL 4.3
 * CMake 2.8
 
 Dependencies
 ------------
 
-* SFML 2.0
+* SDL2
 * Boost
 * GLM (OpenGL Mathematics)
