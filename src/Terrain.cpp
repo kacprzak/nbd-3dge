@@ -1,14 +1,21 @@
 #include "Terrain.h"
 
-#include <SFML/Graphics.hpp>
+#include <SDL.h>
+#include <SDL_image.h>
 
 Terrain::Terrain(const std::string& name, const std::string& heightMapPath)
     : Actor{name}
 {
-    sf::Image img;
-    img.loadFromFile(heightMapPath);
-    m_x = img.getSize().x;
-    m_y = img.getSize().y;
+    SDL_Surface* surface = IMG_Load(heightMapPath.c_str());
+    
+    if (!surface) {
+        throw std::runtime_error("SDL_Image load error: " +
+                                 std::string(IMG_GetError()));
+    }
+
+    m_x = surface->w;
+    m_y = surface->h;
+
 
     if (m_x % 2 != 0 || m_y % 2 != 0) {
         throw std::runtime_error{"Terrain heightMap with odd size is not supported."};
@@ -16,11 +23,18 @@ Terrain::Terrain(const std::string& name, const std::string& heightMapPath)
 
     m_heights.resize(m_x * m_y);
 
+    SDL_LockSurface(surface);
+    Uint8 *pixels = (Uint8 *)surface->pixels;
+    
     for (int y = 0; y < m_y; ++y) {
         for (int x = 0; x < m_x; ++x) {
-            m_heights[y * m_y + x] = img.getPixel(x, y).r;
+            m_heights[y * m_y + x] = pixels[(y * surface->w + x) * surface->format->BytesPerPixel];
         }
     }
+    SDL_UnlockSurface(surface);
+
+    SDL_FreeSurface(surface);
+
 
     std::vector<GLfloat> vertices;
     vertices.resize(m_x * m_y * 3);
