@@ -1,10 +1,9 @@
-#include "GameCore.h"
-
+#include "SDLWindow.h"
 
 #include "Engine.h"
+#include "FpsCounter.h"
 
 #include <iostream>
-#include "FpsCounter.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -29,19 +28,19 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/,
     }
 }
 
-GameCore::GameCore(const std::string& title, int screenWidth,
-           int screenHeight, bool screenFull)
+SDLWindow::SDLWindow(const std::string& title, int screenWidth,
+                     int screenHeight, bool screenFull)
     : m_title{title}, m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_screenFull{screenFull}
 {
-   try {
+    try {
         createSDLWindow();
     } catch (EngineError /*e*/) {
         SDL_Quit();
         throw;
-   }
+    }
 }
 
-void GameCore::createSDLWindow()
+void SDLWindow::createSDLWindow()
 {
     int screen_flags = SDL_WINDOW_OPENGL;
 
@@ -78,33 +77,35 @@ void GameCore::createSDLWindow()
     initializeOpenGL();
 }
 
-GameCore::~GameCore()
+SDLWindow::~SDLWindow()
 {
     SDL_GL_DeleteContext(m_glContext);
     SDL_DestroyWindow(m_window);
 }
 
-bool GameCore::processInput(const SDL_Event& event)
+bool SDLWindow::processInput(const SDL_Event& event)
 {
-        switch (event.type) {
-        case SDL_KEYUP:
-            keyReleased(event);
-            break;
-        case SDL_KEYDOWN:
-            keyPressed(event);
-            break;
-        case SDL_MOUSEMOTION:
-            mouseMoved(event);
-            break;
-        }
+    switch (event.type) {
+    case SDL_KEYUP:
+        keyReleased(event);
+        break;
+    case SDL_KEYDOWN:
+        keyPressed(event);
+        break;
+    case SDL_MOUSEMOTION:
+        mouseMoved(event);
+        break;
+    }
+
+    return true;
 }
 
-void GameCore::update(float delta)
+void SDLWindow::update(float delta)
 {
     m_gom.update(delta);
 }
 
-void GameCore::initializeOpenGL()
+void SDLWindow::initializeOpenGL()
 {
     GLenum glewInitStatus = glewInit();
 
@@ -138,7 +139,7 @@ void GameCore::initializeOpenGL()
 }
 
 /* function to reset our viewport after a window resize */
-void GameCore::resizeWindow(int width, int height)
+void SDLWindow::resizeWindow(int width, int height)
 {
     //std::cout << "resizeWindow " << width << " " << height << std::endl;
 
@@ -148,14 +149,14 @@ void GameCore::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void GameCore::preDraw()
+void SDLWindow::preDraw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
 
-void GameCore::postDraw()
+void SDLWindow::postDraw()
 {
     SDL_GL_SwapWindow(m_window);
 }

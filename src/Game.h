@@ -1,13 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "GameCore.h"
+#include "SDLWindow.h"
 #include "ResourcesMgr.h"
 #include "Camera.h"
 
-class Game : public GameCore
+class Game : public SDLWindow
 {
-    typedef GameCore super;
+    typedef SDLWindow super;
   
  public:
     Game(const std::string& title, int screenWidth,
@@ -37,6 +37,7 @@ class Game : public GameCore
     bool m_sPressed = false;
     bool m_aPressed = false;
     bool m_dPressed = false;
+    bool m_shiftPressed = false;
 };
 
 #endif // GAME_H

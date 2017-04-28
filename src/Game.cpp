@@ -37,7 +37,7 @@ private:
 
 Game::Game(const std::string& title, int screenWidth,
            int screenHeight, bool screenFull)
-    : GameCore{title, screenWidth, screenHeight, screenFull}
+    : SDLWindow{title, screenWidth, screenHeight, screenFull}
 {
     loadData();
 }
@@ -211,20 +211,24 @@ void Game::draw()
 
 void Game::update(float delta)
 {
+    float cameraSpeedMultiplyer = 1.0f;
+    if (m_shiftPressed)
+        cameraSpeedMultiplyer = 5.0f;
+    
     if (m_wPressed) {
-        m_camera->moveForward(-delta * m_cameraSpeed);
+        m_camera->moveForward(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     if (m_sPressed) {
-        m_camera->moveForward(delta * m_cameraSpeed);
+        m_camera->moveForward(delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     if (m_dPressed) {
-        m_camera->moveRight(-delta * m_cameraSpeed);
+        m_camera->moveRight(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     if (m_aPressed) {
-        m_camera->moveLeft(-delta * m_cameraSpeed);
+        m_camera->moveLeft(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     super::update(delta);
@@ -256,6 +260,15 @@ void Game::keyPressed(const SDL_Event& event)
         m_dPressed = true;
         break;
     }
+
+    switch(event.key.keysym.scancode) {
+    case SDL_SCANCODE_LSHIFT:
+        m_shiftPressed = true;
+        break;
+    default:
+        break;
+    }
+
 }
 
 void Game::keyReleased(const SDL_Event& event)
@@ -275,7 +288,11 @@ void Game::keyReleased(const SDL_Event& event)
         break;
     }
 
+
     switch(event.key.keysym.scancode) {
+    case SDL_SCANCODE_LSHIFT:
+        m_shiftPressed = false;
+        break;
     case SDL_SCANCODE_SPACE:
         {
             auto s = m_resourcesMgr->getScript("rotationScript");
@@ -316,6 +333,8 @@ void Game::keyReleased(const SDL_Event& event)
                     m_normalsShader.reset();
             }
         }
+        break;
+    default:
         break;
     }
 }

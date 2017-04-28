@@ -7,12 +7,12 @@
 //#include <SFML/Window.hpp>
 #include "GameObjectManager.h"
 
-class GameCore : public GameView
+class SDLWindow : public GameView
 {
 public:
-    GameCore(const std::string& title, int screenWidth,
+    SDLWindow(const std::string& title, int screenWidth,
              int screenHeight, bool screenFull);
-    virtual ~GameCore();
+    virtual ~SDLWindow();
 
     void update(float delta) override;
 

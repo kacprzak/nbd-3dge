@@ -45,7 +45,7 @@ configure_file(
 
 configure_file( ${CMAKE_SOURCE_DIR}/config.xml ${CMAKE_BINARY_DIR}/config.xml COPYONLY )
 
-set( EXTRA_LIBS ${SFML_LIBRARIES} GL GLU GLEW )
+set( EXTRA_LIBS GL GLU GLEW )
 
 add_subdirectory( src )
 

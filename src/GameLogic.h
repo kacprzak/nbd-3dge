@@ -17,7 +17,7 @@ class GameLogic : private boost::noncopyable
   public:
     virtual ~GameLogic() {}
 
-    virtual void update(float elapsedTime) {}//= 0;
+    virtual void update(float /*elapsedTime*/) {};
 
     /*!  Use these if you need Engine to create or clean stuff */
     virtual void onBeforeMainLoop(Engine* /*e*/) {}
