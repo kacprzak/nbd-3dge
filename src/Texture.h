@@ -14,6 +14,9 @@ public:
     void setClampToEdge();
     void setRepeat();
 
+    int getWidth() const { return m_w; }
+    int getHeight() const { return m_h; }
+    
     static Texture *create(const std::string& filename, bool clamp = false);
     static Texture *create(const std::array<std::string, 6> filenames, bool clamp = false);
     
@@ -24,6 +27,9 @@ private:
     GLenum m_target;
     GLuint m_textureId;
     GLuint m_samplerId;
+
+    int m_w = -1;
+    int m_h = -1;
 };
 
 #endif // TEXTURE_H

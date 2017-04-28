@@ -10,6 +10,12 @@
     </shaderProgram>
 
     <shaderProgram>
+      <name>font</name>
+      <vertexShader>font.vert</vertexShader>
+      <fragmentShader>font.frag</fragmentShader>
+    </shaderProgram>
+    
+    <shaderProgram>
       <name>normals</name>
       <vertexShader>normals.vert</vertexShader>
       <geometryShader>normals.geom</geometryShader>

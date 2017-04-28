@@ -6,6 +6,7 @@
 #include <set>
 #include "ShaderProgram.h"
 #include "Camera.h"
+#include "Text.h"
 
 class GameObjectManager
 {
@@ -28,6 +29,13 @@ public:
         m_actors.erase(actor);
     }
 
+    void add(std::shared_ptr<Text> actor) {
+        m_texts.insert(actor);
+    }
+    void remove(std::shared_ptr<Text> actor) {
+        m_texts.erase(actor);
+    }
+    
     const std::set<std::shared_ptr<Actor>>& actors() const {
         return m_actors;
     }
@@ -41,6 +49,7 @@ private:
     std::set<std::shared_ptr<Actor>> m_actors;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
+    std::set<std::shared_ptr<Text>> m_texts;
 };
 
 #endif // GAMEOBJECTMANAGER_H

@@ -65,15 +65,15 @@ Texture *Texture::create(const std::string &filename, bool clamp)
     if (SDL_InvertSurface(surface) != 0)
         throw std::runtime_error("SDL Error: " + std::string(SDL_GetError()));
 
-    int w = surface->w;
-    int h = surface->h;
+    tex->m_w = surface->w;
+    tex->m_h = surface->h;
 
     glBindTexture(target, tex->m_textureId);
 
     GLenum format = textureFormat(&surface);
 
     SDL_LockSurface(surface);
-    glTexImage2D(target, 0, GL_SRGB8, w, h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexImage2D(target, 0, GL_SRGB8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_UnlockSurface(surface);
 
     SDL_FreeSurface(surface);
@@ -81,7 +81,7 @@ Texture *Texture::create(const std::string &filename, bool clamp)
     glGenerateMipmap(GL_TEXTURE_2D);
     
     std::cout << "Loaded: " << tex->m_filename << " texId: "<< tex->m_textureId
-              << " (" << w << " x " << h << ")" << std::endl;
+              << " (" << tex->m_w << " x " << tex->m_h << ")" << std::endl;
 
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -110,19 +110,19 @@ Texture *Texture::create(const std::array<std::string, 6> filenames, bool clamp)
                                      std::string(IMG_GetError()));
         }
 
-        int w = surface->w;
-        int h = surface->h;
+        tex->m_w = surface->w;
+        tex->m_h = surface->h;
 
         GLenum format = textureFormat(&surface);
 
         SDL_LockSurface(surface);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                     0, GL_SRGB8, w, h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+                     0, GL_SRGB8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
         SDL_UnlockSurface(surface);
 
     
         std::cout << "Loaded: " << extractFilename(filenames[i]) << " texId: "<< tex->m_textureId
-                  << " (" << w << " x " << h << ")" << std::endl;
+                  << " (" << tex->m_w << " x " << tex->m_h << ")" << std::endl;
 
         SDL_FreeSurface(surface);
     }

@@ -12,7 +12,7 @@ class Camera;
 
 class Actor
 {
-public:
+ public:
     Actor(const std::string& name);
     virtual ~Actor() {};
 
@@ -50,7 +50,7 @@ public:
     bool isActive() const { return m_state == Active; }
     bool isDestroyed() const { return m_state == Destroyed; }
 
-protected:
+ protected:
 
     enum State {
         Idle,
@@ -66,7 +66,7 @@ protected:
 
     bool m_dirty = true;
 
-private:
+ private:
     void rebuildModelMatrix();
 
     const std::string m_name;

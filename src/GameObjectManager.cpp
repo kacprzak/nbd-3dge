@@ -19,6 +19,10 @@ void GameObjectManager::draw(const Camera* camera) const
     for (const auto& a : m_actors) {
         a->draw(camera);
     }
+
+    for (const auto& a : m_texts) {
+        a->draw();
+    }
 }
 
 void GameObjectManager::draw(ShaderProgram* shaderProgram, const Camera* camera) const
@@ -31,6 +35,10 @@ void GameObjectManager::draw(ShaderProgram* shaderProgram, const Camera* camera)
 
     for (const auto& a : m_actors) {
         a->draw(shaderProgram, camera);
+    }
+
+    for (const auto& a : m_texts) {
+        a->draw();
     }
 }
 

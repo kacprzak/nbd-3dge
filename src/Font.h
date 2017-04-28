@@ -17,13 +17,42 @@ class Font final
     Font();
 
     std::vector<std::string> getTexturesFilenames() const
-    {
-        return m_pages;
-    }
+        {
+            return m_pages;
+        }
 
     void setTextures(const std::vector<std::shared_ptr<Texture>>& textures)
     {
         m_textures = textures;
+    }
+
+    struct Char
+    {
+        uint32_t id;
+        uint16_t x;
+        uint16_t y;
+        uint16_t width;
+        uint16_t height;
+        int16_t xoffset;
+        int16_t yoffset;
+        int16_t xadvance;
+        uint8_t page;
+        uint8_t chnl;
+    };
+
+    std::shared_ptr<Texture> getTexture(const Char& c) const
+        {
+            return m_textures.at(c.page);
+        }
+
+    std::shared_ptr<Texture> getTexture(int page) const
+        {
+            return m_textures.at(page);
+        }
+    
+    Char getChar(uint32_t code) const
+    {
+        return m_chars.at(code);
     }
 
  private:
@@ -51,20 +80,6 @@ class Font final
     std::vector<std::string> m_pages; //< texture files for each page
     std::vector<std::shared_ptr<Texture>> m_textures; //< texture per page
 
-    struct Char
-    {
-        uint32_t id;
-        uint16_t x;
-        uint16_t y;
-        uint16_t width;
-        uint16_t height;
-        int16_t xoffset;
-        int16_t yoffset;
-        int16_t xadvance;
-        uint8_t page;
-        uint8_t chnl;
-    };
-    
     std::map<uint32_t, Char> m_chars; //< char.id -> char
     std::map<std::pair<uint32_t, uint32_t>, int16_t> m_kerning; //< (first, second) -> amount
 };

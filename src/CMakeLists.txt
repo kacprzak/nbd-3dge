@@ -23,6 +23,7 @@ set( nbd-3dge_SRCS
     Script.cpp
     Engine.cpp
     Logger.cpp
+    Text.cpp
 )
 
 set( LINK_LIBS
