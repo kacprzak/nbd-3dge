@@ -17,10 +17,12 @@ set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} 
 find_package( SDL2 REQUIRED )
 find_package( SDL2_image REQUIRED )
 find_package( OpenGL REQUIRED )
-find_package( Boost REQUIRED )
+
+set( Boost_COMPONENTS program_options )
 if( UNIX )
-  find_package( Boost COMPONENTS unit_test_framework )
+  list( APPEND Boost_COMPONENTS unit_test_framework )
 endif()
+find_package( Boost COMPONENTS ${Boost_COMPONENTS} REQUIRED )
 #find_package( Lua53 REQUIRED )
 
 include_directories(

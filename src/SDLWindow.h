@@ -3,15 +3,15 @@
 
 #include "GameView.h"
 
-#include <GL/glew.h>
-//#include <SFML/Window.hpp>
 #include "GameObjectManager.h"
+#include "Settings.h"
+
+#include <GL/glew.h>
 
 class SDLWindow : public GameView
 {
 public:
-    SDLWindow(const std::string& title, int screenWidth,
-             int screenHeight, bool screenFull);
+    SDLWindow(const Settings& settings);
     virtual ~SDLWindow();
 
     void update(float delta) override;

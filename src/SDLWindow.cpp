@@ -28,9 +28,11 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/,
     }
 }
 
-SDLWindow::SDLWindow(const std::string& title, int screenWidth,
-                     int screenHeight, bool screenFull)
-    : m_title{title}, m_screenWidth{screenWidth}, m_screenHeight{screenHeight}, m_screenFull{screenFull}
+SDLWindow::SDLWindow(const Settings& settings)
+    : m_title{settings.windowTitle},
+      m_screenWidth{settings.screenWidth},
+      m_screenHeight{settings.screenHeight},
+      m_screenFull{settings.fullscreen}
 {
     try {
         createSDLWindow();
@@ -63,7 +65,9 @@ void SDLWindow::createSDLWindow()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#ifndef NDEBUG
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetSwapInterval(1);
 
@@ -131,11 +135,13 @@ void SDLWindow::initializeOpenGL()
     /* Gamma correction */
     glEnable(GL_FRAMEBUFFER_SRGB);
 
+#ifndef NDEBUG
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(openglCallbackFunction, nullptr);
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE,
                           0, NULL, true);
+#endif
 }
 
 /* function to reset our viewport after a window resize */

@@ -35,9 +35,8 @@ private:
 
 //==============================================================================
 
-Game::Game(const std::string& title, int screenWidth,
-           int screenHeight, bool screenFull)
-    : SDLWindow{title, screenWidth, screenHeight, screenFull}
+Game::Game(const Settings& settings)
+    : SDLWindow{settings}
 {
     loadData();
 }

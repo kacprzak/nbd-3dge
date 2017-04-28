@@ -4,14 +4,14 @@
 #include "SDLWindow.h"
 #include "ResourcesMgr.h"
 #include "Camera.h"
+#include "Settings.h"
 
 class Game : public SDLWindow
 {
     typedef SDLWindow super;
   
  public:
-    Game(const std::string& title, int screenWidth,
-         int screenHeight, bool screenFull);
+    Game(const Settings& settings);
 
  protected:
     void resizeWindow(int width, int height) override;
