@@ -20,6 +20,8 @@ class Game : public SDLWindow
     void update(float delta) override;
 
     void mouseMoved(const SDL_Event& event) override;
+    void mouseButtonPressed(const SDL_Event& event) override;
+    void mouseButtonReleased(const SDL_Event& event) override;
     void keyPressed(const SDL_Event& event) override;
     void keyReleased(const SDL_Event& event) override;
 
@@ -38,6 +40,7 @@ class Game : public SDLWindow
     bool m_aPressed = false;
     bool m_dPressed = false;
     bool m_shiftPressed = false;
+    bool m_leftMouseButtonPressed = false;
 };
 
 #endif // GAME_H

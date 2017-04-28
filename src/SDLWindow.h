@@ -1,5 +1,5 @@
-#ifndef GAMECORE_H
-#define GAMECORE_H
+#ifndef SDLWINDOW_H
+#define SDLWINDOW_H
 
 #include "GameView.h"
 
@@ -22,6 +22,9 @@ protected:
     virtual void resizeWindow(int width, int height);
     
     virtual void mouseMoved(const SDL_Event& event) = 0;
+    virtual void mouseButtonPressed(const SDL_Event& event) = 0;
+    virtual void mouseButtonReleased(const SDL_Event& event) = 0;
+
     virtual void keyPressed(const SDL_Event& event) = 0;
     virtual void keyReleased(const SDL_Event& event) = 0;
 
@@ -29,6 +32,8 @@ protected:
 
     void preDraw();
     void postDraw();
+
+    void setMouseRelativeMode(bool enable);
 
  private:
     void createSDLWindow();
@@ -46,4 +51,4 @@ protected:
     GameObjectManager m_gom;
 };
 
-#endif // GAMECORE_H
+#endif // SDLWINDOW_H

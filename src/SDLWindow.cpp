@@ -28,6 +28,8 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/,
     }
 }
 
+//==============================================================================
+
 SDLWindow::SDLWindow(const Settings& settings)
     : m_title{settings.windowTitle},
       m_screenWidth{settings.screenWidth},
@@ -57,6 +59,9 @@ void SDLWindow::createSDLWindow()
     if (!m_window) {
         throw EngineError("Creating window failed", SDL_GetError());
     }
+
+    // SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    // SDL_StopTextInput(); // Disable text input events when GUI is not visible
 
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -98,6 +103,12 @@ bool SDLWindow::processInput(const SDL_Event& event)
         break;
     case SDL_MOUSEMOTION:
         mouseMoved(event);
+        break;
+    case SDL_MOUSEBUTTONUP:
+        mouseButtonReleased(event);
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        mouseButtonPressed(event);
         break;
     }
 
@@ -166,3 +177,17 @@ void SDLWindow::postDraw()
 {
     SDL_GL_SwapWindow(m_window);
 }
+
+//------------------------------------------------------------------------------
+
+void SDLWindow::setMouseRelativeMode(bool enable)
+{
+    if (enable) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+        SDL_ShowCursor(SDL_DISABLE);
+    } else {
+        SDL_ShowCursor(SDL_ENABLE);
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+    }
+}
+

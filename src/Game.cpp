@@ -238,10 +238,33 @@ void Game::update(float delta)
 void Game::mouseMoved(const SDL_Event& event)
 {
     float mouseSensity = 0.01f;
-    
-    m_camera->rotate(-event.motion.yrel * mouseSensity,
-                     -event.motion.xrel * mouseSensity, 0.0f);
+
+    if (m_leftMouseButtonPressed)
+        m_camera->rotate(-event.motion.yrel * mouseSensity,
+                         -event.motion.xrel * mouseSensity, 0.0f);
 }
+
+void Game::mouseButtonPressed(const SDL_Event& event)
+{
+    switch(event.button.button) {
+    case SDL_BUTTON_LEFT:
+        m_leftMouseButtonPressed = true;
+        setMouseRelativeMode(true);
+        break;
+    }
+}
+
+void Game::mouseButtonReleased(const SDL_Event& event)
+{
+    switch(event.button.button) {
+    case SDL_BUTTON_LEFT:
+        m_leftMouseButtonPressed = false;
+        setMouseRelativeMode(false);
+        break;
+    }
+}
+
+//------------------------------------------------------------------------------
 
 void Game::keyPressed(const SDL_Event& event)
 {
