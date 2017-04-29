@@ -45,7 +45,10 @@ configure_file(
   ${PROJECT_BINARY_DIR}/config.h
 )
 
-configure_file( ${CMAKE_SOURCE_DIR}/config.xml ${CMAKE_BINARY_DIR}/config.xml COPYONLY )
+configure_file(
+  ${PROJECT_SOURCE_DIR}/config.ini.in
+  ${PROJECT_BINARY_DIR}/config.ini
+)
 
 set( EXTRA_LIBS GL GLU GLEW )
 

@@ -38,7 +38,7 @@ private:
 Game::Game(const Settings& settings)
     : SDLWindow{settings}
 {
-    loadData();
+    loadData(settings);
 }
 
 //------------------------------------------------------------------------------
@@ -58,17 +58,15 @@ void Game::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void Game::loadData()
+void Game::loadData(const Settings& s)
 {
     // Load scene
     using boost::property_tree::ptree;
     ptree pt;
 
-    read_xml("config.xml", pt);    
-    const std::string& dataFolder = pt.get<std::string>("config.assets.dataFolder");
-    const std::string& shadersFolder = pt.get<std::string>("config.assets.shadersFolder");
+    read_xml(s.dataFolder + "scene.xml", pt);    
 
-    m_resourcesMgr = std::make_unique<ResourcesMgr>(dataFolder, shadersFolder);
+    m_resourcesMgr = std::make_unique<ResourcesMgr>(s.dataFolder, s.shadersFolder);
 
     auto rotationScript = std::make_shared<RotationScript>();
     m_resourcesMgr->addScript("rotationScript", rotationScript);
@@ -147,7 +145,7 @@ void Game::loadData()
             float y = actorTree.get("position.y", 0.0f);
             float z = actorTree.get("position.z", 0.0f);
 
-            auto a = std::make_shared<Terrain>(name, dataFolder + map);
+            auto a = std::make_shared<Terrain>(name, s.dataFolder + map);
             a->setScale(scale);
             a->moveTo(x, y, z);
 

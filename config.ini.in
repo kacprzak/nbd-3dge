@@ -1,0 +1,2 @@
+dataFolder=@CMAKE_SOURCE_DIR@/data/
+shadersFolder=@CMAKE_SOURCE_DIR@/shaders/

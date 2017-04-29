@@ -1,8 +1,5 @@
 <config>
   <assets>
-    <dataFolder>../nbd-3dge/data/</dataFolder>
-    <shadersFolder>../nbd-3dge/shaders/</shadersFolder>
-
     <shaderProgram>
       <name>default</name>
       <vertexShader>default.vert</vertexShader>

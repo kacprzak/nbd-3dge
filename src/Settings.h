@@ -9,6 +9,8 @@ struct Settings
     int screenWidth = 1024;
     int screenHeight = 768;
     bool fullscreen = false;
+    std::string dataFolder;
+    std::string shadersFolder;
 };
 
 #endif // SETTINGS_H

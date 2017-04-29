@@ -27,8 +27,7 @@ class Game : public SDLWindow
     void keyReleased(const SDL_Event& event) override;
 
  private:
-    void loadData();
-    void polarView();
+    void loadData(const Settings& s);
 
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
     std::shared_ptr<Camera> m_camera;
