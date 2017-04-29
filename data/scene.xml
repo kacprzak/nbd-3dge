@@ -1,236 +1,116 @@
-<config>
-  <assets>
-    <shaderProgram>
-      <name>default</name>
-      <vertexShader>default.vert</vertexShader>
-      <fragmentShader>default.frag</fragmentShader>
-    </shaderProgram>
+<scene>
+  <assets>assets.xml</assets> 
+  <camera>
+    <position>
+      <x>0</x>
+      <y>100</y>
+      <z>80</z>
+    </position>
+  </camera>
 
-    <shaderProgram>
-      <name>font</name>
-      <vertexShader>font.vert</vertexShader>
-      <fragmentShader>font.frag</fragmentShader>
-    </shaderProgram>
-    
-    <shaderProgram>
-      <name>normals</name>
-      <vertexShader>normals.vert</vertexShader>
-      <geometryShader>normals.geom</geometryShader>
-      <fragmentShader>normals.frag</fragmentShader>
-    </shaderProgram>
-    
-    <shaderProgram>
-      <name>skybox</name>
-      <vertexShader>skybox.vert</vertexShader>
-      <fragmentShader>skybox.frag</fragmentShader>
-    </shaderProgram>
-    
-    <shaderProgram>
-      <name>light</name>
-      <vertexShader>light.vert</vertexShader>
-      <fragmentShader>light.frag</fragmentShader>
-    </shaderProgram>
+  <skybox>
+    <texture>skybox_cubemap</texture>
+    <shaderProgram>skybox</shaderProgram>
+  </skybox>
 
-    <shaderProgram>
-      <name>lightAndTex</name>
-      <vertexShader>lightAndTex.vert</vertexShader>
-      <fragmentShader>lightAndTex.frag</fragmentShader>
-    </shaderProgram>
+  <terrain>
+    <name>terrain</name>
+    <heightMap>terrain-heightmap-01.png</heightMap>
+    <shaderProgram>terrain</shaderProgram>
+    <scale>5</scale>
+    <position>
+      <x>0</x>
+      <y>30</y>
+      <z>0</z>
+    </position>
+    <textures>
+      <texture>grass_diffuse</texture>
+      <texture>snow_diffuse</texture>
+      <texture>rocky_diffuse</texture>
+    </textures>
+  </terrain>
 
-    <shaderProgram>
-      <name>terrain</name>
-      <vertexShader>terrain.vert</vertexShader>
-      <fragmentShader>terrain.frag</fragmentShader>
-    </shaderProgram>
-    
-    <texture>
-      <name>skybox_cubemap</name>
-      <file>
-        <right>envmap_stormydays/stormydays_ft.tga</right>
-        <left>envmap_stormydays/stormydays_bk.tga</left>
-        <top>envmap_stormydays/stormydays_up.tga</top>
-        <bottom>envmap_stormydays/stormydays_dn.tga</bottom>
-        <front>envmap_stormydays/stormydays_lf.tga</front>
-        <back>envmap_stormydays/stormydays_rt.tga</back>
-      </file>
-      <wrap>GL_CLAMP_TO_EDGE</wrap>
-    </texture>
-    
-    <texture>
-      <name>cube_texture</name>
-      <file>texture_I.png</file>
-    </texture>
+  <actor>
+    <name>teddy</name>
+    <scale>0.2</scale>
+    <position>
+      <x>10</x>
+      <y>100</y>
+      <z>0</z>
+    </position>
+    <mesh>teddy</mesh>
+    <shaderProgram>light</shaderProgram>
+  </actor>
+  
+  <actor>
+    <name>cube</name>
+    <scale>0.2</scale>
+    <position>
+      <x>10</x>
+      <y>80</y>
+      <z>0</z>
+    </position>
+    <mesh>cube</mesh>
+    <texture>cube_texture</texture>
+  </actor>
 
-    <texture>
-      <name>grass_diffuse</name>
-      <file>terrain/grass_green_d.jpg</file>
-    </texture>
+  <actor>
+    <name>cow</name>
+    <position>
+      <x>-10</x>
+      <y>100</y>
+      <z>0</z>
+    </position>
+    <mesh>cow</mesh>
+    <shaderProgram>light</shaderProgram>
+  </actor>
 
-    <texture>
-      <name>snow_diffuse</name>
-      <file>terrain/snow_grass_d.jpg</file>
-    </texture>
+  <actor>
+    <name>ship</name>
+    <scale>0.1</scale>
+    <position>
+      <x>0</x>
+      <y>90</y>
+      <z>0</z>
+    </position>
+    <mesh>ship</mesh>
+    <texture>ship_texture</texture>
+    <shaderProgram>lightAndTex</shaderProgram>
+  </actor>
 
-    <texture>
-      <name>rocky_diffuse</name>
-      <file>terrain/grass_rocky_d.jpg</file>
-    </texture>
-    
-    <texture>
-      <name>ship_texture</name>
-      <file>ship.jpg</file>
-    </texture>
+  <actor>
+    <name>ship_2</name>
+    <scale>0.1</scale>
+    <position>
+      <x>10</x>
+      <y>120</y>
+      <z>0</z>
+    </position>
+    <mesh>ship</mesh>
+    <texture>ship_texture</texture>
+  </actor>
 
-    <font>
-      <name>ubuntu</name>
-      <file>ubuntu.fnt</file>
-    </font>
-
-    <mesh>
-      <name>teddy</name>
-      <file>teddy2.obj</file>
-    </mesh>
-
-    <mesh>
-      <name>cow</name>
-      <file>cow.obj</file>
-    </mesh>
-
-    <!--mesh>
-      <name>teapot</name>
-      <file>teapot.obj</file>
-    </mesh-->
-
-    <mesh>
-      <name>ship</name>
-      <file>ship.obj</file>
-    </mesh>
-
-    <mesh>
-      <name>cube</name>
-      <file>cube.obj</file>
-    </mesh>
-
-    <!--mesh>
-      <name>floor</name>
-      <file>floor.obj</file>
-    </mesh-->
-    
-  </assets>
-  <scene>
-    
-    <camera>
-      <position>
-        <x>0</x>
-        <y>100</y>
-        <z>80</z>
-      </position>
-    </camera>
-
-    <skybox>
-      <texture>skybox_cubemap</texture>
-      <shaderProgram>skybox</shaderProgram>
-    </skybox>
-
-    <terrain>
-      <name>terrain</name>
-      <heightMap>terrain-heightmap-01.png</heightMap>
-      <shaderProgram>terrain</shaderProgram>
-      <scale>5</scale>
-      <position>
-        <x>0</x>
-        <y>30</y>
-        <z>0</z>
-      </position>
-      <textures>
-        <texture>grass_diffuse</texture>
-        <texture>snow_diffuse</texture>
-        <texture>rocky_diffuse</texture>
-      </textures>
-    </terrain>
-
-    <actor>
-      <name>teddy</name>
-      <scale>0.2</scale>
-      <position>
-        <x>10</x>
-        <y>100</y>
-        <z>0</z>
-      </position>
-      <mesh>teddy</mesh>
-      <shaderProgram>light</shaderProgram>
-    </actor>
-    
-    <actor>
-      <name>cube</name>
-      <scale>0.2</scale>
-      <position>
-        <x>10</x>
-        <y>80</y>
-        <z>0</z>
-      </position>
-      <mesh>cube</mesh>
-      <texture>cube_texture</texture>
-    </actor>
-
-    <actor>
-      <name>cow</name>
-      <position>
-        <x>-10</x>
-        <y>100</y>
-        <z>0</z>
-      </position>
-      <mesh>cow</mesh>
-      <shaderProgram>light</shaderProgram>
-    </actor>
-
-    <actor>
-      <name>ship</name>
-      <scale>0.1</scale>
-      <position>
-        <x>0</x>
-        <y>90</y>
-        <z>0</z>
-      </position>
-      <mesh>ship</mesh>
-      <texture>ship_texture</texture>
-      <shaderProgram>lightAndTex</shaderProgram>
-    </actor>
-
-    <actor>
-      <name>ship_2</name>
-      <scale>0.1</scale>
-      <position>
-        <x>10</x>
-        <y>120</y>
-        <z>0</z>
-      </position>
-      <mesh>ship</mesh>
-      <texture>ship_texture</texture>
-    </actor>
-
-    <!--actor>
+  <!--actor>
       <name>teapot</name>
       <position>
-        <x>0</x>
-        <y>10</y>
-        <z>0</z>
+      <x>0</x>
+      <y>10</y>
+      <z>0</z>
       </position>
       <mesh>teapot</mesh>
       <shaderProgram>light</shaderProgram>
-    </actor-->
+      </actor-->
 
-    <!--actor>
+  <!--actor>
       <name>floor</name>
       <scale>25</scale>
       <position>
-        <x>0</x>
-        <y>-15</y>
-        <z>0</z>
+      <x>0</x>
+      <y>-15</y>
+      <z>0</z>
       </position>
       <mesh>floor</mesh>
       <texture>floor_texture</texture>
-    </actor-->
+      </actor-->
+</scene>
 
-  </scene>
-</config>

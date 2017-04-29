@@ -24,6 +24,7 @@ set( nbd-3dge_SRCS
     Engine.cpp
     Logger.cpp
     Text.cpp
+    ResourcesMgr.cpp
 )
 
 set( LINK_LIBS

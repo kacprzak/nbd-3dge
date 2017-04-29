@@ -64,57 +64,21 @@ void Game::loadData(const Settings& s)
     using boost::property_tree::ptree;
     ptree pt;
 
-    read_xml(s.dataFolder + "scene.xml", pt);    
+    read_xml(s.dataFolder + "scene.xml", pt);
+    const auto& assetsXml = pt.get<std::string>("scene.assets");
 
     m_resourcesMgr = std::make_unique<ResourcesMgr>(s.dataFolder, s.shadersFolder);
-
+    m_resourcesMgr->load(assetsXml);
+    
     auto rotationScript = std::make_shared<RotationScript>();
     m_resourcesMgr->addScript("rotationScript", rotationScript);
     
-    for (ptree::value_type &v : pt.get_child("config.assets")) {
-        const std::string& assetType  = v.first;
-        ptree& assetTree = v.second;
-
-        if (assetType == "shaderProgram") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& vertexShaderFile = assetTree.get("vertexShader", "");
-            const std::string& geometryShaderFile = assetTree.get("geometryShader", "");
-            const std::string& fragmentShaderFile = assetTree.get("fragmentShader", "");
-            m_resourcesMgr->addShaderProgram(name, vertexShaderFile, geometryShaderFile, fragmentShaderFile);
-        }
-        else if (assetType == "texture") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
-            if (assetTree.get_child("file").size() == 0) {
-                const std::string& file = assetTree.get<std::string>("file");
-                m_resourcesMgr->addTexture(name, file, wrap);
-            } else {
-                std::array<std::string, 6> files;
-                files[0] = assetTree.get<std::string>("file.right");
-                files[1] = assetTree.get<std::string>("file.left");
-                files[2] = assetTree.get<std::string>("file.top");
-                files[3] = assetTree.get<std::string>("file.bottom");
-                files[4] = assetTree.get<std::string>("file.back");
-                files[5] = assetTree.get<std::string>("file.front");
-                m_resourcesMgr->addTexture(name, files, wrap);
-            }
-        } else if (assetType == "font") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& file = assetTree.get<std::string>("file");
-            m_resourcesMgr->addFont(name, file);
-            auto text = std::make_shared<Text>(m_resourcesMgr->getFont(name));
-            text->setText("Hello World!\nLorem Ipsum dolor\nsit amet, consectetur adipiscing\nelit.\n1234567890[]{}");
-            text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
-            gameObjectManager().add(text);
-            m_fpsCounter.setText(text);
-        } else if (assetType == "mesh") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& file = assetTree.get<std::string>("file");
-            m_resourcesMgr->addMesh(name, file);
-        }
-    }
-
-    for (ptree::value_type& v : pt.get_child("config.scene")) {
+    auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));
+    text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
+    gameObjectManager().add(text);
+    m_fpsCounter.setText(text);
+    
+    for (ptree::value_type& v : pt.get_child("scene")) {
         const std::string& actorType  = v.first;
         ptree& actorTree = v.second;
 

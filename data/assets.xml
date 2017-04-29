@@ -1,0 +1,105 @@
+<assets>
+  <shaderProgram>
+    <name>default</name>
+    <vertexShader>default.vert</vertexShader>
+    <fragmentShader>default.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
+    <name>font</name>
+    <vertexShader>font.vert</vertexShader>
+    <fragmentShader>font.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
+    <name>normals</name>
+    <vertexShader>normals.vert</vertexShader>
+    <geometryShader>normals.geom</geometryShader>
+    <fragmentShader>normals.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
+    <name>skybox</name>
+    <vertexShader>skybox.vert</vertexShader>
+    <fragmentShader>skybox.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
+    <name>light</name>
+    <vertexShader>light.vert</vertexShader>
+    <fragmentShader>light.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
+    <name>lightAndTex</name>
+    <vertexShader>lightAndTex.vert</vertexShader>
+    <fragmentShader>lightAndTex.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
+    <name>terrain</name>
+    <vertexShader>terrain.vert</vertexShader>
+    <fragmentShader>terrain.frag</fragmentShader>
+  </shaderProgram>
+  
+  <texture>
+    <name>skybox_cubemap</name>
+    <file>
+      <right>envmap_stormydays/stormydays_ft.tga</right>
+      <left>envmap_stormydays/stormydays_bk.tga</left>
+      <top>envmap_stormydays/stormydays_up.tga</top>
+      <bottom>envmap_stormydays/stormydays_dn.tga</bottom>
+      <front>envmap_stormydays/stormydays_lf.tga</front>
+      <back>envmap_stormydays/stormydays_rt.tga</back>
+    </file>
+    <wrap>GL_CLAMP_TO_EDGE</wrap>
+  </texture>
+  <texture>
+    <name>cube_texture</name>
+    <file>texture_I.png</file>
+  </texture>
+  <texture>
+    <name>grass_diffuse</name>
+    <file>terrain/grass_green_d.jpg</file>
+  </texture>
+  <texture>
+    <name>snow_diffuse</name>
+    <file>terrain/snow_grass_d.jpg</file>
+  </texture>
+  <texture>
+    <name>rocky_diffuse</name>
+    <file>terrain/grass_rocky_d.jpg</file>
+  </texture>
+  <texture>
+    <name>ship_texture</name>
+    <file>ship.jpg</file>
+  </texture>
+
+  <font>
+    <name>ubuntu</name>
+    <file>ubuntu.fnt</file>
+  </font>
+
+  <mesh>
+    <name>teddy</name>
+    <file>teddy2.obj</file>
+  </mesh>
+  <mesh>
+    <name>cow</name>
+    <file>cow.obj</file>
+  </mesh>
+
+  <!--mesh>
+      <name>teapot</name>
+      <file>teapot.obj</file>
+    </mesh-->
+
+    <mesh>
+      <name>ship</name>
+      <file>ship.obj</file>
+    </mesh>
+
+    <mesh>
+      <name>cube</name>
+      <file>cube.obj</file>
+    </mesh>
+
+    <!--mesh>
+        <name>floor</name>
+        <file>floor.obj</file>
+      </mesh-->      
+</assets>
