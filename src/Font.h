@@ -39,6 +39,9 @@ class Font final
     unsigned getLineHeight() const;
     int getKerning(char prev, char next) const;
 
+    unsigned getScaleW() const;
+    unsigned getScaleH() const;
+
  private:
     struct Info {
         uint16_t size;

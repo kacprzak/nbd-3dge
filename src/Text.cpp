@@ -5,6 +5,14 @@
 Text::Text(std::shared_ptr<Font> font)
     : m_font{font}
 {
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_buffer);
+}
+
+Text::~Text()
+{
+    glDeleteVertexArrays(1, &m_vao);
+    glDeleteBuffers(1, &m_buffer);
 }
 
 void Text::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
@@ -14,17 +22,22 @@ void Text::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
 
 void Text::setText(const std::string& text)
 {
+    if (text == m_text)
+        return;
+    
     struct Vertex { float x, y, s, t; };
 
     m_text = text;
 
     std::vector<Vertex> verts;
     // Six vertices per glyph
-    std::size_t size = text.size() * 6;
-    verts.resize(size);
+    verts.reserve(text.size() * 6);
 
     float coursorX = 0.0f;
     float coursorY = 0.0f;
+
+    const float texW = m_font->getScaleW();
+    const float texH = m_font->getScaleH();
 
     char prev = '\0';
     for (std::size_t i = 0 ; i < text.size(); ++i) {
@@ -34,60 +47,61 @@ void Text::setText(const std::string& text)
             coursorX = 0.0f;
             coursorY -= m_font->getLineHeight();
         }
-        
+
         const auto& c = m_font->getChar(curr);
-        const auto& tex = m_font->getTexture(c);
-
-        const float texW = (float)tex->getWidth();
-        const float texH = (float)tex->getHeight();
-
-        //if (coursorX == 0.0f)
-        //    coursorX += c.xoffset;
-
         int kerning = m_font->getKerning(prev, curr);
-        //int kerning = 0;
+
+        if (c.width != 0 && c.height != 0) {
+            Vertex v[6];
         
-        auto& topLeft = verts[i*6];
-        topLeft.x = coursorX + c.xoffset + kerning;
-        topLeft.y = coursorY - c.yoffset;
-        topLeft.s = c.x / texW;
-        topLeft.t = 1.0f - c.y / texH;
+            auto& topLeft = v[0];
+            topLeft.x = coursorX + c.xoffset + kerning;
+            topLeft.y = coursorY - c.yoffset;
+            topLeft.s = c.x / texW;
+            topLeft.t = 1.0f - c.y / texH;
 
-        auto& bottomLeft = verts[i*6+1];
-        bottomLeft.x = topLeft.x;
-        bottomLeft.y = coursorY - (c.height + c.yoffset);
-        bottomLeft.s = topLeft.s;
-        bottomLeft.t = 1.0f - (c.y + c.height) / texH;
+            auto& bottomLeft = v[1];
+            bottomLeft.x = topLeft.x;
+            bottomLeft.y = coursorY - (c.height + c.yoffset);
+            bottomLeft.s = topLeft.s;
+            bottomLeft.t = 1.0f - (c.y + c.height) / texH;
 
-        auto& bottomRight = verts[i*6+2];
-        bottomRight.x = coursorX + c.xoffset + c.width + kerning;
-        bottomRight.y = bottomLeft.y;
-        bottomRight.s = (c.x + c.width) / texW;
-        bottomRight.t = bottomLeft.t;
+            auto& bottomRight = v[2];
+            bottomRight.x = coursorX + c.xoffset + c.width + kerning;
+            bottomRight.y = bottomLeft.y;
+            bottomRight.s = (c.x + c.width) / texW;
+            bottomRight.t = bottomLeft.t;
 
-        verts[i*6+3] = bottomRight;
+            v[3] = bottomRight;
         
-        auto& topRight = verts[i*6+4];
-        topRight.x = bottomRight.x;
-        topRight.y = topLeft.y;
-        topRight.s = bottomRight.s;
-        topRight.t = topLeft.t;
+            auto& topRight = v[4];
+            topRight.x = bottomRight.x;
+            topRight.y = topLeft.y;
+            topRight.s = bottomRight.s;
+            topRight.t = topLeft.t;
 
-        verts[i*6+5] = topLeft;
+            v[5] = topLeft;
+
+            for(size_t j = 0; j < 6; ++j)
+                verts.emplace_back(v[j]);
+        }
         
-        coursorX += c.xadvance;
-
+        coursorX += c.xadvance + kerning;
         prev = curr;
     }
 
-    glGenVertexArrays(1, &m_vao);
-    glGenBuffers(1, &m_buffer);
+    m_bufferSize = verts.size() * sizeof(Vertex);
 
     glBindVertexArray(m_vao);
-
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verts.size(), &verts[0], GL_DYNAMIC_DRAW);
 
+    if (m_bufferSize > m_bufferReservedSize) {
+        glBufferData(GL_ARRAY_BUFFER, m_bufferSize, 0, GL_DYNAMIC_DRAW);
+        m_bufferReservedSize = m_bufferSize;
+    }
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_bufferSize, &verts[0]);
+    
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glEnableVertexAttribArray(1);
@@ -98,11 +112,13 @@ void Text::setText(const std::string& text)
     m_modelMatrix = glm::mat4(1.0f);
     m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(-1.0f, 1.0f, 0.0f));
     m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(0.005f));
-
 }
 
 void Text::draw()
 {
+    if (m_text.empty())
+        return;
+    
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
@@ -116,7 +132,7 @@ void Text::draw()
     
     glBindVertexArray(m_vao);
 
-    glDrawArrays(GL_TRIANGLES, 0, m_text.size() * 6);
+    glDrawArrays(GL_TRIANGLES, 0, m_bufferSize);
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);

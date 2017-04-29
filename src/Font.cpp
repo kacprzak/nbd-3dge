@@ -44,3 +44,14 @@ int Font::getKerning(char prev, char next) const
     else
         return 0;
 }
+
+unsigned Font::getScaleW() const
+{
+    return m_common.scaleW;
+}
+
+unsigned Font::getScaleH() const
+{
+    return m_common.scaleH;
+}
+
