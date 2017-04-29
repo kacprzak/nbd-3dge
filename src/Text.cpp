@@ -105,6 +105,7 @@ void Text::draw()
 {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
 
     if (m_shaderProgram) {
         m_shaderProgram->use();
@@ -116,5 +117,7 @@ void Text::draw()
     glBindVertexArray(m_vao);
 
     glDrawArrays(GL_TRIANGLES, 0, m_text.size() * 6);
+
+    glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
 }

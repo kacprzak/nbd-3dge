@@ -105,7 +105,7 @@ void Game::loadData()
             const std::string& file = assetTree.get<std::string>("file");
             m_resourcesMgr->addFont(name, file);
             auto text = std::make_shared<Text>(m_resourcesMgr->getFont(name));
-            text->setText("Hello World!\nLorem Ipsum dolor\nsit amet, consectetur adipiscing\nelit.");
+            text->setText("Hello World!\nLorem Ipsum dolor\nsit amet, consectetur adipiscing\nelit.\n1234567890[]{}");
             text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
             gameObjectManager().add(text);
         } else if (assetType == "mesh") {
