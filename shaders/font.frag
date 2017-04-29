@@ -8,7 +8,7 @@ out vec4 fragColor;
 void main()
 {
     vec4 outputColor = texture2D(colorTexture, texCoord);
-    //    if (outputColor.a < 0.5)
-    //        discard;
     fragColor = outputColor;
+    //fragColor.ra = vec2(1,1);
+    //fragColor = vec4(1,1,1,1);
 }

@@ -73,7 +73,7 @@ Texture *Texture::create(const std::string &filename, bool clamp)
     GLenum format = textureFormat(&surface);
 
     SDL_LockSurface(surface);
-    glTexImage2D(target, 0, GL_SRGB8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexImage2D(target, 0, GL_SRGB8_ALPHA8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_UnlockSurface(surface);
 
     SDL_FreeSurface(surface);

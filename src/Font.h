@@ -16,15 +16,8 @@ class Font final
  public:
     Font();
 
-    std::vector<std::string> getTexturesFilenames() const
-        {
-            return m_pages;
-        }
-
-    void setTextures(const std::vector<std::shared_ptr<Texture>>& textures)
-    {
-        m_textures = textures;
-    }
+    std::vector<std::string> getTexturesFilenames() const;
+    void setTextures(const std::vector<std::shared_ptr<Texture>>& textures);
 
     struct Char
     {
@@ -40,20 +33,11 @@ class Font final
         uint8_t chnl;
     };
 
-    std::shared_ptr<Texture> getTexture(const Char& c) const
-        {
-            return m_textures.at(c.page);
-        }
-
-    std::shared_ptr<Texture> getTexture(int page) const
-        {
-            return m_textures.at(page);
-        }
-    
-    Char getChar(uint32_t code) const
-    {
-        return m_chars.at(code);
-    }
+    std::shared_ptr<Texture> getTexture(const Char& c) const;
+    std::shared_ptr<Texture> getTexture(int page) const;    
+    Char getChar(char c) const;
+    unsigned getLineHeight() const;
+    int getKerning(char prev, char next) const;
 
  private:
     struct Info {

@@ -5,6 +5,7 @@
 #include "ShaderProgram.h"
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <string>
 
 class Text
@@ -25,6 +26,8 @@ class Text
 
     GLuint m_vao;
     GLuint m_buffer;
+
+    glm::mat4 m_modelMatrix;
     std::size_t m_bufferSize = 0;
 };
 
