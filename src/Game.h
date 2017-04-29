@@ -5,6 +5,7 @@
 #include "ResourcesMgr.h"
 #include "Camera.h"
 #include "Settings.h"
+#include "FpsCounter.h"
 
 class Game : public SDLWindow
 {
@@ -32,6 +33,8 @@ class Game : public SDLWindow
     std::unique_ptr<ResourcesMgr> m_resourcesMgr;
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<ShaderProgram> m_normalsShader;
+
+    FpsCounter m_fpsCounter;
 
     float m_cameraSpeed = 50.0f;
 

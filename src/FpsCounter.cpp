@@ -1,9 +1,8 @@
 #include "FpsCounter.h"
 #include <iostream>
 
-FpsCounter::FpsCounter(float printInterval)
-    : m_fpsInterval(printInterval)
-    , m_fpsTimePassed(0.0f)
+FpsCounter::FpsCounter()
+    : m_timePassed(0.0f)
     , m_framesPassed(0)
 {
 }
@@ -11,11 +10,14 @@ FpsCounter::FpsCounter(float printInterval)
 void FpsCounter::update(float delta)
 {
     ++m_framesPassed;
-    m_fpsTimePassed += delta;
+    m_timePassed += delta;
 
-    if (m_fpsTimePassed > m_fpsInterval) {
-        std::cout << "fps: " << m_framesPassed / m_fpsTimePassed << std::endl;
+    if (m_timePassed > 1.0f) {
+        double val =  1000.0 / m_framesPassed;
+        if(m_text)
+            m_text->setText("ms/f: " + std::to_string(val));
+        
         m_framesPassed = 0;
-        m_fpsTimePassed -= m_fpsInterval;
+        m_timePassed -= 1.0f;
     }
 }

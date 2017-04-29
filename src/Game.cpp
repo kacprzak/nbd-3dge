@@ -108,6 +108,7 @@ void Game::loadData()
             text->setText("Hello World!\nLorem Ipsum dolor\nsit amet, consectetur adipiscing\nelit.\n1234567890[]{}");
             text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
             gameObjectManager().add(text);
+            m_fpsCounter.setText(text);
         } else if (assetType == "mesh") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
@@ -214,6 +215,8 @@ void Game::draw()
 
 void Game::update(float delta)
 {
+    m_fpsCounter.update(delta);
+    
     float cameraSpeedMultiplyer = 1.0f;
     if (m_shiftPressed)
         cameraSpeedMultiplyer = 5.0f;

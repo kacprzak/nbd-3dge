@@ -90,6 +90,7 @@ void Text::setText(const std::string& text)
         prev = curr;
     }
 
+    m_vertsCount = verts.size();
     m_bufferSize = verts.size() * sizeof(Vertex);
 
     glBindVertexArray(m_vao);
@@ -111,7 +112,7 @@ void Text::setText(const std::string& text)
     
     m_modelMatrix = glm::mat4(1.0f);
     m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(-1.0f, 1.0f, 0.0f));
-    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(0.005f));
+    m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(0.001f));
 }
 
 void Text::draw()
@@ -132,7 +133,7 @@ void Text::draw()
     
     glBindVertexArray(m_vao);
 
-    glDrawArrays(GL_TRIANGLES, 0, m_bufferSize);
+    glDrawArrays(GL_TRIANGLES, 0, m_vertsCount);
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);

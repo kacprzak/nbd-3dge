@@ -29,6 +29,7 @@ class Text final
     GLuint m_buffer = 0;
 
     glm::mat4 m_modelMatrix;
+    std::size_t m_vertsCount = 0;
     std::size_t m_bufferSize = 0;
     std::size_t m_bufferReservedSize = 0;
 };

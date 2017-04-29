@@ -1,17 +1,23 @@
 #ifndef FPSCOUNTER_H
 #define FPSCOUNTER_H
 
+#include "Text.h"
+
 class FpsCounter
 {
 public:
-    FpsCounter(float printInterval = 5.0f);
+    FpsCounter();
 
     void update(float delta);
+    void setText(std::shared_ptr<Text> text)
+    {
+        m_text = text;
+    }
 
 private:
-    const float m_fpsInterval;
-    float m_fpsTimePassed;
+    float m_timePassed;
     unsigned int m_framesPassed;
+    std::shared_ptr<Text> m_text;
 };
 
 #endif // FPSCOUNTER_H
