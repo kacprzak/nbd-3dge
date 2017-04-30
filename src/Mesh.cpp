@@ -72,12 +72,12 @@ Mesh *Mesh::create(const std::string& name,
     glGenVertexArrays(1, &mesh->m_vao);
     glGenBuffers(NUM_BUFFERS, mesh->m_buffers);
 
-    LOG_INFO << "Loaded: " << mesh->m_name << "\t vaoId: " << mesh->m_vao << '\n'
-             << "  Vertices: " << vertices.size()/3 << "\t id: " << mesh->m_buffers[VERTICES] << '\n'
-             << "  TexCoords: " << texcoords.size()/2 << "\t id: " << mesh->m_buffers[TEXCOORDS] << '\n'
-             << "  Normals: " << normals.size()/3 << "\t id: " << mesh->m_buffers[NORMALS] << '\n'
-             << "  Indices: " << indices.size() << "\t id: " << mesh->m_buffers[INDICES] << '\n'
-             << "  Primitive: " << primitive;
+    LOG_TRACE << "Loaded: " << mesh->m_name << "\t vaoId: " << mesh->m_vao << '\n'
+              << "  Vertices: " << vertices.size()/3 << "\t id: " << mesh->m_buffers[VERTICES] << '\n'
+              << "  TexCoords: " << texcoords.size()/2 << "\t id: " << mesh->m_buffers[TEXCOORDS] << '\n'
+              << "  Normals: " << normals.size()/3 << "\t id: " << mesh->m_buffers[NORMALS] << '\n'
+              << "  Indices: " << indices.size() << "\t id: " << mesh->m_buffers[INDICES] << '\n'
+              << "  Primitive: " << primitive;
 
     glBindVertexArray(mesh->m_vao);
 

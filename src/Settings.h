@@ -11,6 +11,11 @@ struct Settings
     bool fullscreen = false;
     std::string dataFolder;
     std::string shadersFolder;
+#ifndef NDEBUG
+    std::string logLevel = "debug";
+#else
+    std::string logLevel = "warning";
+#endif
 };
 
 #endif // SETTINGS_H
