@@ -74,7 +74,6 @@ void SDLWindow::createSDLWindow()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetSwapInterval(1);
 
     m_glContext = SDL_GL_CreateContext(m_window);
     if (!m_glContext) {
@@ -82,8 +81,24 @@ void SDLWindow::createSDLWindow()
         throw EngineError("Creating OpenGL context failed", SDL_GetError());
     }
 
+    int contexMajorVersion;
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMajorVersion);
+    int contexMinorVersion;
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMinorVersion);
+    std::cout << "GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion << '\n';
+    toggleVSync();
+    
     // No SDL related stuff
     initializeOpenGL();
+}
+
+void SDLWindow::toggleVSync()
+{
+    m_swapInterval = (m_swapInterval == 0) ? 1 : 0;
+    
+    SDL_GL_SetSwapInterval(m_swapInterval);    
+    m_swapInterval = SDL_GL_GetSwapInterval();
+    std::cout << "SwapInterval: " << m_swapInterval << '\n';
 }
 
 SDLWindow::~SDLWindow()

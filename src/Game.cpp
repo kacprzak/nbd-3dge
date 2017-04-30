@@ -325,6 +325,9 @@ void Game::keyReleased(const SDL_Event& event)
             }
         }
         break;
+    case SDL_SCANCODE_V:
+        toggleVSync();
+        break;
     default:
         break;
     }

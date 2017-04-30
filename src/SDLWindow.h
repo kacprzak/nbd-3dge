@@ -34,6 +34,7 @@ protected:
     void postDraw();
 
     void setMouseRelativeMode(bool enable);
+    void toggleVSync();
 
  private:
     void createSDLWindow();
@@ -47,6 +48,7 @@ protected:
 
     SDL_Window* m_window;
     SDL_GLContext m_glContext;
+    int m_swapInterval = 0; //< Vsync on:1 off:0
 
     GameObjectManager m_gom;
 };
