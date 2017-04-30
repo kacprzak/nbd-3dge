@@ -1,10 +1,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Actor.h"
+#include "GfxNode.h"
 #include <glm/glm.hpp>
 
-class Camera : public Actor
+class Camera : public GfxNode
 {
  public:
     Camera();

@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera() : Actor{"camera"}
+Camera::Camera() : GfxNode{"camera"}
 {
     float ratio = 800 / float(600);
     setPerspective(45.0f, ratio, 1.0f, 1200.0f);
@@ -26,7 +26,7 @@ const glm::mat4& Camera::projectionMatrix() const
 
 void Camera::refresh()
 {
-    Actor::refresh();
+    GfxNode::refresh();
 
     m_viewMatrix = glm::mat4(1.0f);
     glm::vec3 orien = orientation();

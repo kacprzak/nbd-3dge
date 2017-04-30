@@ -3,9 +3,7 @@
 
 #include "GameView.h"
 
-#include "GameObjectManager.h"
 #include "Settings.h"
-
 #include <GL/glew.h>
 
 class SDLWindow : public GameView
@@ -14,11 +12,9 @@ public:
     SDLWindow(const Settings& settings);
     virtual ~SDLWindow();
 
-    void update(float delta) override;
+    bool processInput(const SDL_Event& event) override;
 
 protected:
-    bool processInput(const SDL_Event& event) override;
-    
     virtual void resizeWindow(int width, int height);
     
     virtual void mouseMoved(const SDL_Event& event) = 0;
@@ -27,8 +23,6 @@ protected:
 
     virtual void keyPressed(const SDL_Event& event) = 0;
     virtual void keyReleased(const SDL_Event& event) = 0;
-
-    GameObjectManager& gameObjectManager() { return m_gom; }
 
     void preDraw();
     void postDraw();
@@ -49,8 +43,6 @@ protected:
     SDL_Window* m_window;
     SDL_GLContext m_glContext;
     int m_swapInterval = 0; //< Vsync on:1 off:0
-
-    GameObjectManager m_gom;
 };
 
 #endif // SDLWINDOW_H

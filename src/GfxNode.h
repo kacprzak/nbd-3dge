@@ -10,11 +10,11 @@
 
 class Camera;
 
-class Actor
+class GfxNode
 {
  public:
-    Actor(const std::string& name);
-    virtual ~Actor() {};
+    GfxNode(const std::string& name);
+    virtual ~GfxNode() {};
 
     const std::string& name() { return m_name; }
 

@@ -15,7 +15,7 @@
 class RotationScript : public Script
 {
 public:
-    void execute(float delta, Actor *a) override
+    void execute(float delta, GfxNode *a) override
     {
         if (m_paused)
             return;
@@ -75,7 +75,7 @@ void GameClient::loadData(const Settings& s)
     
     auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));
     text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
-    gameObjectManager().add(text);
+    m_scene.add(text);
     m_fpsCounter.setText(text);
     
     for (ptree::value_type& v : pt.get_child("scene")) {
@@ -89,7 +89,7 @@ void GameClient::loadData(const Settings& s)
 
             m_camera = std::make_shared<Camera>();
             m_camera->moveTo(x, y, z);
-            gameObjectManager().setCamera(m_camera);
+            m_scene.setCamera(m_camera);
         }
         else if (actorType == "skybox") {
             const std::string& texture = actorTree.get<std::string>("texture");
@@ -98,7 +98,7 @@ void GameClient::loadData(const Settings& s)
             auto skybox = std::make_shared<Skybox>(m_resourcesMgr->getTexture(texture));
             skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
-            gameObjectManager().setSkybox(skybox);
+            m_scene.setSkybox(skybox);
         }
         else if (actorType == "terrain") {
             const std::string& name = actorTree.get<std::string>("name");
@@ -121,7 +121,7 @@ void GameClient::loadData(const Settings& s)
             
             a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
 
-            gameObjectManager().add(a);
+            m_scene.add(a);
         }
         else if (actorType == "actor") {
             const std::string& name = actorTree.get<std::string>("name");
@@ -133,7 +133,7 @@ void GameClient::loadData(const Settings& s)
             float y = actorTree.get("position.y", 0.0f);
             float z = actorTree.get("position.z", 0.0f);
             
-            auto a = std::make_shared<Actor>(name);
+            auto a = std::make_shared<GfxNode>(name);
             a->setScale(scale);
             a->moveTo(x, y, z);
 
@@ -152,7 +152,7 @@ void GameClient::loadData(const Settings& s)
             if (a->name() != "floor")
                 a->setScript(rotationScript);
            
-            gameObjectManager().add(a);
+            m_scene.add(a);
         }
     }
 }
@@ -163,11 +163,10 @@ void GameClient::draw()
 {
     preDraw();
 
-    //super::draw();
-    gameObjectManager().draw(m_camera.get());
+    m_scene.draw(m_camera.get());
 
     if (m_normalsShader) {
-        gameObjectManager().draw(m_normalsShader.get(), m_camera.get());
+        m_scene.draw(m_normalsShader.get(), m_camera.get());
     }
 
     postDraw();
@@ -199,7 +198,7 @@ void GameClient::update(float delta)
         m_camera->moveLeft(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
-    super::update(delta);
+    m_scene.update(delta);
 }
 
 //------------------------------------------------------------------------------

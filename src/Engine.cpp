@@ -1,7 +1,6 @@
 #include "Engine.h"
 
 #include "Logger.h"
-//#include "ResourceMgr.h"
 //#include "network/BaseSocketMgr.h"
 
 #include <cstdlib> // exit
@@ -29,8 +28,6 @@ Engine::Engine(bool initVideo)
 
 Engine::~Engine()
 {
-    //ResourceMgr::singleton().releaseTextures(); // Before SDL is closed
-
     LOG << "Quitting SDL...\n";
     SDL_Quit();
 }

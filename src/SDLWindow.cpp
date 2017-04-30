@@ -130,11 +130,6 @@ bool SDLWindow::processInput(const SDL_Event& event)
     return true;
 }
 
-void SDLWindow::update(float delta)
-{
-    m_gom.update(delta);
-}
-
 void SDLWindow::initializeOpenGL()
 {
     GLenum glewInitStatus = glewInit();

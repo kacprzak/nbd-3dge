@@ -1,18 +1,18 @@
 #ifndef GAMEOBJECTMANAGER_H
 #define GAMEOBJECTMANAGER_H
 
-#include "Actor.h"
+#include "GfxNode.h"
 #include "Skybox.h"
 #include <set>
 #include "ShaderProgram.h"
 #include "Camera.h"
 #include "Text.h"
 
-class GameObjectManager
+class GfxScene
 {
 public:
-    GameObjectManager();
-    ~GameObjectManager();
+    GfxScene();
+    ~GfxScene();
 
     void setSkybox(std::shared_ptr<Skybox> skybox) {
         m_skybox = skybox;
@@ -22,10 +22,10 @@ public:
         m_camera = camera;
     }
 
-    void add(std::shared_ptr<Actor> actor) {
+    void add(std::shared_ptr<GfxNode> actor) {
         m_actors.insert(actor);
     }
-    void remove(std::shared_ptr<Actor> actor) {
+    void remove(std::shared_ptr<GfxNode> actor) {
         m_actors.erase(actor);
     }
 
@@ -36,7 +36,7 @@ public:
         m_texts.erase(actor);
     }
     
-    const std::set<std::shared_ptr<Actor>>& actors() const {
+    const std::set<std::shared_ptr<GfxNode>>& actors() const {
         return m_actors;
     }
 
@@ -46,7 +46,7 @@ public:
     void update(float delta);
 
 private:
-    std::set<std::shared_ptr<Actor>> m_actors;
+    std::set<std::shared_ptr<GfxNode>> m_actors;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
     std::set<std::shared_ptr<Text>> m_texts;

@@ -1,14 +1,14 @@
-#include "GameObjectManager.h"
+#include "GfxScene.h"
 
-GameObjectManager::GameObjectManager()
+GfxScene::GfxScene()
 {
 }
 
-GameObjectManager::~GameObjectManager()
+GfxScene::~GfxScene()
 {
 }
 
-void GameObjectManager::draw(const Camera* camera) const
+void GfxScene::draw(const Camera* camera) const
 {
     if (m_skybox)
         m_skybox->draw(camera);
@@ -25,7 +25,7 @@ void GameObjectManager::draw(const Camera* camera) const
     }
 }
 
-void GameObjectManager::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+void GfxScene::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
     //if (m_skybox)
     //    m_skybox->draw(shaderProgram, camera);
@@ -42,7 +42,7 @@ void GameObjectManager::draw(ShaderProgram* shaderProgram, const Camera* camera)
     }
 }
 
-void GameObjectManager::update(float delta)
+void GfxScene::update(float delta)
 {  
     if (m_camera) {
         m_camera->update(delta);

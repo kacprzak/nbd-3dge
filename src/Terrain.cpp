@@ -4,7 +4,7 @@
 #include <SDL_image.h>
 
 Terrain::Terrain(const std::string& name, const std::string& heightMapPath)
-    : Actor{name}
+    : GfxNode{name}
 {
     SDL_Surface* surface = IMG_Load(heightMapPath.c_str());
     

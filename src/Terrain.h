@@ -1,9 +1,9 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "Actor.h"
+#include "GfxNode.h"
 
-class Terrain : public Actor
+class Terrain : public GfxNode
 {
  public:
     Terrain(const std::string& name, const std::string& heightMapPath);

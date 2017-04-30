@@ -5,6 +5,7 @@
 #include "ResourcesMgr.h"
 #include "Camera.h"
 #include "Settings.h"
+#include "GfxScene.h"
 #include "FpsCounter.h"
 
 class GameClient : public SDLWindow
@@ -17,8 +18,8 @@ class GameClient : public SDLWindow
  protected:
     void resizeWindow(int width, int height) override;
 
-    void draw() override;
     void update(float delta) override;
+    void draw() override;
 
     void mouseMoved(const SDL_Event& event) override;
     void mouseButtonPressed(const SDL_Event& event) override;
@@ -33,6 +34,7 @@ class GameClient : public SDLWindow
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<ShaderProgram> m_normalsShader;
 
+    GfxScene m_scene;
     FpsCounter m_fpsCounter;
 
     float m_cameraSpeed = 50.0f;

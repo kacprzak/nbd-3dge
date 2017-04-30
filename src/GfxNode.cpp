@@ -1,4 +1,4 @@
-#include "Actor.h"
+#include "GfxNode.h"
 
 #include "Camera.h"
 
@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-Actor::Actor(const std::string& name)
+GfxNode::GfxNode(const std::string& name)
     : m_name{name}
     , m_state{Idle}
     , m_position(glm::vec3(0.0f))
@@ -16,32 +16,32 @@ Actor::Actor(const std::string& name)
 {
 }
 
-void Actor::setTextures(std::vector<std::shared_ptr<Texture>> textures)
+void GfxNode::setTextures(std::vector<std::shared_ptr<Texture>> textures)
 {
     m_textures = textures;
 }
 
-void Actor::addTexture(std::shared_ptr<Texture> texture)
+void GfxNode::addTexture(std::shared_ptr<Texture> texture)
 {
     m_textures.push_back(texture);
 }
 
-void Actor::setMesh(std::shared_ptr<Mesh> mesh)
+void GfxNode::setMesh(std::shared_ptr<Mesh> mesh)
 {
     m_mesh = mesh;
 }
 
-void Actor::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
+void GfxNode::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
 {
     m_shaderProgram = shaderProgram;
 }
 
-void Actor::setScript(std::shared_ptr<Script> script)
+void GfxNode::setScript(std::shared_ptr<Script> script)
 {
     m_script = script;
 }
 
-void Actor::rebuildModelMatrix()
+void GfxNode::rebuildModelMatrix()
 {
     m_modelMatrix = glm::mat4(1.0f);
 
@@ -54,31 +54,31 @@ void Actor::rebuildModelMatrix()
     m_modelMatrix = glm::scale(m_modelMatrix, m_scale);
 }
 
-void Actor::move(float x, float y, float z)
+void GfxNode::move(float x, float y, float z)
 {
     m_position += glm::vec3(x, y, z);
     m_dirty = true;
 }
 
-void Actor::move(const glm::vec3& pos)
+void GfxNode::move(const glm::vec3& pos)
 {
     m_position += pos;
     m_dirty = true;
 }
 
-void Actor::moveTo(float x, float y, float z)
+void GfxNode::moveTo(float x, float y, float z)
 {
     m_position = glm::vec3(x, y, z);
     m_dirty = true;
 }
 
-void Actor::moveTo(const glm::vec3& pos)
+void GfxNode::moveTo(const glm::vec3& pos)
 {
     m_position = pos;
     m_dirty = true;
 }
 
-void Actor::moveForward(float distance)
+void GfxNode::moveForward(float distance)
 {
     glm::vec3 base(0.0f, 0.0f, 1.0f);
 
@@ -89,7 +89,7 @@ void Actor::moveForward(float distance)
     move(base * distance);
 }
 
-void Actor::moveRight(float distance)
+void GfxNode::moveRight(float distance)
 {
     glm::vec3 base(-1.0f, 0.0f, 0.0f);
 
@@ -100,17 +100,17 @@ void Actor::moveRight(float distance)
     move(base * distance);
 }
 
-void Actor::moveLeft(float distance)
+void GfxNode::moveLeft(float distance)
 {
     moveRight(-distance);
 }
 
-void Actor::draw(const Camera* camera) const
+void GfxNode::draw(const Camera* camera) const
 {        
     draw(m_shaderProgram.get(), camera);
 }
 
-void Actor::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
     for (size_t i = 0; i < m_textures.size(); ++i) {
         m_textures[i]->bind(i);
@@ -134,7 +134,7 @@ void Actor::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         m_mesh->draw();
 }
 
-void Actor::update(float deltaTime)
+void GfxNode::update(float deltaTime)
 {
     if (m_script)
         m_script->execute(deltaTime, this);
@@ -145,24 +145,24 @@ void Actor::update(float deltaTime)
     }
 }
 
-void Actor::refresh()
+void GfxNode::refresh()
 {
     rebuildModelMatrix();
 }
 
-void Actor::setOrientation(float x, float y, float z)
+void GfxNode::setOrientation(float x, float y, float z)
 {
     m_orientation = glm::vec3(x, y, z);
     m_dirty = true;
 }
 
-void Actor::rotate(float x, float y, float z)
+void GfxNode::rotate(float x, float y, float z)
 {
     m_orientation += glm::vec3(x, y, z);
     m_dirty = true;
 }
 
-void Actor::setScale(float s)
+void GfxNode::setScale(float s)
 {
     m_scale = glm::vec3(s);
     m_dirty = true;
