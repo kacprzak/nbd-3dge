@@ -2,7 +2,7 @@
 
 #include "ObjLoader.h"
 #include "Util.h"
-#include <iostream>
+#include "Logger.h"
 #include <cstring>
 
 Mesh::Mesh(const std::string& name, GLenum primitive)
@@ -16,7 +16,7 @@ Mesh::~Mesh()
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(NUM_BUFFERS, m_buffers);
 
-    std::cout << "Released: " << m_name << std::endl;
+    LOG_INFO << "Released: " << m_name;
 }
 
 void Mesh::draw() const
@@ -47,7 +47,7 @@ Mesh *Mesh::create(const std::string& objfileName)
 
     std::string name = extractFilename(objfileName);
 
-    std::cout << "Loading... " << name << '\n';
+    LOG_INFO << "Loading... " << name;
 
     return create(name,
                   objLoader.vertices(),
@@ -72,12 +72,12 @@ Mesh *Mesh::create(const std::string& name,
     glGenVertexArrays(1, &mesh->m_vao);
     glGenBuffers(NUM_BUFFERS, mesh->m_buffers);
 
-    std::cout << "Loaded: " << mesh->m_name << "\t vaoId: " << mesh->m_vao << "\n";
-    std::cout << "  Vertices: " << vertices.size()/3 << "\t id: " << mesh->m_buffers[VERTICES] << "\n";
-    std::cout << "  TexCoords: " << texcoords.size()/2 << "\t id: " << mesh->m_buffers[TEXCOORDS] << "\n";
-    std::cout << "  Normals: " << normals.size()/3 << "\t id: " << mesh->m_buffers[NORMALS] << "\n";
-    std::cout << "  Indices: " << indices.size() << "\t id: " << mesh->m_buffers[INDICES] << "\n";
-    std::cout << "  Primitive: " << primitive << std::endl;
+    LOG_INFO << "Loaded: " << mesh->m_name << "\t vaoId: " << mesh->m_vao << '\n'
+             << "  Vertices: " << vertices.size()/3 << "\t id: " << mesh->m_buffers[VERTICES] << '\n'
+             << "  TexCoords: " << texcoords.size()/2 << "\t id: " << mesh->m_buffers[TEXCOORDS] << '\n'
+             << "  Normals: " << normals.size()/3 << "\t id: " << mesh->m_buffers[NORMALS] << '\n'
+             << "  Indices: " << indices.size() << "\t id: " << mesh->m_buffers[INDICES] << '\n'
+             << "  Primitive: " << primitive;
 
     glBindVertexArray(mesh->m_vao);
 

@@ -1,12 +1,10 @@
 #include "Texture.h"
 
 #include "Util.h"
+#include "Logger.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
-
-#include <iostream>
-
 
 static GLenum textureFormat(SDL_Surface** surface);
 static int SDL_InvertSurface(SDL_Surface* image);
@@ -24,7 +22,7 @@ Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureId);
     glDeleteSamplers(1, &m_samplerId);
-    std::cout << "Released: " << m_filename << " texId: "<< m_textureId << std::endl;
+    LOG_INFO << "Released: " << m_filename << " texId: "<< m_textureId;
 }
 
 void Texture::bind(int textureUnit)
@@ -80,8 +78,8 @@ Texture *Texture::create(const std::string &filename, bool clamp)
     
     glGenerateMipmap(GL_TEXTURE_2D);
     
-    std::cout << "Loaded: " << tex->m_filename << " texId: "<< tex->m_textureId
-              << " (" << tex->m_w << " x " << tex->m_h << ")" << std::endl;
+    LOG_INFO << "Loaded: " << tex->m_filename << " texId: "<< tex->m_textureId
+             << " (" << tex->m_w << " x " << tex->m_h << ")";
 
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -121,8 +119,8 @@ Texture *Texture::create(const std::array<std::string, 6> filenames, bool clamp)
         SDL_UnlockSurface(surface);
 
     
-        std::cout << "Loaded: " << extractFilename(filenames[i]) << " texId: "<< tex->m_textureId
-                  << " (" << tex->m_w << " x " << tex->m_h << ")" << std::endl;
+        LOG_INFO << "Loaded: " << extractFilename(filenames[i]) << " texId: "<< tex->m_textureId
+                 << " (" << tex->m_w << " x " << tex->m_h << ")";
 
         SDL_FreeSurface(surface);
     }
@@ -168,7 +166,7 @@ static GLenum textureFormat(SDL_Surface** surface)
         SDL_Surface* nimg = SDL_ConvertSurface(*surface, &fmt, 0);
 
         if (!nimg) {
-            std::cerr << "SDL error: " << SDL_GetError() << "\n";
+            LOG_WARNING << "SDL error: " << SDL_GetError();
             return 0;
         }
 

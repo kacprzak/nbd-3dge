@@ -4,6 +4,7 @@
 //#include "network/BaseSocketMgr.h"
 
 #include <cstdlib> // exit
+#include <sstream>
 
 // Maximum delta value passed to update 1/25 [s]
 #define DELTA_MAX 0.04f
@@ -28,7 +29,7 @@ Engine::Engine(bool initVideo)
 
 Engine::~Engine()
 {
-    LOG << "Quitting SDL...\n";
+    LOG_INFO << "Quitting SDL";
     SDL_Quit();
 }
 
@@ -36,7 +37,7 @@ Engine::~Engine()
 
 void Engine::initializeSDL()
 {
-    LOG << "Initializing SDL...\n";
+    LOG_INFO << "Initializing SDL";
 
     logSDLInfo();
 
@@ -50,11 +51,10 @@ void Engine::initializeSDL()
     }
 
     if (m_initVideo) {
-        LOG << "  Current video driver: " << SDL_GetCurrentVideoDriver()
-            << "\n";
+        LOG_INFO << "Current video driver: " << SDL_GetCurrentVideoDriver();
     }
 
-    LOG << "SDL initialized\n";
+    LOG_INFO << "SDL initialized";
 }
 
 //------------------------------------------------------------------------------
@@ -66,18 +66,20 @@ void Engine::logSDLInfo()
 
     SDL_VERSION(&compiled);
     SDL_GetVersion(&linked);
-    LOG << "  Compiled against SDL " << (uint32_t)compiled.major << "."
-        << (uint32_t)compiled.minor << "." << (uint32_t)compiled.patch
-        << std::endl;
-    LOG << "  Linking against SDL " << (uint32_t)linked.major << "."
-        << (uint32_t)linked.minor << "." << (uint32_t)linked.patch << std::endl;
+
+    std::stringstream ss;
+    LOG_INFO << "Compiled against SDL: " << (uint32_t)compiled.major << "."
+       << (uint32_t)compiled.minor << "." << (uint32_t)compiled.patch;
+    LOG_INFO << "Linked against SDL: " << (uint32_t)linked.major << "."
+       << (uint32_t)linked.minor << "." << (uint32_t)linked.patch;
 
     if (m_initVideo) {
-        LOG << "  Video drivers available:" << std::endl;
+        ss << "Video drivers available: ";
         for (int i = 0; i < SDL_GetNumVideoDrivers(); ++i) {
-            LOG << "    " << SDL_GetVideoDriver(i) << std::endl;
+            ss << SDL_GetVideoDriver(i) << ' ';
         }
     }
+    LOG_INFO << ss.str();
 }
 
 //------------------------------------------------------------------------------

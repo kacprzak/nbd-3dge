@@ -1,8 +1,9 @@
 #include "FontLoader.h"
 
 #include "Util.h"
+#include "Logger.h"
+
 #include <boost/lexical_cast.hpp>
-#include <iostream>
 
 static void removeQuotes(std::string& s)
 {
@@ -181,9 +182,8 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
 
 void FontLoader::fileLoaded()
 {
-    std::cout << "Loaded: fontFace: " << m_font->m_info.face
-              << " chars: " << m_font->m_chars.size()
-              << " kernings: " << m_font->m_kerning.size()
-              << std::endl;
+    LOG_INFO << "Loaded: fontFace: " << m_font->m_info.face
+             << ", chars: " << m_font->m_chars.size()
+             << ", kernings: " << m_font->m_kerning.size();
 }
 

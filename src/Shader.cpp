@@ -1,7 +1,8 @@
 #include "Shader.h"
 
 #include "Util.h"
-//#include <boost/filesystem.hpp>
+#include "Logger.h"
+
 #include <boost/algorithm/string.hpp>
 #include <iostream>
 #include <fstream>
@@ -19,8 +20,8 @@ Shader::Shader(GLenum type, const std::string& filename)
     ifstream f(filename.c_str());
 
     if (f.is_open() == true) {
-        source.assign((istreambuf_iterator<char>(f) ),
-                      (istreambuf_iterator<char>()  ));
+        source.assign((istreambuf_iterator<char>(f)),
+                      (istreambuf_iterator<char>() ));
         f.close();
     } else {
         throw std::runtime_error{"File not found: " + filename};
@@ -28,7 +29,7 @@ Shader::Shader(GLenum type, const std::string& filename)
 
     m_shaderId = glCreateShader(m_type);
 
-    std::cout << "Compiling: " << extractFilename(filename) << "\tid: " << m_shaderId << std::endl;
+    LOG_INFO << "Compiling: " << extractFilename(filename) << "\tid: " << m_shaderId;
 
     const GLchar *shaderSource[1];
     shaderSource[0] = source.c_str();
@@ -55,8 +56,8 @@ Shader::Shader(GLenum type, const std::string& filename)
         case GL_FRAGMENT_SHADER: strShaderType = "fragment"; break;
         }
 
-        std::cerr << "Compile failure in " << strShaderType << " shader:\n"
-                  << strInfoLog << "\n";
+        LOG_ERROR << "Compile failure in " << strShaderType << " shader:\n"
+                  << strInfoLog;
         delete[] strInfoLog;
     }
 }

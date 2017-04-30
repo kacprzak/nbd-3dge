@@ -18,7 +18,7 @@ find_package( SDL2 REQUIRED )
 find_package( SDL2_image REQUIRED )
 find_package( OpenGL REQUIRED )
 
-set( Boost_COMPONENTS program_options )
+set( Boost_COMPONENTS program_options log )
 if( UNIX )
   list( APPEND Boost_COMPONENTS unit_test_framework )
 endif()

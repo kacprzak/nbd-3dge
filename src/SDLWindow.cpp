@@ -2,8 +2,7 @@
 
 #include "Engine.h"
 #include "FpsCounter.h"
-
-#include <iostream>
+#include "Logger.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -20,10 +19,11 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/,
                                             const void* /*userParam*/)
 {
     if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) {
-        fprintf(stderr, "%s\n", message);
         if (severity == GL_DEBUG_SEVERITY_HIGH) {
-            fprintf(stderr, "Aborting...\n");
+            LOG_ERROR << message;
             abort();
+        } else {
+            LOG_WARNING << message;
         }
     }
 }
@@ -85,7 +85,7 @@ void SDLWindow::createSDLWindow()
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMajorVersion);
     int contexMinorVersion;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMinorVersion);
-    std::cout << "GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion << '\n';
+    LOG_INFO << "GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion;
     toggleVSync();
     
     // No SDL related stuff
@@ -98,7 +98,7 @@ void SDLWindow::toggleVSync()
     
     SDL_GL_SetSwapInterval(m_swapInterval);    
     m_swapInterval = SDL_GL_GetSwapInterval();
-    std::cout << "SwapInterval: " << m_swapInterval << '\n';
+    LOG_INFO << "SwapInterval: " << m_swapInterval;
 }
 
 SDLWindow::~SDLWindow()
@@ -135,7 +135,7 @@ void SDLWindow::initializeOpenGL()
     GLenum glewInitStatus = glewInit();
 
     if (GLEW_OK != glewInitStatus) {
-        std::cerr << "ERROR: " << glewGetErrorString(glewInitStatus);
+        LOG_FATAL << "glewInitStatus: " << glewGetErrorString(glewInitStatus);
         exit(1);
     }
 
@@ -165,11 +165,10 @@ void SDLWindow::initializeOpenGL()
 #endif
 }
 
-/* function to reset our viewport after a window resize */
+//------------------------------------------------------------------------------
+
 void SDLWindow::resizeWindow(int width, int height)
 {
-    //std::cout << "resizeWindow " << width << " " << height << std::endl;
-
     /* Setup our viewport. */
     glViewport(0, 0, GLsizei(width), GLsizei(height));
 }

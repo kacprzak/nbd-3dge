@@ -1,5 +1,6 @@
 #include "Logger.h"
 
+/*
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -29,7 +30,7 @@ void logHelper(int sockId, const char* data, unsigned int size, const char* msg)
 
     buf_hex_ptr                = buf_hex;
     char* buf_ptr              = buf;
-    const size_t sizeof_uint32 = 4; // sizeof(u_int32_t);
+    const std::size_t sizeof_uint32 = 4; // sizeof(u_int32_t);
     if (!SHOW_PKT_SIZE && (size > sizeof_uint32)) {
         buf_hex_ptr += sizeof_uint32 * 2 + 4; // plus 4 ':' chars
         buf_ptr += sizeof_uint32;
@@ -39,3 +40,4 @@ void logHelper(int sockId, const char* data, unsigned int size, const char* msg)
               << size << " B: "
               << "|" << buf_hex_ptr << "||" << buf_ptr << "|" << std::endl;
 }
+*/

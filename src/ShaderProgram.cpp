@@ -1,9 +1,10 @@
 #include "ShaderProgram.h"
 
-#include <glm/gtc/type_ptr.hpp>
+#include "Logger.h"
 
-#include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 #include <iterator>
+#include <sstream>
 
 ShaderProgram::ShaderProgram()
     : m_linked(false)
@@ -29,10 +30,11 @@ void ShaderProgram::link()
 
     glLinkProgram(m_shaderProgramId);
 
-    std::cout << "Linking: ";
+    std::stringstream ss;
+    ss << "Linking: ";
     for (const auto& s : m_shaders)
-        std::cout << s->id() << " ";
-    std::cout << "\tid: " << m_shaderProgramId << std::endl;
+        ss << s->id() << " ";
+    LOG_INFO << ss.str() << "\tid: " << m_shaderProgramId;
     
     GLint status;
     glGetProgramiv(m_shaderProgramId, GL_LINK_STATUS, &status);
@@ -43,7 +45,7 @@ void ShaderProgram::link()
 
         GLchar *strInfoLog = new GLchar[infoLogLength + 1];
         glGetProgramInfoLog(m_shaderProgramId, infoLogLength, 0, strInfoLog);
-        std::cout << "Linker failure: " << strInfoLog << std::endl;
+        LOG_WARNING << "Linker failure: " << strInfoLog;
         delete [] strInfoLog;
     }
 
