@@ -2,7 +2,7 @@
 
 #include "Engine.h"
 #include "GameLogic.h"
-#include "Game.h"
+#include "GameClient.h"
 #include "Settings.h"
 
 #include <boost/program_options.hpp>
@@ -56,7 +56,7 @@ int main(int ac, char** av)
     
     Engine engine;
     GameLogic game;
-    game.attachView(std::make_shared<Game>(settings));
+    game.attachView(std::make_shared<GameClient>(settings));
     engine.mainLoop(&game);
 
     return 0;

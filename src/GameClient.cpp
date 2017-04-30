@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "GameClient.h"
 
 #include "Texture.h"
 #include "Skybox.h"
@@ -35,7 +35,7 @@ private:
 
 //==============================================================================
 
-Game::Game(const Settings& settings)
+GameClient::GameClient(const Settings& settings)
     : SDLWindow{settings}
 {
     loadData(settings);
@@ -43,7 +43,7 @@ Game::Game(const Settings& settings)
 
 //------------------------------------------------------------------------------
 
-void Game::resizeWindow(int width, int height)
+void GameClient::resizeWindow(int width, int height)
 {
     /* Protect against a divide by zero */
     if (height == 0)
@@ -58,7 +58,7 @@ void Game::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void Game::loadData(const Settings& s)
+void GameClient::loadData(const Settings& s)
 {
     // Load scene
     using boost::property_tree::ptree;
@@ -159,7 +159,7 @@ void Game::loadData(const Settings& s)
 
 //------------------------------------------------------------------------------
 
-void Game::draw()
+void GameClient::draw()
 {
     preDraw();
 
@@ -175,7 +175,7 @@ void Game::draw()
 
 //------------------------------------------------------------------------------
 
-void Game::update(float delta)
+void GameClient::update(float delta)
 {
     m_fpsCounter.update(delta);
     
@@ -204,7 +204,7 @@ void Game::update(float delta)
 
 //------------------------------------------------------------------------------
 
-void Game::mouseMoved(const SDL_Event& event)
+void GameClient::mouseMoved(const SDL_Event& event)
 {
     float mouseSensity = 0.01f;
 
@@ -213,7 +213,7 @@ void Game::mouseMoved(const SDL_Event& event)
                          -event.motion.xrel * mouseSensity, 0.0f);
 }
 
-void Game::mouseButtonPressed(const SDL_Event& event)
+void GameClient::mouseButtonPressed(const SDL_Event& event)
 {
     switch(event.button.button) {
     case SDL_BUTTON_LEFT:
@@ -223,7 +223,7 @@ void Game::mouseButtonPressed(const SDL_Event& event)
     }
 }
 
-void Game::mouseButtonReleased(const SDL_Event& event)
+void GameClient::mouseButtonReleased(const SDL_Event& event)
 {
     switch(event.button.button) {
     case SDL_BUTTON_LEFT:
@@ -235,7 +235,7 @@ void Game::mouseButtonReleased(const SDL_Event& event)
 
 //------------------------------------------------------------------------------
 
-void Game::keyPressed(const SDL_Event& event)
+void GameClient::keyPressed(const SDL_Event& event)
 {
     switch(event.key.keysym.sym) {
     case SDLK_w:
@@ -262,7 +262,7 @@ void Game::keyPressed(const SDL_Event& event)
 
 }
 
-void Game::keyReleased(const SDL_Event& event)
+void GameClient::keyReleased(const SDL_Event& event)
 {
     switch(event.key.keysym.sym) {
     case SDLK_w:

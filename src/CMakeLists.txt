@@ -7,7 +7,7 @@ set( nbd-3dge_SRCS
     Mesh.cpp
     GameObjectManager.cpp
     SDLWindow.cpp
-    Game.cpp
+    GameClient.cpp
     Util.cpp
     Texture.cpp
     Loader.cpp

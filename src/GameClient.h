@@ -7,12 +7,12 @@
 #include "Settings.h"
 #include "FpsCounter.h"
 
-class Game : public SDLWindow
+class GameClient : public SDLWindow
 {
     typedef SDLWindow super;
   
  public:
-    Game(const Settings& settings);
+    GameClient(const Settings& settings);
 
  protected:
     void resizeWindow(int width, int height) override;
