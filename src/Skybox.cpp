@@ -67,7 +67,7 @@ void Skybox::draw(const Camera *camera) const
         m_shaderProgram->use();
 
         // Move skybox with the camera
-        glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), camera->position());
+        glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), camera->transformation()->position);
 
         m_shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         m_shaderProgram->setUniform("viewMatrix", camera->viewMatrix());

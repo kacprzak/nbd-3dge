@@ -1,6 +1,31 @@
 #include "GameLogic.h"
 #include "ActorFactory.h"
 
+/*
+class RotationScript : public Script
+{
+public:
+    void execute(float delta, Actor *a) override
+    {
+        if (m_paused)
+            return;
+        
+        a->rotate(0.0f, delta * 0.5f, 0.0f);
+        a->moveForward(delta * 20.0f);
+    }
+
+    void togglePause()
+    {
+        m_paused = !m_paused;
+    }
+
+private:
+    bool m_paused = false;
+    };*/
+
+//==============================================================================
+
+
 GameLogic::GameLogic(const Settings& settings)
     : m_settings{settings}
 {

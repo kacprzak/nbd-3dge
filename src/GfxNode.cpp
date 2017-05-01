@@ -6,12 +6,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-GfxNode::GfxNode(const std::string& name)
-    : m_name{name}
-    , m_state{Idle}
-    , m_position(glm::vec3(0.0f))
-    , m_orientation(glm::vec3(0.0f))
-    , m_scale(glm::vec3(1.0f))
+GfxNode::GfxNode(int actorId, TransformationComponent* tr)
+    : m_actorId{actorId}
+    , m_tr{tr}
     , m_modelMatrix(glm::mat4(1.0f))
 {
 }
@@ -40,64 +37,14 @@ void GfxNode::rebuildModelMatrix()
 {
     m_modelMatrix = glm::mat4(1.0f);
 
-    m_modelMatrix = glm::translate(m_modelMatrix, m_position);
+    m_modelMatrix = glm::translate(m_modelMatrix, m_tr->position);
 
-    m_modelMatrix = glm::rotate(m_modelMatrix, m_orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-    m_modelMatrix = glm::rotate(m_modelMatrix, m_orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-    m_modelMatrix = glm::rotate(m_modelMatrix, m_orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+    m_modelMatrix = glm::rotate(m_modelMatrix, m_tr->orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+    m_modelMatrix = glm::rotate(m_modelMatrix, m_tr->orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_modelMatrix = glm::rotate(m_modelMatrix, m_tr->orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_modelMatrix = glm::scale(m_modelMatrix, m_scale);
-}
-
-void GfxNode::move(float x, float y, float z)
-{
-    m_position += glm::vec3(x, y, z);
-    m_dirty = true;
-}
-
-void GfxNode::move(const glm::vec3& pos)
-{
-    m_position += pos;
-    m_dirty = true;
-}
-
-void GfxNode::moveTo(float x, float y, float z)
-{
-    m_position = glm::vec3(x, y, z);
-    m_dirty = true;
-}
-
-void GfxNode::moveTo(const glm::vec3& pos)
-{
-    m_position = pos;
-    m_dirty = true;
-}
-
-void GfxNode::moveForward(float distance)
-{
-    glm::vec3 base(0.0f, 0.0f, 1.0f);
-
-    base = glm::rotateX(base, m_orientation.x);
-    base = glm::rotateY(base, m_orientation.y);
-    base = glm::rotateZ(base, m_orientation.z);
-
-    move(base * distance);
-}
-
-void GfxNode::moveRight(float distance)
-{
-    glm::vec3 base(-1.0f, 0.0f, 0.0f);
-
-    base = glm::rotateX(base, m_orientation.x);
-    base = glm::rotateY(base, m_orientation.y);
-    base = glm::rotateZ(base, m_orientation.z);
-
-    move(base * distance);
-}
-
-void GfxNode::moveLeft(float distance)
-{
-    moveRight(-distance);
+    glm::vec3 scale{m_tr->scale, m_tr->scale, m_tr->scale};
+    m_modelMatrix = glm::scale(m_modelMatrix, scale);
 }
 
 void GfxNode::draw(const Camera* camera) const
@@ -131,31 +78,5 @@ void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 
 void GfxNode::update(float /*deltaTime*/)
 {
-    if (m_dirty) {
-        refresh();
-        m_dirty = false;
-    }
-}
-
-void GfxNode::refresh()
-{
     rebuildModelMatrix();
-}
-
-void GfxNode::setOrientation(float x, float y, float z)
-{
-    m_orientation = glm::vec3(x, y, z);
-    m_dirty = true;
-}
-
-void GfxNode::rotate(float x, float y, float z)
-{
-    m_orientation += glm::vec3(x, y, z);
-    m_dirty = true;
-}
-
-void GfxNode::setScale(float s)
-{
-    m_scale = glm::vec3(s);
-    m_dirty = true;
 }

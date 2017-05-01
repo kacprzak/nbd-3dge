@@ -9,33 +9,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-
-/*
-class RotationScript : public Script
-{
-public:
-    void execute(float delta, Actor *a) override
-    {
-        if (m_paused)
-            return;
-        
-        a->rotate(0.0f, delta * 0.5f, 0.0f);
-        a->moveForward(delta * 20.0f);
-    }
-
-    void togglePause()
-    {
-        m_paused = !m_paused;
-    }
-
-private:
-    bool m_paused = false;
-    };*/
-
-//==============================================================================
-
 GameClient::GameClient(const Settings& settings)
     : SDLWindow{settings}, m_settings{settings}
 {
@@ -62,8 +35,8 @@ void GameClient::resizeWindow(int width, int height)
 void GameClient::loadData(const Settings& /*s*/)
 {
     m_camera = std::make_shared<Camera>();
-    m_camera->moveTo(-35.f, 110.f, 39.f);
-    m_camera->rotate(-0.01f, -0.77f, 0.0f);
+    m_camera->transformation()->position = {-35.f, 110.f, 39.f};
+    m_camera->transformation()->orientation = {-0.01f, -0.77f, 0.0f, 0.0f};
     m_scene.setCamera(m_camera);
 }
 
@@ -73,9 +46,6 @@ void GameClient::loadResources(const std::string& xmlFile)
 {
     m_resourcesMgr = std::make_unique<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     m_resourcesMgr->load(xmlFile);
-
-    //auto rotationScript = std::make_shared<RotationScript>();
-    //m_resourcesMgr->addScript("rotationScript", rotationScript);
 
     auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));
     text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
@@ -94,7 +64,7 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
 {
     std::shared_ptr<GfxNode> a;
     if (rd->role == Role::Dynamic) {
-        a = std::make_shared<GfxNode>(std::to_string(id));
+        a = std::make_shared<GfxNode>(id, tr);
 
         if (!rd->mesh.empty()) {
             auto meshPtr = m_resourcesMgr->getMesh(rd->mesh);
@@ -106,12 +76,9 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
         m_scene.setSkybox(skybox);
         return;
     } else if (rd->role == Role::Terrain) {
-        a = std::make_shared<Terrain>(std::to_string(id), m_settings.dataFolder + rd->mesh);
+        a = std::make_shared<Terrain>(id, tr, m_settings.dataFolder + rd->mesh);
     }
     
-    a->setScale(tr->scale);
-    a->moveTo(tr->position);
- 
     for (const auto& texture : rd->textures) {
         auto texturePtr = m_resourcesMgr->getTexture(texture);
         a->addTexture(texturePtr);
@@ -153,19 +120,19 @@ void GameClient::update(float delta)
         cameraSpeedMultiplyer = 5.0f;
     
     if (m_wPressed) {
-        m_camera->moveForward(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
+        m_camera->transformation()->moveForward(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     if (m_sPressed) {
-        m_camera->moveForward(delta * m_cameraSpeed * cameraSpeedMultiplyer);
+        m_camera->transformation()->moveForward(delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     if (m_dPressed) {
-        m_camera->moveRight(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
+        m_camera->transformation()->moveRight(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     if (m_aPressed) {
-        m_camera->moveLeft(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
+        m_camera->transformation()->moveLeft(-delta * m_cameraSpeed * cameraSpeedMultiplyer);
     }
 
     m_scene.update(delta);
@@ -178,8 +145,8 @@ void GameClient::mouseMoved(const SDL_Event& event)
     float mouseSensity = 0.01f;
 
     if (m_leftMouseButtonPressed)
-        m_camera->rotate(-event.motion.yrel * mouseSensity,
-                         -event.motion.xrel * mouseSensity, 0.0f);
+        m_camera->transformation()->orientation += glm::vec4{-event.motion.yrel * mouseSensity,
+                -event.motion.xrel * mouseSensity, 0.0f, 0.0f};
 }
 
 void GameClient::mouseButtonPressed(const SDL_Event& event)

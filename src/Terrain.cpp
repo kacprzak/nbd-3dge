@@ -3,8 +3,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-Terrain::Terrain(const std::string& name, const std::string& heightMapPath)
-    : GfxNode{name}
+Terrain::Terrain(int actorId, TransformationComponent* tr, const std::string& heightMapPath)
+    : GfxNode{actorId, tr}
 {
     SDL_Surface* surface = IMG_Load(heightMapPath.c_str());
     

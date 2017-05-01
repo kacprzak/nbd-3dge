@@ -6,7 +6,7 @@
 class Terrain : public GfxNode
 {
  public:
-    Terrain(const std::string& name, const std::string& heightMapPath);
+    Terrain(int actorId, TransformationComponent* tr, const std::string& heightMapPath);
 
  private:
     float getHeight(int x, int y) const;
