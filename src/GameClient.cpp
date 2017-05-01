@@ -62,7 +62,8 @@ void GameClient::resizeWindow(int width, int height)
 void GameClient::loadData(const Settings& /*s*/)
 {
     m_camera = std::make_shared<Camera>();
-    //m_camera->moveTo(x, y, z);
+    m_camera->moveTo(-35.f, 110.f, 39.f);
+    m_camera->rotate(-0.01f, -0.77f, 0.0f);
     m_scene.setCamera(m_camera);
 }
 
@@ -99,7 +100,6 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
             auto meshPtr = m_resourcesMgr->getMesh(rd->mesh);
             a->setMesh(meshPtr);
         }
-
     } else if (rd->role == Role::Skybox) {
         auto skybox = std::make_shared<Skybox>(m_resourcesMgr->getTexture(rd->textures[0]));
         skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(rd->shaderProgram));

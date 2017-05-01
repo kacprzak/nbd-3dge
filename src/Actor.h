@@ -21,8 +21,7 @@ class Actor final
 {
     friend class ActorFactory;
 
-    using ComponentsMap =
-        std::map<ComponentId, std::shared_ptr<Component>>;
+    using ComponentsMap = std::map<ComponentId, std::shared_ptr<Component>>;
 
   public:
     Actor(ActorId id);
@@ -32,15 +31,14 @@ class Actor final
 
     ActorId id() const { return m_id; }
 
-    //ActorCategory category() const { return m_category; }
-    //void setCategory(ActorCategory c) { m_category = c; }
-
     void die();
     bool dead() const { return m_dead; }
 
+#ifndef NDEBUG    
     void setName(const std::string& name) { m_name = name; }
     const std::string& name() const { return m_name; }
-
+#endif
+    
     void addComponent(ComponentId id, const std::shared_ptr<Component>& c)
     {
         m_components.insert(std::make_pair(id, c));
@@ -62,11 +60,12 @@ class Actor final
 
   private:
     ActorId m_id;
-    //ActorCategory m_category;
     ComponentsMap m_components;
     bool m_dead; //!< Flag indicating that this actor should be deleted by
                  //! GameLogic
+#ifndef NDEBUG
     std::string m_name; //!< Name used in debug
+#endif
 
 };
 

@@ -1,21 +1,16 @@
 <scene>
   <assets>assets.xml</assets> 
-  <camera>
-    <position>
-      <x>0</x>
-      <y>100</y>
-      <z>80</z>
-    </position>
-  </camera>
 
   <skybox>
-    <texture>skybox_cubemap</texture>
+    <textures>
+      <texture>skybox_cubemap</texture>
+    </textures>
     <shaderProgram>skybox</shaderProgram>
   </skybox>
 
   <terrain>
     <name>terrain</name>
-    <heightMap>terrain-heightmap-01.png</heightMap>
+    <mesh>terrain-heightmap-01.png</mesh>
     <shaderProgram>terrain</shaderProgram>
     <scale>5</scale>
     <position>
