@@ -128,7 +128,7 @@ bool Engine::processEvents()
             break;
         case SDL_KEYDOWN:
             if (event.key.keysym.scancode == SDL_SCANCODE_G)
-                m_game->toggleDrawDebug();
+                //m_game->toggleDrawDebug();
             if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
                 return false;
             break;
@@ -149,7 +149,7 @@ bool Engine::processEvents()
             return false;
         }
 
-        for (auto gv : m_game->gameViews()) {
+        for (auto& gv : m_game->gameViews()) {
             gv->processInput(event);
         }
     }

@@ -7,6 +7,7 @@
 #include "Settings.h"
 #include "GfxScene.h"
 #include "FpsCounter.h"
+#include "Components.h"
 
 class GameClient : public SDLWindow
 {
@@ -14,6 +15,12 @@ class GameClient : public SDLWindow
   
  public:
     GameClient(const Settings& settings);
+
+    void loadResources(const std::string& xmlFile);
+    void unloadResources();
+
+    void addActor(int id, TransformationComponent* tr, RenderComponent* rd);
+    void removeActor(int id);
 
  protected:
     void resizeWindow(int width, int height) override;
@@ -34,6 +41,7 @@ class GameClient : public SDLWindow
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<ShaderProgram> m_normalsShader;
 
+    Settings m_settings;
     GfxScene m_scene;
     FpsCounter m_fpsCounter;
 

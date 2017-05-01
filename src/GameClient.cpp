@@ -12,10 +12,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+/*
 class RotationScript : public Script
 {
 public:
-    void execute(float delta, GfxNode *a) override
+    void execute(float delta, Actor *a) override
     {
         if (m_paused)
             return;
@@ -31,12 +32,12 @@ public:
 
 private:
     bool m_paused = false;
-};
+    };*/
 
 //==============================================================================
 
 GameClient::GameClient(const Settings& settings)
-    : SDLWindow{settings}
+    : SDLWindow{settings}, m_settings{settings}
 {
     loadData(settings);
 }
@@ -58,103 +59,72 @@ void GameClient::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void GameClient::loadData(const Settings& s)
+void GameClient::loadData(const Settings& /*s*/)
 {
-    // Load scene
-    using boost::property_tree::ptree;
-    ptree pt;
+    m_camera = std::make_shared<Camera>();
+    //m_camera->moveTo(x, y, z);
+    m_scene.setCamera(m_camera);
+}
 
-    read_xml(s.dataFolder + "scene.xml", pt);
-    const auto& assetsXml = pt.get<std::string>("scene.assets");
+//------------------------------------------------------------------------------
 
-    m_resourcesMgr = std::make_unique<ResourcesMgr>(s.dataFolder, s.shadersFolder);
-    m_resourcesMgr->load(assetsXml);
-    
-    auto rotationScript = std::make_shared<RotationScript>();
-    m_resourcesMgr->addScript("rotationScript", rotationScript);
-    
+void GameClient::loadResources(const std::string& xmlFile)
+{
+    m_resourcesMgr = std::make_unique<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
+    m_resourcesMgr->load(xmlFile);
+
+    //auto rotationScript = std::make_shared<RotationScript>();
+    //m_resourcesMgr->addScript("rotationScript", rotationScript);
+
     auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));
     text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
     m_scene.add(text);
     m_fpsCounter.setText(text);
-    
-    for (ptree::value_type& v : pt.get_child("scene")) {
-        const std::string& actorType  = v.first;
-        ptree& actorTree = v.second;
+}
 
-        if (actorType == "camera") {
-            float x = actorTree.get("position.x", 0.0f);
-            float y = actorTree.get("position.y", 0.0f);
-            float z = actorTree.get("position.z", 0.0f);
+void GameClient::unloadResources()
+{
+    m_resourcesMgr.reset();
+}
 
-            m_camera = std::make_shared<Camera>();
-            m_camera->moveTo(x, y, z);
-            m_scene.setCamera(m_camera);
+//------------------------------------------------------------------------------
+
+void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* rd)
+{
+    std::shared_ptr<GfxNode> a;
+    if (rd->role == Role::Dynamic) {
+        a = std::make_shared<GfxNode>(std::to_string(id));
+
+        if (!rd->mesh.empty()) {
+            auto meshPtr = m_resourcesMgr->getMesh(rd->mesh);
+            a->setMesh(meshPtr);
         }
-        else if (actorType == "skybox") {
-            const std::string& texture = actorTree.get<std::string>("texture");
-            const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
 
-            auto skybox = std::make_shared<Skybox>(m_resourcesMgr->getTexture(texture));
-            skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
-
-            m_scene.setSkybox(skybox);
-        }
-        else if (actorType == "terrain") {
-            const std::string& name = actorTree.get<std::string>("name");
-            const std::string& map = actorTree.get<std::string>("heightMap");
-            const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
-            float scale = actorTree.get("scale", 1.0f);
-            float x = actorTree.get("position.x", 0.0f);
-            float y = actorTree.get("position.y", 0.0f);
-            float z = actorTree.get("position.z", 0.0f);
-
-            auto a = std::make_shared<Terrain>(name, s.dataFolder + map);
-            a->setScale(scale);
-            a->moveTo(x, y, z);
-
-            for (ptree::value_type& v : actorTree.get_child("textures")) {
-                const std::string& texture = v.second.data();
-                auto texturePtr = m_resourcesMgr->getTexture(texture);
-                a->addTexture(texturePtr);
-            }
-            
-            a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
-
-            m_scene.add(a);
-        }
-        else if (actorType == "actor") {
-            const std::string& name = actorTree.get<std::string>("name");
-            const std::string& mesh = actorTree.get("mesh", "");
-            const std::string& texture = actorTree.get("texture", "");
-            const std::string& shaderProgram = actorTree.get("shaderProgram", "default");
-            float scale = actorTree.get("scale", 1.0f);
-            float x = actorTree.get("position.x", 0.0f);
-            float y = actorTree.get("position.y", 0.0f);
-            float z = actorTree.get("position.z", 0.0f);
-            
-            auto a = std::make_shared<GfxNode>(name);
-            a->setScale(scale);
-            a->moveTo(x, y, z);
-
-            if (!mesh.empty()) {
-                auto meshPtr = m_resourcesMgr->getMesh(mesh);
-                a->setMesh(meshPtr);
-            }
- 
-            if (!texture.empty()) {
-                auto texturePtr = m_resourcesMgr->getTexture(texture);
-                a->addTexture(texturePtr);
-            }
-
-            a->setShaderProgram(m_resourcesMgr->getShaderProgram(shaderProgram));
-
-            if (a->name() != "floor")
-                a->setScript(rotationScript);
-           
-            m_scene.add(a);
-        }
+    } else if (rd->role == Role::Skybox) {
+        auto skybox = std::make_shared<Skybox>(m_resourcesMgr->getTexture(rd->textures[0]));
+        skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(rd->shaderProgram));
+        m_scene.setSkybox(skybox);
+        return;
+    } else if (rd->role == Role::Terrain) {
+        a = std::make_shared<Terrain>(std::to_string(id), m_settings.dataFolder + rd->mesh);
     }
+    
+    a->setScale(tr->scale);
+    a->moveTo(tr->position);
+ 
+    for (const auto& texture : rd->textures) {
+        auto texturePtr = m_resourcesMgr->getTexture(texture);
+        a->addTexture(texturePtr);
+    }
+
+    a->setShaderProgram(m_resourcesMgr->getShaderProgram(rd->shaderProgram));
+
+    m_scene.add(id, a);
+}
+    
+void GameClient::removeActor(int id)
+{
+    m_scene.remove(id);
 }
 
 //------------------------------------------------------------------------------
@@ -285,8 +255,8 @@ void GameClient::keyReleased(const SDL_Event& event)
         break;
     case SDL_SCANCODE_SPACE:
         {
-            auto s = m_resourcesMgr->getScript("rotationScript");
-            std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
+            //auto s = m_resourcesMgr->getScript("rotationScript");
+            //std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
         }
         break;
     case SDL_SCANCODE_Z:

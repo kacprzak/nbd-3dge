@@ -36,11 +36,6 @@ void GfxNode::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
     m_shaderProgram = shaderProgram;
 }
 
-void GfxNode::setScript(std::shared_ptr<Script> script)
-{
-    m_script = script;
-}
-
 void GfxNode::rebuildModelMatrix()
 {
     m_modelMatrix = glm::mat4(1.0f);
@@ -134,11 +129,8 @@ void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         m_mesh->draw();
 }
 
-void GfxNode::update(float deltaTime)
+void GfxNode::update(float /*deltaTime*/)
 {
-    if (m_script)
-        m_script->execute(deltaTime, this);
-    
     if (m_dirty) {
         refresh();
         m_dirty = false;

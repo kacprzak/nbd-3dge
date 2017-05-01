@@ -3,10 +3,12 @@
 
 #include "GfxNode.h"
 #include "Skybox.h"
-#include <set>
 #include "ShaderProgram.h"
 #include "Camera.h"
 #include "Text.h"
+
+#include <set>
+#include <map>
 
 class GfxScene
 {
@@ -22,11 +24,11 @@ public:
         m_camera = camera;
     }
 
-    void add(std::shared_ptr<GfxNode> actor) {
-        m_actors.insert(actor);
+    void add(int id, std::shared_ptr<GfxNode> actor) {
+        m_actors[id] = actor;
     }
-    void remove(std::shared_ptr<GfxNode> actor) {
-        m_actors.erase(actor);
+    void remove(int id) {
+        m_actors.erase(id);
     }
 
     void add(std::shared_ptr<Text> actor) {
@@ -36,9 +38,9 @@ public:
         m_texts.erase(actor);
     }
     
-    const std::set<std::shared_ptr<GfxNode>>& actors() const {
-        return m_actors;
-    }
+    //const std::map<std::shared_ptr<GfxNode>>& actors() const {
+    //    return m_actors;
+    //}
 
     void draw(const Camera* camera) const;
     void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
@@ -46,7 +48,7 @@ public:
     void update(float delta);
 
 private:
-    std::set<std::shared_ptr<GfxNode>> m_actors;
+    std::map<int, std::shared_ptr<GfxNode>> m_actors;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
     std::set<std::shared_ptr<Text>> m_texts;

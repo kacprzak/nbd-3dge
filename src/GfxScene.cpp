@@ -17,7 +17,7 @@ void GfxScene::draw(const Camera* camera) const
         m_camera->draw(camera);
 
     for (const auto& a : m_actors) {
-        a->draw(camera);
+        a.second->draw(camera);
     }
 
     for (const auto& a : m_texts) {
@@ -34,7 +34,7 @@ void GfxScene::draw(ShaderProgram* shaderProgram, const Camera* camera) const
     //    m_camera->draw(shaderProgram, camera);
 
     for (const auto& a : m_actors) {
-        a->draw(shaderProgram, camera);
+        a.second->draw(shaderProgram, camera);
     }
 
     for (const auto& a : m_texts) {
@@ -49,6 +49,6 @@ void GfxScene::update(float delta)
     }
 
     for (const auto& a : m_actors) {
-        a->update(delta);
+        a.second->update(delta);
     }
 }

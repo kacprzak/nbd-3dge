@@ -1,8 +1,10 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
+#include "Settings.h"
 #include "GameView.h"
 #include "PhysicsEngine.h"
+#include "Actor.h"
 
 #include <boost/utility.hpp>
 #include <list>
@@ -10,44 +12,28 @@
 
 class Engine;
 
-using GameViewList = std::list<std::shared_ptr<GameView>>;
-
 class GameLogic : private boost::noncopyable
 {
-  public:
+    using GameViewList = std::list<std::shared_ptr<GameView>>;
+    using ActorsList = std::list<std::shared_ptr<Actor>>;
+ public:
+    GameLogic(const Settings& settings);
     virtual ~GameLogic() {}
 
     virtual void update(float /*elapsedTime*/) {};
 
-    /*!  Use these if you need Engine to create or clean stuff */
-    virtual void onBeforeMainLoop(Engine* /*e*/) {}
-    virtual void onAfterMainLoop(Engine* /*e*/) {}
-
-    virtual PhysicsEngine* physicsEngine() { return nullptr; }
-
     GameViewList& gameViews() { return m_gameViews; }
+    /*!  Use these if you need Engine to create or clean stuff */
+    void onBeforeMainLoop(Engine* e);
+    void onAfterMainLoop(Engine* e);
 
-    void drawDebugData()
-    {
-        if (physicsEngine())
-            physicsEngine()->drawDebugData();
-    }
-
-    void toggleDrawDebug()
-    {
-        if (physicsEngine())
-            physicsEngine()->toggleDrawDebug();
-    }
-
-    void attachView(std::shared_ptr<GameView> gameView, unsigned actorId = 0)
-    {
-        int viewId = m_gameViews.size();
-        m_gameViews.push_back(gameView);
-        gameView->onAttach(viewId, actorId);
-    }
-
-  private:
+    void attachView(std::shared_ptr<GameView> gameView, unsigned actorId = 0);
+    
+ private:
+    Settings m_settings;
     GameViewList m_gameViews;
+    ActorsList m_actors;
+
 };
 
 #endif // GAMELOGIC_H

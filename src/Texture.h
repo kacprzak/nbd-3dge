@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 
-class Texture
+class Texture final
 {
 public:
     ~Texture();

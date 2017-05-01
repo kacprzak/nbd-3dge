@@ -51,7 +51,9 @@
       <z>0</z>
     </position>
     <mesh>cube</mesh>
-    <texture>cube_texture</texture>
+    <textures>
+      <texture>cube_texture</texture>
+    </textures>
   </actor>
 
   <actor>
@@ -74,7 +76,9 @@
       <z>0</z>
     </position>
     <mesh>ship</mesh>
-    <texture>ship_texture</texture>
+    <textures>
+      <texture>ship_texture</texture>
+    </textures>
     <shaderProgram>lightAndTex</shaderProgram>
   </actor>
 
@@ -87,7 +91,9 @@
       <z>0</z>
     </position>
     <mesh>ship</mesh>
-    <texture>ship_texture</texture>
+    <textures>
+      <texture>ship_texture</texture>
+    </textures>
   </actor>
 
   <!--actor>

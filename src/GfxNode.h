@@ -1,10 +1,9 @@
-#ifndef ACTOR_H
-#define ACTOR_H
+#ifndef GFXNODE_H
+#define GFXNODE_H
 
 #include "Mesh.h"
 #include "Texture.h"
 #include "ShaderProgram.h"
-#include "Script.h"
 
 #include <glm/glm.hpp>
 
@@ -23,7 +22,6 @@ class GfxNode
     
     void setMesh(std::shared_ptr<Mesh> mesh);
     void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
-    void setScript(std::shared_ptr<Script> script);
 
     void move(float x, float y = 0.0f, float z = 0.0f);
     void move(const glm::vec3& pos);
@@ -73,7 +71,6 @@ class GfxNode
 
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
-    std::shared_ptr<Script> m_script;
     std::vector<std::shared_ptr<Texture>> m_textures;
     
     State m_state;
@@ -85,4 +82,4 @@ class GfxNode
     glm::mat4 m_modelMatrix;
 };
 
-#endif // ACTOR_H
+#endif // GFXNODE_H

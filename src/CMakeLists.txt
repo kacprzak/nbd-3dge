@@ -8,6 +8,7 @@ set( nbd-3dge_SRCS
     GfxScene.cpp
     SDLWindow.cpp
     GameClient.cpp
+    GameLogic.cpp
     Util.cpp
     Texture.cpp
     Loader.cpp
@@ -25,6 +26,8 @@ set( nbd-3dge_SRCS
     Logger.cpp
     Text.cpp
     ResourcesMgr.cpp
+    Actor.cpp
+    ActorFactory.cpp
 )
 
 set( LINK_LIBS

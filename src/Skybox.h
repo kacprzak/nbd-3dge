@@ -8,7 +8,7 @@
 
 class Camera;
 
-class Skybox
+class Skybox final
 {
  public:
     Skybox(std::shared_ptr<Texture> texture);

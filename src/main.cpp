@@ -79,7 +79,7 @@ int main(int ac, char** av)
     initLogger(settings.logLevel);
     
     Engine engine;
-    GameLogic game;
+    GameLogic game(settings);
     game.attachView(std::make_shared<GameClient>(settings));
     engine.mainLoop(&game);
 

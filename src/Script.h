@@ -1,12 +1,12 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-class GfxNode;
+#include "Actor.h"
 
 class Script
 {
  public:
-    virtual void execute(float deltaTime, GfxNode* actor) = 0;
+    virtual void execute(float deltaTime, Actor* actor) = 0;
 };
 
 #endif // SCRIPT_H
