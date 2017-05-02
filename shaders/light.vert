@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -59,9 +59,15 @@ void main()
     
     vec3 diffuse = sun.diffuse * max(dot(normal_world, surfaceToLight), 0.0);
 
-    vec3 reflection = -reflect(surfaceToLight, normal_world);
-    vec3 vertexToEye = normalize(-position_eye.xyz);
-    vec3 specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), mtl.shininess);
+    vec3 specular;
+    if (dot(normal_world, surfaceToLight) < 0.0) {
+        specular = vec3(0.0, 0.0, 0.0);
+    }
+    else { 
+        vec3 reflection = -reflect(surfaceToLight, normal_world);
+        vec3 vertexToEye = normalize(-position_eye.xyz);
+        specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), mtl.shininess);
+    }
 
     color = mtl.ambient * sun.ambient + mtl.diffuse * diffuse + mtl.specular * specular;
     
