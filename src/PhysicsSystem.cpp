@@ -16,7 +16,7 @@ PhysicsSystem::PhysicsSystem()
 PhysicsSystem::~PhysicsSystem()
 {
     // Remove the rigidbodies from the dynamics world and delete them
-    for (int i = m_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; i--) {
+    for (int i = m_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; --i) {
         btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
         btRigidBody* body = btRigidBody::upcast(obj);
         if (body && body->getMotionState()) {
@@ -44,8 +44,8 @@ void PhysicsSystem::update(float elapsedTime)
 {
     m_dynamicsWorld->stepSimulation(elapsedTime);
 
-    for (int j = m_dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; j--) {
-        btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[j];
+    for (int i = m_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; --i) {
+        btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
         btRigidBody* body = btRigidBody::upcast(obj);
         btTransform trans;
         if (body && body->getMotionState()) {
@@ -54,17 +54,23 @@ void PhysicsSystem::update(float elapsedTime)
         else {
             trans = obj->getWorldTransform();
         }
+        // Sync component
         TransformationComponent* tr = (TransformationComponent*)body->getUserPointer();
         tr->position.x = trans.getOrigin().getX();
         tr->position.y = trans.getOrigin().getY();
         tr->position.z = trans.getOrigin().getZ();
+
+        tr->orientation.x = trans.getRotation().getX();
+        tr->orientation.y = trans.getRotation().getY();
+        tr->orientation.z = trans.getRotation().getZ();
+        tr->orientation.w = trans.getRotation().getW();
     }
 }
 
 void PhysicsSystem::addActor(int id, TransformationComponent *tr, RenderComponent *rd)
 {
     //btCollisionShape* colShape = new btBoxShape(btVector3(1,1,1));
-    btCollisionShape* colShape = new btSphereShape(btScalar(1.));
+    btCollisionShape* colShape = new btSphereShape(btScalar(10.));
     m_collisionShapes.push_back(colShape);
 
     // Create Dynamic Objects
@@ -84,6 +90,9 @@ void PhysicsSystem::addActor(int id, TransformationComponent *tr, RenderComponen
 
     const auto& p = tr->position;
     startTransform.setOrigin(btVector3(p.x, p.y, p.z));
+
+    const auto& orient = tr->orientation;
+    startTransform.setRotation(btQuaternion(orient.x, orient.y, orient.z, orient.w));
 
     // Using motionstate is recommended, it provides interpolation capabilities, and only
     // synchronizes 'active' objects
