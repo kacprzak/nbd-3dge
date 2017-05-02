@@ -1,5 +1,6 @@
 #include "GameLogic.h"
 #include "ActorFactory.h"
+#include "PhysicsSystem.h"
 
 /*
 class RotationScript : public Script
@@ -28,6 +29,11 @@ private:
 
 GameLogic::GameLogic(const Settings& settings)
     : m_settings{settings}
+    , m_physicsSystem{new PhysicsSystem}
+{
+}
+
+GameLogic::~GameLogic()
 {
 }
 
@@ -66,6 +72,15 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
                 gv->addActor(a->id(), str.get(), srd.get());
         }
     }
+
+    for (auto& a : m_actors) {
+        auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation);
+        auto rd = a->getComponent<RenderComponent>(ComponentId::Render);            
+        auto str = tr.lock();
+        auto srd = rd.lock();
+        if (str)
+            m_physicsSystem->addActor(a->id(), str.get(), srd.get());
+    }
 }
 
 
@@ -77,6 +92,6 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
 
 void GameLogic::update(float elapsedTime)
 {
-    m_physicsSystem.update(elapsedTime);
+    m_physicsSystem->update(elapsedTime);
 }
 

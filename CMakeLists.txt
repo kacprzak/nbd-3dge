@@ -17,6 +17,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} 
 find_package( SDL2 REQUIRED )
 find_package( SDL2_image REQUIRED )
 find_package( OpenGL REQUIRED )
+find_package( Bullet REQUIRED )
 
 set( Boost_COMPONENTS program_options log )
 if( UNIX )
@@ -33,6 +34,7 @@ include_directories(
   ${OPENGL_INCLUDE_DIR}
   ${Boost_INCLUDE_DIR}
   ${LUA53_INCLUDE_DIR}
+  ${BULLET_INCLUDE_DIRS}
 )
 
 if( Boost_UNIT_TEST_FRAMEWORK_FOUND )
@@ -50,7 +52,7 @@ configure_file(
   ${PROJECT_BINARY_DIR}/config.ini
 )
 
-set( EXTRA_LIBS GL GLU GLEW )
+set( EXTRA_LIBS GL GLU GLEW ${BULLET_LIBRARIES} )
 
 add_subdirectory( src )
 

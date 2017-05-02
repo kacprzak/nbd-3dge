@@ -3,7 +3,6 @@
 
 #include "Settings.h"
 #include "GameView.h"
-#include "PhysicsSystem.h"
 #include "Actor.h"
 
 #include <boost/utility.hpp>
@@ -11,16 +10,17 @@
 #include <memory>
 
 class Engine;
+class PhysicsSystem;
 
-class GameLogic : private boost::noncopyable
+class GameLogic final : private boost::noncopyable
 {
     using GameViewList = std::list<std::shared_ptr<GameView>>;
     using ActorsList = std::list<std::shared_ptr<Actor>>;
  public:
     GameLogic(const Settings& settings);
-    virtual ~GameLogic() {}
+    ~GameLogic();
 
-    virtual void update(float elapsedTime);
+    void update(float elapsedTime);
 
     GameViewList& gameViews() { return m_gameViews; }
     /*!  Use these if you need Engine to create or clean stuff */
@@ -30,9 +30,8 @@ class GameLogic : private boost::noncopyable
     void attachView(std::shared_ptr<GameView> gameView, unsigned actorId = 0);
     
  private:
-    PhysicsSystem m_physicsSystem;
-    
     Settings m_settings;
+    std::unique_ptr<PhysicsSystem> m_physicsSystem;
     GameViewList m_gameViews;
     ActorsList m_actors;
 
