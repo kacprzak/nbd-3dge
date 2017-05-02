@@ -14,8 +14,8 @@ public:
     void setClampToEdge();
     void setRepeat();
 
-    int getWidth() const { return m_w; }
-    int getHeight() const { return m_h; }
+    int width() const { return m_w; }
+    int height() const { return m_h; }
     
     static Texture *create(const std::string& filename, bool clamp = false);
     static Texture *create(const std::array<std::string, 6> filenames, bool clamp = false);

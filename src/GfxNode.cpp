@@ -6,9 +6,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-GfxNode::GfxNode(int actorId, TransformationComponent* tr)
+GfxNode::GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
     : m_actorId{actorId}
     , m_tr{tr}
+    , m_rd{rd}
     , m_modelMatrix(glm::mat4(1.0f))
 {
 }

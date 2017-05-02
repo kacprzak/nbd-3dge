@@ -64,7 +64,7 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
 {
     std::shared_ptr<GfxNode> a;
     if (rd->role == Role::Dynamic) {
-        a = std::make_shared<GfxNode>(id, tr);
+        a = std::make_shared<GfxNode>(id, tr, rd);
 
         if (!rd->mesh.empty()) {
             auto meshPtr = m_resourcesMgr->getMesh(rd->mesh);
@@ -76,7 +76,7 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
         m_scene.setSkybox(skybox);
         return;
     } else if (rd->role == Role::Terrain) {
-        a = std::make_shared<Terrain>(id, tr, m_settings.dataFolder + rd->mesh);
+        a = std::make_shared<Terrain>(id, tr, rd, m_settings.dataFolder);
     }
     
     for (const auto& texture : rd->textures) {

@@ -10,7 +10,7 @@
 Skybox::Skybox(std::shared_ptr<Texture> texture)
     : m_texture{texture}
 {
-    float x = 50.0f;
+    float x = texture->width() / 2.0f;
 
     /*
      *    6----7     y

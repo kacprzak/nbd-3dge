@@ -13,7 +13,7 @@ class Camera;
 class GfxNode
 {
  public:
-    GfxNode(int actorId, TransformationComponent* tr);
+    GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
     virtual ~GfxNode() {};
 
     void setTextures(std::vector<std::shared_ptr<Texture>> textures);
@@ -26,11 +26,18 @@ class GfxNode
     virtual void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
     virtual void update(float delta);
 
+    TransformationComponent* transformation() { return m_tr; }
+    const TransformationComponent* transformation() const { return m_tr; }
+
+    RenderComponent* render() { return m_rd; }
+    const RenderComponent* render() const { return m_rd; }
+    
  protected:
     const glm::mat4& modelMatrix() const { return m_modelMatrix; }
 
     const int m_actorId;
-    TransformationComponent* m_tr;
+    TransformationComponent* m_tr = nullptr;
+    RenderComponent* m_rd = nullptr;
 
  private:
     void rebuildModelMatrix();

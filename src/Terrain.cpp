@@ -3,10 +3,10 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-Terrain::Terrain(int actorId, TransformationComponent* tr, const std::string& heightMapPath)
-    : GfxNode{actorId, tr}
+Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd, const std::string& dataFolder)
+    : GfxNode{actorId, tr, rd}
 {
-    SDL_Surface* surface = IMG_Load(heightMapPath.c_str());
+    SDL_Surface* surface = IMG_Load((dataFolder + rd->mesh).c_str());
     
     if (!surface) {
         throw std::runtime_error("SDL_Image load error: " +

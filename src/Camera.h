@@ -16,9 +16,6 @@ class Camera : public GfxNode
 
     const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
-
-    TransformationComponent* transformation() { return m_tr; }
-    const TransformationComponent* transformation() const { return m_tr; }
     
  private:
     glm::mat4 m_projectionMatrix;
