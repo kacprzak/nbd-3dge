@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 Camera::Camera() : GfxNode{-1, new TransformationComponent, nullptr}
 {
@@ -18,6 +19,17 @@ void Camera::setPerspective(float angle, float ratio, float near, float far)
     m_projectionMatrix = glm::perspective(angle, ratio, near, far);
 }
 
+void Camera::rotate(float yaw, float pitch, float /*roll*/)
+{
+    m_yawPitch += glm::vec2{glm::radians(-yaw), glm::radians(-pitch)};
+    m_yawPitch.x = glm::mod(m_yawPitch.x, glm::two_pi<float>());
+    m_yawPitch.y = glm::mod(m_yawPitch.y, glm::two_pi<float>());
+    
+    auto& orient = transformation()->orientation;
+    orient = glm::angleAxis(m_yawPitch.x, glm::vec3(0,1,0));
+    orient *= glm::angleAxis(m_yawPitch.y, glm::vec3(1,0,0));
+}
+
 const glm::mat4& Camera::viewMatrix() const
 {
     return m_viewMatrix;
@@ -32,12 +44,9 @@ void Camera::update(float delta)
 {
     GfxNode::update(delta);
 
-    m_viewMatrix = glm::mat4(1.0f);
-    glm::vec4 orien = transformation()->orientation;
+    glm::quat orien = transformation()->orientation;
 
-    m_viewMatrix = glm::rotate(m_viewMatrix, -orien.x, glm::vec3(1.0f, 0.0f, 0.0f));
-    m_viewMatrix = glm::rotate(m_viewMatrix, -orien.y, glm::vec3(0.0f, 1.0f, 0.0f));
-    m_viewMatrix = glm::rotate(m_viewMatrix, -orien.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-    m_viewMatrix = glm::translate(m_viewMatrix, -(transformation()->position));
+    const auto T = glm::translate(glm::mat4(1.f), -transformation()->position);
+    const auto R = glm::toMat4(glm::inverse(orien));
+    m_viewMatrix = R * T;
 }

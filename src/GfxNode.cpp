@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 GfxNode::GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
     : m_actorId{actorId}
@@ -36,16 +37,11 @@ void GfxNode::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
 
 void GfxNode::rebuildModelMatrix()
 {
-    m_modelMatrix = glm::mat4(1.0f);
+    const auto T = glm::translate(glm::mat4(1.f), m_tr->position);
+    const auto R = glm::toMat4(m_tr->orientation);
+    const auto S = glm::scale(glm::mat4(1.f), glm::vec3{m_tr->scale, m_tr->scale, m_tr->scale});
 
-    m_modelMatrix = glm::translate(m_modelMatrix, m_tr->position);
-
-    m_modelMatrix = glm::rotate(m_modelMatrix, m_tr->orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-    m_modelMatrix = glm::rotate(m_modelMatrix, m_tr->orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-    m_modelMatrix = glm::rotate(m_modelMatrix, m_tr->orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-    glm::vec3 scale{m_tr->scale, m_tr->scale, m_tr->scale};
-    m_modelMatrix = glm::scale(m_modelMatrix, scale);
+    m_modelMatrix = T * R * S;
 }
 
 void GfxNode::draw(const Camera* camera) const
