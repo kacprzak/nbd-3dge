@@ -69,5 +69,14 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 }
 
 
-void GameLogic::onAfterMainLoop(Engine* /*e*/) {}
+void GameLogic::onAfterMainLoop(Engine* /*e*/)
+{
+}
+
+//------------------------------------------------------------------------------
+
+void GameLogic::update(float elapsedTime)
+{
+    m_physicsSystem.update(elapsedTime);
+}
 

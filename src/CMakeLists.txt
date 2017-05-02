@@ -28,6 +28,7 @@ set( nbd-3dge_SRCS
     ResourcesMgr.cpp
     Actor.cpp
     ActorFactory.cpp
+    PhysicsSystem.cpp
 )
 
 set( LINK_LIBS
