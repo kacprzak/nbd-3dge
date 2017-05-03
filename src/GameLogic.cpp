@@ -37,11 +37,18 @@ GameLogic::~GameLogic()
 {
 }
 
+#include "GameClient.h"
+
 void GameLogic::attachView(std::shared_ptr<GameView> gameView, unsigned actorId)
 {
     int viewId = m_gameViews.size();
     m_gameViews.push_back(gameView);
     gameView->onAttach(viewId, actorId);
+
+    if (viewId == 0) {
+        GameClient* client = (GameClient*)gameView.get();
+        m_physicsSystem->setDebugDrawer(&(client->m_debugDraw));
+    }
 }
 
 void GameLogic::onBeforeMainLoop(Engine* /*e*/)
@@ -93,5 +100,7 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
 void GameLogic::update(float elapsedTime)
 {
     m_physicsSystem->update(elapsedTime);
+    if (m_drawDebug)
+        m_physicsSystem->drawDebugData();
 }
 

@@ -29,6 +29,7 @@ set( nbd-3dge_SRCS
     Actor.cpp
     ActorFactory.cpp
     PhysicsSystem.cpp
+    PhysicsDebugDrawer.cpp
 )
 
 add_executable( nbd-3dge ${nbd-3dge_SRCS} )

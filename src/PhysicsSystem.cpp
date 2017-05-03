@@ -97,10 +97,22 @@ void PhysicsSystem::addActor(int id, TransformationComponent *tr, RenderComponen
     // Using motionstate is recommended, it provides interpolation capabilities, and only
     // synchronizes 'active' objects
     btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState,
+                                                    colShape, localInertia);
     btRigidBody* body = new btRigidBody(rbInfo);
 
     body->setUserPointer((void*)tr);
 
     m_dynamicsWorld->addRigidBody(body);
+}
+
+void PhysicsSystem::setDebugDrawer(btIDebugDraw* debugDrawer)
+{
+    debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    m_dynamicsWorld->setDebugDrawer(debugDrawer);
+}
+
+void PhysicsSystem::drawDebugData()
+{
+    m_dynamicsWorld->debugDrawWorld();
 }

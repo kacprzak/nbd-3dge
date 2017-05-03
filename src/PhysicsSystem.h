@@ -12,6 +12,7 @@ class btBroadphaseInterface;
 class btSequentialImpulseConstraintSolver;
 class btDynamicsWorld;
 class btCollisionShape;
+class btIDebugDraw;
 
 class PhysicsSystem final : private boost::noncopyable
 {
@@ -24,8 +25,8 @@ class PhysicsSystem final : private boost::noncopyable
     void addActor(int id, TransformationComponent* tr, RenderComponent* rd);
     void removeActor(int id);
 
-    //virtual void toggleDrawDebug() = 0;
-    //virtual void drawDebugData()   = 0;
+    void setDebugDrawer(btIDebugDraw* debugDrawer);
+    void drawDebugData();
 
  private:
     btCollisionConfiguration* m_collisionConfiguration;

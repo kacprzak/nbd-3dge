@@ -45,7 +45,8 @@ void GameClient::loadData(const Settings& /*s*/)
 
 void GameClient::loadResources(const std::string& xmlFile)
 {
-    m_resourcesMgr = std::make_unique<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
+    m_resourcesMgr = std::make_unique<ResourcesMgr>(m_settings.dataFolder,
+                                                    m_settings.shadersFolder);
     m_resourcesMgr->load(xmlFile);
 
     auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));
@@ -106,6 +107,8 @@ void GameClient::draw()
     if (m_normalsShader) {
         m_scene.draw(m_normalsShader.get(), m_camera.get());
     }
+
+    m_debugDraw.draw(m_resourcesMgr->getShaderProgram("default").get(), m_camera.get());
 
     postDraw();
 }
@@ -208,7 +211,6 @@ void GameClient::keyPressed(const SDL_Event& event)
     default:
         break;
     }
-
 }
 
 void GameClient::keyReleased(const SDL_Event& event)
@@ -227,7 +229,6 @@ void GameClient::keyReleased(const SDL_Event& event)
         m_dPressed = false;
         break;
     }
-
 
     switch(event.key.keysym.scancode) {
     case SDL_SCANCODE_LSHIFT:

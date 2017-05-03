@@ -28,12 +28,15 @@ class GameLogic final : private boost::noncopyable
     void onAfterMainLoop(Engine* e);
 
     void attachView(std::shared_ptr<GameView> gameView, unsigned actorId = 0);
+
+    void toggleDrawDebug() { m_drawDebug = !m_drawDebug; }
     
  private:
     const Settings m_settings;
     std::unique_ptr<PhysicsSystem> m_physicsSystem;
     GameViewList m_gameViews;
     ActorsList m_actors;
+    bool m_drawDebug = false;
 
 };
 

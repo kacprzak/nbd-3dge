@@ -8,6 +8,7 @@
 #include "GfxScene.h"
 #include "FpsCounter.h"
 #include "Components.h"
+#include "PhysicsDebugDrawer.h"
 
 class GameClient : public SDLWindow
 {
@@ -21,6 +22,8 @@ class GameClient : public SDLWindow
 
     void addActor(int id, TransformationComponent* tr, RenderComponent* rd) override;
     void removeActor(int id) override;
+
+    PhysicsDebugDrawer m_debugDraw;
 
  protected:
     void resizeWindow(int width, int height) override;
