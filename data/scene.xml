@@ -2,116 +2,96 @@
   <assets>assets.xml</assets> 
 
   <skybox>
-    <textures>
-      <texture>skybox_cubemap</texture>
-    </textures>
-    <shaderProgram>skybox</shaderProgram>
+    <render>
+      <shaderProgram>skybox</shaderProgram>
+      <textures>
+        <texture>skybox_cubemap</texture>
+      </textures>
+    </render>
   </skybox>
 
   <terrain>
     <name>terrain</name>
-    <mesh>terrain-heightmap-01.png</mesh>
-    <shaderProgram>terrain</shaderProgram>
-    <scale>5</scale>
-    <position>
-      <x>0</x>
-      <y>30</y>
-      <z>0</z>
-    </position>
-    <textures>
-      <texture>grass_diffuse</texture>
-      <texture>snow_diffuse</texture>
-      <texture>rocky_diffuse</texture>
-    </textures>
+    <transformation>
+      <scale>5</scale>
+      <position>0 30 0</position>
+    </transformation>
+    <render>
+      <mesh>terrain-heightmap-01.png</mesh>
+      <shaderProgram>terrain</shaderProgram>
+      <textures>
+        <texture>grass_diffuse</texture>
+        <texture>snow_diffuse</texture>
+        <texture>rocky_diffuse</texture>
+      </textures>
+    </render>
   </terrain>
 
   <actor>
     <name>teddy</name>
-    <scale>0.2</scale>
-    <position>
-      <x>10</x>
-      <y>100</y>
-      <z>0</z>
-    </position>
-    <mesh>teddy</mesh>
-    <shaderProgram>light</shaderProgram>
+    <transformation>
+      <scale>0.2</scale>
+      <position>10 100 0</position>
+    </transformation>
+    <render>
+      <mesh>teddy</mesh>
+      <shaderProgram>light</shaderProgram>
+    </render>
   </actor>
   
   <actor>
     <name>cube</name>
-    <scale>0.2</scale>
-    <position>
-      <x>10</x>
-      <y>80</y>
-      <z>0</z>
-    </position>
-    <mesh>cube</mesh>
-    <textures>
-      <texture>cube_texture</texture>
-    </textures>
+    <transformation>
+      <scale>0.2</scale>
+      <position>10 80 0</position>
+    </transformation>
+    <render>
+      <mesh>cube</mesh>
+      <textures>
+        <texture>cube_texture</texture>
+      </textures>
+    </render>
   </actor>
 
   <actor>
     <name>cow</name>
-    <position>
-      <x>-10</x>
-      <y>100</y>
-      <z>0</z>
-    </position>
-    <mesh>cow</mesh>
-    <shaderProgram>light</shaderProgram>
+    <transformation>
+      <position>-10 100 0</position>
+    </transformation>
+    <render>
+      <mesh>cow</mesh>
+      <shaderProgram>light</shaderProgram>
+    </render>
   </actor>
 
   <actor>
     <name>ship</name>
-    <scale>0.1</scale>
-    <position>
-      <x>0</x>
-      <y>90</y>
-      <z>0</z>
-    </position>
-    <mesh>ship</mesh>
-    <textures>
-      <texture>ship_texture</texture>
-    </textures>
-    <shaderProgram>lightAndTex</shaderProgram>
+    <transformation>
+      <scale>0.1</scale>
+      <position>0 90 0</position>
+      <orientation>0 90</orientation>
+    </transformation>
+    <render>
+      <mesh>ship</mesh>
+      <textures>
+        <texture>ship_texture</texture>
+      </textures>
+      <shaderProgram>lightAndTex</shaderProgram>
+    </render>
   </actor>
 
   <actor>
     <name>ship_2</name>
-    <scale>0.1</scale>
-    <position>
-      <x>10</x>
-      <y>120</y>
-      <z>0</z>
-    </position>
-    <mesh>ship</mesh>
-    <textures>
-      <texture>ship_texture</texture>
-    </textures>
+    <transformation>
+      <scale>0.1</scale>
+      <position> 10 120 0</position>
+    </transformation>
+    <render>
+      <mesh>ship</mesh>
+      <textures>
+        <texture>ship_texture</texture>
+      </textures>
+    </render>
   </actor>
-
-  <!--actor>
-      <name>teapot</name>
-      <position>
-      <x>0</x>
-      <y>10</y>
-      <z>0</z>
-      </position>
-      <mesh>teapot</mesh>
-      <shaderProgram>light</shaderProgram>
-      </actor-->
-
-  <!--actor>
-      <name>floor</name>
-      <scale>25</scale>
-      <position>
-      <x>0</x>
-      <y>-15</y>
-      <z>0</z>
-      </position>
-      <mesh>floor</mesh>
-      <texture>floor_texture</texture>
-      </actor-->
 </scene>
 

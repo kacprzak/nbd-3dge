@@ -1,6 +1,26 @@
 #include "ActorFactory.h"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/lexical_cast.hpp>
+
 using namespace boost::property_tree;
+
+static glm::vec4 stringToVector(std::string str)
+{
+    glm::vec4 retval;
+
+    if (!str.empty()) {
+        boost::trim(str);
+        std::vector<std::string> splitted;
+        boost::split(splitted, str, boost::is_any_of(" \t"));
+        for (size_t i = 0; i < splitted.size(); ++i)
+            retval[i] = boost::lexical_cast<float>(splitted[i]);
+    }
+    
+    return retval;
+}
 
 static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree)
 {
@@ -22,11 +42,15 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree)
 static std::shared_ptr<TransformationComponent> getTransformationComponent(ptree& actorTree)
 {
     auto tr = std::make_shared<TransformationComponent>();
+    std::string orientation = actorTree.get("orientation", "");
+    // Conversion form euler to quaternion
+    tr->orientation = glm::vec3{stringToVector(orientation)};
+    
+    std::string position = actorTree.get("position", "");
+    tr->position = stringToVector(position);
+        
     tr->scale = actorTree.get("scale", 1.0f);
-    tr->position.x = actorTree.get("position.x", 0.0f);
-    tr->position.y = actorTree.get("position.y", 0.0f);
-    tr->position.z = actorTree.get("position.z", 0.0f);
-
+    
     return tr;
 }
 
@@ -37,26 +61,33 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     const std::string& actorType  = v.first;
     ptree& actorTree = v.second;
 
-    if (actorType == "skybox") {
-        auto rd = getRenderComponent(actorTree);
+    auto trNode = actorTree.get_child_optional("transformation");
+    if (trNode) {
+        auto tr = getTransformationComponent(trNode.get());
+        a->addComponent(ComponentId::Transformation, tr);
+    }
+   
+    auto rdNode = actorTree.get_child_optional("render");
+    if (rdNode) {
+        auto rd = getRenderComponent(rdNode.get());
         rd->role = Role::Skybox;
         a->addComponent(ComponentId::Render, rd);
     }
+    
+    if (actorType == "skybox") {
+        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        if (rd)
+            rd->role = Role::Skybox;
+    }
     else if (actorType == "terrain") {
-        auto rd = getRenderComponent(actorTree);
-        rd->role = Role::Terrain;
-        a->addComponent(ComponentId::Render, rd);
-            
-        auto tr = getTransformationComponent(actorTree);
-        a->addComponent(ComponentId::Transformation, tr);
+        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        if (rd)
+            rd->role = Role::Terrain;
     }
     else if (actorType == "actor") {
-        auto rd = getRenderComponent(actorTree);
-        rd->role = Role::Dynamic;
-        a->addComponent(ComponentId::Render, rd);
-
-        auto tr = getTransformationComponent(actorTree);    
-        a->addComponent(ComponentId::Transformation, tr);
+        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        if (rd)
+            rd->role = Role::Dynamic;
     }
 
     return a;
