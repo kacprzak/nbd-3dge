@@ -55,7 +55,7 @@ void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         m_textures[i]->bind(i);
     }
 
-    if(shaderProgram) {
+    if (shaderProgram) {
         shaderProgram->use();
         shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());

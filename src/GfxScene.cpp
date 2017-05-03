@@ -16,12 +16,12 @@ void GfxScene::draw(const Camera* camera) const
     if (m_camera)
         m_camera->draw(camera);
 
-    for (const auto& a : m_actors) {
-        a.second->draw(camera);
+    for (const auto& node : m_nodes) {
+        node.second->draw(camera);
     }
 
-    for (const auto& a : m_texts) {
-        a->draw();
+    for (const auto& node : m_texts) {
+        node->draw();
     }
 }
 
@@ -33,12 +33,12 @@ void GfxScene::draw(ShaderProgram* shaderProgram, const Camera* camera) const
     //if (m_camera)
     //    m_camera->draw(shaderProgram, camera);
 
-    for (const auto& a : m_actors) {
-        a.second->draw(shaderProgram, camera);
+    for (const auto& node : m_nodes) {
+        node.second->draw(shaderProgram, camera);
     }
 
-    for (const auto& a : m_texts) {
-        a->draw();
+    for (const auto& node : m_texts) {
+        node->draw();
     }
 }
 
@@ -48,7 +48,7 @@ void GfxScene::update(float delta)
         m_camera->update(delta);
     }
 
-    for (const auto& a : m_actors) {
-        a.second->update(delta);
+    for (const auto& node : m_nodes) {
+        node.second->update(delta);
     }
 }

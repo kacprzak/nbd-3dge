@@ -25,10 +25,10 @@ class GfxScene
     }
 
     void add(int id, std::shared_ptr<GfxNode> actor) {
-        m_actors[id] = actor;
+        m_nodes[id] = actor;
     }
     void remove(int id) {
-        m_actors.erase(id);
+        m_nodes.erase(id);
     }
 
     void add(std::shared_ptr<Text> actor) {
@@ -44,7 +44,7 @@ class GfxScene
     void update(float delta);
 
  private:
-    std::map<int, std::shared_ptr<GfxNode>> m_actors;
+    std::map<int, std::shared_ptr<GfxNode>> m_nodes;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
     std::set<std::shared_ptr<Text>> m_texts;

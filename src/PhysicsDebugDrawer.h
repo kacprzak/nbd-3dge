@@ -3,12 +3,13 @@
 
 #include <LinearMath/btIDebugDraw.h>
 
+#include <GL/glew.h>
 #include <vector>
 
 class ShaderProgram;
 class Camera;
 
-class PhysicsDebugDrawer : public btIDebugDraw
+class PhysicsDebugDrawer final : public btIDebugDraw
 {
  public:
     PhysicsDebugDrawer();
@@ -25,8 +26,14 @@ class PhysicsDebugDrawer : public btIDebugDraw
     void draw(ShaderProgram* shaderProgram, Camera* camera);
 
  private:
+    void updateBuffer();
+
     int m_debugMode;
     std::vector<float> m_linesData;
+
+    GLuint m_vao = 0;
+    GLuint m_buffer = 0;
+    std::size_t m_bufferReservedSize = 0;
 };
 
 #endif // PHYSICSDEBUGDRAWER_H
