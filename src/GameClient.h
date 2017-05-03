@@ -16,7 +16,7 @@ class GameClient : public SDLWindow
  public:
     GameClient(const Settings& settings);
 
-    void loadResources(const std::string& xmlFile);
+    void loadResources(const std::string& xmlFile) override;
     void unloadResources() override;
 
     void addActor(int id, TransformationComponent* tr, RenderComponent* rd) override;

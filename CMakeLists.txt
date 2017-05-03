@@ -26,7 +26,13 @@ endif()
 find_package( Boost COMPONENTS ${Boost_COMPONENTS} REQUIRED )
 #find_package( Lua53 REQUIRED )
 
+if( UNIX )
+  # For irony-mode to work
+  set( LIBCLANG_INCLUDES /usr/include/c++/6 )
+endif()
+
 include_directories(
+  ${LIBCLANG_INCLUDES}
   ${PROJECT_BINARY_DIR}
   src
   ${SDL2_INCLUDE_DIR}
