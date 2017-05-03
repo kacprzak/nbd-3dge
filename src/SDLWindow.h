@@ -10,7 +10,7 @@ class SDLWindow : public GameView
 {
 public:
     SDLWindow(const Settings& settings);
-    virtual ~SDLWindow();
+    ~SDLWindow();
 
     bool processInput(const SDL_Event& event) override;
 
@@ -32,7 +32,6 @@ protected:
 
  private:
     void createSDLWindow();
-
     void initializeOpenGL();
 
     std::string m_title;

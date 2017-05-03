@@ -2,14 +2,11 @@
 #define ENGINE_H
 
 #include "config.h"
+#include "GameLogic.h"
 
 #if PLATFORM == PLATFORM_WINDOWS
 #include <windows.h>
 #endif
-
-#include "GameLogic.h"
-#include "Singleton.h"
-
 #include <SDL.h>
 
 #include <stdexcept>
@@ -17,7 +14,7 @@
 
 class EngineError : public std::runtime_error
 {
-  public:
+ public:
     EngineError(const std::string& msg, const char* sdlError)
         : std::runtime_error(msg + ": " + sdlError)
         , m_sdlError(sdlError)
@@ -26,7 +23,7 @@ class EngineError : public std::runtime_error
 
     const char* sdlError() { return m_sdlError; }
 
-  private:
+ private:
     const char* m_sdlError;
 };
 
@@ -35,11 +32,11 @@ class EngineError : public std::runtime_error
 /*!
  * \brief Main loop.
  */
-class Engine : public Singleton<Engine>
+class Engine final
 {
-  public:
+ public:
     explicit Engine(bool initVideo = true);
-    ~Engine() override;
+    ~Engine();
 
     void mainLoop(GameLogic* game);
     GameLogic* game() { return m_game; }
@@ -48,7 +45,7 @@ class Engine : public Singleton<Engine>
 
     static int showErrorMessageBox(const char* msg);
 
-  private:
+ private:
     void initializeSDL();
     void logSDLInfo();
 

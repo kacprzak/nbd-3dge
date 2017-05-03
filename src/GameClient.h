@@ -1,5 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef GAMECLIENT_H
+#define GAMECLIENT_H
 
 #include "SDLWindow.h"
 #include "ResourcesMgr.h"
@@ -17,10 +17,10 @@ class GameClient : public SDLWindow
     GameClient(const Settings& settings);
 
     void loadResources(const std::string& xmlFile);
-    void unloadResources();
+    void unloadResources() override;
 
-    void addActor(int id, TransformationComponent* tr, RenderComponent* rd);
-    void removeActor(int id);
+    void addActor(int id, TransformationComponent* tr, RenderComponent* rd) override;
+    void removeActor(int id) override;
 
  protected:
     void resizeWindow(int width, int height) override;
@@ -41,7 +41,7 @@ class GameClient : public SDLWindow
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<ShaderProgram> m_normalsShader;
 
-    Settings m_settings;
+    const Settings m_settings;
     GfxScene m_scene;
     FpsCounter m_fpsCounter;
 
@@ -55,4 +55,4 @@ class GameClient : public SDLWindow
     bool m_leftMouseButtonPressed = false;
 };
 
-#endif // GAME_H
+#endif // GAMECLIENT_H

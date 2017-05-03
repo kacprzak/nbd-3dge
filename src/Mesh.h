@@ -16,22 +16,22 @@ class Mesh
         NUM_BUFFERS
     };
 
-public:
+ public:
     ~Mesh();
 
     void draw() const;
     void draw(int start, int count) const;
 
-    static Mesh *create(const std::string& objfileName);
+    static Mesh* create(const std::string& objfileName);
 
-    static Mesh *create(const std::string& name,
+    static Mesh* create(const std::string& name,
                         const std::vector<GLfloat>& vertices,
                         const std::vector<GLfloat>& normals,
                         const std::vector<GLfloat>& texcoords,
                         const std::vector<GLushort>& indices,
                         GLenum primitive = GL_TRIANGLES);
 
-private:
+ private:
     Mesh(const std::string& name, GLenum primitive);
 
     const std::string m_name;

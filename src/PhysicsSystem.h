@@ -4,7 +4,6 @@
 #include "Components.h"
 
 #include <LinearMath/btAlignedObjectArray.h>
-
 #include <boost/noncopyable.hpp>
 
 class btCollisionConfiguration;
@@ -27,8 +26,6 @@ class PhysicsSystem final : private boost::noncopyable
 
     //virtual void toggleDrawDebug() = 0;
     //virtual void drawDebugData()   = 0;
-
-    //virtual void applyForce(const Vec2& dir, float newtons, ActorId actorId) = 0;
 
  private:
     btCollisionConfiguration* m_collisionConfiguration;

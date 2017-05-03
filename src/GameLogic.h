@@ -30,7 +30,7 @@ class GameLogic final : private boost::noncopyable
     void attachView(std::shared_ptr<GameView> gameView, unsigned actorId = 0);
     
  private:
-    Settings m_settings;
+    const Settings m_settings;
     std::unique_ptr<PhysicsSystem> m_physicsSystem;
     GameViewList m_gameViews;
     ActorsList m_actors;

@@ -5,7 +5,7 @@
 
 class FpsCounter
 {
-public:
+ public:
     FpsCounter();
 
     void update(float delta);
@@ -14,7 +14,7 @@ public:
         m_text = text;
     }
 
-private:
+ private:
     float m_timePassed;
     unsigned int m_framesPassed;
     std::shared_ptr<Text> m_text;

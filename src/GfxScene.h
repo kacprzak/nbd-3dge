@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECTMANAGER_H
-#define GAMEOBJECTMANAGER_H
+#ifndef GFXSCENE_H
+#define GFXSCENE_H
 
 #include "GfxNode.h"
 #include "Skybox.h"
@@ -12,7 +12,7 @@
 
 class GfxScene
 {
-public:
+ public:
     GfxScene();
     ~GfxScene();
 
@@ -38,20 +38,16 @@ public:
         m_texts.erase(actor);
     }
     
-    //const std::map<std::shared_ptr<GfxNode>>& actors() const {
-    //    return m_actors;
-    //}
-
     void draw(const Camera* camera) const;
     void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
 
     void update(float delta);
 
-private:
+ private:
     std::map<int, std::shared_ptr<GfxNode>> m_actors;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
     std::set<std::shared_ptr<Text>> m_texts;
 };
 
-#endif // GAMEOBJECTMANAGER_H
+#endif // GFXSCENE_H

@@ -13,10 +13,10 @@ class MtlLoader : public Loader
         std::string texture;
     };
 
-protected:
+ protected:
     void command(const std::string& cmd, const std::vector<std::string>& args);
 
-private:
+ private:
     std::vector<Material> m_materials;
 };
 

@@ -12,8 +12,8 @@ struct Component {};
 
 struct TransformationComponent : public Component
 {
+    glm::quat orientation;
     glm::vec3 position;
-    glm::quat orientation{glm::vec3{0.f, 0.f, 0.f}};
     float scale;
 };
 

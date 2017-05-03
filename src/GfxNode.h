@@ -14,7 +14,7 @@ class GfxNode
 {
  public:
     GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
-    virtual ~GfxNode() {};
+    ~GfxNode() = default;
 
     void setTextures(std::vector<std::shared_ptr<Texture>> textures);
     void addTexture(std::shared_ptr<Texture> texture);

@@ -1,7 +1,6 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-//#include "ActorCategory.h"
 #include "Components.h"
 
 #include <map>
@@ -23,7 +22,7 @@ class Actor final
 
     using ComponentsMap = std::map<ComponentId, std::shared_ptr<Component>>;
 
-  public:
+ public:
     Actor(ActorId id);
     Actor(const Actor&) = delete;
     Actor& operator=(const Actor&) = delete;
@@ -58,7 +57,7 @@ class Actor final
         }
     }
 
-  private:
+ private:
     ActorId m_id;
     ComponentsMap m_components;
     bool m_dead; //!< Flag indicating that this actor should be deleted by

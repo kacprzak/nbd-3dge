@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include <vector>
 
-class ShaderProgram
+class ShaderProgram final
 {
  public:
     ShaderProgram();

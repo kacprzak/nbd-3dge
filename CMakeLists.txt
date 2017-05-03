@@ -52,7 +52,21 @@ configure_file(
   ${PROJECT_BINARY_DIR}/config.ini
 )
 
-set( EXTRA_LIBS GL GLU GLEW ${BULLET_LIBRARIES} )
+set( LINK_LIBS
+  GL GLU GLEW
+  ${SDL2_LIBRARY}
+  ${SDL2MAIN_LIBRARY}
+  ${SDL2IMAGE_LIBRARY}
+  ${OPENGL_LIBRARIES}
+  ${LUA53_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ${BULLET_LIBRARIES}
+)
+
+# Add winsock lib
+if( WIN32 )
+  set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
+endif( WIN32 )
 
 add_subdirectory( src )
 

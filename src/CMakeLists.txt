@@ -31,20 +31,5 @@ set( nbd-3dge_SRCS
     PhysicsSystem.cpp
 )
 
-set( LINK_LIBS
-  ${SDL2_LIBRARY}
-  ${SDL2MAIN_LIBRARY}
-  ${SDL2IMAGE_LIBRARY}
-  ${OPENGL_LIBRARIES}
-  ${LUA53_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${EXTRA_LIBS}
-)
-
-# Add winsock lib
-if( WIN32 )
-  set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
-endif( WIN32 )
-
 add_executable( nbd-3dge ${nbd-3dge_SRCS} )
 target_link_libraries( nbd-3dge ${LINK_LIBS} )

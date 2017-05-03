@@ -4,16 +4,16 @@
 #include <GL/glew.h>
 #include <string>
 
-class Shader
+class Shader final
 {
-public:
+ public:
     Shader(GLenum type, const std::string& filename);
     ~Shader();
 
     GLenum type() { return m_type; }
     GLuint id() { return m_shaderId; }
 
-private:
+ private:
     GLuint m_shaderId;
     GLenum m_type;
 };

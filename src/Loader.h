@@ -11,20 +11,20 @@
  */
 class Loader
 {
-public:
+ public:
     Loader();
     virtual ~Loader();
 
     void load(const std::string& filename);
 
-protected:
+ protected:
     virtual void command(const std::string& cmd, const std::vector<std::string>& args) = 0;
     virtual void fileLoaded();
     virtual void parseLine(const std::string& line);
 
     const std::string& currentFolder() { return m_folder; }
 
-private:
+ private:
     std::string m_folder;
 };
 

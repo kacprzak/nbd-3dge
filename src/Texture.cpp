@@ -71,7 +71,8 @@ Texture *Texture::create(const std::string &filename, bool clamp)
     GLenum format = textureFormat(&surface);
 
     SDL_LockSurface(surface);
-    glTexImage2D(target, 0, GL_SRGB8_ALPHA8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexImage2D(target, 0, GL_SRGB8_ALPHA8, tex->m_w, tex->m_h, 0,
+                 format, GL_UNSIGNED_BYTE, surface->pixels);
     SDL_UnlockSurface(surface);
 
     SDL_FreeSurface(surface);
@@ -115,11 +116,13 @@ Texture *Texture::create(const std::array<std::string, 6> filenames, bool clamp)
 
         SDL_LockSurface(surface);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                     0, GL_SRGB8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+                     0, GL_SRGB8, tex->m_w, tex->m_h, 0,
+                     format, GL_UNSIGNED_BYTE, surface->pixels);
         SDL_UnlockSurface(surface);
 
     
-        LOG_INFO << "Loaded: " << extractFilename(filenames[i]) << " texId: "<< tex->m_textureId
+        LOG_INFO << "Loaded: " << extractFilename(filenames[i])
+                 << " texId: "<< tex->m_textureId
                  << " (" << tex->m_w << " x " << tex->m_h << ")";
 
         SDL_FreeSurface(surface);
