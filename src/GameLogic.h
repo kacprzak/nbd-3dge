@@ -21,6 +21,7 @@ class GameLogic final : private boost::noncopyable
     ~GameLogic();
 
     void update(float elapsedTime);
+    void draw();
 
     GameViewList& gameViews() { return m_gameViews; }
     /*!  Use these if you need Engine to create or clean stuff */

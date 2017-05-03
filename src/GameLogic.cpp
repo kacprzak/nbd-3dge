@@ -100,7 +100,10 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
 void GameLogic::update(float elapsedTime)
 {
     m_physicsSystem->update(elapsedTime);
+}
+
+void GameLogic::draw()
+{
     if (m_drawDebug)
         m_physicsSystem->drawDebugData();
 }
-
