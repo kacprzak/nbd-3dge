@@ -50,6 +50,7 @@
       <textures>
         <texture>cube_texture</texture>
       </textures>
+      <shaderProgram>lightAndTex</shaderProgram>
     </render>
   </actor>
 
@@ -91,6 +92,7 @@
       <textures>
         <texture>ship_texture</texture>
       </textures>
+      <shaderProgram>lightAndTex</shaderProgram>
     </render>
   </actor>
 </scene>

@@ -17,15 +17,23 @@ PhysicsDebugDrawer::~PhysicsDebugDrawer()
 
 //------------------------------------------------------------------------------
 
-void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& /*color*/)
+void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
 {
     m_linesData.push_back(from.getX());
     m_linesData.push_back(from.getY());
     m_linesData.push_back(from.getZ());
 
+    m_linesData.push_back(color.getX());
+    m_linesData.push_back(color.getY());
+    m_linesData.push_back(color.getZ());
+    
     m_linesData.push_back(to.getX());
     m_linesData.push_back(to.getY());
     m_linesData.push_back(to.getZ());
+
+    m_linesData.push_back(color.getX());
+    m_linesData.push_back(color.getY());
+    m_linesData.push_back(color.getZ());
 }
 
 void PhysicsDebugDrawer::drawContactPoint (const btVector3& /*PointOnB*/, const btVector3& /*normalOnB*/,
@@ -62,10 +70,10 @@ void PhysicsDebugDrawer::draw(ShaderProgram* shaderProgram, Camera* camera)
         shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
         shaderProgram->setUniform("modelMatrix", glm::mat4(1.f));
-
-        glBindVertexArray(m_vao);
-        glDrawArrays(GL_LINES, 0, m_linesData.size()/3);
     }
+
+    glBindVertexArray(m_vao);
+    glDrawArrays(GL_LINES, 0, m_linesData.size() / 6);
     
     m_linesData.clear();
 }
@@ -85,7 +93,10 @@ void PhysicsDebugDrawer::updateBuffer()
     glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, &m_linesData[0]);
     
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
 
