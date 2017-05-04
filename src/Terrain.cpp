@@ -6,31 +6,36 @@
 Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd, const std::string& dataFolder)
     : GfxNode{actorId, tr, rd}
 {
-    SDL_Surface* surface = IMG_Load((dataFolder + rd->mesh).c_str());
+    std::vector<unsigned char> heights = getHeightData(dataFolder + rd->mesh, &m_x, &m_y);
+
+    auto mesh = std::shared_ptr<Mesh>{Mesh::fromHeightmap(heights, m_x, m_y, m_amplitude, m_textureStrech)};
+    setMesh(mesh);
+}
+
+std::vector<unsigned char> Terrain::getHeightData(const std::string& filename, int* w, int* h)
+{
+    SDL_Surface* surface = IMG_Load(filename.c_str());
     
     if (!surface) {
-        throw std::runtime_error("SDL_Image load error: " +
-                                 std::string(IMG_GetError()));
+        throw std::runtime_error{"SDL_Image load error: " + std::string{IMG_GetError()}};
     }
 
-    m_x = surface->w;
-    m_y = surface->h;
+    *w = surface->w;
+    *h = surface->h;
 
     std::vector<unsigned char> heights;
-    heights.resize(m_x * m_y);
+    heights.resize(*w * *h);
 
     SDL_LockSurface(surface);
     Uint8 *pixels = (Uint8 *)surface->pixels;
     
-    for (int y = 0; y < m_y; ++y) {
-        for (int x = 0; x < m_x; ++x) {
-            heights[y * m_y + x] = pixels[(y * surface->w + x) * surface->format->BytesPerPixel];
+    for (int y = 0; y < *h; ++y) {
+        for (int x = 0; x < *w; ++x) {
+            heights[y * *h + x] = pixels[(y * surface->w + x) * surface->format->BytesPerPixel];
         }
     }
     SDL_UnlockSurface(surface);
-
     SDL_FreeSurface(surface);
 
-    auto mesh = std::shared_ptr<Mesh>{Mesh::fromHeightmap(heights, m_x, m_y, m_amplitude, m_textureStrech)};
-    setMesh(mesh);
+    return heights;
 }

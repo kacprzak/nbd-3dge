@@ -8,6 +8,7 @@ class Terrain : public GfxNode
  public:
     Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd, const std::string& dataFolder);
 
+    static std::vector<unsigned char> getHeightData(const std::string& filename, int* w, int* h);
  private:
     int m_x = 0;
     int m_y = 0;
