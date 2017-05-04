@@ -54,11 +54,8 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
         5, 1, 0
     };
 
-    Mesh *mesh = Mesh::create("skybox.obj",
-                              vertices, {}, {}, indices,
-                              GL_TRIANGLES);
-    
-    m_mesh = std::shared_ptr<Mesh>{mesh};
+    m_mesh = std::make_shared<Mesh>(GL_TRIANGLES, vertices,
+                                    std::vector<float>{}, std::vector<float>{}, indices);
 }
 
 void Skybox::draw(const Camera *camera) const

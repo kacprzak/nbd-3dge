@@ -9,14 +9,20 @@
 class Mesh
 {
     enum Buffers {
-        VERTICES,
-        TEXCOORDS,
+        POSITIONS,
         NORMALS,
+        TEXCOORDS,
         INDICES,
         NUM_BUFFERS
     };
 
  public:
+    Mesh(GLenum primitive,
+         const std::vector<GLfloat> &vertices,
+         const std::vector<GLfloat> &normals,
+         const std::vector<GLfloat> &texcoords,
+         const std::vector<GLushort> &indices);
+
     ~Mesh();
 
     void draw() const;
@@ -24,18 +30,7 @@ class Mesh
 
     static Mesh* create(const std::string& objfileName);
 
-    static Mesh* create(const std::string& name,
-                        const std::vector<GLfloat>& vertices,
-                        const std::vector<GLfloat>& normals,
-                        const std::vector<GLfloat>& texcoords,
-                        const std::vector<GLushort>& indices,
-                        GLenum primitive = GL_TRIANGLES);
-
  private:
-    Mesh(const std::string& name, GLenum primitive);
-
-    const std::string m_name;
-
     GLuint m_buffers[NUM_BUFFERS];
     GLuint m_vao;
 

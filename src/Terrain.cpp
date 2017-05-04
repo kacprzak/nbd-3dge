@@ -91,9 +91,9 @@ Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd, 
         }
     }
 
-    auto mesh = std::shared_ptr<Mesh>{Mesh::create("terrain",
-                                                   vertices, normals, texCoords, indices,
-                                                   GL_TRIANGLE_STRIP)};
+    auto mesh = std::make_shared<Mesh>(GL_TRIANGLE_STRIP,
+                                       vertices, normals,
+                                       texCoords, indices);
 
     setMesh(mesh);
 }
