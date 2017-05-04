@@ -138,7 +138,7 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name)
 void ResourcesMgr::addMesh(const std::string& name,
                            const std::string& filename)
 {
-    std::shared_ptr<Mesh> mesh{Mesh::create(m_dataFolder + filename)};
+    std::shared_ptr<Mesh> mesh{Mesh::fromWavefrontObj(m_dataFolder + filename)};
     m_meshes[name] = mesh;
 }
 
