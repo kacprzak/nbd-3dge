@@ -86,7 +86,7 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
         auto str = tr.lock();
         auto srd = rd.lock();
         if (str)
-            m_physicsSystem->addActor(a->id(), str.get(), srd.get());
+            m_physicsSystem->addActor(a->id(), str.get(), srd.get(), m_settings.dataFolder);
     }
 }
 

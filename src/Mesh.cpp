@@ -98,15 +98,15 @@ Mesh *Mesh::fromWavefrontObj(const std::string& objfileName)
             objLoader.indices()};
 }
 
-Mesh* Mesh::fromHeightmap(const std::vector<unsigned char>& heights, int w, int h,
-                          float amplitude, float textureStrech)
+Mesh* Mesh::fromHeightmap(const std::vector<float>& heights, int w, int h,
+                          float textureStrech)
 {
     if (w % 2 != 0 || h % 2 != 0) {
         throw std::runtime_error{"Heightmap with odd size is not supported."};
     }
     
     const auto getHeight = [&](int x, int y)->float {
-        return ((heights[y * h + x]/255.0f) - 0.5) * amplitude;
+        return heights[y * h + x];
     };
 
     const auto getNormal = [&](int x, int y)->glm::vec3 {

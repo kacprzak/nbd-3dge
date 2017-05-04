@@ -22,7 +22,8 @@ class PhysicsSystem final : private boost::noncopyable
 
     void update(float elapsedTime);
 
-    void addActor(int id, TransformationComponent* tr, RenderComponent* rd);
+    void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+                  const std::string& dataFolder);
     void removeActor(int id);
 
     void setDebugDrawer(btIDebugDraw* debugDrawer);
@@ -36,6 +37,7 @@ class PhysicsSystem final : private boost::noncopyable
     btDynamicsWorld* m_dynamicsWorld;
 
     btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
+    std::vector<float> m_heightmapData;
 };
 
 #endif // PHYSICSSYSTEM_H

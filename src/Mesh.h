@@ -29,8 +29,8 @@ class Mesh
     void draw(int start, int count) const;
 
     static Mesh* fromWavefrontObj(const std::string& objfileName);
-    static Mesh* fromHeightmap(const std::vector<unsigned char>& heights, int w, int h,
-                               float amplitude, float textureStrech);
+    static Mesh* fromHeightmap(const std::vector<float>& heights, int w, int h,
+                               float textureStrech);
 
  private:
     GLuint m_buffers[NUM_BUFFERS];

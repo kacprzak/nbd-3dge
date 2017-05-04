@@ -1,6 +1,9 @@
 #include "PhysicsSystem.h"
 
 #include <btBulletDynamicsCommon.h>
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
+// Fixme: remove this dependency
+#include "Terrain.h"
 
 PhysicsSystem::PhysicsSystem()
 {
@@ -67,10 +70,22 @@ void PhysicsSystem::update(float elapsedTime)
     }
 }
 
-void PhysicsSystem::addActor(int id, TransformationComponent *tr, RenderComponent *rd)
+void PhysicsSystem::addActor(int id, TransformationComponent *tr, RenderComponent *rd,
+                             const std::string& dataFoldera)
 {
-    //btCollisionShape* colShape = new btBoxShape(btVector3(1,1,1));
-    btCollisionShape* colShape = new btSphereShape(btScalar(10.));
+    btCollisionShape* colShape = nullptr;
+
+    if (rd->role == Role::Terrain) {
+        int w, h;
+        float amp = 40.f;
+        m_heightmapData = Terrain::getHeightData(dataFoldera + rd->mesh, &w, &h, amp);
+        colShape = new btHeightfieldTerrainShape{w, h, m_heightmapData.data(), 1.0f, -amp, amp,
+                                                 1, PHY_FLOAT, false};
+        colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
+    } else {
+        //colShape = new btBoxShape(btVector3(1,1,1));
+        colShape = new btSphereShape(btScalar(10.));
+    }
     m_collisionShapes.push_back(colShape);
 
     // Create Dynamic Objects
