@@ -27,7 +27,7 @@ std::vector<float> ObjLoader::vertices() const
         return vertices_a;
     }
     
-    for (const Vectorf& v : m_vertices) {
+    for (const auto& v : m_vertices) {
         vertices_a.push_back(v.x);
         vertices_a.push_back(v.y);
         vertices_a.push_back(v.z);
@@ -50,7 +50,7 @@ std::vector<float> ObjLoader::normals() const
         return normals_a;
     }
 
-    for (const Vectorf& n : m_normals) {
+    for (const auto& n : m_normals) {
         normals_a.push_back(n.x);
         normals_a.push_back(n.y);
         normals_a.push_back(n.z);
@@ -89,7 +89,7 @@ std::vector<float> ObjLoader::texCoords() const
         return texcoords_a;
     }
     
-    for (const TexCoord& t : m_texCoords) {
+    for (const auto& t : m_texCoords) {
         texcoords_a.push_back(t.s);
         texcoords_a.push_back(t.t);
     }
@@ -103,7 +103,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
         //loadMtlLib(args[0]);
     } else if (cmd == "v") {
         // v -42.209999 19.670004 38.799995
-        Vectorf v;
+        glm::vec3 v;
         v.x = to_float(args[0]);
         v.y = to_float(args[1]);
         v.z = to_float(args[2]);
@@ -111,7 +111,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
 
     } else if (cmd == "vn") {
         // vn -0.002913 -0.974373 -0.224919
-        Vectorf n;
+        glm::vec3 n;
         n.x = to_float(args[0]);
         n.y = to_float(args[1]);
         n.z = to_float(args[2]);
@@ -119,7 +119,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
 
     } else if (cmd == "vt") {
         // vt 0.622800 0.226700
-        TexCoord tc;
+        glm::vec2 tc;
         tc.s = to_float(args[0]);
         tc.t = to_float(args[1]);
         m_texCoords.push_back(tc);
@@ -181,8 +181,8 @@ void ObjLoader::fileLoaded()
             for (int i = 0; i < 3; ++i) {        
                 OpenGlVertex vert;
                 vert.p = m_vertices[f.vertexIndices[i]];
-                vert.n = !m_normals.empty() ? m_normals[f.normIndices[i]] : Vectorf{0.0f, 0.0f, 0.0f};
-                vert.t = !m_texCoords.empty() ? m_texCoords[f.texIndices[i]] : TexCoord{0.0f, 0.0f};
+                vert.n = !m_normals.empty() ? m_normals[f.normIndices[i]] : glm::vec3{0.0f, 0.0f, 0.0f};
+                vert.t = !m_texCoords.empty() ? m_texCoords[f.texIndices[i]] : glm::vec2{0.0f, 0.0f};
 
                 const auto& it = std::find(std::cbegin(m_oglVertices), std::cend(m_oglVertices), vert);
                 if (it != std::cend(m_oglVertices)) {

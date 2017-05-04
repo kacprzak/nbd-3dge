@@ -15,20 +15,15 @@ Loader::~Loader()
 {
 }
 
-void Loader::load(const std::string &filename)
+void Loader::load(const std::string& filename)
 {
     using namespace std;
     m_folder = extractDirectory(filename);
 
-    string tmp;
     ifstream f(filename.c_str());
 
     if (f.is_open() == true) {
-        while (f.good()) {
-            getline(f, tmp);
-            boost::algorithm::trim(tmp);
-            parseLine(tmp);
-        }
+        load(f);
         f.close();
     } else {
         cerr << "Error: unable to open " << filename << endl;
@@ -37,7 +32,18 @@ void Loader::load(const std::string &filename)
     fileLoaded();
 }
 
-void Loader::parseLine(const std::string &line)
+void Loader::load(std::istream& stream)
+{
+    std::string tmp;
+
+    while (stream.good()) {
+        getline(stream, tmp);
+        boost::algorithm::trim(tmp);
+        parseLine(tmp);
+    }
+}
+
+void Loader::parseLine(const std::string& line)
 {
     using namespace boost;
 

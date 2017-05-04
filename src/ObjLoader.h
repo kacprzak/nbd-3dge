@@ -4,40 +4,20 @@
 #include "Loader.h"
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 class ObjLoader : public Loader
 {
-    struct Vectorf {
-        float x;
-        float y;
-        float z;
-
-        bool operator==(const Vectorf& other) const
-        {
-            return x == other.x && y == other.y && z == other.z;
-        }
-    };
-
-    struct TexCoord {
-        float s;
-        float t;
-
-        bool operator==(const TexCoord& other) const
-        {
-            return s == other.s && t == other.t;
-        }
-    };
-
     struct Face {
         unsigned short vertexIndices[3];
-        unsigned short texIndices[3];
         unsigned short normIndices[3];
+        unsigned short texIndices[3];
     };
 
     struct OpenGlVertex
     {
-        Vectorf p, n;
-        TexCoord t;
+        glm::vec3 p, n;
+        glm::vec2 t;
 
         bool operator==(const OpenGlVertex& other) const
         {
@@ -65,10 +45,10 @@ class ObjLoader : public Loader
  private:
     GLenum m_primitive = GL_TRIANGLES; //< triangles by deafult
     
-    std::vector<Vectorf> m_vertices;
+    std::vector<glm::vec3> m_vertices;
     std::vector<Face> m_faces;
-    std::vector<Vectorf> m_normals;
-    std::vector<TexCoord> m_texCoords;
+    std::vector<glm::vec3> m_normals;
+    std::vector<glm::vec2> m_texCoords;
 
     std::vector<OpenGlVertex> m_oglVertices;
     std::vector<OpenGlFace> m_oglFaces;
