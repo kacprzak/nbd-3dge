@@ -148,6 +148,8 @@ void PhysicsDebugDrawer::updateBuffer()
         glBufferData(GL_ARRAY_BUFFER, bufferSize, 0, GL_DYNAMIC_DRAW);
         m_bufferReservedSize = bufferSize;
         LOG_TRACE << "PhysicsDebugDrawer::m_bufferReservedSize = " << m_bufferReservedSize;
+    } else {
+        glInvalidateBufferData(m_buffer);
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, &m_linesData[0]);
