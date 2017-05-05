@@ -148,9 +148,9 @@ Mesh* Mesh::fromHeightmap(const std::vector<float>& heights, int w, int h,
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             int idx = (y * h + x) * 3;
-            vertices[idx] = x - w/2.0f;
+            vertices[idx] = x - w/2.0f + 0.5f;
             vertices[idx + 1] = getHeight(x, y);
-            vertices[idx + 2] = y - h/2.0f;
+            vertices[idx + 2] = y - h/2.0f + 0.5f;
         }
     }
 
