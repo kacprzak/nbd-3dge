@@ -242,10 +242,7 @@ void GameClient::keyReleased(const SDL_Event& event)
         break;
     case SDL_SCANCODE_Z:
         {
-            GLint polygonMode;
-            glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
-            polygonMode = polygonMode == GL_FILL ? GL_LINE : GL_FILL;
-            glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+            m_scene.setNextPolygonMode();
         }
         break;
     case SDL_SCANCODE_N:

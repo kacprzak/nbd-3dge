@@ -43,7 +43,11 @@ class GfxScene
 
     void update(float delta);
 
+    void setNextPolygonMode();
+
  private:
+    GLenum m_polygonMode = GL_FILL;
+    
     std::map<int, std::shared_ptr<GfxNode>> m_nodes;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
