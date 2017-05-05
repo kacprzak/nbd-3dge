@@ -67,20 +67,37 @@ void ResourcesMgr::addShaderProgram(const std::string& name,
     std::unique_ptr<Shader> gs;
     std::unique_ptr<Shader> fs;
 
+    const auto extractSource = [](const std::string& filename) -> std::string {
+        std::string source;
+        std::ifstream f(filename.c_str());
+
+        if (f.is_open() == true) {
+            source.assign((std::istreambuf_iterator<char>(f)),
+                          (std::istreambuf_iterator<char>() ));
+            f.close();
+        } else {
+            throw std::runtime_error{"File not found: " + filename};
+        }
+        return source;
+    };
+
     auto sp = std::make_shared<ShaderProgram>();
 
     if (!vertexShaderFile.empty()) {
-        vs = std::make_unique<Shader>(GL_VERTEX_SHADER, m_shadersFolder + vertexShaderFile);
+        vs = std::make_unique<Shader>(GL_VERTEX_SHADER,
+                                      extractSource(m_shadersFolder + vertexShaderFile));
         sp->addShared(vs.get());
     }
 
     if (!geometryShaderFile.empty()) {
-        gs = std::make_unique<Shader>(GL_GEOMETRY_SHADER, m_shadersFolder + geometryShaderFile);
+        gs = std::make_unique<Shader>(GL_GEOMETRY_SHADER,
+                                      extractSource(m_shadersFolder + geometryShaderFile));
         sp->addShared(gs.get());
     }
         
     if (!fragmentShaderFile.empty()) {
-        fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER, m_shadersFolder + fragmentShaderFile);
+        fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER,
+                                      extractSource(m_shadersFolder + fragmentShaderFile));
         sp->addShared(fs.get());
     }
 

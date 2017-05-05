@@ -108,7 +108,7 @@ void GameClient::draw()
         m_scene.draw(m_normalsShader.get(), m_camera.get());
     }
 
-    m_debugDraw.draw(m_resourcesMgr->getShaderProgram("default").get(), m_camera.get());
+    m_debugDraw.draw(m_camera.get());
 
     postDraw();
 }

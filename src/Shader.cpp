@@ -11,26 +11,13 @@
 using namespace std;
 using namespace boost::algorithm;
 
-Shader::Shader(GLenum type, const std::string& filename)
+Shader::Shader(GLenum type, const std::string& source)
+    : m_type{type}
 {
-    //path p(file);
-    m_type = type;
-
-    string source;
-    ifstream f(filename.c_str());
-
-    if (f.is_open() == true) {
-        source.assign((istreambuf_iterator<char>(f)),
-                      (istreambuf_iterator<char>() ));
-        f.close();
-    } else {
-        throw std::runtime_error{"File not found: " + filename};
-    }
-
     m_shaderId = glCreateShader(m_type);
 
-    LOG_INFO << "Compiling: " << extractFilename(filename) << "\tid: " << m_shaderId;
-
+    LOG_INFO << "Compiling Shader: " << m_shaderId;
+    
     const GLchar *shaderSource[1];
     shaderSource[0] = source.c_str();
 

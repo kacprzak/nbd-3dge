@@ -3,11 +3,12 @@
 
 #include <GL/glew.h>
 #include <string>
+#include <istream>
 
 class Shader final
 {
  public:
-    Shader(GLenum type, const std::string& filename);
+    Shader(GLenum type, const std::string& source);
     ~Shader();
 
     GLenum type() { return m_type; }
