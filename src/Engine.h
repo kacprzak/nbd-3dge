@@ -53,14 +53,13 @@ class Engine final
     void update(float elapsedTime);
     void draw();
 
-    bool m_breakLoop;
+    bool m_breakLoop = false;
+    bool m_appActive = true;
+    //bool m_mouseFocus true;
+    bool m_inputFocus = true;
     bool m_initVideo;
 
-    bool m_appActive;
-    bool m_mouseFocus;
-    bool m_inputFocus;
-
-    GameLogic* m_game;
+    GameLogic* m_game = nullptr;
 };
 
 #endif

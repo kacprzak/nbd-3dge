@@ -79,11 +79,11 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 
     for (auto& a : m_actors) {
         auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-        auto rd  = a->getComponent<RenderComponent>(ComponentId::Render);
+        auto ph  = a->getComponent<PhysicsComponent>(ComponentId::Physics);
         auto str = tr.lock();
-        auto srd = rd.lock();
-        if (str)
-            m_physicsSystem->addActor(a->id(), str.get(), srd.get(), m_settings.dataFolder);
+        auto sph = ph.lock();
+        if (str && sph)
+            m_physicsSystem->addActor(a->id(), str.get(), sph.get(), m_settings.dataFolder);
     }
 }
 

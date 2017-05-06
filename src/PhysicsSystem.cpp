@@ -3,7 +3,10 @@
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <btBulletDynamicsCommon.h>
 // Fixme: remove this dependency
+#include "ObjLoader.h"
 #include "Terrain.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 PhysicsSystem::PhysicsSystem()
 {
@@ -69,38 +72,57 @@ void PhysicsSystem::update(float elapsedTime)
     }
 }
 
-void PhysicsSystem::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
-                             const std::string& dataFoldera)
+void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsComponent* ph,
+                             const std::string& dataFolder)
 {
     btCollisionShape* colShape = nullptr;
+    const std::string shape    = ph->shape;
 
-    if (rd->role == Role::Terrain) {
-        int w, h;
-        float amp       = 40.f;
-        m_heightmapData = Terrain::getHeightData(dataFoldera + rd->mesh, &w, &h, amp);
-        colShape        = new btHeightfieldTerrainShape{
-            w, h, m_heightmapData.data(), 1.0f, -amp, amp, 1, PHY_FLOAT, false};
-        colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
+    if (!shape.empty()) {
+        std::vector<std::string> splitted;
+        boost::split(splitted, shape, boost::is_any_of(":"));
+        if (splitted.size() != 2) throw std::runtime_error{"Invalid shape format: " + shape};
+
+        if (splitted[0] == "heightfield") {
+            int w, h;
+            float amp       = 40.f;
+            m_heightmapData = Terrain::getHeightData(dataFolder + splitted[1], &w, &h, amp);
+            colShape        = new btHeightfieldTerrainShape{
+                w, h, m_heightmapData.data(), 1.0f, -amp, amp, 1, PHY_FLOAT, false};
+
+        } else if (splitted[0] == "mesh") {
+            auto convexHullShape = new btConvexHullShape;
+
+            ObjLoader loader;
+            loader.load(dataFolder + splitted[1]);
+            const auto& v = loader.vertices();
+            for (size_t i = 0; i < v.size(); i = i + 3) {
+                convexHullShape->addPoint(btVector3{v[i], v[i + 1], v[i + 2]}, false);
+            }
+            convexHullShape->recalcLocalAabb();
+            colShape = convexHullShape;
+
+        } else {
+            throw std::runtime_error{"Unknown shape type: " + splitted[0]};
+        }
     } else {
-        // colShape = new btBoxShape(btVector3(1,1,1));
-        colShape = new btSphereShape(btScalar(10.));
+        colShape = new btBoxShape(btVector3(1, 1, 1));
+        // colShape = new btSphereShape(btScalar(10.));
     }
+    colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
     m_collisionShapes.push_back(colShape);
 
     // Create Dynamic Objects
     btTransform startTransform;
     startTransform.setIdentity();
 
-    btScalar mass(1.f);
-    if (rd->role == Role::Terrain)
-        mass = 0.f;
+    btScalar mass(ph->mass);
 
     // Rigidbody is dynamic if and only if mass is non zero, otherwise static
     bool isDynamic = (mass != 0.f);
 
     btVector3 localInertia(0, 0, 0);
-    if (isDynamic)
-        colShape->calculateLocalInertia(mass, localInertia);
+    if (isDynamic) colShape->calculateLocalInertia(mass, localInertia);
 
     const auto& p = tr->position;
     startTransform.setOrigin(btVector3(p.x, p.y, p.z));

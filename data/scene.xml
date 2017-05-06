@@ -25,6 +25,10 @@
         <texture>rocky_diffuse</texture>
       </textures>
     </render>
+    <physics>
+      <shape>heightfield:terrain-heightmap-01.png</shape>
+      <mass>0</mass>
+    </physics>
   </terrain>
 
   <actor>
@@ -37,13 +41,17 @@
       <mesh>teddy</mesh>
       <shaderProgram>light</shaderProgram>
     </render>
+    <physics>
+      <shape>mesh:teddy2.obj</shape>
+      <mass>10</mass>
+    </physics>
   </actor>
   
   <actor>
     <name>cube</name>
     <transformation>
-      <scale>0.2</scale>
-      <position>10 80 0</position>
+      <scale>10</scale>
+      <position>10 50 0</position>
     </transformation>
     <render>
       <mesh>cube</mesh>
@@ -52,6 +60,7 @@
       </textures>
       <shaderProgram>lightAndTex</shaderProgram>
     </render>
+    <physics></physics>
   </actor>
 
   <actor>
@@ -79,6 +88,10 @@
       </textures>
       <shaderProgram>lightAndTex</shaderProgram>
     </render>
+    <physics>
+      <shape>mesh:ship.obj</shape>
+      <mass>1000</mass>
+    </physics>
   </actor>
 
   <actor>
@@ -94,6 +107,9 @@
       </textures>
       <shaderProgram>lightAndTex</shaderProgram>
     </render>
+    <physics>
+      <shape>mesh:ship.obj</shape>
+      <mass>1000</mass>
+    </physics>
   </actor>
 </scene>
-

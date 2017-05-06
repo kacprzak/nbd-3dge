@@ -22,6 +22,8 @@ static glm::vec4 stringToVector(std::string str)
     return retval;
 }
 
+//------------------------------------------------------------------------------
+
 static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree)
 {
     auto rd = std::make_shared<RenderComponent>();
@@ -54,6 +56,18 @@ static std::shared_ptr<TransformationComponent> getTransformationComponent(ptree
     return tr;
 }
 
+static std::shared_ptr<PhysicsComponent> getPhysicsComponent(ptree& actorTree)
+{
+    auto ph = std::make_shared<PhysicsComponent>();
+
+    ph->shape = actorTree.get("shape", "");
+    ph->mass  = actorTree.get("mass", 0.0f);
+
+    return ph;
+}
+
+//------------------------------------------------------------------------------
+
 std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_type& v)
 {
     auto a = std::make_unique<Actor>(getNextId());
@@ -74,18 +88,21 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
         a->addComponent(ComponentId::Render, rd);
     }
 
+    auto phNode = actorTree.get_child_optional("physics");
+    if (phNode) {
+        auto ph = getPhysicsComponent(phNode.get());
+        a->addComponent(ComponentId::Physics, ph);
+    }
+
     if (actorType == "skybox") {
-        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-        if (rd)
-            rd->role = Role::Skybox;
+        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        if (rd) rd->role = Role::Skybox;
     } else if (actorType == "terrain") {
-        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-        if (rd)
-            rd->role = Role::Terrain;
+        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        if (rd) rd->role = Role::Terrain;
     } else if (actorType == "actor") {
-        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-        if (rd)
-            rd->role = Role::Dynamic;
+        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        if (rd) rd->role = Role::Dynamic;
     }
 
     return a;

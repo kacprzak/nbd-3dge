@@ -22,7 +22,7 @@ class PhysicsSystem final : private boost::noncopyable
 
     void update(float elapsedTime);
 
-    void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+    void addActor(int id, TransformationComponent* tr, PhysicsComponent* ph,
                   const std::string& dataFolder);
     void removeActor(int id);
 

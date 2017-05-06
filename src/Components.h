@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-enum class ComponentId { Transformation, Render };
+enum class ComponentId { Transformation, Render, Physics };
 struct Component
 {
 };
@@ -27,6 +27,12 @@ struct RenderComponent : public Component
     std::string shaderProgram;
     std::string mesh;
     std::vector<std::string> textures;
+};
+
+struct PhysicsComponent : public Component
+{
+    std::string shape;
+    float mass;
 };
 
 #endif // COMPONENTS_H
