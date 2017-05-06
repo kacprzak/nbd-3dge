@@ -7,6 +7,7 @@
 #include "Terrain.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/lexical_cast.hpp>
 
 PhysicsSystem::PhysicsSystem()
 {
@@ -81,7 +82,7 @@ void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsCompone
     if (!shape.empty()) {
         std::vector<std::string> splitted;
         boost::split(splitted, shape, boost::is_any_of(":"));
-        if (splitted.size() != 2) throw std::runtime_error{"Invalid shape format: " + shape};
+        if (splitted.size() < 2) throw std::runtime_error{"Invalid shape format: " + shape};
 
         if (splitted[0] == "heightfield") {
             int w, h;
@@ -101,13 +102,20 @@ void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsCompone
             }
             convexHullShape->recalcLocalAabb();
             colShape = convexHullShape;
-
+        } else if (splitted[0] == "capsule") {
+            colShape = new btCapsuleShape{boost::lexical_cast<float>(splitted[1]),
+                                          boost::lexical_cast<float>(splitted[2])};
+        } else if (splitted[0] == "box") {
+            colShape = new btBoxShape(btVector3{
+                boost::lexical_cast<float>(splitted[1]), boost::lexical_cast<float>(splitted[2]),
+                boost::lexical_cast<float>(splitted[3]),
+            });
         } else {
             throw std::runtime_error{"Unknown shape type: " + splitted[0]};
         }
     } else {
-        colShape = new btBoxShape(btVector3(1, 1, 1));
         // colShape = new btSphereShape(btScalar(10.));
+        throw std::runtime_error{"Shape not defined"};
     }
     colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
     m_collisionShapes.push_back(colShape);
