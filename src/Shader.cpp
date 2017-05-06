@@ -35,14 +35,12 @@ Shader::Shader(GLenum type, const std::string& source)
         glGetShaderInfoLog(m_shaderId, infoLogLength, NULL, strInfoLog);
 
         const char* strShaderType = NULL;
-        // clang-format off
-        switch(type)
-        {
-        case GL_VERTEX_SHADER: strShaderType = "vertex"; break;
+
+        switch (type) {
+        case GL_VERTEX_SHADER: strShaderType   = "vertex"; break;
         case GL_GEOMETRY_SHADER: strShaderType = "geometry"; break;
         case GL_FRAGMENT_SHADER: strShaderType = "fragment"; break;
         }
-        // clang-format on
 
         LOG_ERROR << "Compile failure in " << strShaderType << " shader:\n" << strInfoLog;
         delete[] strInfoLog;

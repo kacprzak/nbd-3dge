@@ -94,8 +94,7 @@ void Engine::mainLoop(GameLogic* game)
     float delta            = 0.0f;
 
     for (;;) {
-        if (m_breakLoop || !processEvents())
-            break;
+        if (m_breakLoop || !processEvents()) break;
         if (m_appActive) {
             if (/*m_inputFocus &&*/ delta > 0.0f) {
                 while (delta > DELTA_MAX) {
@@ -124,29 +123,20 @@ bool Engine::processEvents()
 
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-        case SDL_KEYUP:
-            break;
+        case SDL_KEYUP: break;
         case SDL_KEYDOWN:
-            if (event.key.keysym.scancode == SDL_SCANCODE_G)
-                m_game->toggleDrawDebug();
-            if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-                return false;
+            if (event.key.keysym.scancode == SDL_SCANCODE_G) m_game->toggleDrawDebug();
+            if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) return false;
             break;
         case SDL_WINDOWEVENT: {
             switch (event.window.event) {
-            case SDL_WINDOWEVENT_FOCUS_GAINED:
-                m_inputFocus = true;
-                break;
-            case SDL_WINDOWEVENT_FOCUS_LOST:
-                m_inputFocus = false;
-                break;
-            default:
-                break;
+            case SDL_WINDOWEVENT_FOCUS_GAINED: m_inputFocus = true; break;
+            case SDL_WINDOWEVENT_FOCUS_LOST: m_inputFocus   = false; break;
+            default: break;
             }
             break;
         }
-        case SDL_QUIT:
-            return false;
+        case SDL_QUIT: return false;
         }
 
         for (auto& gv : m_game->gameViews()) {
@@ -178,8 +168,7 @@ void Engine::update(float elapsedTime)
 
 void Engine::draw()
 {
-    if (!m_initVideo)
-        return;
+    if (!m_initVideo) return;
 
     m_game->draw();
 

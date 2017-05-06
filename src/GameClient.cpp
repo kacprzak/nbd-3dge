@@ -22,8 +22,7 @@ GameClient::GameClient(const Settings& settings)
 void GameClient::resizeWindow(int width, int height)
 {
     /* Protect against a divide by zero */
-    if (height == 0)
-        height = 1;
+    if (height == 0) height = 1;
 
     GLfloat ratio = GLfloat(width) / GLfloat(height);
 
@@ -114,9 +113,8 @@ void GameClient::update(float delta)
 {
     m_fpsCounter.update(delta);
 
-    float cameraSpeedMultiplyer = 1.0f;
-    if (m_shiftPressed)
-        cameraSpeedMultiplyer = 5.0f;
+    float cameraSpeedMultiplyer               = 1.0f;
+    if (m_shiftPressed) cameraSpeedMultiplyer = 5.0f;
 
     auto distance = delta * m_cameraSpeed * cameraSpeedMultiplyer;
 
@@ -183,57 +181,30 @@ void GameClient::mouseButtonReleased(const SDL_Event& event)
 void GameClient::keyPressed(const SDL_Event& event)
 {
     switch (event.key.keysym.sym) {
-    case SDLK_w:
-        m_wPressed = true;
-        break;
-    case SDLK_s:
-        m_sPressed = true;
-        break;
-    case SDLK_a:
-        m_aPressed = true;
-        break;
-    case SDLK_d:
-        m_dPressed = true;
-        break;
+    case SDLK_w: m_wPressed = true; break;
+    case SDLK_s: m_sPressed = true; break;
+    case SDLK_a: m_aPressed = true; break;
+    case SDLK_d: m_dPressed = true; break;
     }
 
     switch (event.key.keysym.scancode) {
-    case SDL_SCANCODE_LSHIFT:
-        m_shiftPressed = true;
-        break;
-    default:
-        break;
+    case SDL_SCANCODE_LSHIFT: m_shiftPressed = true; break;
+    default: break;
     }
 }
 
 void GameClient::keyReleased(const SDL_Event& event)
 {
     switch (event.key.keysym.sym) {
-    case SDLK_w:
-        m_wPressed = false;
-        break;
-    case SDLK_s:
-        m_sPressed = false;
-        break;
-    case SDLK_a:
-        m_aPressed = false;
-        break;
-    case SDLK_d:
-        m_dPressed = false;
-        break;
+    case SDLK_w: m_wPressed = false; break;
+    case SDLK_s: m_sPressed = false; break;
+    case SDLK_a: m_aPressed = false; break;
+    case SDLK_d: m_dPressed = false; break;
     }
 
     switch (event.key.keysym.scancode) {
-    case SDL_SCANCODE_LSHIFT:
-        m_shiftPressed = false;
-        break;
-    case SDL_SCANCODE_SPACE: {
-        // auto s = m_resourcesMgr->getScript("rotationScript");
-        // std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
-    } break;
-    case SDL_SCANCODE_Z: {
-        m_scene.setNextPolygonMode();
-    } break;
+    case SDL_SCANCODE_LSHIFT: m_shiftPressed = false; break;
+    case SDL_SCANCODE_Z: m_scene.setNextPolygonMode(); break;
     case SDL_SCANCODE_N: {
         static bool showNormals = false;
         static int magnitude    = 2;
@@ -244,9 +215,8 @@ void GameClient::keyReleased(const SDL_Event& event)
             shader->use();
             shader->setUniform("magnitude", 0.5f * magnitude);
         } else if (event.key.keysym.mod & KMOD_CTRL) {
-            magnitude = std::abs(--magnitude);
-            if (magnitude == 0)
-                magnitude = 1;
+            magnitude                     = std::abs(--magnitude);
+            if (magnitude == 0) magnitude = 1;
             shader->use();
             shader->setUniform("magnitude", 0.5f * magnitude);
         } else {
@@ -257,10 +227,7 @@ void GameClient::keyReleased(const SDL_Event& event)
                 m_normalsShader.reset();
         }
     } break;
-    case SDL_SCANCODE_V:
-        toggleVSync();
-        break;
-    default:
-        break;
+    case SDL_SCANCODE_V: toggleVSync(); break;
+    default: break;
     }
 }

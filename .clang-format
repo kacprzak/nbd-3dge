@@ -3,6 +3,8 @@ Language:        Cpp
 BasedOnStyle:  LLVM
 AlignConsecutiveAssignments: true
 AlwaysBreakTemplateDeclarations: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
 BraceWrapping:   
   AfterClass:      true
   AfterControlStatement: false

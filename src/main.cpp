@@ -14,13 +14,12 @@ void initLogger(const std::string& logLevel)
     using namespace boost;
 
     auto level = log::trivial::trace;
-    // clang-format off
-    if (logLevel == "debug") level = log::trivial::debug;
-    if (logLevel == "info") level = log::trivial::info;
+
+    if (logLevel == "debug") level   = log::trivial::debug;
+    if (logLevel == "info") level    = log::trivial::info;
     if (logLevel == "warning") level = log::trivial::warning;
-    if (logLevel == "error") level = log::trivial::error;
-    if (logLevel == "fatal") level = log::trivial::fatal;
-    // clang-format on
+    if (logLevel == "error") level   = log::trivial::error;
+    if (logLevel == "fatal") level   = log::trivial::fatal;
 
     log::core::get()->set_filter(log::trivial::severity >= level);
 }
@@ -48,8 +47,8 @@ bool loadSettings(Settings& s, int ac, char** av)
     po::variables_map vm;
     po::store(po::parse_command_line(ac, av, desc), vm);
     std::ifstream ifs{"config.ini"};
-    if (ifs)
-        store(parse_config_file(ifs, desc), vm);
+    if (ifs) store(parse_config_file(ifs, desc), vm);
+
     po::notify(vm);
 
     if (vm.count("help")) {
@@ -59,8 +58,8 @@ bool loadSettings(Settings& s, int ac, char** av)
 
     s.screenWidth  = vm["screenWidth"].as<unsigned short>();
     s.screenHeight = vm["screenHeight"].as<unsigned short>();
-    if (vm.count("fullscreen"))
-        s.fullscreen = true;
+
+    if (vm.count("fullscreen")) s.fullscreen = true;
 
     s.dataFolder    = vm["dataFolder"].as<std::string>();
     s.shadersFolder = vm["shadersFolder"].as<std::string>();
@@ -75,8 +74,7 @@ bool loadSettings(Settings& s, int ac, char** av)
 int main(int ac, char** av)
 {
     Settings settings;
-    if (!loadSettings(settings, ac, av))
-        return 1;
+    if (!loadSettings(settings, ac, av)) return 1;
 
     initLogger(settings.logLevel);
 

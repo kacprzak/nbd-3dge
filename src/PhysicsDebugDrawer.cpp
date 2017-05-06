@@ -116,8 +116,7 @@ void PhysicsDebugDrawer::draw(Camera* camera)
 {
     m_lastMVP = camera->projectionMatrix() * camera->viewMatrix();
 
-    if (m_linesData.empty())
-        return;
+    if (m_linesData.empty()) return;
     updateBuffer();
 
     m_shaderProgram->use();
