@@ -5,6 +5,7 @@
 
 #include <LinearMath/btAlignedObjectArray.h>
 #include <boost/noncopyable.hpp>
+#include <memory>
 
 class btCollisionConfiguration;
 class btDispatcher;
@@ -30,13 +31,16 @@ class PhysicsSystem final : private boost::noncopyable
     void drawDebugData();
 
   private:
+    std::unique_ptr<btCollisionShape> createCollisionShape(const PhysicsComponent& ph,
+                                                           const std::string& dataFolder);
+
     btCollisionConfiguration* m_collisionConfiguration;
     btDispatcher* m_dispatcher;
     btBroadphaseInterface* m_overlappingPairCache;
     btSequentialImpulseConstraintSolver* m_solver;
     btDynamicsWorld* m_dynamicsWorld;
 
-    btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
+    std::vector<std::unique_ptr<btCollisionShape>> m_collisionShapes;
     std::vector<float> m_heightmapData;
 };
 
