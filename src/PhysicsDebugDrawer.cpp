@@ -78,22 +78,26 @@ void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to,
         return;
     }
 #endif
+    m_requestedLinesDataSize += 12;
+    if (m_linesData.size() < m_requestedLinesDataSize) return;
 
-    m_linesData.push_back(from.x());
-    m_linesData.push_back(from.y());
-    m_linesData.push_back(from.z());
+    m_linesData[m_currLinesDataIdx]     = from.x();
+    m_linesData[m_currLinesDataIdx + 1] = from.y();
+    m_linesData[m_currLinesDataIdx + 2] = from.z();
 
-    m_linesData.push_back(color.x());
-    m_linesData.push_back(color.y());
-    m_linesData.push_back(color.z());
+    m_linesData[m_currLinesDataIdx + 3] = color.x();
+    m_linesData[m_currLinesDataIdx + 4] = color.y();
+    m_linesData[m_currLinesDataIdx + 5] = color.z();
 
-    m_linesData.push_back(to.x());
-    m_linesData.push_back(to.y());
-    m_linesData.push_back(to.z());
+    m_linesData[m_currLinesDataIdx + 6] = to.x();
+    m_linesData[m_currLinesDataIdx + 7] = to.y();
+    m_linesData[m_currLinesDataIdx + 8] = to.z();
 
-    m_linesData.push_back(color.x());
-    m_linesData.push_back(color.y());
-    m_linesData.push_back(color.z());
+    m_linesData[m_currLinesDataIdx + 9]  = color.x();
+    m_linesData[m_currLinesDataIdx + 10] = color.y();
+    m_linesData[m_currLinesDataIdx + 11] = color.z();
+
+    m_currLinesDataIdx += 12;
 }
 
 void PhysicsDebugDrawer::drawContactPoint(const btVector3& /*PointOnB*/,
@@ -116,16 +120,19 @@ void PhysicsDebugDrawer::draw(Camera* camera)
 {
     m_lastMVP = camera->projectionMatrix() * camera->viewMatrix();
 
-    if (m_linesData.empty()) return;
-    updateBuffer();
+    if (m_currLinesDataIdx != 0) {
+        updateBuffer();
 
-    m_shaderProgram->use();
-    m_shaderProgram->setUniform("MVP", m_lastMVP);
+        m_shaderProgram->use();
+        m_shaderProgram->setUniform("MVP", m_lastMVP);
 
-    glBindVertexArray(m_vao);
-    glDrawArrays(GL_LINES, 0, m_linesData.size() / 6);
+        glBindVertexArray(m_vao);
+        glDrawArrays(GL_LINES, 0, (m_currLinesDataIdx + 1) / 6);
+    }
 
-    m_linesData.clear();
+    if (m_linesData.size() < m_requestedLinesDataSize) m_linesData.resize(m_requestedLinesDataSize);
+    m_requestedLinesDataSize = 0;
+    m_currLinesDataIdx       = 0;
 }
 
 void PhysicsDebugDrawer::updateBuffer()

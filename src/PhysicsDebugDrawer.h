@@ -32,6 +32,8 @@ class PhysicsDebugDrawer final : public btIDebugDraw
 
     int m_debugMode;
     std::vector<float> m_linesData;
+    size_t m_currLinesDataIdx = 0;
+    size_t m_requestedLinesDataSize = 0;
 
     GLuint m_vao                     = 0;
     GLuint m_buffer                  = 0;
