@@ -9,7 +9,7 @@ void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& 
         mtl.name = args[0];
         m_materials.push_back(mtl);
     } else if (cmd == "map_Kd") {
-        Material *mtl = &m_materials.back();
-        mtl->texture = args[0];
+        Material* mtl = &m_materials.back();
+        mtl->texture  = args[0];
     }
 }

@@ -2,26 +2,18 @@
 #define MESH_H
 
 #include <GL/glew.h>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 class Mesh
 {
-    enum Buffers {
-        POSITIONS,
-        NORMALS,
-        TEXCOORDS,
-        INDICES,
-        NUM_BUFFERS
-    };
+    enum Buffers { POSITIONS, NORMALS, TEXCOORDS, INDICES, NUM_BUFFERS };
 
- public:
-    Mesh(GLenum primitive,
-         const std::vector<GLfloat> &vertices,
-         const std::vector<GLfloat> &normals,
-         const std::vector<GLfloat> &texcoords,
-         const std::vector<GLushort> &indices);
+  public:
+    Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
+         const std::vector<GLfloat>& normals, const std::vector<GLfloat>& texcoords,
+         const std::vector<GLushort>& indices);
 
     ~Mesh();
 
@@ -32,7 +24,7 @@ class Mesh
     static Mesh* fromHeightmap(const std::vector<float>& heights, int w, int h,
                                float textureStrech);
 
- private:
+  private:
     GLuint m_buffers[NUM_BUFFERS];
     GLuint m_vao;
 

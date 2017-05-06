@@ -3,16 +3,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-Camera::Camera() : GfxNode{-1, new TransformationComponent, nullptr}
+Camera::Camera()
+    : GfxNode{-1, new TransformationComponent, nullptr}
 {
     float ratio = 800 / float(600);
     setPerspective(45.0f, ratio, 1.0f, 1200.0f);
 }
 
-Camera::~Camera()
-{
-    delete transformation();
-}
+Camera::~Camera() { delete transformation(); }
 
 void Camera::setPerspective(float angle, float ratio, float near, float far)
 {
@@ -24,21 +22,15 @@ void Camera::rotate(float yaw, float pitch, float /*roll*/)
     m_yawPitch += glm::vec2{glm::radians(-yaw), glm::radians(-pitch)};
     m_yawPitch.x = glm::mod(m_yawPitch.x, glm::two_pi<float>());
     m_yawPitch.y = glm::mod(m_yawPitch.y, glm::two_pi<float>());
-    
+
     auto& orient = transformation()->orientation;
-    orient = glm::angleAxis(m_yawPitch.x, glm::vec3(0,1,0));
-    orient *= glm::angleAxis(m_yawPitch.y, glm::vec3(1,0,0));
+    orient       = glm::angleAxis(m_yawPitch.x, glm::vec3(0, 1, 0));
+    orient *= glm::angleAxis(m_yawPitch.y, glm::vec3(1, 0, 0));
 }
 
-const glm::mat4& Camera::viewMatrix() const
-{
-    return m_viewMatrix;
-}
+const glm::mat4& Camera::viewMatrix() const { return m_viewMatrix; }
 
-const glm::mat4& Camera::projectionMatrix() const
-{
-    return m_projectionMatrix;
-}
+const glm::mat4& Camera::projectionMatrix() const { return m_projectionMatrix; }
 
 void Camera::update(float delta)
 {

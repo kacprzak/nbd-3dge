@@ -5,15 +5,17 @@
 
 class Terrain : public GfxNode
 {
- public:
-    Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd, const std::string& dataFolder);
+  public:
+    Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd,
+            const std::string& dataFolder);
 
     static std::vector<float> getHeightData(const std::string& filename, int* w, int* h, float amp);
- private:
+
+  private:
     int m_x = 0;
     int m_y = 0;
 
-    float m_amplitude = 40.0f;
+    float m_amplitude     = 40.0f;
     float m_textureStrech = 10.0;
 };
 

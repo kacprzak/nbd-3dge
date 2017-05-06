@@ -12,19 +12,13 @@ ShaderProgram::ShaderProgram()
     m_shaderProgramId = glCreateProgram();
 }
 
-ShaderProgram::~ShaderProgram()
-{
-    glDeleteProgram(m_shaderProgramId);
-}
+ShaderProgram::~ShaderProgram() { glDeleteProgram(m_shaderProgramId); }
 
-void ShaderProgram::addShared(Shader *shader)
-{
-    m_shaders.push_back(shader);
-}
+void ShaderProgram::addShared(Shader* shader) { m_shaders.push_back(shader); }
 
 void ShaderProgram::link()
-{    
-    for (Shader *s : m_shaders) {
+{
+    for (Shader* s : m_shaders) {
         glAttachShader(m_shaderProgramId, s->id());
     }
 
@@ -35,21 +29,21 @@ void ShaderProgram::link()
     for (const auto& s : m_shaders)
         ss << s->id() << " ";
     LOG_INFO << ss.str() << "\tid: " << m_shaderProgramId;
-    
+
     GLint status;
     glGetProgramiv(m_shaderProgramId, GL_LINK_STATUS, &status);
-    
+
     if (status == GL_FALSE) {
         GLint infoLogLength;
         glGetProgramiv(m_shaderProgramId, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-        GLchar *strInfoLog = new GLchar[infoLogLength + 1];
+        GLchar* strInfoLog = new GLchar[infoLogLength + 1];
         glGetProgramInfoLog(m_shaderProgramId, infoLogLength, 0, strInfoLog);
         LOG_WARNING << "Linker failure: " << strInfoLog;
-        delete [] strInfoLog;
+        delete[] strInfoLog;
     }
 
-    for (Shader *s : m_shaders) {
+    for (Shader* s : m_shaders) {
         glDetachShader(m_shaderProgramId, s->id());
     }
 
@@ -57,10 +51,7 @@ void ShaderProgram::link()
     m_shaders.clear();
 }
 
-void ShaderProgram::use()
-{
-    glUseProgram(m_shaderProgramId);
-}
+void ShaderProgram::use() { glUseProgram(m_shaderProgramId); }
 
 void ShaderProgram::setUniform(const char* name, const glm::mat4& matrix)
 {
@@ -68,13 +59,13 @@ void ShaderProgram::setUniform(const char* name, const glm::mat4& matrix)
     glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void ShaderProgram::setUniform(const char *name, float value)
+void ShaderProgram::setUniform(const char* name, float value)
 {
     GLint loc = glGetUniformLocation(m_shaderProgramId, name);
     glUniform1f(loc, value);
 }
 
-void ShaderProgram::setUniform(const char *name, int value)
+void ShaderProgram::setUniform(const char* name, int value)
 {
     GLint loc = glGetUniformLocation(m_shaderProgramId, name);
     glUniform1i(loc, value);

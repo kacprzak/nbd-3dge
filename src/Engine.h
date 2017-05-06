@@ -1,8 +1,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "config.h"
 #include "GameLogic.h"
+#include "config.h"
 
 #if PLATFORM == PLATFORM_WINDOWS
 #include <windows.h>
@@ -14,7 +14,7 @@
 
 class EngineError : public std::runtime_error
 {
- public:
+  public:
     EngineError(const std::string& msg, const char* sdlError)
         : std::runtime_error(msg + ": " + sdlError)
         , m_sdlError(sdlError)
@@ -23,7 +23,7 @@ class EngineError : public std::runtime_error
 
     const char* sdlError() { return m_sdlError; }
 
- private:
+  private:
     const char* m_sdlError;
 };
 
@@ -34,7 +34,7 @@ class EngineError : public std::runtime_error
  */
 class Engine final
 {
- public:
+  public:
     explicit Engine(bool initVideo = true);
     ~Engine();
 
@@ -45,7 +45,7 @@ class Engine final
 
     static int showErrorMessageBox(const char* msg);
 
- private:
+  private:
     void initializeSDL();
     void logSDLInfo();
 

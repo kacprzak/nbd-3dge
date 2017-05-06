@@ -3,27 +3,27 @@
 
 #include "Shader.h"
 
-#include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <vector>
 
 class ShaderProgram final
 {
- public:
+  public:
     ShaderProgram();
     ~ShaderProgram();
 
-    void addShared(Shader *shader);
+    void addShared(Shader* shader);
     void link();
     void use();
 
     void setUniform(const char* name, const glm::mat4& matrix);
     void setUniform(const char* name, float value);
     void setUniform(const char* name, int value);
-    
- private:
+
+  private:
     GLuint m_shaderProgramId;
-    std::vector<Shader *> m_shaders;
+    std::vector<Shader*> m_shaders;
     bool m_linked;
 };
 

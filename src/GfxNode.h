@@ -1,10 +1,10 @@
 #ifndef GFXNODE_H
 #define GFXNODE_H
 
-#include "Mesh.h"
-#include "Texture.h"
-#include "ShaderProgram.h"
 #include "Components.h"
+#include "Mesh.h"
+#include "ShaderProgram.h"
+#include "Texture.h"
 
 #include <glm/glm.hpp>
 
@@ -12,13 +12,13 @@ class Camera;
 
 class GfxNode
 {
- public:
+  public:
     GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
     ~GfxNode() = default;
 
     void setTextures(std::vector<std::shared_ptr<Texture>> textures);
     void addTexture(std::shared_ptr<Texture> texture);
-    
+
     void setMesh(std::shared_ptr<Mesh> mesh);
     void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
 
@@ -31,21 +31,21 @@ class GfxNode
 
     RenderComponent* render() { return m_rd; }
     const RenderComponent* render() const { return m_rd; }
-    
- protected:
+
+  protected:
     const glm::mat4& modelMatrix() const { return m_modelMatrix; }
 
     const int m_actorId;
     TransformationComponent* m_tr = nullptr;
-    RenderComponent* m_rd = nullptr;
+    RenderComponent* m_rd         = nullptr;
 
- private:
+  private:
     void rebuildModelMatrix();
-    
+
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
     std::vector<std::shared_ptr<Texture>> m_textures;
-    
+
     glm::mat4 m_modelMatrix;
 };
 

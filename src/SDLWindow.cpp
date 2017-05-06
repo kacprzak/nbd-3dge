@@ -10,13 +10,9 @@
 #define APIENTRY
 #endif
 
-static void APIENTRY openglCallbackFunction(GLenum /*source*/,
-                                            GLenum /*type*/,
-                                            GLuint /*id*/,
-                                            GLenum severity,
-                                            GLsizei /*length*/,
-                                            const GLchar* message,
-                                            const void* /*userParam*/)
+static void APIENTRY openglCallbackFunction(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/,
+                                            GLenum severity, GLsizei /*length*/,
+                                            const GLchar* message, const void* /*userParam*/)
 {
     if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) {
         if (severity == GL_DEBUG_SEVERITY_HIGH) {
@@ -31,10 +27,10 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/,
 //==============================================================================
 
 SDLWindow::SDLWindow(const Settings& settings)
-    : m_title{settings.windowTitle},
-      m_screenWidth{settings.screenWidth},
-      m_screenHeight{settings.screenHeight},
-      m_screenFull{settings.fullscreen}
+    : m_title{settings.windowTitle}
+    , m_screenWidth{settings.screenWidth}
+    , m_screenHeight{settings.screenHeight}
+    , m_screenFull{settings.fullscreen}
 {
     try {
         createSDLWindow();
@@ -52,9 +48,8 @@ void SDLWindow::createSDLWindow()
         screen_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
     // Screen surface
-    m_window = SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED,
-                                SDL_WINDOWPOS_CENTERED, m_screenWidth,
-                                m_screenHeight, screen_flags);
+    m_window = SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                m_screenWidth, m_screenHeight, screen_flags);
 
     if (!m_window) {
         throw EngineError("Creating window failed", SDL_GetError());
@@ -63,9 +58,9 @@ void SDLWindow::createSDLWindow()
     // SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
     // SDL_StopTextInput(); // Disable text input events when GUI is not visible
 
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   8);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -87,7 +82,7 @@ void SDLWindow::createSDLWindow()
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMinorVersion);
     LOG_INFO << "GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion;
     toggleVSync();
-    
+
     // No SDL related stuff
     initializeOpenGL();
 }
@@ -95,8 +90,8 @@ void SDLWindow::createSDLWindow()
 void SDLWindow::toggleVSync()
 {
     m_swapInterval = (m_swapInterval == 0) ? 1 : 0;
-    
-    SDL_GL_SetSwapInterval(m_swapInterval);    
+
+    SDL_GL_SetSwapInterval(m_swapInterval);
     m_swapInterval = SDL_GL_GetSwapInterval();
     LOG_INFO << "SwapInterval: " << m_swapInterval;
 }
@@ -160,8 +155,7 @@ void SDLWindow::initializeOpenGL()
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(openglCallbackFunction, nullptr);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE,
-                          0, NULL, true);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
 #endif
 }
 
@@ -175,17 +169,11 @@ void SDLWindow::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void SDLWindow::preDraw()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
+void SDLWindow::preDraw() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 //------------------------------------------------------------------------------
 
-void SDLWindow::postDraw()
-{
-    SDL_GL_SwapWindow(m_window);
-}
+void SDLWindow::postDraw() { SDL_GL_SwapWindow(m_window); }
 
 //------------------------------------------------------------------------------
 
@@ -199,4 +187,3 @@ void SDLWindow::setMouseRelativeMode(bool enable)
         SDL_SetRelativeMouseMode(SDL_FALSE);
     }
 }
-

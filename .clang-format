@@ -21,3 +21,4 @@ BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: true
 PointerAlignment: Left
 IndentWidth:     4
+ColumnLimit: 100

@@ -1,9 +1,9 @@
 #ifndef LOADER_H
 #define LOADER_H
 
+#include <istream>
 #include <string>
 #include <vector>
-#include <istream>
 
 /**
  * @brief Base class for Loaders
@@ -12,21 +12,21 @@
  */
 class Loader
 {
- public:
+  public:
     Loader();
     virtual ~Loader();
 
     void load(const std::string& filename);
     void load(std::istream& stream);
 
- protected:
+  protected:
     virtual void command(const std::string& cmd, const std::vector<std::string>& args) = 0;
     virtual void fileLoaded();
     virtual void parseLine(const std::string& line);
 
     std::string currentFolder() { return m_folder; }
 
- private:
+  private:
     std::string m_folder;
 };
 

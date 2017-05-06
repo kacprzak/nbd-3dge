@@ -3,20 +3,21 @@
 
 #include "Loader.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class MtlLoader : public Loader
 {
-    struct Material {
+    struct Material
+    {
         std::string name;
         std::string texture;
     };
 
- protected:
+  protected:
     void command(const std::string& cmd, const std::vector<std::string>& args);
 
- private:
+  private:
     std::vector<Material> m_materials;
 };
 

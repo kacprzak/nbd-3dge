@@ -29,7 +29,7 @@ class PhysicsSystem final : private boost::noncopyable
     void setDebugDrawer(btIDebugDraw* debugDrawer);
     void drawDebugData();
 
- private:
+  private:
     btCollisionConfiguration* m_collisionConfiguration;
     btDispatcher* m_dispatcher;
     btBroadphaseInterface* m_overlappingPairCache;

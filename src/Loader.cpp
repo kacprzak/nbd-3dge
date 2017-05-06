@@ -1,19 +1,15 @@
 #include "Loader.h"
 
-#include <iostream>
-#include <fstream>
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
+#include <fstream>
+#include <iostream>
 
 #include "Util.h"
 
-Loader::Loader()
-{
-}
+Loader::Loader() {}
 
-Loader::~Loader()
-{
-}
+Loader::~Loader() {}
 
 void Loader::load(const std::string& filename)
 {
@@ -51,14 +47,13 @@ void Loader::parseLine(const std::string& line)
     if (line.empty() || algorithm::starts_with(line, "#"))
         return;
 
-    typedef tokenizer<char_separator<char> >
-            tokenizer;
+    typedef tokenizer<char_separator<char>> tokenizer;
 
     char_separator<char> sep(" ");
     tokenizer tokens(line, sep);
 
     tokenizer::iterator it = tokens.begin();
-    const std::string cmd = *it;
+    const std::string cmd  = *it;
     ++it; // skip command;
 
     std::vector<std::string> args;

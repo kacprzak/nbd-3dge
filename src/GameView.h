@@ -8,7 +8,7 @@
 
 class GameView : private boost::noncopyable
 {
- public:
+  public:
     virtual ~GameView() = default;
 
     virtual bool processInput(const SDL_Event& event) = 0;
@@ -19,7 +19,7 @@ class GameView : private boost::noncopyable
     virtual void onAttach(int /*gameViewId*/, unsigned long /*actorId*/) {}
 
     virtual void loadResources(const std::string& xmlFile) = 0;
-    virtual void unloadResources() = 0;
+    virtual void unloadResources()                         = 0;
 
     virtual void addActor(int id, TransformationComponent* tr, RenderComponent* rd) = 0;
     virtual void removeActor(int id) = 0;

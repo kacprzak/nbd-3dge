@@ -69,9 +69,9 @@ void Engine::logSDLInfo()
 
     std::stringstream ss;
     LOG_INFO << "Compiled against SDL: " << (uint32_t)compiled.major << "."
-       << (uint32_t)compiled.minor << "." << (uint32_t)compiled.patch;
-    LOG_INFO << "Linked against SDL: " << (uint32_t)linked.major << "."
-       << (uint32_t)linked.minor << "." << (uint32_t)linked.patch;
+             << (uint32_t)compiled.minor << "." << (uint32_t)compiled.patch;
+    LOG_INFO << "Linked against SDL: " << (uint32_t)linked.major << "." << (uint32_t)linked.minor
+             << "." << (uint32_t)linked.patch;
 
     if (m_initVideo) {
         ss << "Video drivers available: ";
@@ -169,8 +169,8 @@ void Engine::update(float elapsedTime)
         gv->update(elapsedTime);
 
     // Update network
-    //net::BaseSocketMgr* sm = net::BaseSocketMgr::singletonPtr();
-    //if (sm)
+    // net::BaseSocketMgr* sm = net::BaseSocketMgr::singletonPtr();
+    // if (sm)
     //    sm->select(20);
 }
 

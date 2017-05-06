@@ -1,16 +1,12 @@
 #include "ObjLoader.h"
 
 #include "Util.h"
-#include <boost/lexical_cast.hpp>
 #include <algorithm>
+#include <boost/lexical_cast.hpp>
 
-static inline float to_float(const std::string& s) {
-    return boost::lexical_cast<float>(s);
-}
+static inline float to_float(const std::string& s) { return boost::lexical_cast<float>(s); }
 
-static inline int to_int(const std::string& s) {
-    return boost::lexical_cast<int>(s);
-}
+static inline int to_int(const std::string& s) { return boost::lexical_cast<int>(s); }
 
 std::vector<float> ObjLoader::vertices() const
 {
@@ -26,7 +22,7 @@ std::vector<float> ObjLoader::vertices() const
         }
         return vertices_a;
     }
-    
+
     for (const auto& v : m_vertices) {
         vertices_a.push_back(v.x);
         vertices_a.push_back(v.y);
@@ -42,7 +38,7 @@ std::vector<float> ObjLoader::normals() const
     if (!m_oglFaces.empty()) {
         normals_a.reserve(m_oglVertices.size() * 3);
 
-        for(const auto& v : m_oglVertices) {
+        for (const auto& v : m_oglVertices) {
             normals_a.push_back(v.n.x);
             normals_a.push_back(v.n.y);
             normals_a.push_back(v.n.z);
@@ -64,9 +60,9 @@ std::vector<unsigned short> ObjLoader::indices() const
 
     if (m_oglFaces.empty())
         return indices_a;
-    
+
     indices_a.reserve(m_oglFaces.size() * 3);
-    
+
     for (const auto& f : m_oglFaces) {
         indices_a.push_back(f.indices[0]);
         indices_a.push_back(f.indices[1]);
@@ -81,14 +77,14 @@ std::vector<float> ObjLoader::texCoords() const
 
     if (!m_oglFaces.empty()) {
         texcoords_a.reserve(m_oglVertices.size() * 2);
-        
+
         for (const auto& v : m_oglVertices) {
             texcoords_a.push_back(v.t.s);
             texcoords_a.push_back(v.t.t);
         }
         return texcoords_a;
     }
-    
+
     for (const auto& t : m_texCoords) {
         texcoords_a.push_back(t.s);
         texcoords_a.push_back(t.t);
@@ -96,11 +92,10 @@ std::vector<float> ObjLoader::texCoords() const
     return texcoords_a;
 }
 
-
 void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& args)
 {
     if (cmd == "mtllib") {
-        //loadMtlLib(args[0]);
+        // loadMtlLib(args[0]);
     } else if (cmd == "v") {
         // v -42.209999 19.670004 38.799995
         glm::vec3 v;
@@ -126,7 +121,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
 
     } else if (cmd == "f") {
         //    v/vt/vn
-        // f 44/61/61 56/62/62 62/63/63 
+        // f 44/61/61 56/62/62 62/63/63
         Face f;
         std::vector<std::string> elems;
 
@@ -173,18 +168,21 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
 void ObjLoader::fileLoaded()
 {
     if (!m_faces.empty()) {
-        m_oglVertices.reserve(m_faces.size()/3);
+        m_oglVertices.reserve(m_faces.size() / 3);
         m_oglFaces.reserve(m_faces.size());
 
-        for(const Face& f : m_faces) {
+        for (const Face& f : m_faces) {
             OpenGlFace face;
-            for (int i = 0; i < 3; ++i) {        
+            for (int i = 0; i < 3; ++i) {
                 OpenGlVertex vert;
                 vert.p = m_vertices[f.vertexIndices[i]];
-                vert.n = !m_normals.empty() ? m_normals[f.normIndices[i]] : glm::vec3{0.0f, 0.0f, 0.0f};
-                vert.t = !m_texCoords.empty() ? m_texCoords[f.texIndices[i]] : glm::vec2{0.0f, 0.0f};
+                vert.n =
+                    !m_normals.empty() ? m_normals[f.normIndices[i]] : glm::vec3{0.0f, 0.0f, 0.0f};
+                vert.t =
+                    !m_texCoords.empty() ? m_texCoords[f.texIndices[i]] : glm::vec2{0.0f, 0.0f};
 
-                const auto& it = std::find(std::cbegin(m_oglVertices), std::cend(m_oglVertices), vert);
+                const auto& it =
+                    std::find(std::cbegin(m_oglVertices), std::cend(m_oglVertices), vert);
                 if (it != std::cend(m_oglVertices)) {
                     face.indices[i] = std::distance(cbegin(m_oglVertices), it);
                 } else {

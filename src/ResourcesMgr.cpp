@@ -3,10 +3,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-
 ResourcesMgr::ResourcesMgr(const std::string& dataFolder, const std::string& shadersFolder)
-    : m_dataFolder{dataFolder}, m_shadersFolder{shadersFolder}
-{}
+    : m_dataFolder{dataFolder}
+    , m_shadersFolder{shadersFolder}
+{
+}
 
 //------------------------------------------------------------------------------
 
@@ -15,20 +16,19 @@ void ResourcesMgr::load(std::string xmlFile)
     using boost::property_tree::ptree;
     ptree pt;
 
-    read_xml(m_dataFolder + xmlFile, pt);    
+    read_xml(m_dataFolder + xmlFile, pt);
 
-    for (ptree::value_type &v : pt.get_child("assets")) {
-        const std::string& assetType  = v.first;
-        ptree& assetTree = v.second;
+    for (ptree::value_type& v : pt.get_child("assets")) {
+        const std::string& assetType = v.first;
+        ptree& assetTree             = v.second;
 
         if (assetType == "shaderProgram") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& vertexShaderFile = assetTree.get("vertexShader", "");
+            const std::string& name               = assetTree.get<std::string>("name");
+            const std::string& vertexShaderFile   = assetTree.get("vertexShader", "");
             const std::string& geometryShaderFile = assetTree.get("geometryShader", "");
             const std::string& fragmentShaderFile = assetTree.get("fragmentShader", "");
             addShaderProgram(name, vertexShaderFile, geometryShaderFile, fragmentShaderFile);
-        }
-        else if (assetType == "texture") {
+        } else if (assetType == "texture") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
             if (assetTree.get_child("file").size() == 0) {
@@ -58,8 +58,7 @@ void ResourcesMgr::load(std::string xmlFile)
 
 //------------------------------------------------------------------------------
 
-void ResourcesMgr::addShaderProgram(const std::string& name,
-                                    const std::string& vertexShaderFile,
+void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& vertexShaderFile,
                                     const std::string& geometryShaderFile,
                                     const std::string& fragmentShaderFile)
 {
@@ -72,8 +71,7 @@ void ResourcesMgr::addShaderProgram(const std::string& name,
         std::ifstream f(filename.c_str());
 
         if (f.is_open() == true) {
-            source.assign((std::istreambuf_iterator<char>(f)),
-                          (std::istreambuf_iterator<char>() ));
+            source.assign((std::istreambuf_iterator<char>(f)), (std::istreambuf_iterator<char>()));
             f.close();
         } else {
             throw std::runtime_error{"File not found: " + filename};
@@ -94,7 +92,7 @@ void ResourcesMgr::addShaderProgram(const std::string& name,
                                       extractSource(m_shadersFolder + geometryShaderFile));
         sp->addShared(gs.get());
     }
-        
+
     if (!fragmentShaderFile.empty()) {
         fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER,
                                       extractSource(m_shadersFolder + fragmentShaderFile));
@@ -102,7 +100,7 @@ void ResourcesMgr::addShaderProgram(const std::string& name,
     }
 
     sp->link();
-     
+
     m_shaderPrograms[name] = sp;
 }
 
@@ -115,20 +113,18 @@ std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string&
         return it->second;
 }
 
-void ResourcesMgr::addTexture(const std::string& name,
-                              const std::string& filename,
+void ResourcesMgr::addTexture(const std::string& name, const std::string& filename,
                               const std::string& wrap)
 {
     bool clamp = false;
     if (wrap == "GL_CLAMP_TO_EDGE")
         clamp = true;
-        
+
     std::shared_ptr<Texture> tex{Texture::create(m_dataFolder + filename, clamp)};
     m_textures[name] = tex;
 }
 
-void ResourcesMgr::addTexture(const std::string& name,
-                              std::array<std::string, 6> filenames,
+void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6> filenames,
                               const std::string& wrap)
 {
     bool clamp = false;
@@ -138,11 +134,11 @@ void ResourcesMgr::addTexture(const std::string& name,
     for (auto& filename : filenames) {
         filename = m_dataFolder + filename;
     }
-        
+
     std::shared_ptr<Texture> tex{Texture::create(filenames, clamp)};
     m_textures[name] = tex;
 }
-    
+
 std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name)
 {
     auto it = m_textures.find(name);
@@ -152,8 +148,7 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name)
         return it->second;
 }
 
-void ResourcesMgr::addMesh(const std::string& name,
-                           const std::string& filename)
+void ResourcesMgr::addMesh(const std::string& name, const std::string& filename)
 {
     std::shared_ptr<Mesh> mesh{Mesh::fromWavefrontObj(m_dataFolder + filename)};
     m_meshes[name] = mesh;
@@ -168,8 +163,7 @@ std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name)
         return it->second;
 }
 
-void ResourcesMgr::addFont(const std::string& name,
-                           const std::string& filename)
+void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 {
     FontLoader loader;
     loader.load(m_dataFolder + filename);
@@ -177,12 +171,11 @@ void ResourcesMgr::addFont(const std::string& name,
     auto font = std::shared_ptr<Font>{loader.getFont()};
 
     std::vector<std::shared_ptr<Texture>> textures;
-    for (const auto& texFilename : font->getTexturesFilenames())
-        {
-            textures.emplace_back(Texture::create(m_dataFolder + texFilename));
-        }
+    for (const auto& texFilename : font->getTexturesFilenames()) {
+        textures.emplace_back(Texture::create(m_dataFolder + texFilename));
+    }
     font->setTextures(textures);
-        
+
     m_fonts[name] = font;
 }
 
@@ -194,9 +187,8 @@ std::shared_ptr<Font> ResourcesMgr::getFont(const std::string& name)
     else
         return it->second;
 }
-    
-void ResourcesMgr::addScript(const std::string& name,
-                             std::shared_ptr<Script> script)
+
+void ResourcesMgr::addScript(const std::string& name, std::shared_ptr<Script> script)
 {
     m_scripts[name] = script;
 }
@@ -209,4 +201,3 @@ std::shared_ptr<Script> ResourcesMgr::getScript(const std::string& name)
     else
         return it->second;
 }
-

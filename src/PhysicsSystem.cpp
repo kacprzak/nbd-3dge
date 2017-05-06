@@ -1,18 +1,18 @@
 #include "PhysicsSystem.h"
 
-#include <btBulletDynamicsCommon.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
+#include <btBulletDynamicsCommon.h>
 // Fixme: remove this dependency
 #include "Terrain.h"
 
 PhysicsSystem::PhysicsSystem()
 {
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
-    m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
-    m_overlappingPairCache = new btDbvtBroadphase();
-    m_solver = new btSequentialImpulseConstraintSolver;
-    m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher, m_overlappingPairCache,
-                                                  m_solver, m_collisionConfiguration);
+    m_dispatcher             = new btCollisionDispatcher(m_collisionConfiguration);
+    m_overlappingPairCache   = new btDbvtBroadphase();
+    m_solver                 = new btSequentialImpulseConstraintSolver;
+    m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher, m_overlappingPairCache, m_solver,
+                                                  m_collisionConfiguration);
     m_dynamicsWorld->setGravity(btVector3(0, -10, 0));
 }
 
@@ -21,7 +21,7 @@ PhysicsSystem::~PhysicsSystem()
     // Remove the rigidbodies from the dynamics world and delete them
     for (int i = m_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; --i) {
         btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
-        btRigidBody* body = btRigidBody::upcast(obj);
+        btRigidBody* body      = btRigidBody::upcast(obj);
         if (body && body->getMotionState()) {
             delete body->getMotionState();
         }
@@ -32,10 +32,10 @@ PhysicsSystem::~PhysicsSystem()
     // Delete collision shapes
     for (int j = 0; j < m_collisionShapes.size(); j++) {
         btCollisionShape* shape = m_collisionShapes[j];
-        m_collisionShapes[j] = 0;
+        m_collisionShapes[j]    = 0;
         delete shape;
     }
-    
+
     delete m_dynamicsWorld;
     delete m_solver;
     delete m_overlappingPairCache;
@@ -49,19 +49,18 @@ void PhysicsSystem::update(float elapsedTime)
 
     for (int i = m_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; --i) {
         btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
-        btRigidBody* body = btRigidBody::upcast(obj);
+        btRigidBody* body      = btRigidBody::upcast(obj);
         btTransform trans;
         if (body && body->getMotionState()) {
             body->getMotionState()->getWorldTransform(trans);
-        }
-        else {
+        } else {
             trans = obj->getWorldTransform();
         }
         // Sync component
         TransformationComponent* tr = (TransformationComponent*)body->getUserPointer();
-        tr->position.x = trans.getOrigin().getX();
-        tr->position.y = trans.getOrigin().getY();
-        tr->position.z = trans.getOrigin().getZ();
+        tr->position.x              = trans.getOrigin().getX();
+        tr->position.y              = trans.getOrigin().getY();
+        tr->position.z              = trans.getOrigin().getZ();
 
         tr->orientation.x = trans.getRotation().getX();
         tr->orientation.y = trans.getRotation().getY();
@@ -70,20 +69,20 @@ void PhysicsSystem::update(float elapsedTime)
     }
 }
 
-void PhysicsSystem::addActor(int id, TransformationComponent *tr, RenderComponent *rd,
+void PhysicsSystem::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
                              const std::string& dataFoldera)
 {
     btCollisionShape* colShape = nullptr;
 
     if (rd->role == Role::Terrain) {
         int w, h;
-        float amp = 40.f;
+        float amp       = 40.f;
         m_heightmapData = Terrain::getHeightData(dataFoldera + rd->mesh, &w, &h, amp);
-        colShape = new btHeightfieldTerrainShape{w, h, m_heightmapData.data(), 1.0f, -amp, amp,
-                                                 1, PHY_FLOAT, false};
+        colShape        = new btHeightfieldTerrainShape{
+            w, h, m_heightmapData.data(), 1.0f, -amp, amp, 1, PHY_FLOAT, false};
         colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
     } else {
-        //colShape = new btBoxShape(btVector3(1,1,1));
+        // colShape = new btBoxShape(btVector3(1,1,1));
         colShape = new btSphereShape(btScalar(10.));
     }
     m_collisionShapes.push_back(colShape);
@@ -112,8 +111,7 @@ void PhysicsSystem::addActor(int id, TransformationComponent *tr, RenderComponen
     // Using motionstate is recommended, it provides interpolation capabilities, and only
     // synchronizes 'active' objects
     btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState,
-                                                    colShape, localInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
     btRigidBody* body = new btRigidBody(rbInfo);
 
     body->setUserPointer((void*)tr);
@@ -127,7 +125,4 @@ void PhysicsSystem::setDebugDrawer(btIDebugDraw* debugDrawer)
     m_dynamicsWorld->setDebugDrawer(debugDrawer);
 }
 
-void PhysicsSystem::drawDebugData()
-{
-    m_dynamicsWorld->debugDrawWorld();
-}
+void PhysicsSystem::drawDebugData() { m_dynamicsWorld->debugDrawWorld(); }

@@ -3,17 +3,17 @@
 
 #include "Texture.h"
 
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 class FontLoader;
 
 class Font final
 {
     friend class FontLoader;
-    
- public:
+
+  public:
     Font();
 
     std::vector<std::string> getTexturesFilenames() const;
@@ -34,7 +34,7 @@ class Font final
     };
 
     std::shared_ptr<Texture> getTexture(const Char& c) const;
-    std::shared_ptr<Texture> getTexture(int page) const;    
+    std::shared_ptr<Texture> getTexture(int page) const;
     Char getChar(char c) const;
     unsigned getLineHeight() const;
     int getKerning(char prev, char next) const;
@@ -42,20 +42,24 @@ class Font final
     unsigned getScaleW() const;
     unsigned getScaleH() const;
 
- private:
-    struct Info {
+  private:
+    struct Info
+    {
         uint16_t size;
-        uint8_t bitField = 0; //< bit 0: smooth, bit 1: unicode, bit 2: italic, bit 3: bold, bit 4: fixedHeigth, bits 5-7: reserved
+        uint8_t bitField = 0; //< bit 0: smooth, bit 1: unicode, bit 2: italic, bit 3: bold, bit 4:
+                              //fixedHeigth, bits 5-7: reserved
         uint8_t charset;
         uint16_t strechH;
         uint8_t aa;
         uint8_t padding[4]; //< up, right, down, left
-        int8_t spacing[2]; //< horiz, vert (in AngelFont doc it's uint8_t but Hiero can output ints )
+        int8_t
+            spacing[2]; //< horiz, vert (in AngelFont doc it's uint8_t but Hiero can output ints )
         uint8_t outline;
         std::string face;
     } m_info;
 
-    struct Common {
+    struct Common
+    {
         uint16_t lineHeight;
         uint16_t base;
         uint16_t scaleW;
@@ -64,10 +68,10 @@ class Font final
         uint8_t bitField = 0; //< bits 0-6: reserved, bit 7: packed
     } m_common;
 
-    std::vector<std::string> m_pages; //< texture files for each page
+    std::vector<std::string> m_pages;                 //< texture files for each page
     std::vector<std::shared_ptr<Texture>> m_textures; //< texture per page
 
-    std::map<uint32_t, Char> m_chars; //< char.id -> char
+    std::map<uint32_t, Char> m_chars;                           //< char.id -> char
     std::map<std::pair<uint32_t, uint32_t>, int16_t> m_kerning; //< (first, second) -> amount
 };
 

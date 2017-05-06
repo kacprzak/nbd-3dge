@@ -4,8 +4,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 GfxNode::GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
     : m_actorId{actorId}
@@ -15,20 +15,11 @@ GfxNode::GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
 {
 }
 
-void GfxNode::setTextures(std::vector<std::shared_ptr<Texture>> textures)
-{
-    m_textures = textures;
-}
+void GfxNode::setTextures(std::vector<std::shared_ptr<Texture>> textures) { m_textures = textures; }
 
-void GfxNode::addTexture(std::shared_ptr<Texture> texture)
-{
-    m_textures.push_back(texture);
-}
+void GfxNode::addTexture(std::shared_ptr<Texture> texture) { m_textures.push_back(texture); }
 
-void GfxNode::setMesh(std::shared_ptr<Mesh> mesh)
-{
-    m_mesh = mesh;
-}
+void GfxNode::setMesh(std::shared_ptr<Mesh> mesh) { m_mesh = mesh; }
 
 void GfxNode::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
 {
@@ -44,10 +35,7 @@ void GfxNode::rebuildModelMatrix()
     m_modelMatrix = T * R * S;
 }
 
-void GfxNode::draw(const Camera* camera) const
-{        
-    draw(m_shaderProgram.get(), camera);
-}
+void GfxNode::draw(const Camera* camera) const { draw(m_shaderProgram.get(), camera); }
 
 void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
@@ -68,12 +56,9 @@ void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
     } else {
         glUseProgram(0);
     }
-    
+
     if (m_mesh)
         m_mesh->draw();
 }
 
-void GfxNode::update(float /*deltaTime*/)
-{
-    rebuildModelMatrix();
-}
+void GfxNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }

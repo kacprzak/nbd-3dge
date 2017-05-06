@@ -1,19 +1,19 @@
 #include "FontLoader.h"
 
-#include "Util.h"
 #include "Logger.h"
+#include "Util.h"
 
 #include <boost/lexical_cast.hpp>
 
 static void removeQuotes(std::string& s)
 {
-    if ( s.front() == '"' ) {
-        s.erase( 0, 1 ); // erase the first character
-        s.erase( s.size() - 1 ); // erase the last character
+    if (s.front() == '"') {
+        s.erase(0, 1);         // erase the first character
+        s.erase(s.size() - 1); // erase the last character
     }
 }
 
-template<typename T>
+template <typename T>
 T to_int(const std::string& s)
 {
     return boost::lexical_cast<T>(s);
@@ -31,16 +31,9 @@ int8_t to_int<int8_t>(const std::string& s)
     return boost::numeric_cast<int8_t>(boost::lexical_cast<int>(s));
 }
 
+FontLoader::FontLoader() { m_font = new Font(); }
 
-FontLoader::FontLoader()
-{
-    m_font = new Font();
-}
-
-Font* FontLoader::getFont()
-{
-    return m_font;
-}
+Font* FontLoader::getFont() { return m_font; }
 
 void FontLoader::command(const std::string& cmd, const std::vector<std::string>& args)
 {
@@ -55,15 +48,15 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
             if (keyVal[0] == "size")
                 info.size = to_int<uint16_t>(keyVal[1]);
             else if (keyVal[0] == "smooth" && keyVal[1] == "1")
-                info.bitField |= 1>>0;
+                info.bitField |= 1 >> 0;
             else if (keyVal[0] == "unicode" && keyVal[1] == "1")
-                info.bitField |= 1>>1;
+                info.bitField |= 1 >> 1;
             else if (keyVal[0] == "italic" && keyVal[1] == "1")
-                info.bitField |= 1>>2;
+                info.bitField |= 1 >> 2;
             else if (keyVal[0] == "bold" && keyVal[1] == "1")
-                info.bitField |= 1>>3;
+                info.bitField |= 1 >> 3;
             else if (keyVal[0] == "fixedHeight" && keyVal[1] == "1")
-                info.bitField |= 1>>4;
+                info.bitField |= 1 >> 4;
             else if (keyVal[0] == "charset" && !keyVal[1].empty())
                 info.charset = to_int<uint8_t>(keyVal[1]);
             else if (keyVal[0] == "strechH")
@@ -75,18 +68,16 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
                 split(keyVal[1], ',', v);
                 assert(v.size() == 4);
                 for (size_t i = 0; i < v.size(); ++i) {
-                    info.padding[i] = to_int<uint8_t>(v.at(i));                    
+                    info.padding[i] = to_int<uint8_t>(v.at(i));
                 }
-            }
-            else if (keyVal[0] == "spacing") {
+            } else if (keyVal[0] == "spacing") {
                 std::vector<std::string> v;
                 split(keyVal[1], ',', v);
                 assert(v.size() == 2);
                 for (size_t i = 0; i < v.size(); ++i) {
-                    info.spacing[i] = to_int<int8_t>(v.at(i));                    
+                    info.spacing[i] = to_int<int8_t>(v.at(i));
                 }
-            }
-            else if (keyVal[0] == "outline")
+            } else if (keyVal[0] == "outline")
                 info.outline = to_int<uint8_t>(keyVal[1]);
             else if (keyVal[0] == "face")
                 info.face = keyVal[1];
@@ -108,7 +99,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
             else if (keyVal[0] == "pages")
                 common.pages = to_int<uint16_t>(keyVal[1]);
             else if (keyVal[0] == "packed" && keyVal[1] == "1")
-                common.bitField |= 1>>7;
+                common.bitField |= 1 >> 7;
         }
     } else if (cmd == "page") {
         m_font->m_pages.resize(m_font->m_common.pages);
@@ -157,18 +148,18 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
                 c.page = to_int<uint8_t>(keyVal[1]);
             else if (keyVal[0] == "chnl")
                 c.page = to_int<uint8_t>(keyVal[1]);
-        }       
+        }
         m_font->m_chars[c.id] = c;
     } else if (cmd == "kernings") {
         // same as in case of chars
     } else if (cmd == "kerning") {
-        uint32_t first = 0;
+        uint32_t first  = 0;
         uint32_t second = 0;
-        int16_t amount = 0;
+        int16_t amount  = 0;
         for (const auto& arg : args) {
             keyVal.clear();
             split(arg, '=', keyVal);
-            removeQuotes(keyVal[1]);            
+            removeQuotes(keyVal[1]);
             if (keyVal[0] == "first")
                 first = to_int<uint32_t>(keyVal[1]);
             if (keyVal[0] == "second")
@@ -182,8 +173,6 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
 
 void FontLoader::fileLoaded()
 {
-    LOG_INFO << "Loaded: fontFace: " << m_font->m_info.face
-             << ", chars: " << m_font->m_chars.size()
+    LOG_INFO << "Loaded: fontFace: " << m_font->m_info.face << ", chars: " << m_font->m_chars.size()
              << ", kernings: " << m_font->m_kerning.size();
 }
-

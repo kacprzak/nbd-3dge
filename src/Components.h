@@ -8,7 +8,9 @@
 #include <vector>
 
 enum class ComponentId { Transformation, Render };
-struct Component {};
+struct Component
+{
+};
 
 struct TransformationComponent : public Component
 {
@@ -26,7 +28,5 @@ struct RenderComponent : public Component
     std::string mesh;
     std::vector<std::string> textures;
 };
-
-
 
 #endif // COMPONENTS_H

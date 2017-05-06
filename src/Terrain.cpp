@@ -3,7 +3,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd, const std::string& dataFolder)
+Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd,
+                 const std::string& dataFolder)
     : GfxNode{actorId, tr, rd}
 {
     const auto& heights = getHeightData(dataFolder + rd->mesh, &m_x, &m_y, m_amplitude);
@@ -15,7 +16,7 @@ Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd, 
 std::vector<float> Terrain::getHeightData(const std::string& filename, int* w, int* h, float amp)
 {
     SDL_Surface* surface = IMG_Load(filename.c_str());
-    
+
     if (!surface) {
         throw std::runtime_error{"SDL_Image load error: " + std::string{IMG_GetError()}};
     }
@@ -27,12 +28,12 @@ std::vector<float> Terrain::getHeightData(const std::string& filename, int* w, i
     heights.resize(*w * *h);
 
     SDL_LockSurface(surface);
-    Uint8 *pixels = (Uint8 *)surface->pixels;
-    
+    Uint8* pixels = (Uint8*)surface->pixels;
+
     for (int y = 0; y < *h; ++y) {
         for (int x = 0; x < *w; ++x) {
             auto& val = heights[y * *h + x];
-            val = pixels[(y * surface->w + x) * surface->format->BytesPerPixel] / 128.0 - 1.0;
+            val       = pixels[(y * surface->w + x) * surface->format->BytesPerPixel] / 128.0 - 1.0;
             val *= amp;
         }
     }

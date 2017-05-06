@@ -1,18 +1,14 @@
 #include "GfxScene.h"
 
-GfxScene::GfxScene()
-{
-}
+GfxScene::GfxScene() {}
 
-GfxScene::~GfxScene()
-{
-}
+GfxScene::~GfxScene() {}
 
 void GfxScene::draw(const Camera* camera) const
 {
     if (m_polygonMode != GL_FILL)
         glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
-    
+
     if (m_skybox)
         m_skybox->draw(camera);
 
@@ -24,7 +20,7 @@ void GfxScene::draw(const Camera* camera) const
     }
 
     if (m_polygonMode != GL_FILL)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);    
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     for (const auto& node : m_texts) {
         node->draw();
@@ -33,23 +29,23 @@ void GfxScene::draw(const Camera* camera) const
 
 void GfxScene::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
-    //if (m_skybox)
+    // if (m_skybox)
     //    m_skybox->draw(shaderProgram, camera);
 
-    //if (m_camera)
+    // if (m_camera)
     //    m_camera->draw(shaderProgram, camera);
 
     for (const auto& node : m_nodes) {
         node.second->draw(shaderProgram, camera);
     }
 
-    //for (const auto& node : m_texts) {
+    // for (const auto& node : m_texts) {
     //    node->draw();
     //}
 }
 
 void GfxScene::update(float delta)
-{  
+{
     if (m_camera) {
         m_camera->update(delta);
     }

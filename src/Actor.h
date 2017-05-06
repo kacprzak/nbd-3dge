@@ -22,7 +22,7 @@ class Actor final
 
     using ComponentsMap = std::map<ComponentId, std::shared_ptr<Component>>;
 
- public:
+  public:
     Actor(ActorId id);
     Actor(const Actor&) = delete;
     Actor& operator=(const Actor&) = delete;
@@ -33,16 +33,16 @@ class Actor final
     void die();
     bool dead() const { return m_dead; }
 
-#ifndef NDEBUG    
+#ifndef NDEBUG
     void setName(const std::string& name) { m_name = name; }
     const std::string& name() const { return m_name; }
 #endif
-    
+
     void addComponent(ComponentId id, const std::shared_ptr<Component>& c)
     {
         m_components.insert(std::make_pair(id, c));
     }
-    
+
     template <class T>
     std::weak_ptr<T> getComponent(ComponentId id)
     {
@@ -57,7 +57,7 @@ class Actor final
         }
     }
 
- private:
+  private:
     ActorId m_id;
     ComponentsMap m_components;
     bool m_dead; //!< Flag indicating that this actor should be deleted by
@@ -65,7 +65,6 @@ class Actor final
 #ifndef NDEBUG
     std::string m_name; //!< Name used in debug
 #endif
-
 };
 
 #endif // ACTOR_H

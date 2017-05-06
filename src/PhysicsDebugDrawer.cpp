@@ -1,8 +1,8 @@
 #include "PhysicsDebugDrawer.h"
 
-#include "ShaderProgram.h"
 #include "Camera.h"
 #include "Logger.h"
+#include "ShaderProgram.h"
 
 static std::string vertexSource = R"==(
 #version 430
@@ -60,26 +60,25 @@ PhysicsDebugDrawer::~PhysicsDebugDrawer()
 #define EARLY_CLIPPING
 #endif
 
-void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
+void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to,
+                                  const btVector3& color)
 {
 #ifdef EARLY_CLIPPING
     auto from_homo = m_lastMVP * glm::vec4{from.x(), from.y(), from.z(), 1.f};
-    from_homo = from_homo / from_homo.w;
-    if (from_homo.x > 1.f || from_homo.x < -1.f
-        || from_homo.y > 1.f || from_homo.y < -1.f
-        || from_homo.z > 1.f || from_homo.z < -1.f) {
+    from_homo      = from_homo / from_homo.w;
+    if (from_homo.x > 1.f || from_homo.x < -1.f || from_homo.y > 1.f || from_homo.y < -1.f ||
+        from_homo.z > 1.f || from_homo.z < -1.f) {
         return;
     }
 
     auto to_homo = m_lastMVP * glm::vec4{to.x(), to.y(), to.z(), 1.f};
-    to_homo = to_homo / to_homo.w;
-    if (to_homo.x > 1.f || to_homo.x < -1.f
-        || to_homo.y > 1.f || to_homo.y < -1.f
-        || to_homo.z > 1.f || to_homo.z < -1.f) {
+    to_homo      = to_homo / to_homo.w;
+    if (to_homo.x > 1.f || to_homo.x < -1.f || to_homo.y > 1.f || to_homo.y < -1.f ||
+        to_homo.z > 1.f || to_homo.z < -1.f) {
         return;
     }
 #endif
-    
+
     m_linesData.push_back(from.x());
     m_linesData.push_back(from.y());
     m_linesData.push_back(from.z());
@@ -87,7 +86,7 @@ void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to, co
     m_linesData.push_back(color.x());
     m_linesData.push_back(color.y());
     m_linesData.push_back(color.z());
-    
+
     m_linesData.push_back(to.x());
     m_linesData.push_back(to.y());
     m_linesData.push_back(to.z());
@@ -97,26 +96,19 @@ void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to, co
     m_linesData.push_back(color.z());
 }
 
-void PhysicsDebugDrawer::drawContactPoint (const btVector3& /*PointOnB*/, const btVector3& /*normalOnB*/,
-                                           btScalar /*distance*/, int /*lifeTime*/,
-                                           const btVector3& /*color*/)
-{}
-
-void PhysicsDebugDrawer::reportErrorWarning(const char* /*warningString*/)
-{}
-
-void PhysicsDebugDrawer::draw3dText(const btVector3& /*location*/, const char* /*textString*/)
-{}
-
-void PhysicsDebugDrawer::setDebugMode(int debugMode)
+void PhysicsDebugDrawer::drawContactPoint(const btVector3& /*PointOnB*/,
+                                          const btVector3& /*normalOnB*/, btScalar /*distance*/,
+                                          int /*lifeTime*/, const btVector3& /*color*/)
 {
-    m_debugMode = debugMode;
 }
 
-int PhysicsDebugDrawer::getDebugMode() const
-{
-    return m_debugMode;
-}
+void PhysicsDebugDrawer::reportErrorWarning(const char* /*warningString*/) {}
+
+void PhysicsDebugDrawer::draw3dText(const btVector3& /*location*/, const char* /*textString*/) {}
+
+void PhysicsDebugDrawer::setDebugMode(int debugMode) { m_debugMode = debugMode; }
+
+int PhysicsDebugDrawer::getDebugMode() const { return m_debugMode; }
 
 //------------------------------------------------------------------------------
 
@@ -133,14 +125,14 @@ void PhysicsDebugDrawer::draw(Camera* camera)
 
     glBindVertexArray(m_vao);
     glDrawArrays(GL_LINES, 0, m_linesData.size() / 6);
-    
+
     m_linesData.clear();
 }
 
 void PhysicsDebugDrawer::updateBuffer()
 {
     size_t bufferSize = m_linesData.size() * sizeof(float);
-    
+
     glBindVertexArray(m_vao);
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
 
@@ -153,12 +145,10 @@ void PhysicsDebugDrawer::updateBuffer()
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, &m_linesData[0]);
-    
+
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
 
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 }
-
-

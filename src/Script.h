@@ -5,7 +5,7 @@
 
 class Script
 {
- public:
+  public:
     virtual void execute(float deltaTime, Actor* actor) = 0;
 };
 

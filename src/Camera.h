@@ -6,7 +6,7 @@
 
 class Camera : public GfxNode
 {
- public:
+  public:
     Camera();
     ~Camera();
 
@@ -18,10 +18,10 @@ class Camera : public GfxNode
 
     const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
-    
- private:
+
+  private:
     glm::vec2 m_yawPitch;
-    
+
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;
 };

@@ -2,12 +2,12 @@
 #define TEXTURE_H
 
 #include <GL/glew.h>
-#include <string>
 #include <memory>
+#include <string>
 
 class Texture final
 {
-public:
+  public:
     ~Texture();
 
     void bind(int textureUnit);
@@ -16,11 +16,11 @@ public:
 
     int width() const { return m_w; }
     int height() const { return m_h; }
-    
-    static Texture *create(const std::string& filename, bool clamp = false);
-    static Texture *create(const std::array<std::string, 6> filenames, bool clamp = false);
-    
-private:
+
+    static Texture* create(const std::string& filename, bool clamp = false);
+    static Texture* create(const std::array<std::string, 6> filenames, bool clamp = false);
+
+  private:
     Texture(GLenum target);
 
     std::string m_filename;

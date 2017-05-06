@@ -10,7 +10,7 @@ public:
     {
         if (m_paused)
             return;
-        
+
         a->rotate(0.0f, delta * 0.5f, 0.0f);
         a->moveForward(delta * 20.0f);
     }
@@ -26,16 +26,13 @@ private:
 
 //==============================================================================
 
-
 GameLogic::GameLogic(const Settings& settings)
     : m_settings{settings}
     , m_physicsSystem{new PhysicsSystem}
 {
 }
 
-GameLogic::~GameLogic()
-{
-}
+GameLogic::~GameLogic() {}
 
 #include "GameClient.h"
 
@@ -63,7 +60,7 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
     for (auto& gv : m_gameViews) {
         gv->loadResources(assetsXml);
     }
-    
+
     for (ptree::value_type& v : pt.get_child("scene")) {
         auto a = ActorFactory::create(v);
         m_actors.push_back(std::move(a));
@@ -71,8 +68,8 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 
     for (auto& gv : m_gameViews) {
         for (auto& a : m_actors) {
-            auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-            auto rd = a->getComponent<RenderComponent>(ComponentId::Render);
+            auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
+            auto rd  = a->getComponent<RenderComponent>(ComponentId::Render);
             auto str = tr.lock();
             auto srd = rd.lock();
             if (srd)
@@ -81,8 +78,8 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
     }
 
     for (auto& a : m_actors) {
-        auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-        auto rd = a->getComponent<RenderComponent>(ComponentId::Render);            
+        auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
+        auto rd  = a->getComponent<RenderComponent>(ComponentId::Render);
         auto str = tr.lock();
         auto srd = rd.lock();
         if (str)
@@ -90,17 +87,11 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
     }
 }
 
-
-void GameLogic::onAfterMainLoop(Engine* /*e*/)
-{
-}
+void GameLogic::onAfterMainLoop(Engine* /*e*/) {}
 
 //------------------------------------------------------------------------------
 
-void GameLogic::update(float elapsedTime)
-{
-    m_physicsSystem->update(elapsedTime);
-}
+void GameLogic::update(float elapsedTime) { m_physicsSystem->update(elapsedTime); }
 
 void GameLogic::draw()
 {

@@ -1,7 +1,7 @@
 #include "Texture.h"
 
-#include "Util.h"
 #include "Logger.h"
+#include "Util.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -22,7 +22,7 @@ Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureId);
     glDeleteSamplers(1, &m_samplerId);
-    LOG_INFO << "Released: " << m_filename << " texId: "<< m_textureId;
+    LOG_INFO << "Released: " << m_filename << " texId: " << m_textureId;
 }
 
 void Texture::bind(int textureUnit)
@@ -46,17 +46,16 @@ void Texture::setRepeat()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
-Texture *Texture::create(const std::string &filename, bool clamp)
+Texture* Texture::create(const std::string& filename, bool clamp)
 {
-    GLenum target = GL_TEXTURE_2D;
-    Texture *tex = new Texture{target};
+    GLenum target   = GL_TEXTURE_2D;
+    Texture* tex    = new Texture{target};
     tex->m_filename = extractFilename(filename);
 
     SDL_Surface* surface = IMG_Load(filename.c_str());
 
     if (!surface) {
-        throw std::runtime_error("SDL_Image load error: " +
-                                 std::string(IMG_GetError()));
+        throw std::runtime_error("SDL_Image load error: " + std::string(IMG_GetError()));
     }
 
     // Top down inversion
@@ -71,16 +70,16 @@ Texture *Texture::create(const std::string &filename, bool clamp)
     GLenum format = textureFormat(&surface);
 
     SDL_LockSurface(surface);
-    glTexImage2D(target, 0, GL_SRGB8_ALPHA8, tex->m_w, tex->m_h, 0,
-                 format, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexImage2D(target, 0, GL_SRGB8_ALPHA8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE,
+                 surface->pixels);
     SDL_UnlockSurface(surface);
 
     SDL_FreeSurface(surface);
-    
+
     glGenerateMipmap(GL_TEXTURE_2D);
-    
-    LOG_INFO << "Loaded: " << tex->m_filename << " texId: "<< tex->m_textureId
-             << " (" << tex->m_w << " x " << tex->m_h << ")";
+
+    LOG_INFO << "Loaded: " << tex->m_filename << " texId: " << tex->m_textureId << " (" << tex->m_w
+             << " x " << tex->m_h << ")";
 
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -93,10 +92,10 @@ Texture *Texture::create(const std::string &filename, bool clamp)
     return tex;
 }
 
-Texture *Texture::create(const std::array<std::string, 6> filenames, bool clamp)
+Texture* Texture::create(const std::array<std::string, 6> filenames, bool clamp)
 {
-    GLenum target = GL_TEXTURE_CUBE_MAP;
-    Texture *tex = new Texture{target};
+    GLenum target   = GL_TEXTURE_CUBE_MAP;
+    Texture* tex    = new Texture{target};
     tex->m_filename = extractFilename(filenames[0]);
 
     glBindTexture(target, tex->m_textureId);
@@ -105,8 +104,7 @@ Texture *Texture::create(const std::array<std::string, 6> filenames, bool clamp)
         SDL_Surface* surface = IMG_Load(filenames[i].c_str());
 
         if (!surface) {
-            throw std::runtime_error("SDL_Image load error: " +
-                                     std::string(IMG_GetError()));
+            throw std::runtime_error("SDL_Image load error: " + std::string(IMG_GetError()));
         }
 
         tex->m_w = surface->w;
@@ -115,14 +113,11 @@ Texture *Texture::create(const std::array<std::string, 6> filenames, bool clamp)
         GLenum format = textureFormat(&surface);
 
         SDL_LockSurface(surface);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                     0, GL_SRGB8, tex->m_w, tex->m_h, 0,
-                     format, GL_UNSIGNED_BYTE, surface->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB8, tex->m_w, tex->m_h, 0, format,
+                     GL_UNSIGNED_BYTE, surface->pixels);
         SDL_UnlockSurface(surface);
 
-    
-        LOG_INFO << "Loaded: " << extractFilename(filenames[i])
-                 << " texId: "<< tex->m_textureId
+        LOG_INFO << "Loaded: " << extractFilename(filenames[i]) << " texId: " << tex->m_textureId
                  << " (" << tex->m_w << " x " << tex->m_h << ")";
 
         SDL_FreeSurface(surface);
@@ -176,7 +171,7 @@ static GLenum textureFormat(SDL_Surface** surface)
         // Done converting.
         SDL_FreeSurface(*surface);
         *surface = nimg;
-        format  = GL_RGBA;
+        format   = GL_RGBA;
     }
     return format;
 }
@@ -205,8 +200,7 @@ static int invert_image(int pitch, int height, void* image_pixels)
         memcpy((Uint8*)(image_pixels) + pitch * index,
                (Uint8*)(image_pixels) + pitch * (height - index - 1), pitch);
 
-        memcpy((Uint8*)(image_pixels) + pitch * (height - index - 1), temp_row,
-               pitch);
+        memcpy((Uint8*)(image_pixels) + pitch * (height - index - 1), temp_row, pitch);
     }
     free(temp_row);
     return 0;

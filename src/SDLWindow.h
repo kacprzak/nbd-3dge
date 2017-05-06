@@ -8,20 +8,20 @@
 
 class SDLWindow : public GameView
 {
-public:
+  public:
     SDLWindow(const Settings& settings);
     ~SDLWindow();
 
     bool processInput(const SDL_Event& event) override;
 
-protected:
+  protected:
     virtual void resizeWindow(int width, int height);
-    
-    virtual void mouseMoved(const SDL_Event& event) = 0;
-    virtual void mouseButtonPressed(const SDL_Event& event) = 0;
+
+    virtual void mouseMoved(const SDL_Event& event)          = 0;
+    virtual void mouseButtonPressed(const SDL_Event& event)  = 0;
     virtual void mouseButtonReleased(const SDL_Event& event) = 0;
 
-    virtual void keyPressed(const SDL_Event& event) = 0;
+    virtual void keyPressed(const SDL_Event& event)  = 0;
     virtual void keyReleased(const SDL_Event& event) = 0;
 
     void preDraw();
@@ -30,7 +30,7 @@ protected:
     void setMouseRelativeMode(bool enable);
     void toggleVSync();
 
- private:
+  private:
     void createSDLWindow();
     void initializeOpenGL();
 

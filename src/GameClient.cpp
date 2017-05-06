@@ -1,9 +1,9 @@
 #include "GameClient.h"
 
-#include "Texture.h"
-#include "Skybox.h"
 #include "Shader.h"
+#include "Skybox.h"
 #include "Terrain.h"
+#include "Texture.h"
 
 //#define GLM_FORCE_RADIANS
 
@@ -11,7 +11,8 @@
 #include <glm/gtx/quaternion.hpp>
 
 GameClient::GameClient(const Settings& settings)
-    : SDLWindow{settings}, m_settings{settings}
+    : SDLWindow{settings}
+    , m_settings{settings}
 {
     loadData(settings);
 }
@@ -35,9 +36,9 @@ void GameClient::resizeWindow(int width, int height)
 
 void GameClient::loadData(const Settings& /*s*/)
 {
-    m_camera = std::make_shared<Camera>();
+    m_camera                             = std::make_shared<Camera>();
     m_camera->transformation()->position = {-35.f, 110.f, 39.f};
-    //m_camera->transformation()->orientation = glm::vec3{0.01f, 0.77f, 0.0f};
+    // m_camera->transformation()->orientation = glm::vec3{0.01f, 0.77f, 0.0f};
     m_scene.setCamera(m_camera);
 }
 
@@ -45,8 +46,8 @@ void GameClient::loadData(const Settings& /*s*/)
 
 void GameClient::loadResources(const std::string& xmlFile)
 {
-    m_resourcesMgr = std::make_unique<ResourcesMgr>(m_settings.dataFolder,
-                                                    m_settings.shadersFolder);
+    m_resourcesMgr =
+        std::make_unique<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     m_resourcesMgr->load(xmlFile);
 
     auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));
@@ -55,10 +56,7 @@ void GameClient::loadResources(const std::string& xmlFile)
     m_fpsCounter.setText(text);
 }
 
-void GameClient::unloadResources()
-{
-    m_resourcesMgr.reset();
-}
+void GameClient::unloadResources() { m_resourcesMgr.reset(); }
 
 //------------------------------------------------------------------------------
 
@@ -80,7 +78,7 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
     } else if (rd->role == Role::Terrain) {
         a = std::make_shared<Terrain>(id, tr, rd, m_settings.dataFolder);
     }
-    
+
     for (const auto& texture : rd->textures) {
         auto texturePtr = m_resourcesMgr->getTexture(texture);
         a->addTexture(texturePtr);
@@ -90,11 +88,8 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
 
     m_scene.add(id, a);
 }
-    
-void GameClient::removeActor(int id)
-{
-    m_scene.remove(id);
-}
+
+void GameClient::removeActor(int id) { m_scene.remove(id); }
 
 //------------------------------------------------------------------------------
 
@@ -118,13 +113,13 @@ void GameClient::draw()
 void GameClient::update(float delta)
 {
     m_fpsCounter.update(delta);
-    
+
     float cameraSpeedMultiplyer = 1.0f;
     if (m_shiftPressed)
         cameraSpeedMultiplyer = 5.0f;
 
     auto distance = delta * m_cameraSpeed * cameraSpeedMultiplyer;
-    
+
     if (m_wPressed) {
         const auto orien = m_camera->transformation()->orientation;
         const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, -distance, 0.f});
@@ -159,15 +154,13 @@ void GameClient::mouseMoved(const SDL_Event& event)
     float mouseSensity = 0.2f;
 
     if (m_leftMouseButtonPressed) {
-        m_camera->rotate(event.motion.xrel * mouseSensity,
-                         event.motion.yrel * mouseSensity,
-                         0.0f);
+        m_camera->rotate(event.motion.xrel * mouseSensity, event.motion.yrel * mouseSensity, 0.0f);
     }
 }
 
 void GameClient::mouseButtonPressed(const SDL_Event& event)
 {
-    switch(event.button.button) {
+    switch (event.button.button) {
     case SDL_BUTTON_LEFT:
         m_leftMouseButtonPressed = true;
         setMouseRelativeMode(true);
@@ -177,7 +170,7 @@ void GameClient::mouseButtonPressed(const SDL_Event& event)
 
 void GameClient::mouseButtonReleased(const SDL_Event& event)
 {
-    switch(event.button.button) {
+    switch (event.button.button) {
     case SDL_BUTTON_LEFT:
         m_leftMouseButtonPressed = false;
         setMouseRelativeMode(false);
@@ -189,7 +182,7 @@ void GameClient::mouseButtonReleased(const SDL_Event& event)
 
 void GameClient::keyPressed(const SDL_Event& event)
 {
-    switch(event.key.keysym.sym) {
+    switch (event.key.keysym.sym) {
     case SDLK_w:
         m_wPressed = true;
         break;
@@ -204,7 +197,7 @@ void GameClient::keyPressed(const SDL_Event& event)
         break;
     }
 
-    switch(event.key.keysym.scancode) {
+    switch (event.key.keysym.scancode) {
     case SDL_SCANCODE_LSHIFT:
         m_shiftPressed = true;
         break;
@@ -215,7 +208,7 @@ void GameClient::keyPressed(const SDL_Event& event)
 
 void GameClient::keyReleased(const SDL_Event& event)
 {
-    switch(event.key.keysym.sym) {
+    switch (event.key.keysym.sym) {
     case SDLK_w:
         m_wPressed = false;
         break;
@@ -230,48 +223,40 @@ void GameClient::keyReleased(const SDL_Event& event)
         break;
     }
 
-    switch(event.key.keysym.scancode) {
+    switch (event.key.keysym.scancode) {
     case SDL_SCANCODE_LSHIFT:
         m_shiftPressed = false;
         break;
-    case SDL_SCANCODE_SPACE:
-        {
-            //auto s = m_resourcesMgr->getScript("rotationScript");
-            //std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
+    case SDL_SCANCODE_SPACE: {
+        // auto s = m_resourcesMgr->getScript("rotationScript");
+        // std::dynamic_pointer_cast<RotationScript>(s)->togglePause();
+    } break;
+    case SDL_SCANCODE_Z: {
+        m_scene.setNextPolygonMode();
+    } break;
+    case SDL_SCANCODE_N: {
+        static bool showNormals = false;
+        static int magnitude    = 2;
+
+        const auto& shader = m_resourcesMgr->getShaderProgram("normals");
+        if (event.key.keysym.mod & KMOD_SHIFT) {
+            magnitude = std::abs(++magnitude);
+            shader->use();
+            shader->setUniform("magnitude", 0.5f * magnitude);
+        } else if (event.key.keysym.mod & KMOD_CTRL) {
+            magnitude = std::abs(--magnitude);
+            if (magnitude == 0)
+                magnitude = 1;
+            shader->use();
+            shader->setUniform("magnitude", 0.5f * magnitude);
+        } else {
+            showNormals = !showNormals;
+            if (showNormals)
+                m_normalsShader = shader;
+            else
+                m_normalsShader.reset();
         }
-        break;
-    case SDL_SCANCODE_Z:
-        {
-            m_scene.setNextPolygonMode();
-        }
-        break;
-    case SDL_SCANCODE_N:
-        {
-            static bool showNormals = false;
-            static int magnitude = 2;
-            
-            const auto& shader = m_resourcesMgr->getShaderProgram("normals");
-            if (event.key.keysym.mod & KMOD_SHIFT) {
-                magnitude = std::abs(++magnitude);
-                shader->use();
-                shader->setUniform("magnitude", 0.5f * magnitude);
-            }
-            else if (event.key.keysym.mod & KMOD_CTRL) {
-                magnitude = std::abs(--magnitude);
-                if (magnitude == 0)
-                    magnitude = 1;
-                shader->use();
-                shader->setUniform("magnitude", 0.5f * magnitude);
-            }
-            else {
-                showNormals = !showNormals;
-                if (showNormals)
-                    m_normalsShader = shader;               
-                else
-                    m_normalsShader.reset();
-            }
-        }
-        break;
+    } break;
     case SDL_SCANCODE_V:
         toggleVSync();
         break;

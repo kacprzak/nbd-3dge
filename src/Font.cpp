@@ -1,38 +1,21 @@
 #include "Font.h"
 
-Font::Font()
-{
-}
+Font::Font() {}
 
-std::vector<std::string> Font::getTexturesFilenames() const
-{
-    return m_pages;
-}
+std::vector<std::string> Font::getTexturesFilenames() const { return m_pages; }
 
 void Font::setTextures(const std::vector<std::shared_ptr<Texture>>& textures)
 {
     m_textures = textures;
 }
 
-std::shared_ptr<Texture> Font::getTexture(const Char& c) const
-{
-    return m_textures.at(c.page);
-}
+std::shared_ptr<Texture> Font::getTexture(const Char& c) const { return m_textures.at(c.page); }
 
-std::shared_ptr<Texture> Font::getTexture(int page) const
-{
-    return m_textures.at(page);
-}
+std::shared_ptr<Texture> Font::getTexture(int page) const { return m_textures.at(page); }
 
-Font::Char Font::getChar(char c) const
-{
-    return m_chars.at(c);
-}
+Font::Char Font::getChar(char c) const { return m_chars.at(c); }
 
-unsigned Font::getLineHeight() const
-{
-    return m_common.lineHeight;
-}
+unsigned Font::getLineHeight() const { return m_common.lineHeight; }
 
 int Font::getKerning(char prev, char next) const
 {
@@ -44,13 +27,6 @@ int Font::getKerning(char prev, char next) const
         return 0;
 }
 
-unsigned Font::getScaleW() const
-{
-    return m_common.scaleW;
-}
+unsigned Font::getScaleW() const { return m_common.scaleW; }
 
-unsigned Font::getScaleH() const
-{
-    return m_common.scaleH;
-}
-
+unsigned Font::getScaleH() const { return m_common.scaleH; }

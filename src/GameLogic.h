@@ -1,9 +1,9 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
-#include "Settings.h"
-#include "GameView.h"
 #include "Actor.h"
+#include "GameView.h"
+#include "Settings.h"
 
 #include <boost/utility.hpp>
 #include <list>
@@ -15,8 +15,9 @@ class PhysicsSystem;
 class GameLogic final : private boost::noncopyable
 {
     using GameViewList = std::list<std::shared_ptr<GameView>>;
-    using ActorsList = std::list<std::shared_ptr<Actor>>;
- public:
+    using ActorsList   = std::list<std::shared_ptr<Actor>>;
+
+  public:
     GameLogic(const Settings& settings);
     ~GameLogic();
 
@@ -31,14 +32,13 @@ class GameLogic final : private boost::noncopyable
     void attachView(std::shared_ptr<GameView> gameView, unsigned actorId = 0);
 
     void toggleDrawDebug() { m_drawDebug = !m_drawDebug; }
-    
- private:
+
+  private:
     const Settings m_settings;
     std::unique_ptr<PhysicsSystem> m_physicsSystem;
     GameViewList m_gameViews;
     ActorsList m_actors;
     bool m_drawDebug = false;
-
 };
 
 #endif // GAMELOGIC_H

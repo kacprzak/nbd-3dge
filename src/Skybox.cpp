@@ -22,6 +22,7 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
      *
      */
 
+    // clang-format off
     std::vector<float> vertices = {
         x, -x,  x,
         -x, -x,  x,
@@ -53,12 +54,13 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
         0, 4, 5,
         5, 1, 0
     };
+    // clang-format on
 
-    m_mesh = std::make_shared<Mesh>(GL_TRIANGLES, vertices,
-                                    std::vector<float>{}, std::vector<float>{}, indices);
+    m_mesh = std::make_shared<Mesh>(GL_TRIANGLES, vertices, std::vector<float>{},
+                                    std::vector<float>{}, indices);
 }
 
-void Skybox::draw(const Camera *camera) const
+void Skybox::draw(const Camera* camera) const
 {
     if (m_shaderProgram) {
         m_shaderProgram->use();

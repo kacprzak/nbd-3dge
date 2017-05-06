@@ -6,9 +6,9 @@
 struct Settings
 {
     std::string windowTitle = "nbd-edge";
-    int screenWidth = 1024;
-    int screenHeight = 768;
-    bool fullscreen = false;
+    int screenWidth         = 1024;
+    int screenHeight        = 768;
+    bool fullscreen         = false;
     std::string dataFolder;
     std::string shadersFolder;
 #ifndef NDEBUG
