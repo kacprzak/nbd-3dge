@@ -165,12 +165,13 @@ void Engine::draw()
 {
     if (!m_initVideo) return;
 
-    m_game->draw();
-
     // Draw game
     for (auto gv : m_game->gameViews()) {
         gv->draw();
     }
+
+    // Used for debug draw
+    m_game->draw();
 }
 
 //------------------------------------------------------------------------------
