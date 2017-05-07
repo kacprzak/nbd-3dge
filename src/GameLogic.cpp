@@ -2,6 +2,8 @@
 #include "ActorFactory.h"
 #include "PhysicsSystem.h"
 
+#include <boost/algorithm/string/predicate.hpp>
+
 /*
 class RotationScript : public Script
 {
@@ -66,9 +68,14 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
         gv->loadResources(assetsXml);
     }
 
+    ActorFactory factory;
     for (ptree::value_type& v : pt.get_child("scene")) {
-        auto a = ActorFactory::create(v);
-        m_actors.push_back(std::move(a));
+        if (boost::algorithm::ends_with(v.first, "Prototype")) {
+            factory.registerPrototype(v);
+        } else {
+            auto a = factory.create(v);
+            m_actors.push_back(std::move(a));
+        }
     }
 
     for (auto& gv : m_gameViews) {

@@ -16,7 +16,7 @@ struct TransformationComponent : public Component
 {
     glm::quat orientation;
     glm::vec3 position;
-    float scale;
+    float scale = 1.0f;
 };
 
 enum class Role { Skybox, Terrain, Dynamic, Gui };
@@ -24,7 +24,7 @@ enum class Role { Skybox, Terrain, Dynamic, Gui };
 struct RenderComponent : public Component
 {
     Role role;
-    std::string shaderProgram;
+    std::string shaderProgram = "default";
     std::string mesh;
     std::vector<std::string> textures;
 };
@@ -32,7 +32,7 @@ struct RenderComponent : public Component
 struct PhysicsComponent : public Component
 {
     std::string shape;
-    float mass;
+    float mass = 0.0f;
 };
 
 #endif // COMPONENTS_H

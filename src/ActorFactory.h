@@ -6,15 +6,20 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+#include <memory>
+
 class GameLogic;
 
 class ActorFactory
 {
   public:
-    static std::unique_ptr<Actor> create(boost::property_tree::ptree::value_type& v);
+    void registerPrototype(boost::property_tree::ptree::value_type& v);
+    std::unique_ptr<Actor> create(boost::property_tree::ptree::value_type& v);
 
   private:
-    static unsigned int getNextId();
+    unsigned int getNextId();
+
+    std::map<std::string, std::unique_ptr<Actor>> m_prototypes;
 };
 
 #endif // ACTORFACTORY_H

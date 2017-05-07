@@ -1,5 +1,70 @@
 <scene>
-  <assets>assets.xml</assets> 
+  <assets>assets.xml</assets>
+
+  <actorPrototype>
+    <name>shipPrototype</name>
+    <transformation>
+      <scale>0.1</scale>
+    </transformation>
+    <render>
+      <mesh>ship</mesh>
+      <textures>
+        <texture>ship_texture</texture>
+      </textures>
+      <shaderProgram>lightAndTex</shaderProgram>
+    </render>
+    <physics>
+      <shape>mesh:ship</shape>
+      <mass>1000</mass>
+    </physics>
+  </actorPrototype>
+
+  <actorPrototype>
+    <name>teddyPrototype</name>
+    <transformation>
+      <scale>0.2</scale>
+    </transformation>
+    <render>
+      <mesh>teddy</mesh>
+      <shaderProgram>light</shaderProgram>
+    </render>
+    <physics>
+      <shape>capsule:11:17</shape>
+      <mass>10</mass>
+    </physics>
+  </actorPrototype>
+
+  <actorPrototype>
+    <name>cubePrototype</name>
+    <transformation>
+      <scale>10</scale>
+    </transformation>
+    <render>
+      <mesh>cube</mesh>
+      <textures>
+        <texture>cube_texture</texture>
+      </textures>
+      <shaderProgram>lightAndTex</shaderProgram>
+    </render>
+    <physics>
+      <shape>box:1:1:1</shape>
+    </physics>
+  </actorPrototype>
+
+  <actorPrototype>
+    <name>cowPrototype</name>
+    <transformation>
+      <position>-10 100 0</position>
+    </transformation>
+    <render>
+      <mesh>cow</mesh>
+      <shaderProgram>light</shaderProgram>
+    </render>
+    <physics>
+      <shape>box:5:2.5:1</shape>
+      <mass>200</mass>
+    </physics>
+  </actorPrototype>
 
   <skybox>
     <render>
@@ -31,90 +96,125 @@
     </physics>
   </terrain>
 
-  <actor>
+  <!--actor>
     <name>teddy</name>
+    <prototype>teddyPrototype</prototype>
     <transformation>
-      <scale>0.2</scale>
       <position>22 100 0</position>
     </transformation>
-    <render>
-      <mesh>teddy</mesh>
-      <shaderProgram>light</shaderProgram>
-    </render>
-    <physics>
-      <shape>capsule:11:17</shape>
-      <mass>10</mass>
-    </physics>
-  </actor>
+    <render/>
+    <physics/>
+  </actor-->
   
   <actor>
     <name>cube</name>
+    <prototype>cubePrototype</prototype>
     <transformation>
-      <scale>10</scale>
       <position>10 50 0</position>
     </transformation>
-    <render>
-      <mesh>cube</mesh>
-      <textures>
-        <texture>cube_texture</texture>
-      </textures>
-      <shaderProgram>lightAndTex</shaderProgram>
-    </render>
-    <physics>
-      <shape>box:1:1:1</shape>
-    </physics>
+    <render/>
+    <physics/>
   </actor>
 
   <actor>
-    <name>cow</name>
+    <name>cube</name>
+    <prototype>cubePrototype</prototype>
     <transformation>
-      <position>-10 100 0</position>
+      <position>10 150 -500</position>
     </transformation>
-    <render>
-      <mesh>cow</mesh>
-      <shaderProgram>light</shaderProgram>
-    </render>
-    <physics>
-      <shape>box:5:2.5:1</shape>
-    </physics>
+    <render/>
+    <physics/>
   </actor>
 
+  <actor>
+    <name>cube</name>
+    <prototype>cubePrototype</prototype>
+    <transformation>
+      <position>500 200 0</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <name>cube</name>
+    <prototype>cubePrototype</prototype>
+    <transformation>
+      <position>-10 150 500</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <name>cube</name>
+    <prototype>cubePrototype</prototype>
+    <transformation>
+      <position>-500 200 0</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+  
   <actor>
     <name>ship</name>
+    <prototype>shipPrototype</prototype>
     <transformation>
-      <scale>0.1</scale>
       <position>0 90 0</position>
       <orientation>0 90</orientation>
     </transformation>
-    <render>
-      <mesh>ship</mesh>
-      <textures>
-        <texture>ship_texture</texture>
-      </textures>
-      <shaderProgram>lightAndTex</shaderProgram>
-    </render>
-    <physics>
-      <shape>mesh:ship</shape>
-      <mass>1000</mass>
-    </physics>
+    <render/>
+    <physics/>
   </actor>
 
   <actor>
     <name>ship_2</name>
+    <prototype>shipPrototype</prototype>
     <transformation>
-      <scale>0.1</scale>
-      <position> 10 120 0</position>
+      <position>10 120 0</position>
     </transformation>
-    <render>
-      <mesh>ship</mesh>
-      <textures>
-        <texture>ship_texture</texture>
-      </textures>
-      <shaderProgram>lightAndTex</shaderProgram>
-    </render>
-    <physics>
-      <shape>mesh:ship</shape>
-      <mass>1000</mass>
-    </physics>
+    <render/>
+    <physics/>
   </actor>
+
+  <actor>
+    <name>ship_3</name>
+    <prototype>shipPrototype</prototype>
+    <transformation>
+      <position>50 120 0</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <name>ship_4</name>
+    <prototype>shipPrototype</prototype>
+    <transformation>
+      <position>100 120 0</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <name>ship_5</name>
+    <prototype>shipPrototype</prototype>
+    <transformation>
+      <position>200 120 0</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <name>ship_6</name>
+    <prototype>shipPrototype</prototype>
+    <transformation>
+      <position>10 220 0</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
 </scene>

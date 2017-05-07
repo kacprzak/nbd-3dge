@@ -12,7 +12,11 @@ ShaderProgram::ShaderProgram()
     m_shaderProgramId = glCreateProgram();
 }
 
-ShaderProgram::~ShaderProgram() { glDeleteProgram(m_shaderProgramId); }
+ShaderProgram::~ShaderProgram()
+{
+    glDeleteProgram(m_shaderProgramId);
+    LOG_INFO << "Deleted Program: " << m_shaderProgramId;
+}
 
 void ShaderProgram::addShared(Shader* shader) { m_shaders.push_back(shader); }
 
@@ -25,7 +29,7 @@ void ShaderProgram::link()
     glLinkProgram(m_shaderProgramId);
 
     std::stringstream ss;
-    ss << "Linking Program: " << m_shaderProgramId << " (";
+    ss << "Linking Program: " << m_shaderProgramId << " ( ";
     for (const auto& s : m_shaders)
         ss << s->id() << " ";
     LOG_INFO << ss.str() << ")";
