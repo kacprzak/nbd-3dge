@@ -3,7 +3,6 @@
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <btBulletDynamicsCommon.h>
 // Fixme: remove this dependency
-#include "ObjLoader.h"
 #include "Terrain.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -83,9 +82,9 @@ void PhysicsSystem::update(float elapsedTime) { m_dynamicsWorld->stepSimulation(
 //------------------------------------------------------------------------------
 
 void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsComponent* ph,
-                             const std::string& dataFolder)
+                             const std::string& dataFolder, const ResourcesMgr& resourcesMgr)
 {
-    auto colShape = createCollisionShape(*ph, dataFolder);
+    auto colShape = createCollisionShape(*ph, dataFolder, resourcesMgr);
     colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
 
     // Create Dynamic Objects
@@ -106,6 +105,13 @@ void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsCompone
 
 //------------------------------------------------------------------------------
 
+void PhysicsSystem::removeActor(int id)
+{
+    //
+}
+
+//------------------------------------------------------------------------------
+
 void PhysicsSystem::setDebugDrawer(btIDebugDraw* debugDrawer)
 {
     debugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
@@ -118,8 +124,9 @@ void PhysicsSystem::drawDebugData() { m_dynamicsWorld->debugDrawWorld(); }
 
 //------------------------------------------------------------------------------
 
-std::unique_ptr<btCollisionShape> PhysicsSystem::createCollisionShape(const PhysicsComponent& ph,
-                                                                      const std::string& dataFolder)
+std::unique_ptr<btCollisionShape>
+PhysicsSystem::createCollisionShape(const PhysicsComponent& ph, const std::string& dataFolder,
+                                    const ResourcesMgr& resourcesMgr)
 {
     const std::string shape = ph.shape;
 
@@ -139,9 +146,7 @@ std::unique_ptr<btCollisionShape> PhysicsSystem::createCollisionShape(const Phys
         } else if (splitted[0] == "mesh") {
             auto colShape = std::make_unique<btConvexHullShape>();
 
-            ObjLoader loader;
-            loader.load(dataFolder + splitted[1]);
-            const auto& v = loader.vertices();
+            const auto& v = resourcesMgr.getMesh(splitted[1])->positions();
             for (size_t i = 0; i < v.size(); i = i + 3) {
                 colShape->addPoint(btVector3{v[i], v[i + 1], v[i + 2]}, false);
             }

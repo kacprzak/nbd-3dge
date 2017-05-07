@@ -10,6 +10,8 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
            const std::vector<GLushort>& indices)
     : m_primitive{primitive}
 {
+    std::fill(std::begin(m_bufferSizes), std::end(m_bufferSizes), 0);
+
     m_numberOfVertices = vertices.size();
     m_numberOfElements = indices.size();
 
@@ -28,30 +30,31 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
     glBindVertexArray(m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_buffers[POSITIONS]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+    m_bufferSizes[POSITIONS] = sizeof(float) * vertices.size();
+    glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[POSITIONS], &vertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     if (normals.size() > 0) {
         glBindBuffer(GL_ARRAY_BUFFER, m_buffers[NORMALS]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * normals.size(), &normals[0],
-                     GL_STATIC_DRAW);
+        m_bufferSizes[NORMALS] = sizeof(float) * normals.size();
+        glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[NORMALS], &normals[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
     }
 
     if (texcoords.size() > 0) {
         glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TEXCOORDS]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texcoords.size(), &texcoords[0],
-                     GL_STATIC_DRAW);
+        m_bufferSizes[TEXCOORDS] = sizeof(float) * texcoords.size();
+        glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[TEXCOORDS], &texcoords[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
     }
 
     if (indices.size() > 0) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDICES]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indices.size(), &indices[0],
-                     GL_STATIC_DRAW);
+        m_bufferSizes[INDICES] = sizeof(GLushort) * indices.size();
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_bufferSizes[INDICES], &indices[0], GL_STATIC_DRAW);
     }
 
     glBindVertexArray(0);
@@ -84,6 +87,24 @@ void Mesh::draw(int start, int count) const
     } else {
         glDrawElements(m_primitive, count, GL_UNSIGNED_SHORT, 0);
     }
+
+    glBindVertexArray(0);
+}
+
+std::vector<float> Mesh::positions() const
+{
+    std::vector<float> retVal;
+    retVal.resize(m_bufferSizes[POSITIONS] / sizeof(float));
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_buffers[POSITIONS]);
+    void* buff = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+
+    std::memcpy(retVal.data(), buff, m_bufferSizes[POSITIONS]);
+
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return retVal;
 }
 
 Mesh* Mesh::fromWavefrontObj(const std::string& objfileName)

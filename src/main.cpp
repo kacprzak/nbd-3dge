@@ -78,9 +78,12 @@ int main(int ac, char** av)
 
     initLogger(settings.logLevel);
 
+    auto resourcesMgr =
+        std::make_shared<ResourcesMgr>(settings.dataFolder, settings.shadersFolder);
+
     Engine engine;
-    GameLogic game(settings);
-    game.attachView(std::make_shared<GameClient>(settings));
+    GameLogic game(settings, resourcesMgr);
+    game.attachView(std::make_shared<GameClient>(settings, resourcesMgr));
     engine.mainLoop(&game);
 
     return 0;

@@ -30,7 +30,8 @@ class ResourcesMgr
 
     void addMesh(const std::string& name, const std::string& filename);
     std::shared_ptr<Mesh> getMesh(const std::string& name);
-
+    std::shared_ptr<const Mesh> getMesh(const std::string& name) const;
+    
     void addFont(const std::string& name, const std::string& filename);
     std::shared_ptr<Font> getFont(const std::string& name);
 

@@ -10,11 +10,17 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-GameClient::GameClient(const Settings& settings)
+GameClient::GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr)
     : SDLWindow{settings}
+    , m_resourcesMgr{resourcesMgr}
     , m_settings{settings}
 {
-    loadData(settings);
+    if (!m_resourcesMgr) {
+        m_resourcesMgr =
+            std::make_shared<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
+    }
+
+    loadData();
 }
 
 //------------------------------------------------------------------------------
@@ -33,11 +39,10 @@ void GameClient::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void GameClient::loadData(const Settings& /*s*/)
+void GameClient::loadData()
 {
     m_camera                             = std::make_shared<Camera>();
     m_camera->transformation()->position = {-35.f, 110.f, 39.f};
-    // m_camera->transformation()->orientation = glm::vec3{0.01f, 0.77f, 0.0f};
     m_scene.setCamera(m_camera);
 }
 
@@ -45,8 +50,6 @@ void GameClient::loadData(const Settings& /*s*/)
 
 void GameClient::loadResources(const std::string& xmlFile)
 {
-    m_resourcesMgr =
-        std::make_unique<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     m_resourcesMgr->load(xmlFile);
 
     auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));

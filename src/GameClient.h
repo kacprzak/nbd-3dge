@@ -15,7 +15,7 @@ class GameClient : public SDLWindow
     typedef SDLWindow super;
 
   public:
-    GameClient(const Settings& settings);
+    GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr = {});
 
     void loadResources(const std::string& xmlFile) override;
     void unloadResources() override;
@@ -38,9 +38,9 @@ class GameClient : public SDLWindow
     void keyReleased(const SDL_Event& event) override;
 
   private:
-    void loadData(const Settings& s);
+    void loadData();
 
-    std::unique_ptr<ResourcesMgr> m_resourcesMgr;
+    std::shared_ptr<ResourcesMgr> m_resourcesMgr;
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<ShaderProgram> m_normalsShader;
 

@@ -94,7 +94,7 @@
       <shaderProgram>lightAndTex</shaderProgram>
     </render>
     <physics>
-      <shape>mesh:ship.obj</shape>
+      <shape>mesh:ship</shape>
       <mass>1000</mass>
     </physics>
   </actor>
@@ -113,7 +113,7 @@
       <shaderProgram>lightAndTex</shaderProgram>
     </render>
     <physics>
-      <shape>mesh:ship.obj</shape>
+      <shape>mesh:ship</shape>
       <mass>1000</mass>
     </physics>
   </actor>

@@ -4,6 +4,7 @@
 #include "Actor.h"
 #include "GameView.h"
 #include "Settings.h"
+#include "ResourcesMgr.h"
 
 #include <boost/utility.hpp>
 #include <list>
@@ -18,7 +19,7 @@ class GameLogic final : private boost::noncopyable
     using ActorsList   = std::list<std::shared_ptr<Actor>>;
 
   public:
-    GameLogic(const Settings& settings);
+    GameLogic(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr = {});
     ~GameLogic();
 
     void update(float elapsedTime);
@@ -35,6 +36,7 @@ class GameLogic final : private boost::noncopyable
 
   private:
     const Settings m_settings;
+    std::shared_ptr<ResourcesMgr> m_resourcesMgr;
     std::unique_ptr<PhysicsSystem> m_physicsSystem;
     GameViewList m_gameViews;
     ActorsList m_actors;

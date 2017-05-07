@@ -2,6 +2,7 @@
 #define PHYSICSSYSTEM_H
 
 #include "Components.h"
+#include "ResourcesMgr.h"
 
 #include <LinearMath/btAlignedObjectArray.h>
 #include <boost/noncopyable.hpp>
@@ -24,7 +25,7 @@ class PhysicsSystem final : private boost::noncopyable
     void update(float elapsedTime);
 
     void addActor(int id, TransformationComponent* tr, PhysicsComponent* ph,
-                  const std::string& dataFolder);
+                  const std::string& dataFolder, const ResourcesMgr& resourcesMgr);
     void removeActor(int id);
 
     void setDebugDrawer(btIDebugDraw* debugDrawer);
@@ -32,7 +33,8 @@ class PhysicsSystem final : private boost::noncopyable
 
   private:
     std::unique_ptr<btCollisionShape> createCollisionShape(const PhysicsComponent& ph,
-                                                           const std::string& dataFolder);
+                                                           const std::string& dataFolder,
+                                                           const ResourcesMgr& resourcesMgr);
 
     btCollisionConfiguration* m_collisionConfiguration;
     btDispatcher* m_dispatcher;

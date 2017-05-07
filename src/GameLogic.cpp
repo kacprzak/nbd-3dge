@@ -26,10 +26,15 @@ private:
 
 //==============================================================================
 
-GameLogic::GameLogic(const Settings& settings)
+GameLogic::GameLogic(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr)
     : m_settings{settings}
+    , m_resourcesMgr(resourcesMgr)
     , m_physicsSystem{new PhysicsSystem}
 {
+    if (!m_resourcesMgr) {
+        m_resourcesMgr =
+            std::make_shared<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
+    }
 }
 
 GameLogic::~GameLogic() {}
@@ -72,8 +77,7 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
             auto rd  = a->getComponent<RenderComponent>(ComponentId::Render);
             auto str = tr.lock();
             auto srd = rd.lock();
-            if (srd)
-                gv->addActor(a->id(), str.get(), srd.get());
+            if (srd) gv->addActor(a->id(), str.get(), srd.get());
         }
     }
 
@@ -83,11 +87,31 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
         auto str = tr.lock();
         auto sph = ph.lock();
         if (str && sph)
-            m_physicsSystem->addActor(a->id(), str.get(), sph.get(), m_settings.dataFolder);
+            m_physicsSystem->addActor(a->id(), str.get(), sph.get(), m_settings.dataFolder, *m_resourcesMgr);
     }
 }
 
-void GameLogic::onAfterMainLoop(Engine* /*e*/) {}
+void GameLogic::onAfterMainLoop(Engine* /*e*/)
+{
+    for (auto& gv : m_gameViews) {
+        for (auto& a : m_actors) {
+            auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
+            auto rd  = a->getComponent<RenderComponent>(ComponentId::Render);
+            auto str = tr.lock();
+            auto srd = rd.lock();
+            if (srd) gv->removeActor(a->id());
+        }
+    }
+
+    for (auto& a : m_actors) {
+        auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
+        auto ph  = a->getComponent<PhysicsComponent>(ComponentId::Physics);
+        auto str = tr.lock();
+        auto sph = ph.lock();
+        if (str && sph)
+            m_physicsSystem->removeActor(a->id());
+    }
+}
 
 //------------------------------------------------------------------------------
 
@@ -95,6 +119,5 @@ void GameLogic::update(float elapsedTime) { m_physicsSystem->update(elapsedTime)
 
 void GameLogic::draw()
 {
-    if (m_drawDebug)
-        m_physicsSystem->drawDebugData();
+    if (m_drawDebug) m_physicsSystem->drawDebugData();
 }

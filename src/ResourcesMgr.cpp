@@ -163,6 +163,15 @@ std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name)
         return it->second;
 }
 
+std::shared_ptr<const Mesh> ResourcesMgr::getMesh(const std::string& name) const
+{
+    auto it = m_meshes.find(name);
+    if (it == std::end(m_meshes))
+        throw std::runtime_error("Mesh '" + name + "' not loaded.");
+    else
+        return it->second;
+}
+
 void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 {
     FontLoader loader;
