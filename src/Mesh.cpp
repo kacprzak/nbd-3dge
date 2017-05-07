@@ -18,9 +18,8 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(NUM_BUFFERS, m_buffers);
 
-    LOG_TRACE << "Loaded Mesh: "
-              << "\t vaoId: " << m_vao << '\n'
-              << "  Vertices: " << vertices.size() / 3 << "\t id: " << m_buffers[POSITIONS] << '\n'
+    LOG_INFO << "Loaded Mesh: " << m_vao;
+    LOG_TRACE << "  Vertices: " << vertices.size() / 3 << "\t id: " << m_buffers[POSITIONS] << '\n'
               << "  Normals: " << normals.size() / 3 << "\t id: " << m_buffers[NORMALS] << '\n'
               << "  TexCoords: " << texcoords.size() / 2 << "\t id: " << m_buffers[TEXCOORDS]
               << '\n'
@@ -65,7 +64,7 @@ Mesh::~Mesh()
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(NUM_BUFFERS, m_buffers);
 
-    LOG_INFO << "Released: " << m_vao;
+    LOG_INFO << "Released Mesh: " << m_vao;
 }
 
 void Mesh::draw() const
@@ -81,7 +80,6 @@ void Mesh::draw(int start, int count) const
 {
     glBindVertexArray(m_vao);
 
-    // Draw
     if (m_numberOfElements == 0) {
         glDrawArrays(m_primitive, start, count);
     } else {
@@ -107,10 +105,11 @@ std::vector<float> Mesh::positions() const
     return retVal;
 }
 
+//------------------------------------------------------------------------------
+
 Mesh* Mesh::fromWavefrontObj(const std::string& objfileName)
 {
     std::string name = extractFilename(objfileName);
-    LOG_INFO << "Loading... " << name;
 
     ObjLoader objLoader;
     objLoader.load(objfileName);
@@ -118,6 +117,8 @@ Mesh* Mesh::fromWavefrontObj(const std::string& objfileName)
     return new Mesh{GLenum(objLoader.primitive()), objLoader.vertices(), objLoader.normals(),
                     objLoader.texCoords(), objLoader.indices()};
 }
+
+//------------------------------------------------------------------------------
 
 Mesh* Mesh::fromHeightmap(const std::vector<float>& heights, int w, int h, float textureStrech)
 {

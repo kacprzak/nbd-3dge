@@ -86,8 +86,7 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
         auto ph  = a->getComponent<PhysicsComponent>(ComponentId::Physics);
         auto str = tr.lock();
         auto sph = ph.lock();
-        if (str && sph)
-            m_physicsSystem->addActor(a->id(), str.get(), sph.get(), m_settings.dataFolder, *m_resourcesMgr);
+        if (str && sph) m_physicsSystem->addActor(a->id(), str.get(), sph.get(), *m_resourcesMgr);
     }
 }
 
@@ -108,8 +107,7 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
         auto ph  = a->getComponent<PhysicsComponent>(ComponentId::Physics);
         auto str = tr.lock();
         auto sph = ph.lock();
-        if (str && sph)
-            m_physicsSystem->removeActor(a->id());
+        if (str && sph) m_physicsSystem->removeActor(a->id());
     }
 }
 

@@ -25,7 +25,7 @@ class PhysicsSystem final : private boost::noncopyable
     void update(float elapsedTime);
 
     void addActor(int id, TransformationComponent* tr, PhysicsComponent* ph,
-                  const std::string& dataFolder, const ResourcesMgr& resourcesMgr);
+                  const ResourcesMgr& resourcesMgr);
     void removeActor(int id);
 
     void setDebugDrawer(btIDebugDraw* debugDrawer);
@@ -33,7 +33,6 @@ class PhysicsSystem final : private boost::noncopyable
 
   private:
     std::unique_ptr<btCollisionShape> createCollisionShape(const PhysicsComponent& ph,
-                                                           const std::string& dataFolder,
                                                            const ResourcesMgr& resourcesMgr);
 
     btCollisionConfiguration* m_collisionConfiguration;
@@ -43,7 +42,6 @@ class PhysicsSystem final : private boost::noncopyable
     btDynamicsWorld* m_dynamicsWorld;
 
     std::vector<std::unique_ptr<btCollisionShape>> m_collisionShapes;
-    std::vector<float> m_heightmapData;
 };
 
 #endif // PHYSICSSYSTEM_H

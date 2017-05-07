@@ -2,8 +2,7 @@
 
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <btBulletDynamicsCommon.h>
-// Fixme: remove this dependency
-#include "Terrain.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
@@ -82,9 +81,9 @@ void PhysicsSystem::update(float elapsedTime) { m_dynamicsWorld->stepSimulation(
 //------------------------------------------------------------------------------
 
 void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsComponent* ph,
-                             const std::string& dataFolder, const ResourcesMgr& resourcesMgr)
+                             const ResourcesMgr& resourcesMgr)
 {
-    auto colShape = createCollisionShape(*ph, dataFolder, resourcesMgr);
+    auto colShape = createCollisionShape(*ph, resourcesMgr);
     colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
 
     // Create Dynamic Objects
@@ -125,8 +124,7 @@ void PhysicsSystem::drawDebugData() { m_dynamicsWorld->debugDrawWorld(); }
 //------------------------------------------------------------------------------
 
 std::unique_ptr<btCollisionShape>
-PhysicsSystem::createCollisionShape(const PhysicsComponent& ph, const std::string& dataFolder,
-                                    const ResourcesMgr& resourcesMgr)
+PhysicsSystem::createCollisionShape(const PhysicsComponent& ph, const ResourcesMgr& resourcesMgr)
 {
     const std::string shape = ph.shape;
 
@@ -136,11 +134,10 @@ PhysicsSystem::createCollisionShape(const PhysicsComponent& ph, const std::strin
         if (splitted.size() < 2) throw std::runtime_error{"Invalid shape format: " + shape};
 
         if (splitted[0] == "heightfield") {
-            int w, h;
-            float amp       = 40.f;
-            m_heightmapData = Terrain::getHeightData(dataFolder + splitted[1], &w, &h, amp);
-            auto colShape   = std::make_unique<btHeightfieldTerrainShape>(
-                w, h, m_heightmapData.data(), 1.0f, -amp, amp, 1, PHY_FLOAT, false);
+            const auto& heightfield = resourcesMgr.getHeightfield(splitted[1]);
+            auto colShape           = std::make_unique<btHeightfieldTerrainShape>(
+                heightfield->w, heightfield->h, heightfield->heights.data(), 1.0f,
+                -heightfield->amplitude, heightfield->amplitude, 1, PHY_FLOAT, false);
             return colShape;
 
         } else if (splitted[0] == "mesh") {

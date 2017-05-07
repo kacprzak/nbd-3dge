@@ -17,7 +17,7 @@
       <position>0 30 0</position>
     </transformation>
     <render>
-      <mesh>terrain-heightmap-01.png</mesh>
+      <mesh>heightfield:terrain-heightmap</mesh>
       <shaderProgram>terrain</shaderProgram>
       <textures>
         <texture>grass_diffuse</texture>
@@ -26,7 +26,7 @@
       </textures>
     </render>
     <physics>
-      <shape>heightfield:terrain-heightmap-01.png</shape>
+      <shape>heightfield:terrain-heightmap</shape>
       <mass>0</mass>
     </physics>
   </terrain>

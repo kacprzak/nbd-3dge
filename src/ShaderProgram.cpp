@@ -25,10 +25,10 @@ void ShaderProgram::link()
     glLinkProgram(m_shaderProgramId);
 
     std::stringstream ss;
-    ss << "Linking: ";
+    ss << "Linking Program: " << m_shaderProgramId << " (";
     for (const auto& s : m_shaders)
         ss << s->id() << " ";
-    LOG_INFO << ss.str() << "\tid: " << m_shaderProgramId;
+    LOG_INFO << ss.str() << ")";
 
     GLint status;
     glGetProgramiv(m_shaderProgramId, GL_LINK_STATUS, &status);

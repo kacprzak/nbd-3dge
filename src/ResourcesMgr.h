@@ -7,6 +7,7 @@
 #include "Script.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
+#include "Heightfield.h"
 
 #include <map>
 #include <string>
@@ -31,12 +32,15 @@ class ResourcesMgr
     void addMesh(const std::string& name, const std::string& filename);
     std::shared_ptr<Mesh> getMesh(const std::string& name);
     std::shared_ptr<const Mesh> getMesh(const std::string& name) const;
-    
+
     void addFont(const std::string& name, const std::string& filename);
     std::shared_ptr<Font> getFont(const std::string& name);
 
     void addScript(const std::string& name, std::shared_ptr<Script> script);
     std::shared_ptr<Script> getScript(const std::string& name);
+
+    void addHeightfield(const std::string& name, const std::string& filename, float amplitude);
+    std::shared_ptr<const Heightfield> getHeightfield(const std::string& name) const;
 
   private:
     const std::string m_dataFolder, m_shadersFolder;
@@ -46,6 +50,7 @@ class ResourcesMgr
     std::map<std::string, std::shared_ptr<Font>> m_fonts;
     std::map<std::string, std::shared_ptr<ShaderProgram>> m_shaderPrograms;
     std::map<std::string, std::shared_ptr<Script>> m_scripts;
+    std::map<std::string, std::shared_ptr<Heightfield>> m_heightfields;
 };
 
 #endif

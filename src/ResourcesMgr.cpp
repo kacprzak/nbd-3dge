@@ -1,5 +1,8 @@
 #include "ResourcesMgr.h"
 
+#include <SDL.h>
+#include <SDL_image.h>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -52,6 +55,11 @@ void ResourcesMgr::load(std::string xmlFile)
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
             addMesh(name, file);
+        } else if (assetType == "heightfield") {
+            const std::string& name = assetTree.get<std::string>("name");
+            const std::string& file = assetTree.get<std::string>("file");
+            float amplitude         = assetTree.get("amplitude", 1.0f);
+            addHeightfield(name, file, amplitude);
         }
     }
 }
@@ -113,12 +121,13 @@ std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string&
         return it->second;
 }
 
+//------------------------------------------------------------------------------
+
 void ResourcesMgr::addTexture(const std::string& name, const std::string& filename,
                               const std::string& wrap)
 {
-    bool clamp = false;
-    if (wrap == "GL_CLAMP_TO_EDGE")
-        clamp = true;
+    bool clamp                            = false;
+    if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
 
     std::shared_ptr<Texture> tex{Texture::create(m_dataFolder + filename, clamp)};
     m_textures[name] = tex;
@@ -127,9 +136,8 @@ void ResourcesMgr::addTexture(const std::string& name, const std::string& filena
 void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6> filenames,
                               const std::string& wrap)
 {
-    bool clamp = false;
-    if (wrap == "GL_CLAMP_TO_EDGE")
-        clamp = true;
+    bool clamp                            = false;
+    if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
 
     for (auto& filename : filenames) {
         filename = m_dataFolder + filename;
@@ -147,6 +155,8 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name)
     else
         return it->second;
 }
+
+//------------------------------------------------------------------------------
 
 void ResourcesMgr::addMesh(const std::string& name, const std::string& filename)
 {
@@ -171,6 +181,8 @@ std::shared_ptr<const Mesh> ResourcesMgr::getMesh(const std::string& name) const
     else
         return it->second;
 }
+
+//------------------------------------------------------------------------------
 
 void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 {
@@ -197,6 +209,8 @@ std::shared_ptr<Font> ResourcesMgr::getFont(const std::string& name)
         return it->second;
 }
 
+//------------------------------------------------------------------------------
+
 void ResourcesMgr::addScript(const std::string& name, std::shared_ptr<Script> script)
 {
     m_scripts[name] = script;
@@ -207,6 +221,59 @@ std::shared_ptr<Script> ResourcesMgr::getScript(const std::string& name)
     auto it = m_scripts.find(name);
     if (it == std::end(m_scripts))
         throw std::runtime_error("Script '" + name + "' not loaded.");
+    else
+        return it->second;
+}
+
+//------------------------------------------------------------------------------
+
+void ResourcesMgr::addHeightfield(const std::string& name, const std::string& filename,
+                                  float amplitude)
+{
+    const std::string filepath = m_dataFolder + filename;
+    SDL_Surface* surface       = IMG_Load(filepath.c_str());
+
+    if (!surface) {
+        throw std::runtime_error{"SDL_Image load error: " + std::string{IMG_GetError()}};
+    }
+
+    auto heightfield = std::make_shared<Heightfield>();
+
+    heightfield->w         = surface->w;
+    heightfield->h         = surface->h;
+    heightfield->amplitude = amplitude;
+
+    heightfield->heights.resize(heightfield->w * heightfield->h);
+
+    SDL_LockSurface(surface);
+    Uint8* pixels = (Uint8*)surface->pixels;
+    auto bytespp  = surface->format->BytesPerPixel;
+
+    for (int y = 0; y < heightfield->h; ++y) {
+        for (int x = 0; x < heightfield->w; ++x) {
+            auto& val = heightfield->heights[y * heightfield->h + x];
+            val       = pixels[(y * surface->w + x) * bytespp] / 128.0 - 1.0;
+            val *= amplitude;
+        }
+    }
+    SDL_UnlockSurface(surface);
+    SDL_FreeSurface(surface);
+
+    m_heightfields[name] = heightfield;
+}
+
+std::shared_ptr<const Heightfield> ResourcesMgr::getHeightfield(const std::string& name) const
+{
+    auto it = m_heightfields.find(name);
+
+    auto sep = name.find_first_of(':');
+    if (sep != std::string::npos) {
+        auto sub = name.substr(sep + 1);
+        it       = m_heightfields.find(sub);
+    }
+
+    if (it == std::end(m_heightfields))
+        throw std::runtime_error("Heightfield '" + name + "' not loaded.");
     else
         return it->second;
 }

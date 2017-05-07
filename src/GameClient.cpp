@@ -78,7 +78,7 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
         m_scene.setSkybox(skybox);
         return;
     } else if (rd->role == Role::Terrain) {
-        a = std::make_shared<Terrain>(id, tr, rd, m_settings.dataFolder);
+        a = std::make_shared<Terrain>(id, tr, rd, *m_resourcesMgr->getHeightfield(rd->mesh));
     }
 
     for (const auto& texture : rd->textures) {
@@ -90,6 +90,8 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
 
     m_scene.add(id, a);
 }
+
+//------------------------------------------------------------------------------
 
 void GameClient::removeActor(int id) { m_scene.remove(id); }
 

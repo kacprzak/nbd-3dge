@@ -22,7 +22,7 @@ Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureId);
     glDeleteSamplers(1, &m_samplerId);
-    LOG_INFO << "Released: " << m_filename << " texId: " << m_textureId;
+    LOG_INFO << "Released Texture: " << m_filename << " texId: " << m_textureId;
 }
 
 void Texture::bind(int textureUnit)
@@ -78,7 +78,7 @@ Texture* Texture::create(const std::string& filename, bool clamp)
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    LOG_INFO << "Loaded: " << tex->m_filename << " texId: " << tex->m_textureId << " (" << tex->m_w
+    LOG_INFO << "Loaded Texture: " << tex->m_filename << " texId: " << tex->m_textureId << " (" << tex->m_w
              << " x " << tex->m_h << ")";
 
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -117,7 +117,7 @@ Texture* Texture::create(const std::array<std::string, 6> filenames, bool clamp)
                      GL_UNSIGNED_BYTE, surface->pixels);
         SDL_UnlockSurface(surface);
 
-        LOG_INFO << "Loaded: " << extractFilename(filenames[i]) << " texId: " << tex->m_textureId
+        LOG_INFO << "Loaded CubeTex: " << extractFilename(filenames[i]) << " texId: " << tex->m_textureId
                  << " (" << tex->m_w << " x " << tex->m_h << ")";
 
         SDL_FreeSurface(surface);

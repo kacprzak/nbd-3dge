@@ -74,6 +74,12 @@
     <file>ubuntu.fnt</file>
   </font>
 
+  <heightfield>
+    <name>terrain-heightmap</name>
+    <file>terrain-heightmap-01.png</file>
+    <amplitude>40</amplitude>
+  </heightfield>
+
   <mesh>
     <name>teddy</name>
     <file>teddy2.obj</file>
