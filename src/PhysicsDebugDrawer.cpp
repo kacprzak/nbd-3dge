@@ -130,22 +130,22 @@ void PhysicsDebugDrawer::updateBuffer()
 {
     size_t bufferSize = m_linesData.size() * sizeof(Line);
 
-    glBindVertexArray(m_vao);
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
 
     if (bufferSize > m_bufferReservedSize) {
         glBufferData(GL_ARRAY_BUFFER, bufferSize, 0, GL_STREAM_DRAW);
         m_bufferReservedSize = bufferSize;
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
         LOG_TRACE << "PhysicsDebugDrawer::m_bufferReservedSize = " << m_bufferReservedSize;
     } else {
         glInvalidateBufferData(m_buffer);
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, &m_linesData[0]);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 }
