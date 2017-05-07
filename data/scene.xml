@@ -37,7 +37,7 @@
   <actorPrototype>
     <name>cubePrototype</name>
     <transformation>
-      <scale>10</scale>
+      <scale>15</scale>
     </transformation>
     <render>
       <mesh>cube</mesh>
