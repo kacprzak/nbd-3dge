@@ -78,26 +78,17 @@ void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to,
         return;
     }
 #endif
-    m_requestedLinesDataSize += 12;
+    m_requestedLinesDataSize++;
     if (m_linesData.size() < m_requestedLinesDataSize) return;
 
-    m_linesData[m_currLinesDataIdx]     = from.x();
-    m_linesData[m_currLinesDataIdx + 1] = from.y();
-    m_linesData[m_currLinesDataIdx + 2] = from.z();
+    Line tmp;
+    tmp.pos1 = glm::vec3{from.x(), from.y(), from.z()};
+    tmp.col1 = glm::vec3{color.x(), color.y(), color.z()};
+    tmp.pos2 = glm::vec3{to.x(), to.y(), to.z()};
+    tmp.col2 = tmp.col2;
 
-    m_linesData[m_currLinesDataIdx + 3] = color.x();
-    m_linesData[m_currLinesDataIdx + 4] = color.y();
-    m_linesData[m_currLinesDataIdx + 5] = color.z();
-
-    m_linesData[m_currLinesDataIdx + 6] = to.x();
-    m_linesData[m_currLinesDataIdx + 7] = to.y();
-    m_linesData[m_currLinesDataIdx + 8] = to.z();
-
-    m_linesData[m_currLinesDataIdx + 9]  = color.x();
-    m_linesData[m_currLinesDataIdx + 10] = color.y();
-    m_linesData[m_currLinesDataIdx + 11] = color.z();
-
-    m_currLinesDataIdx += 12;
+    m_linesData[m_currLinesDataIdx] = tmp;
+    m_currLinesDataIdx++;
 }
 
 void PhysicsDebugDrawer::drawContactPoint(const btVector3& /*PointOnB*/,
@@ -121,13 +112,13 @@ void PhysicsDebugDrawer::draw(Camera* camera)
     m_lastMVP = camera->projectionMatrix() * camera->viewMatrix();
 
     if (m_currLinesDataIdx != 0) {
-        updateBuffer();
-
         m_shaderProgram->use();
         m_shaderProgram->setUniform("MVP", m_lastMVP);
 
         glBindVertexArray(m_vao);
-        glDrawArrays(GL_LINES, 0, (m_currLinesDataIdx + 1) / 6);
+        glDrawArrays(GL_LINES, 0, std::min(m_bufferReservedSize / sizeof(Line) * 2, m_currLinesDataIdx * 2));
+
+        updateBuffer();
     }
 
     if (m_linesData.size() < m_requestedLinesDataSize) m_linesData.resize(m_requestedLinesDataSize);
@@ -137,13 +128,13 @@ void PhysicsDebugDrawer::draw(Camera* camera)
 
 void PhysicsDebugDrawer::updateBuffer()
 {
-    size_t bufferSize = m_linesData.size() * sizeof(float);
+    size_t bufferSize = m_linesData.size() * sizeof(Line);
 
     glBindVertexArray(m_vao);
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
 
     if (bufferSize > m_bufferReservedSize) {
-        glBufferData(GL_ARRAY_BUFFER, bufferSize, 0, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, bufferSize, 0, GL_STREAM_DRAW);
         m_bufferReservedSize = bufferSize;
         LOG_TRACE << "PhysicsDebugDrawer::m_bufferReservedSize = " << m_bufferReservedSize;
     } else {

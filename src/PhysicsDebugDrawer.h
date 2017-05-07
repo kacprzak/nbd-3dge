@@ -30,8 +30,16 @@ class PhysicsDebugDrawer final : public btIDebugDraw
   private:
     void updateBuffer();
 
+    struct Line
+    {
+        glm::vec3 pos1;
+        glm::vec3 col1;
+        glm::vec3 pos2;
+        glm::vec3 col2;
+    };
+
     int m_debugMode;
-    std::vector<float> m_linesData;
+    std::vector<Line> m_linesData;
     size_t m_currLinesDataIdx = 0;
     size_t m_requestedLinesDataSize = 0;
 
