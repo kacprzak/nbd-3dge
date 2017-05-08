@@ -1,7 +1,6 @@
 #include "Texture.h"
 
 #include "Logger.h"
-#include "Util.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -22,7 +21,7 @@ Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureId);
     glDeleteSamplers(1, &m_samplerId);
-    LOG_INFO << "Released Texture: " << m_filename << " texId: " << m_textureId;
+    LOG_INFO << "Released Texture: " << m_textureId;
 }
 
 void Texture::bind(int textureUnit)
@@ -50,7 +49,6 @@ Texture* Texture::create(const std::string& filename, bool clamp)
 {
     GLenum target   = GL_TEXTURE_2D;
     Texture* tex    = new Texture{target};
-    tex->m_filename = extractFilename(filename);
 
     SDL_Surface* surface = IMG_Load(filename.c_str());
 
@@ -78,8 +76,8 @@ Texture* Texture::create(const std::string& filename, bool clamp)
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    LOG_INFO << "Loaded Texture: " << tex->m_filename << " texId: " << tex->m_textureId << " (" << tex->m_w
-             << " x " << tex->m_h << ")";
+    LOG_INFO << "Loaded Texture: " << tex->m_textureId << " (" << tex->m_w << " x " << tex->m_h
+             << ")";
 
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -96,7 +94,6 @@ Texture* Texture::create(const std::array<std::string, 6> filenames, bool clamp)
 {
     GLenum target   = GL_TEXTURE_CUBE_MAP;
     Texture* tex    = new Texture{target};
-    tex->m_filename = extractFilename(filenames[0]);
 
     glBindTexture(target, tex->m_textureId);
 
@@ -117,11 +114,11 @@ Texture* Texture::create(const std::array<std::string, 6> filenames, bool clamp)
                      GL_UNSIGNED_BYTE, surface->pixels);
         SDL_UnlockSurface(surface);
 
-        LOG_INFO << "Loaded CubeTex: " << extractFilename(filenames[i]) << " texId: " << tex->m_textureId
-                 << " (" << tex->m_w << " x " << tex->m_h << ")";
-
         SDL_FreeSurface(surface);
     }
+
+    LOG_INFO << "Loaded CubeTex: " << tex->m_textureId << " (" << tex->m_w << " x " << tex->m_h
+             << ")";
 
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -142,13 +139,11 @@ static GLenum textureFormat(SDL_Surface** surface)
 
     // work out what format to tell glTexImage2D to use...
     if ((*surface)->format->BytesPerPixel == 3) { // RGB 24bit
-        format = GL_RGB;
-        if ((*surface)->format->Bshift == 0)
-            format = GL_BGR;
+        format                                      = GL_RGB;
+        if ((*surface)->format->Bshift == 0) format = GL_BGR;
     } else if ((*surface)->format->BytesPerPixel == 4) { // RGBA 32bit
-        format = GL_RGBA;
-        if ((*surface)->format->Bshift == 0)
-            format = GL_BGRA;
+        format                                      = GL_RGBA;
+        if ((*surface)->format->Bshift == 0) format = GL_BGRA;
     } else {
         // Convert to 32 bits.
         SDL_PixelFormat fmt;

@@ -4,7 +4,7 @@
   <actorPrototype>
     <name>shipPrototype</name>
     <transformation>
-      <scale>0.1</scale>
+      <scale>0.01</scale>
     </transformation>
     <render>
       <mesh>ship</mesh>
@@ -15,11 +15,11 @@
     </render>
     <physics>
       <shape>mesh:ship</shape>
-      <mass>1000</mass>
+      <mass>300</mass>
     </physics>
   </actorPrototype>
 
-  <actorPrototype>
+  <!--actorPrototype>
     <name>teddyPrototype</name>
     <transformation>
       <scale>0.2</scale>
@@ -32,12 +32,12 @@
       <shape>capsule:11:17</shape>
       <mass>10</mass>
     </physics>
-  </actorPrototype>
+  </actorPrototype-->
 
   <actorPrototype>
     <name>cubePrototype</name>
     <transformation>
-      <scale>15</scale>
+      <scale>2</scale>
     </transformation>
     <render>
       <mesh>cube</mesh>
@@ -51,7 +51,7 @@
     </physics>
   </actorPrototype>
 
-  <actorPrototype>
+  <!--actorPrototype>
     <name>cowPrototype</name>
     <transformation>
       <position>-10 100 0</position>
@@ -64,7 +64,7 @@
       <shape>box:5:2.5:1</shape>
       <mass>200</mass>
     </physics>
-  </actorPrototype>
+  </actorPrototype-->
 
   <skybox>
     <render>
@@ -79,7 +79,7 @@
     <name>terrain</name>
     <transformation>
       <scale>5</scale>
-      <position>0 30 0</position>
+      <position>0 16.2 0</position>
     </transformation>
     <render>
       <mesh>heightfield:terrain-heightmap</mesh>
@@ -109,7 +109,7 @@
   <actor>
     <prototype>cubePrototype</prototype>
     <transformation>
-      <position>10 50 0</position>
+      <position>1 5 0</position>
     </transformation>
     <render/>
     <physics/>
@@ -118,7 +118,7 @@
   <actor>
     <prototype>cubePrototype</prototype>
     <transformation>
-      <position>10 150 -500</position>
+      <position>1 15 -50</position>
     </transformation>
     <render/>
     <physics/>
@@ -127,7 +127,7 @@
   <actor>
     <prototype>cubePrototype</prototype>
     <transformation>
-      <position>500 200 0</position>
+      <position>50 20 0</position>
     </transformation>
     <render/>
     <physics/>
@@ -136,7 +136,7 @@
   <actor>
     <prototype>cubePrototype</prototype>
     <transformation>
-      <position>-10 150 500</position>
+      <position>-1 15 50</position>
     </transformation>
     <render/>
     <physics/>
@@ -145,7 +145,7 @@
   <actor>
     <prototype>cubePrototype</prototype>
     <transformation>
-      <position>-500 200 0</position>
+      <position>-50 20 0</position>
     </transformation>
     <render/>
     <physics/>
@@ -164,7 +164,7 @@
   <actor>
     <prototype>shipPrototype</prototype>
     <transformation>
-      <position>10 120 0</position>
+      <position>1 12 0</position>
     </transformation>
     <render/>
     <physics/>
@@ -173,7 +173,7 @@
   <actor>
     <prototype>shipPrototype</prototype>
     <transformation>
-      <position>50 120 0</position>
+      <position>5 12 0</position>
     </transformation>
     <render/>
     <physics/>
@@ -182,7 +182,7 @@
   <actor>
     <prototype>shipPrototype</prototype>
     <transformation>
-      <position>100 120 0</position>
+      <position>10 12 0</position>
     </transformation>
     <render/>
     <physics/>
@@ -191,7 +191,7 @@
   <actor>
     <prototype>shipPrototype</prototype>
     <transformation>
-      <position>200 120 0</position>
+      <position>20 12 0</position>
     </transformation>
     <render/>
     <physics/>
@@ -200,7 +200,7 @@
   <actor>
     <prototype>shipPrototype</prototype>
     <transformation>
-      <position>10 220 0</position>
+      <position>1 22 0</position>
     </transformation>
     <render/>
     <physics/>

@@ -23,7 +23,6 @@ class Texture final
   private:
     Texture(GLenum target);
 
-    std::string m_filename;
     GLenum m_target;
     GLuint m_textureId;
     GLuint m_samplerId;

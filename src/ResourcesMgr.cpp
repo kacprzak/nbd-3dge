@@ -1,5 +1,7 @@
 #include "ResourcesMgr.h"
 
+#include "Logger.h"
+
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -70,6 +72,8 @@ void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& 
                                     const std::string& geometryShaderFile,
                                     const std::string& fragmentShaderFile)
 {
+    LOG_TRACE << "Adding ShaderProgram: " << name;
+    
     std::unique_ptr<Shader> vs;
     std::unique_ptr<Shader> gs;
     std::unique_ptr<Shader> fs;
@@ -126,6 +130,8 @@ std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string&
 void ResourcesMgr::addTexture(const std::string& name, const std::string& filename,
                               const std::string& wrap)
 {
+    LOG_TRACE << "Adding Texture: " << name;
+    
     bool clamp                            = false;
     if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
 
@@ -136,6 +142,8 @@ void ResourcesMgr::addTexture(const std::string& name, const std::string& filena
 void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6> filenames,
                               const std::string& wrap)
 {
+    LOG_TRACE << "Adding Texture: " << name;
+    
     bool clamp                            = false;
     if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
 
@@ -160,6 +168,8 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name)
 
 void ResourcesMgr::addMesh(const std::string& name, const std::string& filename)
 {
+    LOG_TRACE << "Adding Mesh: " << name;
+    
     std::shared_ptr<Mesh> mesh{Mesh::fromWavefrontObj(m_dataFolder + filename)};
     m_meshes[name] = mesh;
 }
@@ -186,6 +196,8 @@ std::shared_ptr<const Mesh> ResourcesMgr::getMesh(const std::string& name) const
 
 void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 {
+    LOG_TRACE << "Adding Font: " << name;
+    
     FontLoader loader;
     loader.load(m_dataFolder + filename);
 
@@ -230,6 +242,8 @@ std::shared_ptr<Script> ResourcesMgr::getScript(const std::string& name)
 void ResourcesMgr::addHeightfield(const std::string& name, const std::string& filename,
                                   float amplitude)
 {
+    LOG_TRACE << "Adding Heightfield: " << name;
+    
     const std::string filepath = m_dataFolder + filename;
     SDL_Surface* surface       = IMG_Load(filepath.c_str());
 

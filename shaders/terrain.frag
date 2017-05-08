@@ -30,8 +30,8 @@ const material mtl = material(
 
 void main()
 {
-    const float snowLevel = 80.0f;
-    const float snowTransitionHeight = 30.0f;
+    const float snowLevel = 30.0f;
+    const float snowTransitionHeight = 5.0f;
     
     //float normalImpact = dot(normal, vec3(0,1,0)) * 80;
     //fragColor = vec4(1.0f - dot(normal, vec3(0,1,0)), 0, 0, 1);return;

@@ -3,7 +3,9 @@
 #include "Logger.h"
 #include "ObjLoader.h"
 #include "Util.h"
+
 #include <cstring>
+#include <limits>
 
 Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
            const std::vector<GLfloat>& normals, const std::vector<GLfloat>& texcoords,
@@ -18,13 +20,16 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(NUM_BUFFERS, m_buffers);
 
+    auto aabb = calculateAABB(vertices);
     LOG_INFO << "Loaded Mesh: " << m_vao;
     LOG_TRACE << "  Vertices: " << vertices.size() / 3 << "\t id: " << m_buffers[POSITIONS] << '\n'
               << "  Normals: " << normals.size() / 3 << "\t id: " << m_buffers[NORMALS] << '\n'
               << "  TexCoords: " << texcoords.size() / 2 << "\t id: " << m_buffers[TEXCOORDS]
               << '\n'
               << "  Indices: " << indices.size() << "\t id: " << m_buffers[INDICES] << '\n'
-              << "  Primitive: " << primitive;
+              << "  Primitive: " << primitive << '\n'
+              << "  Dimensions: (" << aabb[1] - aabb[0] << " x " << aabb[3] - aabb[2] << " x "
+              << aabb[5] - aabb[4] << ")";
 
     glBindVertexArray(m_vao);
 
@@ -101,6 +106,31 @@ std::vector<float> Mesh::positions() const
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return retVal;
+}
+
+std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
+{
+    std::array<float, 6> retVal;
+    // x axis
+    retVal[0] = std::numeric_limits<float>::max();
+    retVal[1] = std::numeric_limits<float>::lowest();
+    // y axis
+    retVal[2] = std::numeric_limits<float>::max();
+    retVal[3] = std::numeric_limits<float>::lowest();
+    // z axis
+    retVal[4] = std::numeric_limits<float>::max();
+    retVal[5] = std::numeric_limits<float>::lowest();
+
+    for (size_t i = 0; i < positions.size(); i = i + 3) {
+        retVal[0] = std::min(retVal[0], positions[i]);
+        retVal[1] = std::max(retVal[1], positions[i]);
+        retVal[2] = std::min(retVal[2], positions[i + 1]);
+        retVal[3] = std::max(retVal[3], positions[i + 1]);
+        retVal[4] = std::min(retVal[4], positions[i + 2]);
+        retVal[5] = std::max(retVal[5], positions[i + 3]);
+    }
 
     return retVal;
 }

@@ -11,7 +11,7 @@ class Terrain : public GfxNode
             const Heightfield& heightfield);
 
   private:
-    float m_textureStrech = 10.0;
+    float m_textureStrech = 1.0;
 };
 
 #endif // TERRAIN_H

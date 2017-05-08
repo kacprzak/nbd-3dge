@@ -77,17 +77,17 @@
   <heightfield>
     <name>terrain-heightmap</name>
     <file>terrain-heightmap-01.png</file>
-    <amplitude>40</amplitude>
+    <amplitude>15</amplitude>
   </heightfield>
 
-  <mesh>
+  <!--mesh>
     <name>teddy</name>
     <file>teddy2.obj</file>
   </mesh>
   <mesh>
     <name>cow</name>
     <file>cow.obj</file>
-  </mesh>
+  </mesh-->
 
   <!--mesh>
       <name>teapot</name>

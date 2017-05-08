@@ -42,7 +42,7 @@ void GameClient::resizeWindow(int width, int height)
 void GameClient::loadData()
 {
     m_camera                             = std::make_shared<Camera>();
-    m_camera->transformation()->position = {-35.f, 110.f, 39.f};
+    m_camera->transformation()->position = {-3.5f, 11.0f, 3.9f};
     m_scene.setCamera(m_camera);
 }
 
@@ -118,7 +118,7 @@ void GameClient::update(float delta)
 {
     m_fpsCounter.update(delta);
 
-    float cameraSpeedMultiplyer               = 1.0f;
+    float cameraSpeedMultiplyer               = 0.5f;
     if (m_shiftPressed) cameraSpeedMultiplyer = 5.0f;
 
     auto distance = delta * m_cameraSpeed * cameraSpeedMultiplyer;
