@@ -41,7 +41,8 @@ class PhysicsSystem final : private boost::noncopyable
     btSequentialImpulseConstraintSolver* m_solver;
     btDynamicsWorld* m_dynamicsWorld;
 
-    std::vector<std::unique_ptr<btCollisionShape>> m_collisionShapes;
+    using ShapesKey = std::pair<std::string, float>;
+    std::map<ShapesKey, std::unique_ptr<btCollisionShape>> m_collisionShapes;
 };
 
 #endif // PHYSICSSYSTEM_H

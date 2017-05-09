@@ -1,5 +1,7 @@
 #include "PhysicsSystem.h"
 
+#include "Logger.h"
+
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <btBulletDynamicsCommon.h>
 
@@ -83,8 +85,19 @@ void PhysicsSystem::update(float elapsedTime) { m_dynamicsWorld->stepSimulation(
 void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsComponent* ph,
                              const ResourcesMgr& resourcesMgr)
 {
-    auto colShape = createCollisionShape(*ph, resourcesMgr);
-    colShape->setLocalScaling({tr->scale, tr->scale, tr->scale});
+    btCollisionShape* colShape = nullptr;
+
+    auto key        = std::make_pair(ph->shape, tr->scale);
+    auto colShapeIt = m_collisionShapes.find(key);
+    if (colShapeIt == std::end(m_collisionShapes)) {
+        auto colShapeUPtr = createCollisionShape(*ph, resourcesMgr);
+        colShapeUPtr->setLocalScaling({tr->scale, tr->scale, tr->scale});
+        colShape               = colShapeUPtr.get();
+        m_collisionShapes[key] = std::move(colShapeUPtr);
+        LOG_TRACE << "Created CollisionShape: " << key.first << ' ' << key.second;
+    } else {
+        colShape = colShapeIt->second.get();
+    }
 
     // Create Dynamic Objects
     btScalar mass(ph->mass);
@@ -94,10 +107,9 @@ void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsCompone
     btVector3 localInertia(0, 0, 0);
     if (isDynamic) colShape->calculateLocalInertia(mass, localInertia);
 
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, new MotionState{tr}, colShape.get(),
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, new MotionState{tr}, colShape,
                                                     localInertia);
 
-    m_collisionShapes.push_back(std::move(colShape));
     btRigidBody* body = new btRigidBody(rbInfo);
     m_dynamicsWorld->addRigidBody(body);
 }
