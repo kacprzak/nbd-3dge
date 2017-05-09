@@ -78,7 +78,15 @@ PhysicsSystem::~PhysicsSystem()
 
 //------------------------------------------------------------------------------
 
-void PhysicsSystem::update(float elapsedTime) { m_dynamicsWorld->stepSimulation(elapsedTime); }
+void PhysicsSystem::update(float elapsedTime)
+{
+    for (auto& n : m_nodes) {
+        glm::vec3 force{0.f, 9.5f * n.ph->mass, 0.f};
+        force = glm::rotate(n.tr->orientation, force);
+        n.body->applyCentralForce(btVector3{force.x, force.y, force.z});
+    }
+    m_dynamicsWorld->stepSimulation(elapsedTime);
+}
 
 //------------------------------------------------------------------------------
 
@@ -110,15 +118,29 @@ void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsCompone
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, new MotionState{tr}, colShape,
                                                     localInertia);
 
-    btRigidBody* body = new btRigidBody(rbInfo);
-    m_dynamicsWorld->addRigidBody(body);
+    PhysicsNode node;
+    node.actorId = id;
+    node.tr      = tr;
+    node.ph      = ph;
+    node.body    = new btRigidBody(rbInfo);
+
+    m_dynamicsWorld->addRigidBody(node.body);
+    m_nodes.push_back(node);
 }
 
 //------------------------------------------------------------------------------
 
 void PhysicsSystem::removeActor(int id)
 {
-    //
+    auto nodeIt = std::find_if(m_nodes.begin(), m_nodes.end(),
+                               [id](const PhysicsNode& n) { return n.actorId == id; });
+    if (nodeIt != std::end(m_nodes)) {
+        auto& node = *nodeIt;
+        delete node.body->getMotionState();
+        m_dynamicsWorld->removeRigidBody(node.body);
+        delete node.body;
+        m_nodes.erase(nodeIt);
+    }
 }
 
 //------------------------------------------------------------------------------

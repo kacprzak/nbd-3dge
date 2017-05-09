@@ -15,9 +15,18 @@ class btSequentialImpulseConstraintSolver;
 class btDynamicsWorld;
 class btCollisionShape;
 class btIDebugDraw;
+class btRigidBody;
 
 class PhysicsSystem final : private boost::noncopyable
 {
+    struct PhysicsNode
+    {
+        int actorId;
+        TransformationComponent* tr;
+        PhysicsComponent* ph;
+        btRigidBody* body;
+    };
+
   public:
     PhysicsSystem();
     ~PhysicsSystem();
@@ -43,6 +52,8 @@ class PhysicsSystem final : private boost::noncopyable
 
     using ShapesKey = std::pair<std::string, float>;
     std::map<ShapesKey, std::unique_ptr<btCollisionShape>> m_collisionShapes;
+
+    std::vector<PhysicsNode> m_nodes;
 };
 
 #endif // PHYSICSSYSTEM_H
