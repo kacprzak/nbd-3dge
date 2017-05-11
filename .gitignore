@@ -12,3 +12,4 @@ GTAGS
 *.user*
 .kdev4/
 *.kdev4
+\#*#

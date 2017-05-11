@@ -1,4 +1,9 @@
+-#*#
+-*~
 -*.user*
 -Doxyfile.in
 -/data
 -/bin
+-GPATH
+-GRTAGS
+-GTAGS
