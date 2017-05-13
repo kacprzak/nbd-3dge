@@ -10,6 +10,58 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+class CameraController
+{
+  public:
+    ControlComponent cameraActions;
+    TransformationComponent* camera;
+    TransformationComponent* player;
+
+    bool freeCamera     = false;//true;
+    float m_cameraSpeed = 50.0f;
+
+    void update(float delta)
+    {
+        if (freeCamera) {
+            float cameraSpeedMultiplyer                                               = 0.5f;
+            if (cameraActions.actions & ControlComponent::Fire) cameraSpeedMultiplyer = 5.0f;
+
+            auto distance = delta * m_cameraSpeed * cameraSpeedMultiplyer;
+
+            if (cameraActions.actions & ControlComponent::Forward) {
+                const auto orien = camera->orientation;
+                const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, -distance, 0.f});
+                camera->position += glm::vec3{delta};
+            }
+
+            if (cameraActions.actions & ControlComponent::Back) {
+                const auto orien = camera->orientation;
+                const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, distance, 0.f});
+                camera->position += glm::vec3{delta};
+            }
+
+            if (cameraActions.actions & ControlComponent::StrafeRight) {
+                const auto orien = camera->orientation;
+                const auto delta = glm::rotate(orien, glm::vec4{distance, 0.f, 0.f, 0.f});
+                camera->position += glm::vec3{delta};
+            }
+
+            if (cameraActions.actions & ControlComponent::StrafeLeft) {
+                const auto orien = camera->orientation;
+                const auto delta = glm::rotate(orien, glm::vec4{-distance, 0.f, 0.f, 0.f});
+                camera->position += glm::vec3{delta};
+            }
+        } else {
+            auto orien = glm::normalize(player->orientation);
+            const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, 10.f, 0.f});
+            camera->position = player->position + glm::vec3{delta};
+            camera->orientation = orien;
+        }
+    }
+};
+
+//==============================================================================
+
 GameClient::GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr)
     : SDLWindow{settings}
     , m_resourcesMgr{resourcesMgr}
@@ -19,7 +71,15 @@ GameClient::GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> r
         m_resourcesMgr =
             std::make_shared<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     }
+
+    m_cameraCtrl         = std::make_unique<CameraController>();
+    m_cameraCtrl->camera = m_renderSystem.getCamera()->transformation();
+    m_inputSystem.addActor(INT_MAX, &m_cameraCtrl.get()->cameraActions);
 }
+
+//------------------------------------------------------------------------------
+
+GameClient::~GameClient() {}
 
 //------------------------------------------------------------------------------
 
@@ -52,7 +112,10 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
                           ControlComponent* ctrl)
 {
     m_renderSystem.addActor(id, tr, rd, *m_resourcesMgr);
-    if (ctrl) m_inputSystem.addActor(id, ctrl);
+    if (ctrl) {
+        m_inputSystem.addActor(id, ctrl);
+        m_cameraCtrl->player = tr;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -79,36 +142,7 @@ void GameClient::draw()
 
 void GameClient::update(float delta)
 {
-    float cameraSpeedMultiplyer               = 0.5f;
-    if (m_shiftPressed) cameraSpeedMultiplyer = 5.0f;
-
-    auto distance  = delta * m_cameraSpeed * cameraSpeedMultiplyer;
-    Camera* camera = m_renderSystem.getCamera();
-
-    if (m_wPressed) {
-        const auto orien = camera->transformation()->orientation;
-        const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, -distance, 0.f});
-        camera->transformation()->position += glm::vec3{delta};
-    }
-
-    if (m_sPressed) {
-        const auto orien = camera->transformation()->orientation;
-        const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, distance, 0.f});
-        camera->transformation()->position += glm::vec3{delta};
-    }
-
-    if (m_dPressed) {
-        const auto orien = camera->transformation()->orientation;
-        const auto delta = glm::rotate(orien, glm::vec4{distance, 0.f, 0.f, 0.f});
-        camera->transformation()->position += glm::vec3{delta};
-    }
-
-    if (m_aPressed) {
-        const auto orien = camera->transformation()->orientation;
-        const auto delta = glm::rotate(orien, glm::vec4{-distance, 0.f, 0.f, 0.f});
-        camera->transformation()->position += glm::vec3{delta};
-    }
-
+    m_cameraCtrl->update(delta);
     m_renderSystem.update(delta);
 }
 
@@ -151,13 +185,6 @@ void GameClient::mouseButtonReleased(const SDL_Event& event)
 
 void GameClient::keyPressed(const SDL_Event& event)
 {
-    switch (event.key.keysym.sym) {
-    case SDLK_w: m_wPressed = true; break;
-    case SDLK_s: m_sPressed = true; break;
-    case SDLK_a: m_aPressed = true; break;
-    case SDLK_d: m_dPressed = true; break;
-    }
-
     switch (event.key.keysym.scancode) {
     case SDL_SCANCODE_LSHIFT: m_shiftPressed = true; break;
     default: break;
@@ -167,13 +194,6 @@ void GameClient::keyPressed(const SDL_Event& event)
 
 void GameClient::keyReleased(const SDL_Event& event)
 {
-    switch (event.key.keysym.sym) {
-    case SDLK_w: m_wPressed = false; break;
-    case SDLK_s: m_sPressed = false; break;
-    case SDLK_a: m_aPressed = false; break;
-    case SDLK_d: m_dPressed = false; break;
-    }
-
     switch (event.key.keysym.scancode) {
     case SDL_SCANCODE_LSHIFT: m_shiftPressed = false; break;
     case SDL_SCANCODE_Z: m_renderSystem.setNextPolygonMode(); break;

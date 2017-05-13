@@ -2,12 +2,14 @@
 #define GAMECLIENT_H
 
 #include "Components.h"
+#include "InputSystem.h"
 #include "PhysicsDebugDrawer.h"
 #include "RenderSystem.h"
-#include "InputSystem.h"
 #include "ResourcesMgr.h"
 #include "SDLWindow.h"
 #include "Settings.h"
+
+class CameraController;
 
 class GameClient : public SDLWindow
 {
@@ -15,6 +17,7 @@ class GameClient : public SDLWindow
 
   public:
     GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr = {});
+    ~GameClient();
 
     void loadResources(const std::string& xmlFile) override;
     void unloadResources() override;
@@ -45,12 +48,8 @@ class GameClient : public SDLWindow
     RenderSystem m_renderSystem;
     InputSystem m_inputSystem;
 
-    float m_cameraSpeed = 50.0f;
+    std::unique_ptr<CameraController> m_cameraCtrl;
 
-    bool m_wPressed               = false;
-    bool m_sPressed               = false;
-    bool m_aPressed               = false;
-    bool m_dPressed               = false;
     bool m_shiftPressed           = false;
     bool m_leftMouseButtonPressed = false;
 };
