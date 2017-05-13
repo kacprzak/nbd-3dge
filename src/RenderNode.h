@@ -14,7 +14,7 @@ class RenderNode
 {
   public:
     RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
-    ~RenderNode() = default;
+    virtual ~RenderNode() = default;
 
     void setTextures(std::vector<std::shared_ptr<Texture>> textures);
     void addTexture(std::shared_ptr<Texture> texture);
