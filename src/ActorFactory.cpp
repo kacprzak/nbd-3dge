@@ -46,6 +46,8 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
     return rd;
 }
 
+//------------------------------------------------------------------------------
+
 static std::shared_ptr<TransformationComponent>
 getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
 {
@@ -69,6 +71,8 @@ getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
 
     return tr;
 }
+
+//------------------------------------------------------------------------------
 
 static std::shared_ptr<PhysicsComponent> getPhysicsComponent(ptree& actorTree,
                                                              PhysicsComponent prototype)
@@ -114,6 +118,11 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
     if (phNode) {
         auto ph = getPhysicsComponent(phNode.get(), phProto);
         a->addComponent(ComponentId::Physics, ph);
+    }
+
+    auto ctrlNode = actorTree.get_child_optional("control");
+    if (ctrlNode) {
+        a->addComponent(ComponentId::Control, std::make_shared<ControlComponent>());
     }
 
     m_prototypes[prototypeName] = std::move(a);

@@ -41,7 +41,7 @@ GameLogic::GameLogic(const Settings& settings, std::shared_ptr<ResourcesMgr> res
 
 GameLogic::~GameLogic() {}
 
-#include "GameClient.h"
+//------------------------------------------------------------------------------
 
 void GameLogic::attachView(std::shared_ptr<GameView> gameView, unsigned actorId)
 {
@@ -49,10 +49,7 @@ void GameLogic::attachView(std::shared_ptr<GameView> gameView, unsigned actorId)
     m_gameViews.push_back(gameView);
     gameView->onAttach(viewId, actorId);
 
-    if (viewId == 0) {
-        GameClient* client = (GameClient*)gameView.get();
-        m_physicsSystem->setDebugDrawer(&(client->m_debugDraw));
-    }
+    m_physicsSystem->setDebugDrawer(gameView.get()->debugDrawer());
 }
 
 void GameLogic::onBeforeMainLoop(Engine* /*e*/)
@@ -80,11 +77,14 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 
     for (auto& gv : m_gameViews) {
         for (auto& a : m_actors) {
-            auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-            auto rd  = a->getComponent<RenderComponent>(ComponentId::Render);
+            auto tr   = a->getComponent<TransformationComponent>(ComponentId::Transformation);
+            auto rd   = a->getComponent<RenderComponent>(ComponentId::Render);
+            auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control);
+
             auto str = tr.lock();
             auto srd = rd.lock();
-            if (srd) gv->addActor(a->id(), str.get(), srd.get());
+            auto sctrl = ctrl.lock();
+            if (srd) gv->addActor(a->id(), str.get(), srd.get(), sctrl.get());
         }
     }
 

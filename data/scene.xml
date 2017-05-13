@@ -159,6 +159,7 @@
     </transformation>
     <render/>
     <physics/>
+    <control/>
   </actor>
 
   <actor>

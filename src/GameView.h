@@ -2,6 +2,7 @@
 #define GAMEVIEW_H
 
 #include "Components.h"
+#include "PhysicsDebugDrawer.h"
 
 #include <SDL.h>
 #include <boost/utility.hpp>
@@ -21,8 +22,11 @@ class GameView : private boost::noncopyable
     virtual void loadResources(const std::string& xmlFile) = 0;
     virtual void unloadResources()                         = 0;
 
-    virtual void addActor(int id, TransformationComponent* tr, RenderComponent* rd) = 0;
-    virtual void removeActor(int id) = 0;
+    virtual void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+                          ControlComponent* ctrl) = 0;
+    virtual void removeActor(int id)              = 0;
+
+    virtual PhysicsDebugDrawer* debugDrawer() { return nullptr; }
 };
 
 #endif // GAMEVIEW_H

@@ -2,8 +2,8 @@
 #define GAMECLIENT_H
 
 #include "Components.h"
-#include "RenderSystem.h"
 #include "PhysicsDebugDrawer.h"
+#include "RenderSystem.h"
 #include "ResourcesMgr.h"
 #include "SDLWindow.h"
 #include "Settings.h"
@@ -18,10 +18,11 @@ class GameClient : public SDLWindow
     void loadResources(const std::string& xmlFile) override;
     void unloadResources() override;
 
-    void addActor(int id, TransformationComponent* tr, RenderComponent* rd) override;
+    void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+                  ControlComponent* ctrl) override;
     void removeActor(int id) override;
 
-    PhysicsDebugDrawer m_debugDraw;
+    PhysicsDebugDrawer* debugDrawer() override { return &m_debugDraw; }
 
   protected:
     void resizeWindow(int width, int height) override;
@@ -36,6 +37,7 @@ class GameClient : public SDLWindow
     void keyReleased(const SDL_Event& event) override;
 
   private:
+    PhysicsDebugDrawer m_debugDraw;
     std::shared_ptr<ResourcesMgr> m_resourcesMgr;
 
     const Settings m_settings;
