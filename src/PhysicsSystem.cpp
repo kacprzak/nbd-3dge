@@ -51,7 +51,7 @@ PhysicsSystem::PhysicsSystem()
     m_solver                 = new btSequentialImpulseConstraintSolver;
     m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher, m_overlappingPairCache, m_solver,
                                                   m_collisionConfiguration);
-    m_dynamicsWorld->setGravity(btVector3(0, -10, 0));
+    m_dynamicsWorld->setGravity(btVector3(0, -9.81, 0));
 }
 
 //------------------------------------------------------------------------------
@@ -81,8 +81,7 @@ PhysicsSystem::~PhysicsSystem()
 void PhysicsSystem::update(float elapsedTime)
 {
     for (auto& n : m_nodes) {
-        glm::vec3 force{0.f, 9.5f * n.ph->mass, 0.f};
-        force = glm::rotate(n.tr->orientation, force);
+        auto force = glm::rotate(n.tr->orientation, n.ph->force);
         n.body->applyCentralForce(btVector3{force.x, force.y, force.z});
     }
     m_dynamicsWorld->stepSimulation(elapsedTime);

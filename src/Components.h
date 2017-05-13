@@ -33,6 +33,10 @@ struct PhysicsComponent : public Component
 {
     std::string shape;
     float mass = 0.0f;
+    glm::vec3 maxForce = glm::vec3{5000, 5000, 5000};
+    glm::vec3 maxMomentum;
+    glm::vec3 force;
+    glm::vec3 momentum;
 };
 
 struct ControlComponent : public Component

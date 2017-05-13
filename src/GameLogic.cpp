@@ -81,8 +81,8 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
             auto rd   = a->getComponent<RenderComponent>(ComponentId::Render);
             auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control);
 
-            auto str = tr.lock();
-            auto srd = rd.lock();
+            auto str   = tr.lock();
+            auto srd   = rd.lock();
             auto sctrl = ctrl.lock();
             if (srd) gv->addActor(a->id(), str.get(), srd.get(), sctrl.get());
         }
@@ -120,7 +120,31 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
 
 //------------------------------------------------------------------------------
 
-void GameLogic::update(float elapsedTime) { m_physicsSystem->update(elapsedTime); }
+void GameLogic::update(float elapsedTime)
+{
+    for (auto& a : m_actors) {
+        auto ctrl  = a->getComponent<ControlComponent>(ComponentId::Control);
+        auto ph    = a->getComponent<PhysicsComponent>(ComponentId::Physics);
+        auto sctrl = ctrl.lock();
+        auto sph   = ph.lock();
+        if (sctrl && sph) {
+            sph->force = glm::vec3{};
+            if (sctrl->actions & ControlComponent::Forward) {
+                sph->force.z = sph->maxForce.z;
+            }
+            if (sctrl->actions & ControlComponent::Up) {
+                sph->force.y = sph->maxForce.y;
+            }
+            if (sctrl->actions & ControlComponent::StrafeRight) {
+                sph->force.x = sph->maxForce.x;
+            }
+        }
+    }
+
+    m_physicsSystem->update(elapsedTime);
+}
+
+//------------------------------------------------------------------------------
 
 void GameLogic::draw()
 {

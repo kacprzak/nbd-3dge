@@ -120,11 +120,6 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
         a->addComponent(ComponentId::Physics, ph);
     }
 
-    auto ctrlNode = actorTree.get_child_optional("control");
-    if (ctrlNode) {
-        a->addComponent(ComponentId::Control, std::make_shared<ControlComponent>());
-    }
-
     m_prototypes[prototypeName] = std::move(a);
 }
 
@@ -179,6 +174,11 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     if (phNode) {
         auto ph = getPhysicsComponent(phNode.get(), phProto);
         a->addComponent(ComponentId::Physics, ph);
+    }
+
+    auto ctrlNode = actorTree.get_child_optional("control");
+    if (ctrlNode) {
+        a->addComponent(ComponentId::Control, std::make_shared<ControlComponent>());
     }
 
     if (actorType == "skybox") {
