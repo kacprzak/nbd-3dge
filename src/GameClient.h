@@ -1,9 +1,7 @@
 #ifndef GAMECLIENT_H
 #define GAMECLIENT_H
 
-#include "Camera.h"
 #include "Components.h"
-#include "FpsCounter.h"
 #include "RenderSystem.h"
 #include "PhysicsDebugDrawer.h"
 #include "ResourcesMgr.h"
@@ -38,15 +36,10 @@ class GameClient : public SDLWindow
     void keyReleased(const SDL_Event& event) override;
 
   private:
-    void loadData();
-
     std::shared_ptr<ResourcesMgr> m_resourcesMgr;
-    std::shared_ptr<Camera> m_camera;
-    std::shared_ptr<ShaderProgram> m_normalsShader;
 
     const Settings m_settings;
-    RenderSystem m_scene;
-    FpsCounter m_fpsCounter;
+    RenderSystem m_renderSystem;
 
     float m_cameraSpeed = 50.0f;
 

@@ -22,22 +22,21 @@ class ResourcesMgr
     void addShaderProgram(const std::string& name, const std::string& vertexShaderFile,
                           const std::string& geometryShaderFile,
                           const std::string& fragmentShaderFile);
-    std::shared_ptr<ShaderProgram> getShaderProgram(const std::string& name);
+    std::shared_ptr<ShaderProgram> getShaderProgram(const std::string& name) const;
 
     void addTexture(const std::string& name, const std::string& filename, const std::string& wrap);
     void addTexture(const std::string& name, std::array<std::string, 6> filenames,
                     const std::string& wrap);
-    std::shared_ptr<Texture> getTexture(const std::string& name);
+    std::shared_ptr<Texture> getTexture(const std::string& name) const;
 
     void addMesh(const std::string& name, const std::string& filename);
-    std::shared_ptr<Mesh> getMesh(const std::string& name);
-    std::shared_ptr<const Mesh> getMesh(const std::string& name) const;
+    std::shared_ptr<Mesh> getMesh(const std::string& name) const;
 
     void addFont(const std::string& name, const std::string& filename);
-    std::shared_ptr<Font> getFont(const std::string& name);
+    std::shared_ptr<Font> getFont(const std::string& name) const;
 
     void addScript(const std::string& name, std::shared_ptr<Script> script);
-    std::shared_ptr<Script> getScript(const std::string& name);
+    std::shared_ptr<Script> getScript(const std::string& name) const;
 
     void addHeightfield(const std::string& name, const std::string& filename, float amplitude);
     std::shared_ptr<const Heightfield> getHeightfield(const std::string& name) const;

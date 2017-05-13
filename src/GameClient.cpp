@@ -19,8 +19,6 @@ GameClient::GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> r
         m_resourcesMgr =
             std::make_shared<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     }
-
-    loadData();
 }
 
 //------------------------------------------------------------------------------
@@ -30,20 +28,10 @@ void GameClient::resizeWindow(int width, int height)
     /* Protect against a divide by zero */
     if (height == 0) height = 1;
 
-    GLfloat ratio = GLfloat(width) / GLfloat(height);
-
-    m_camera->setPerspective(45.0f, ratio, 5.0f, 1250.0f);
+    // GLfloat ratio = GLfloat(width) / GLfloat(height);
+    // m_renderSystem.getCamera()->setPerspective(45.0f, ratio, 5.0f, 1250.0f);
 
     super::resizeWindow(width, height);
-}
-
-//------------------------------------------------------------------------------
-
-void GameClient::loadData()
-{
-    m_camera                             = std::make_shared<Camera>();
-    m_camera->transformation()->position = {-3.5f, 11.0f, 3.9f};
-    m_scene.setCamera(m_camera);
 }
 
 //------------------------------------------------------------------------------
@@ -52,10 +40,7 @@ void GameClient::loadResources(const std::string& xmlFile)
 {
     m_resourcesMgr->load(xmlFile);
 
-    auto text = std::make_shared<Text>(m_resourcesMgr->getFont("ubuntu"));
-    text->setShaderProgram(m_resourcesMgr->getShaderProgram("font"));
-    m_scene.add(text);
-    m_fpsCounter.setText(text);
+    m_renderSystem.loadCommonResources(*m_resourcesMgr);
 }
 
 void GameClient::unloadResources() { m_resourcesMgr.reset(); }
@@ -64,36 +49,12 @@ void GameClient::unloadResources() { m_resourcesMgr.reset(); }
 
 void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* rd)
 {
-    std::shared_ptr<RenderNode> a;
-    if (rd->role == Role::Dynamic) {
-        a = std::make_shared<RenderNode>(id, tr, rd);
-
-        if (!rd->mesh.empty()) {
-            auto meshPtr = m_resourcesMgr->getMesh(rd->mesh);
-            a->setMesh(meshPtr);
-        }
-    } else if (rd->role == Role::Skybox) {
-        auto skybox = std::make_shared<Skybox>(m_resourcesMgr->getTexture(rd->textures[0]));
-        skybox->setShaderProgram(m_resourcesMgr->getShaderProgram(rd->shaderProgram));
-        m_scene.setSkybox(skybox);
-        return;
-    } else if (rd->role == Role::Terrain) {
-        a = std::make_shared<Terrain>(id, tr, rd, *m_resourcesMgr->getHeightfield(rd->mesh));
-    }
-
-    for (const auto& texture : rd->textures) {
-        auto texturePtr = m_resourcesMgr->getTexture(texture);
-        a->addTexture(texturePtr);
-    }
-
-    a->setShaderProgram(m_resourcesMgr->getShaderProgram(rd->shaderProgram));
-
-    m_scene.add(id, a);
+    m_renderSystem.addActor(id, tr, rd, *m_resourcesMgr);
 }
 
 //------------------------------------------------------------------------------
 
-void GameClient::removeActor(int id) { m_scene.remove(id); }
+void GameClient::removeActor(int id) { m_renderSystem.removeActor(id); }
 
 //------------------------------------------------------------------------------
 
@@ -101,13 +62,8 @@ void GameClient::draw()
 {
     preDraw();
 
-    m_scene.draw(m_camera.get());
-
-    if (m_normalsShader) {
-        m_scene.draw(m_normalsShader.get(), m_camera.get());
-    }
-
-    m_debugDraw.draw(m_camera.get());
+    m_renderSystem.draw();
+    m_debugDraw.draw(m_renderSystem.getCamera());
 
     postDraw();
 }
@@ -116,38 +72,37 @@ void GameClient::draw()
 
 void GameClient::update(float delta)
 {
-    m_fpsCounter.update(delta);
-
     float cameraSpeedMultiplyer               = 0.5f;
     if (m_shiftPressed) cameraSpeedMultiplyer = 5.0f;
 
-    auto distance = delta * m_cameraSpeed * cameraSpeedMultiplyer;
+    auto distance  = delta * m_cameraSpeed * cameraSpeedMultiplyer;
+    Camera* camera = m_renderSystem.getCamera();
 
     if (m_wPressed) {
-        const auto orien = m_camera->transformation()->orientation;
+        const auto orien = camera->transformation()->orientation;
         const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, -distance, 0.f});
-        m_camera->transformation()->position += glm::vec3{delta};
+        camera->transformation()->position += glm::vec3{delta};
     }
 
     if (m_sPressed) {
-        const auto orien = m_camera->transformation()->orientation;
+        const auto orien = camera->transformation()->orientation;
         const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, distance, 0.f});
-        m_camera->transformation()->position += glm::vec3{delta};
+        camera->transformation()->position += glm::vec3{delta};
     }
 
     if (m_dPressed) {
-        const auto orien = m_camera->transformation()->orientation;
+        const auto orien = camera->transformation()->orientation;
         const auto delta = glm::rotate(orien, glm::vec4{distance, 0.f, 0.f, 0.f});
-        m_camera->transformation()->position += glm::vec3{delta};
+        camera->transformation()->position += glm::vec3{delta};
     }
 
     if (m_aPressed) {
-        const auto orien = m_camera->transformation()->orientation;
+        const auto orien = camera->transformation()->orientation;
         const auto delta = glm::rotate(orien, glm::vec4{-distance, 0.f, 0.f, 0.f});
-        m_camera->transformation()->position += glm::vec3{delta};
+        camera->transformation()->position += glm::vec3{delta};
     }
 
-    m_scene.update(delta);
+    m_renderSystem.update(delta);
 }
 
 //------------------------------------------------------------------------------
@@ -157,7 +112,8 @@ void GameClient::mouseMoved(const SDL_Event& event)
     float mouseSensity = 0.2f;
 
     if (m_leftMouseButtonPressed) {
-        m_camera->rotate(event.motion.xrel * mouseSensity, event.motion.yrel * mouseSensity, 0.0f);
+        m_renderSystem.getCamera()->rotate(event.motion.xrel * mouseSensity,
+                                           event.motion.yrel * mouseSensity, 0.0f);
     }
 }
 
@@ -209,27 +165,19 @@ void GameClient::keyReleased(const SDL_Event& event)
 
     switch (event.key.keysym.scancode) {
     case SDL_SCANCODE_LSHIFT: m_shiftPressed = false; break;
-    case SDL_SCANCODE_Z: m_scene.setNextPolygonMode(); break;
+    case SDL_SCANCODE_Z: m_renderSystem.setNextPolygonMode(); break;
     case SDL_SCANCODE_N: {
-        static bool showNormals = false;
-        static int magnitude    = 2;
+        static int magnitude = 2;
 
-        const auto& shader = m_resourcesMgr->getShaderProgram("normals");
         if (event.key.keysym.mod & KMOD_SHIFT) {
             magnitude = std::abs(++magnitude);
-            shader->use();
-            shader->setUniform("magnitude", 0.5f * magnitude);
+            m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
         } else if (event.key.keysym.mod & KMOD_CTRL) {
             magnitude                     = std::abs(--magnitude);
             if (magnitude == 0) magnitude = 1;
-            shader->use();
-            shader->setUniform("magnitude", 0.5f * magnitude);
+            m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
         } else {
-            showNormals = !showNormals;
-            if (showNormals)
-                m_normalsShader = shader;
-            else
-                m_normalsShader.reset();
+            m_renderSystem.setDrawNormals(!m_renderSystem.isDrawNormals(), magnitude);
         }
     } break;
     case SDL_SCANCODE_V: toggleVSync(); break;

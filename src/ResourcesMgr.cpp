@@ -116,7 +116,7 @@ void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& 
     m_shaderPrograms[name] = sp;
 }
 
-std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string& name)
+std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string& name) const
 {
     auto it = m_shaderPrograms.find(name);
     if (it == std::end(m_shaderPrograms))
@@ -155,7 +155,7 @@ void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6
     m_textures[name] = tex;
 }
 
-std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name)
+std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
 {
     auto it = m_textures.find(name);
     if (it == std::end(m_textures))
@@ -174,16 +174,7 @@ void ResourcesMgr::addMesh(const std::string& name, const std::string& filename)
     m_meshes[name] = mesh;
 }
 
-std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name)
-{
-    auto it = m_meshes.find(name);
-    if (it == std::end(m_meshes))
-        throw std::runtime_error("Mesh '" + name + "' not loaded.");
-    else
-        return it->second;
-}
-
-std::shared_ptr<const Mesh> ResourcesMgr::getMesh(const std::string& name) const
+std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name) const
 {
     auto it = m_meshes.find(name);
     if (it == std::end(m_meshes))
@@ -212,7 +203,7 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
     m_fonts[name] = font;
 }
 
-std::shared_ptr<Font> ResourcesMgr::getFont(const std::string& name)
+std::shared_ptr<Font> ResourcesMgr::getFont(const std::string& name) const
 {
     auto it = m_fonts.find(name);
     if (it == std::end(m_fonts))
@@ -228,7 +219,7 @@ void ResourcesMgr::addScript(const std::string& name, std::shared_ptr<Script> sc
     m_scripts[name] = script;
 }
 
-std::shared_ptr<Script> ResourcesMgr::getScript(const std::string& name)
+std::shared_ptr<Script> ResourcesMgr::getScript(const std::string& name) const
 {
     auto it = m_scripts.find(name);
     if (it == std::end(m_scripts))

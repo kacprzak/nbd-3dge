@@ -2,6 +2,7 @@
 #define RENDERSYSTEM_H
 
 #include "Camera.h"
+#include "FpsCounter.h"
 #include "RenderNode.h"
 #include "ShaderProgram.h"
 #include "Skybox.h"
@@ -10,12 +11,30 @@
 #include <map>
 #include <set>
 
-class RenderSystem
+class ResourcesMgr;
+
+class RenderSystem final
 {
   public:
     RenderSystem();
     ~RenderSystem();
 
+    void loadCommonResources(const ResourcesMgr& resourcesMgr);
+
+    void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+                  const ResourcesMgr& resourcesMgr);
+    void removeActor(int id);
+
+    void draw();
+    void update(float delta);
+    void setNextPolygonMode();
+
+    void setDrawNormals(bool enable, float normalLength = 1.0f);
+    bool isDrawNormals() const { return m_drawNormals; }
+
+    Camera* getCamera() { return m_camera.get(); }
+
+  private:
     void setSkybox(std::shared_ptr<Skybox> skybox) { m_skybox = skybox; }
 
     void setCamera(std::shared_ptr<Camera> camera) { m_camera = camera; }
@@ -29,17 +48,16 @@ class RenderSystem
     void draw(const Camera* camera) const;
     void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
 
-    void update(float delta);
-
-    void setNextPolygonMode();
-
-  private:
     GLenum m_polygonMode = GL_FILL;
 
     std::map<int, std::shared_ptr<RenderNode>> m_nodes;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
     std::set<std::shared_ptr<Text>> m_texts;
+
+    std::shared_ptr<ShaderProgram> m_normalsShader;
+    bool m_drawNormals = false;
+    FpsCounter m_fpsCounter;
 };
 
 #endif // RENDERSYSTEM_H
