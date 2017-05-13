@@ -1,5 +1,5 @@
-#ifndef GFXNODE_H
-#define GFXNODE_H
+#ifndef RENDERNODE_H
+#define RENDERNODE_H
 
 #include "Components.h"
 #include "Mesh.h"
@@ -10,11 +10,11 @@
 
 class Camera;
 
-class GfxNode
+class RenderNode
 {
   public:
-    GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
-    ~GfxNode() = default;
+    RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
+    ~RenderNode() = default;
 
     void setTextures(std::vector<std::shared_ptr<Texture>> textures);
     void addTexture(std::shared_ptr<Texture> texture);
@@ -49,4 +49,4 @@ class GfxNode
     glm::mat4 m_modelMatrix;
 };
 
-#endif // GFXNODE_H
+#endif // RENDERNODE_H

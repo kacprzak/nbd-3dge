@@ -1,10 +1,10 @@
-#include "GfxScene.h"
+#include "RenderSystem.h"
 
-GfxScene::GfxScene() {}
+RenderSystem::RenderSystem() {}
 
-GfxScene::~GfxScene() {}
+RenderSystem::~RenderSystem() {}
 
-void GfxScene::draw(const Camera* camera) const
+void RenderSystem::draw(const Camera* camera) const
 {
     if (m_polygonMode != GL_FILL)
         glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
@@ -27,7 +27,7 @@ void GfxScene::draw(const Camera* camera) const
     }
 }
 
-void GfxScene::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
     // if (m_skybox)
     //    m_skybox->draw(shaderProgram, camera);
@@ -44,7 +44,7 @@ void GfxScene::draw(ShaderProgram* shaderProgram, const Camera* camera) const
     //}
 }
 
-void GfxScene::update(float delta)
+void RenderSystem::update(float delta)
 {
     if (m_camera) {
         m_camera->update(delta);
@@ -55,7 +55,7 @@ void GfxScene::update(float delta)
     }
 }
 
-void GfxScene::setNextPolygonMode()
+void RenderSystem::setNextPolygonMode()
 {
     const std::array<GLenum, 3> modes{{GL_FILL, GL_LINE, GL_POINT}};
     static size_t curr = 0;

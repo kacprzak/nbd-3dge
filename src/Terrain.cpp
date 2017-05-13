@@ -2,7 +2,7 @@
 
 Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd,
                  const Heightfield& heightfield)
-    : GfxNode{actorId, tr, rd}
+    : RenderNode{actorId, tr, rd}
 {
     auto mesh = std::shared_ptr<Mesh>{
         Mesh::fromHeightmap(heightfield.heights, heightfield.w, heightfield.h, m_textureStrech)};

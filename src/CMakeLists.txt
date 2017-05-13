@@ -3,9 +3,9 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set( nbd-3dge_SRCS
     main.cpp
     FpsCounter.cpp
-    GfxNode.cpp
+    RenderNode.cpp
     Mesh.cpp
-    GfxScene.cpp
+    RenderSystem.cpp
     SDLWindow.cpp
     GameClient.cpp
     GameLogic.cpp

@@ -4,7 +4,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 Camera::Camera()
-    : GfxNode{-1, new TransformationComponent, nullptr}
+    : RenderNode{-1, new TransformationComponent, nullptr}
 {
     float ratio = 800 / float(600);
     setPerspective(45.0f, ratio, 1.0f, 1200.0f);
@@ -34,7 +34,7 @@ const glm::mat4& Camera::projectionMatrix() const { return m_projectionMatrix; }
 
 void Camera::update(float delta)
 {
-    GfxNode::update(delta);
+    RenderNode::update(delta);
 
     glm::quat orien = transformation()->orientation;
 

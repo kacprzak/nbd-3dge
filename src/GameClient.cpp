@@ -64,9 +64,9 @@ void GameClient::unloadResources() { m_resourcesMgr.reset(); }
 
 void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* rd)
 {
-    std::shared_ptr<GfxNode> a;
+    std::shared_ptr<RenderNode> a;
     if (rd->role == Role::Dynamic) {
-        a = std::make_shared<GfxNode>(id, tr, rd);
+        a = std::make_shared<RenderNode>(id, tr, rd);
 
         if (!rd->mesh.empty()) {
             auto meshPtr = m_resourcesMgr->getMesh(rd->mesh);

@@ -1,4 +1,4 @@
-#include "GfxNode.h"
+#include "RenderNode.h"
 
 #include "Camera.h"
 
@@ -7,7 +7,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-GfxNode::GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
+RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
     : m_actorId{actorId}
     , m_tr{tr}
     , m_rd{rd}
@@ -15,18 +15,18 @@ GfxNode::GfxNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
 {
 }
 
-void GfxNode::setTextures(std::vector<std::shared_ptr<Texture>> textures) { m_textures = textures; }
+void RenderNode::setTextures(std::vector<std::shared_ptr<Texture>> textures) { m_textures = textures; }
 
-void GfxNode::addTexture(std::shared_ptr<Texture> texture) { m_textures.push_back(texture); }
+void RenderNode::addTexture(std::shared_ptr<Texture> texture) { m_textures.push_back(texture); }
 
-void GfxNode::setMesh(std::shared_ptr<Mesh> mesh) { m_mesh = mesh; }
+void RenderNode::setMesh(std::shared_ptr<Mesh> mesh) { m_mesh = mesh; }
 
-void GfxNode::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
+void RenderNode::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
 {
     m_shaderProgram = shaderProgram;
 }
 
-void GfxNode::rebuildModelMatrix()
+void RenderNode::rebuildModelMatrix()
 {
     const auto T = glm::translate(glm::mat4(1.f), m_tr->position);
     const auto R = glm::toMat4(m_tr->orientation);
@@ -35,9 +35,9 @@ void GfxNode::rebuildModelMatrix()
     m_modelMatrix = T * R * S;
 }
 
-void GfxNode::draw(const Camera* camera) const { draw(m_shaderProgram.get(), camera); }
+void RenderNode::draw(const Camera* camera) const { draw(m_shaderProgram.get(), camera); }
 
-void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
     for (size_t i = 0; i < m_textures.size(); ++i) {
         m_textures[i]->bind(i);
@@ -61,4 +61,4 @@ void GfxNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         m_mesh->draw();
 }
 
-void GfxNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }
+void RenderNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }

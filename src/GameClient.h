@@ -4,7 +4,7 @@
 #include "Camera.h"
 #include "Components.h"
 #include "FpsCounter.h"
-#include "GfxScene.h"
+#include "RenderSystem.h"
 #include "PhysicsDebugDrawer.h"
 #include "ResourcesMgr.h"
 #include "SDLWindow.h"
@@ -45,7 +45,7 @@ class GameClient : public SDLWindow
     std::shared_ptr<ShaderProgram> m_normalsShader;
 
     const Settings m_settings;
-    GfxScene m_scene;
+    RenderSystem m_scene;
     FpsCounter m_fpsCounter;
 
     float m_cameraSpeed = 50.0f;

@@ -1,10 +1,10 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "GfxNode.h"
+#include "RenderNode.h"
 #include "Heightfield.h"
 
-class Terrain : public GfxNode
+class Terrain : public RenderNode
 {
   public:
     Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd,
