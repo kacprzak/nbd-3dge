@@ -6,6 +6,7 @@ set( nbd-3dge_SRCS
     RenderNode.cpp
     Mesh.cpp
     RenderSystem.cpp
+    InputSystem.cpp
     SDLWindow.cpp
     GameClient.cpp
     GameLogic.cpp

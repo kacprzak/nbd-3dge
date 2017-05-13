@@ -18,6 +18,8 @@ class RenderSystem final
   public:
     RenderSystem();
     ~RenderSystem();
+    RenderSystem(const RenderSystem&) = delete;
+    RenderSystem& operator=(const RenderSystem&) = delete;
 
     void loadCommonResources(const ResourcesMgr& resourcesMgr);
 

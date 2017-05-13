@@ -39,22 +39,29 @@ void GameClient::resizeWindow(int width, int height)
 void GameClient::loadResources(const std::string& xmlFile)
 {
     m_resourcesMgr->load(xmlFile);
-
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
 }
+
+//------------------------------------------------------------------------------
 
 void GameClient::unloadResources() { m_resourcesMgr.reset(); }
 
 //------------------------------------------------------------------------------
 
-void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* rd, ControlComponent* ctrl)
+void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+                          ControlComponent* ctrl)
 {
     m_renderSystem.addActor(id, tr, rd, *m_resourcesMgr);
+    if (ctrl) m_inputSystem.addActor(id, ctrl);
 }
 
 //------------------------------------------------------------------------------
 
-void GameClient::removeActor(int id) { m_renderSystem.removeActor(id); }
+void GameClient::removeActor(int id)
+{
+    m_inputSystem.removeActor(id);
+    m_renderSystem.removeActor(id);
+}
 
 //------------------------------------------------------------------------------
 
@@ -115,6 +122,7 @@ void GameClient::mouseMoved(const SDL_Event& event)
         m_renderSystem.getCamera()->rotate(event.motion.xrel * mouseSensity,
                                            event.motion.yrel * mouseSensity, 0.0f);
     }
+    m_inputSystem.mouseMoved(event);
 }
 
 void GameClient::mouseButtonPressed(const SDL_Event& event)
@@ -125,6 +133,7 @@ void GameClient::mouseButtonPressed(const SDL_Event& event)
         setMouseRelativeMode(true);
         break;
     }
+    m_inputSystem.mouseButtonPressed(event);
 }
 
 void GameClient::mouseButtonReleased(const SDL_Event& event)
@@ -135,6 +144,7 @@ void GameClient::mouseButtonReleased(const SDL_Event& event)
         setMouseRelativeMode(false);
         break;
     }
+    m_inputSystem.mouseButtonReleased(event);
 }
 
 //------------------------------------------------------------------------------
@@ -152,6 +162,7 @@ void GameClient::keyPressed(const SDL_Event& event)
     case SDL_SCANCODE_LSHIFT: m_shiftPressed = true; break;
     default: break;
     }
+    m_inputSystem.keyPressed(event);
 }
 
 void GameClient::keyReleased(const SDL_Event& event)
@@ -183,4 +194,5 @@ void GameClient::keyReleased(const SDL_Event& event)
     case SDL_SCANCODE_V: toggleVSync(); break;
     default: break;
     }
+    m_inputSystem.keyReleased(event);
 }

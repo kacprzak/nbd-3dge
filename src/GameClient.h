@@ -4,6 +4,7 @@
 #include "Components.h"
 #include "PhysicsDebugDrawer.h"
 #include "RenderSystem.h"
+#include "InputSystem.h"
 #include "ResourcesMgr.h"
 #include "SDLWindow.h"
 #include "Settings.h"
@@ -42,6 +43,7 @@ class GameClient : public SDLWindow
 
     const Settings m_settings;
     RenderSystem m_renderSystem;
+    InputSystem m_inputSystem;
 
     float m_cameraSpeed = 50.0f;
 

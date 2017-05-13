@@ -12,7 +12,7 @@ class SDLWindow : public GameView
     SDLWindow(const Settings& settings);
     ~SDLWindow();
 
-    bool processInput(const SDL_Event& event) override;
+    bool processInput(const SDL_Event& event) override final;
 
   protected:
     virtual void resizeWindow(int width, int height);
