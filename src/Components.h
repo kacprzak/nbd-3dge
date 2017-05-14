@@ -23,7 +23,7 @@ enum class Role { Skybox, Dynamic };
 
 struct RenderComponent : public Component
 {
-    Role role = Role::Dynamic;
+    Role role                 = Role::Dynamic;
     std::string shaderProgram = "default";
     std::string mesh;
     std::vector<std::string> textures;
@@ -34,9 +34,9 @@ struct PhysicsComponent : public Component
     std::string shape;
     float mass         = 0.0f;
     glm::vec3 maxForce = glm::vec3{5000, 5000, 5000};
-    glm::vec3 maxMomentum;
+    glm::vec3 maxTorque;
     glm::vec3 force;
-    glm::vec3 momentum;
+    glm::vec3 torque;
 };
 
 struct ControlComponent : public Component

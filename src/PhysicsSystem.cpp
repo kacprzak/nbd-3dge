@@ -81,8 +81,16 @@ PhysicsSystem::~PhysicsSystem()
 void PhysicsSystem::update(float elapsedTime)
 {
     for (auto& n : m_nodes) {
-        auto force = glm::rotate(n.tr->orientation, n.ph->force);
-        n.body->applyCentralForce(btVector3{force.x, force.y, force.z});
+        if (glm::length(n.ph->force) > 0.f) {
+            n.body->activate();
+            auto force = glm::rotate(n.tr->orientation, n.ph->force);
+            n.body->applyCentralForce(btVector3{force.x, force.y, force.z});
+        }
+        if (glm::length(n.ph->torque) > 0.f) {
+            n.body->activate();
+            auto torque = glm::rotate(n.tr->orientation, n.ph->torque);
+            n.body->applyTorque(btVector3{torque.x, torque.y, torque.z});
+        }
     }
     m_dynamicsWorld->stepSimulation(elapsedTime);
 }
