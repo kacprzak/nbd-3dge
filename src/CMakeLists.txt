@@ -33,5 +33,9 @@ set( nbd-3dge_SRCS
     PhysicsDebugDrawer.cpp
 )
 
-add_executable( nbd-3dge ${nbd-3dge_SRCS} )
+file(GLOB_RECURSE nbd-3dge_HDRS "*.h" )
+
+source_group("Headers" FILES ${nbd-3dge_HDRS})
+
+add_executable( nbd-3dge ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} )
 target_link_libraries( nbd-3dge ${LINK_LIBS} )
