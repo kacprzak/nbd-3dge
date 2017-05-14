@@ -49,9 +49,6 @@ class GameClient : public SDLWindow
     InputSystem m_inputSystem;
 
     std::unique_ptr<CameraController> m_cameraCtrl;
-
-    bool m_shiftPressed           = false;
-    bool m_leftMouseButtonPressed = false;
 };
 
 #endif // GAMECLIENT_H

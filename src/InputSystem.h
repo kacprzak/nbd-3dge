@@ -22,8 +22,13 @@ class InputSystem
     void keyPressed(const SDL_Event& event);
     void keyReleased(const SDL_Event& event);
 
+    void setMouseRelativeMode(bool enable);
+    bool isMouseRelativeMode() const { return m_mouseRelativeMode; }
+
   private:
     std::map<int, ControlComponent*> m_nodes;
+
+    bool m_mouseRelativeMode = false;
 };
 
 #endif // INPUTSYSTEM_H

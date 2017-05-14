@@ -44,8 +44,7 @@ void SDLWindow::createSDLWindow()
 {
     int screen_flags = SDL_WINDOW_OPENGL;
 
-    if (m_screenFull)
-        screen_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    if (m_screenFull) screen_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
     // Screen surface
     m_window = SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -105,21 +104,11 @@ SDLWindow::~SDLWindow()
 bool SDLWindow::processInput(const SDL_Event& event)
 {
     switch (event.type) {
-    case SDL_KEYUP:
-        keyReleased(event);
-        break;
-    case SDL_KEYDOWN:
-        keyPressed(event);
-        break;
-    case SDL_MOUSEMOTION:
-        mouseMoved(event);
-        break;
-    case SDL_MOUSEBUTTONUP:
-        mouseButtonReleased(event);
-        break;
-    case SDL_MOUSEBUTTONDOWN:
-        mouseButtonPressed(event);
-        break;
+    case SDL_KEYUP: keyReleased(event); break;
+    case SDL_KEYDOWN: keyPressed(event); break;
+    case SDL_MOUSEMOTION: mouseMoved(event); break;
+    case SDL_MOUSEBUTTONUP: mouseButtonReleased(event); break;
+    case SDL_MOUSEBUTTONDOWN: mouseButtonPressed(event); break;
     }
 
     return true;
@@ -176,14 +165,3 @@ void SDLWindow::preDraw() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 void SDLWindow::postDraw() { SDL_GL_SwapWindow(m_window); }
 
 //------------------------------------------------------------------------------
-
-void SDLWindow::setMouseRelativeMode(bool enable)
-{
-    if (enable) {
-        SDL_SetRelativeMouseMode(SDL_TRUE);
-        SDL_ShowCursor(SDL_DISABLE);
-    } else {
-        SDL_ShowCursor(SDL_ENABLE);
-        SDL_SetRelativeMouseMode(SDL_FALSE);
-    }
-}

@@ -12,6 +12,20 @@
 
 class CameraController
 {
+  private:
+    glm::vec2 m_yawPitch;
+
+    void rotateCamera(float yaw, float pitch, float /*roll*/)
+    {
+        m_yawPitch += glm::vec2{glm::radians(-yaw), glm::radians(-pitch)};
+        m_yawPitch.x = glm::mod(m_yawPitch.x, glm::two_pi<float>());
+        m_yawPitch.y = glm::mod(m_yawPitch.y, glm::two_pi<float>());
+
+        auto& orient = camera->orientation;
+        orient       = glm::angleAxis(m_yawPitch.x, glm::vec3(0, 1, 0));
+        orient *= glm::angleAxis(m_yawPitch.y, glm::vec3(1, 0, 0));
+    }
+
   public:
     ControlComponent cameraActions;
     TransformationComponent* camera;
@@ -23,10 +37,13 @@ class CameraController
     void update(float delta)
     {
         if (freeCamera) {
-            float cameraSpeedMultiplyer                                               = 0.5f;
+            float cameraSpeedMultiplyer = 0.5f;
+
             if (cameraActions.actions & ControlComponent::Fire) cameraSpeedMultiplyer = 5.0f;
 
             auto distance = delta * m_cameraSpeed * cameraSpeedMultiplyer;
+
+            rotateCamera(cameraActions.axes.x, cameraActions.axes.y, cameraActions.axes.z);
 
             if (cameraActions.actions & ControlComponent::Forward) {
                 const auto orien = camera->orientation;
@@ -51,7 +68,21 @@ class CameraController
                 const auto delta = glm::rotate(orien, glm::vec4{-distance, 0.f, 0.f, 0.f});
                 camera->position += glm::vec3{delta};
             }
+
+            if (cameraActions.actions & ControlComponent::Up) {
+                const auto orien = camera->orientation;
+                const auto delta = glm::rotate(orien, glm::vec4{0.f, distance, 0.f, 0.f});
+                camera->position += glm::vec3{delta};
+            }
+
+            if (cameraActions.actions & ControlComponent::Down) {
+                const auto orien = camera->orientation;
+                const auto delta = glm::rotate(orien, glm::vec4{0.f, -distance, 0.f, 0.f});
+                camera->position += glm::vec3{delta};
+            }
+
         } else {
+            // Fixed position relative to player
             auto orien          = player->orientation;
             const auto delta    = glm::rotate(orien, glm::vec4{0.f, 1.5f, -6.f, 0.f});
             camera->position    = player->position + glm::vec3{delta};
@@ -148,55 +179,29 @@ void GameClient::update(float delta)
 
 //------------------------------------------------------------------------------
 
-void GameClient::mouseMoved(const SDL_Event& event)
-{
-    float mouseSensity = 0.2f;
-
-    if (m_leftMouseButtonPressed) {
-        m_renderSystem.getCamera()->rotate(event.motion.xrel * mouseSensity,
-                                           event.motion.yrel * mouseSensity, 0.0f);
-    }
-    m_inputSystem.mouseMoved(event);
-}
+void GameClient::mouseMoved(const SDL_Event& event) { m_inputSystem.mouseMoved(event); }
 
 void GameClient::mouseButtonPressed(const SDL_Event& event)
 {
-    switch (event.button.button) {
-    case SDL_BUTTON_LEFT:
-        m_leftMouseButtonPressed = true;
-        setMouseRelativeMode(true);
-        break;
-    }
     m_inputSystem.mouseButtonPressed(event);
 }
 
 void GameClient::mouseButtonReleased(const SDL_Event& event)
 {
-    switch (event.button.button) {
-    case SDL_BUTTON_LEFT:
-        m_leftMouseButtonPressed = false;
-        setMouseRelativeMode(false);
-        break;
-    }
     m_inputSystem.mouseButtonReleased(event);
 }
 
 //------------------------------------------------------------------------------
 
-void GameClient::keyPressed(const SDL_Event& event)
-{
-    switch (event.key.keysym.scancode) {
-    case SDL_SCANCODE_LSHIFT: m_shiftPressed = true; break;
-    default: break;
-    }
-    m_inputSystem.keyPressed(event);
-}
+void GameClient::keyPressed(const SDL_Event& event) { m_inputSystem.keyPressed(event); }
 
 void GameClient::keyReleased(const SDL_Event& event)
 {
     switch (event.key.keysym.scancode) {
-    case SDL_SCANCODE_LSHIFT: m_shiftPressed = false; break;
     case SDL_SCANCODE_Z: m_renderSystem.setNextPolygonMode(); break;
+    case SDL_SCANCODE_R:
+        m_inputSystem.setMouseRelativeMode(!m_inputSystem.isMouseRelativeMode());
+        break;
     case SDL_SCANCODE_N: {
         static int magnitude = 2;
 
@@ -204,7 +209,8 @@ void GameClient::keyReleased(const SDL_Event& event)
             magnitude = std::abs(++magnitude);
             m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
         } else if (event.key.keysym.mod & KMOD_CTRL) {
-            magnitude                     = std::abs(--magnitude);
+            magnitude = std::abs(--magnitude);
+
             if (magnitude == 0) magnitude = 1;
             m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
         } else {

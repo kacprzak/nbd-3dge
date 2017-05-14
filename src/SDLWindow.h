@@ -27,7 +27,6 @@ class SDLWindow : public GameView
     void preDraw();
     void postDraw();
 
-    void setMouseRelativeMode(bool enable);
     void toggleVSync();
 
   private:
