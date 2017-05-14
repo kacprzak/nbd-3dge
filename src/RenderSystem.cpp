@@ -3,6 +3,8 @@
 #include "ResourcesMgr.h"
 #include "Terrain.h"
 
+#include <sstream>
+
 RenderSystem::RenderSystem()
 {
     m_camera                             = std::make_shared<Camera>();
@@ -18,10 +20,18 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 {
     m_normalsShader = resourcesMgr.getShaderProgram("normals");
 
-    auto text = std::make_shared<Text>(resourcesMgr.getFont("ubuntu"));
-    text->setShaderProgram(resourcesMgr.getShaderProgram("font"));
+    auto guiFont   = resourcesMgr.getFont("ubuntu");
+    auto guiShader = resourcesMgr.getShaderProgram("font");
+
+    auto text = std::make_shared<Text>(guiFont);
+    text->setShaderProgram(guiShader);
     add(text);
     m_fpsCounter.setText(text);
+
+    m_cameraText = std::make_shared<Text>(guiFont);
+    m_cameraText->setShaderProgram(guiShader);
+    m_cameraText->setPosition({0.5f, 0.f, 0.0f});
+    add(m_cameraText);
 }
 
 //------------------------------------------------------------------------------
@@ -66,6 +76,16 @@ void RenderSystem::update(float delta)
 
     if (m_camera) {
         m_camera->update(delta);
+        
+        auto p = m_camera->transformation()->position;
+        auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / float(M_PI);
+        std::stringstream ss;
+        ss.precision(1);
+        ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
+        ss.precision(0);
+        ss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
+        m_cameraText->setText(ss.str());
     }
 
     for (const auto& node : m_nodes) {

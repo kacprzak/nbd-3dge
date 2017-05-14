@@ -7,6 +7,8 @@ Text::Text(std::shared_ptr<Font> font)
 {
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_buffer);
+
+    setPosition({0.f, 0.f, 0.f});
 }
 
 Text::~Text()
@@ -112,9 +114,12 @@ void Text::setText(const std::string& text)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(Vertex) / 2));
 
     glBindVertexArray(0);
+}
 
+void Text::setPosition(glm::vec3 pos)
+{
     m_modelMatrix = glm::mat4(1.0f);
-    m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(-1.0f, 1.0f, 0.0f));
+    m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(-1.0f, 1.0f, 0.0f) + pos);
     m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(0.001f));
 }
 

@@ -55,6 +55,7 @@ class RenderSystem final
     std::map<int, std::shared_ptr<RenderNode>> m_nodes;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
+    std::shared_ptr<Text> m_cameraText;
     std::set<std::shared_ptr<Text>> m_texts;
 
     std::shared_ptr<ShaderProgram> m_normalsShader;

@@ -52,7 +52,7 @@ class CameraController
                 camera->position += glm::vec3{delta};
             }
         } else {
-            auto orien = glm::normalize(player->orientation);
+            auto orien = player->orientation;
             const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, 10.f, 0.f});
             camera->position = player->position + glm::vec3{delta};
             camera->orientation = orien;
