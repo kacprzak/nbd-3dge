@@ -7,6 +7,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <array>
 
 ResourcesMgr::ResourcesMgr(const std::string& dataFolder, const std::string& shadersFolder)
     : m_dataFolder{dataFolder}

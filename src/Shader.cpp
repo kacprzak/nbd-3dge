@@ -16,7 +16,7 @@ Shader::Shader(GLenum type, const std::string& source)
 {
     m_shaderId = glCreateShader(m_type);
 
-    LOG_INFO << "Compiling Shader: " << m_shaderId;
+    LOG_TRACE << "Compiling Shader: " << m_shaderId;
 
     const GLchar* shaderSource[1];
     shaderSource[0] = source.c_str();

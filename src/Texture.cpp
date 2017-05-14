@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include <array>
+
 static GLenum textureFormat(SDL_Surface** surface);
 static int SDL_InvertSurface(SDL_Surface* image);
 

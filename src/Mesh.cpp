@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <limits>
+#include <array>
 
 Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
            const std::vector<GLfloat>& normals, const std::vector<GLfloat>& texcoords,

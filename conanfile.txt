@@ -1,0 +1,17 @@
+[requires]
+Boost/1.60.0@lasote/stable
+glew/2.0.0@coding3d/stable
+glm/0.9.7.6@dlarudgus20/stable
+SDL2/2.0.5@lasote/stable
+SDL2_image/2.0.1@lasote/stable
+bullet3/2.83.7.98d4780@lasote/vcpkg
+
+[generators]
+cmake
+
+[options]
+Boost:shared=True
+Boost:without_test=True
+
+[imports]
+bin, *.dll -> ./bin

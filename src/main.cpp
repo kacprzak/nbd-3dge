@@ -6,6 +6,15 @@
 
 #include <boost/log/expressions.hpp>
 #include <boost/program_options.hpp>
+
+#ifdef _WIN32
+#  include <direct.h>
+#  define getcwd _getcwd
+#  define chdir _chrdir
+#else
+#  include <unistd.h>
+#endif
+
 #include <fstream>
 #include <iostream>
 
@@ -47,7 +56,20 @@ bool loadSettings(Settings& s, int ac, char** av)
     po::variables_map vm;
     po::store(po::parse_command_line(ac, av, desc), vm);
     std::ifstream ifs{"config.ini"};
-    if (ifs) store(parse_config_file(ifs, desc), vm);
+	if (ifs) {
+		store(parse_config_file(ifs, desc), vm);
+	} else {
+		char* buffer;
+
+		// Get the current working directory:   
+		if ((buffer = getcwd(NULL, 0)) == NULL)
+			perror("getcwd error");
+		else
+		{
+			LOG_WARNING << "No config.ini in " << buffer;
+			free(buffer);
+		}
+	}
 
     po::notify(vm);
 
@@ -78,13 +100,17 @@ int main(int ac, char** av)
 
     initLogger(settings.logLevel);
 
-    auto resourcesMgr =
-        std::make_shared<ResourcesMgr>(settings.dataFolder, settings.shadersFolder);
+	try {
+		auto resourcesMgr =
+			std::make_shared<ResourcesMgr>(settings.dataFolder, settings.shadersFolder);
 
-    Engine engine;
-    GameLogic game(settings, resourcesMgr);
-    game.attachView(std::make_shared<GameClient>(settings, resourcesMgr));
-    engine.mainLoop(&game);
+		Engine engine;
+		GameLogic game(settings, resourcesMgr);
+		game.attachView(std::make_shared<GameClient>(settings, resourcesMgr));
+		engine.mainLoop(&game);
+	} catch (const std::exception& e) {
+		LOG_FATAL << e.what();
+	}
 
     return 0;
 }

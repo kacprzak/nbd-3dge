@@ -5,6 +5,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
+#include <array>
 
 RenderSystem::RenderSystem()
 {
@@ -80,7 +81,7 @@ void RenderSystem::update(float delta)
         m_camera->update(delta);
 
         auto p = m_camera->transformation()->position;
-        auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / float(M_PI);
+        auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / 3.14f;
         std::stringstream ss;
         ss.precision(1);
         ss.setf(std::ios::fixed, std::ios::floatfield);

@@ -7,41 +7,61 @@ set( VERSION_MINOR 1 )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 if( MSVC )
-  #add_definitions( "/W2" )
+  #add_definitions( "/SUBSYSTEM:WINDOWS" )
 else()
   add_definitions( "-Wall -Wextra -g -std=c++14" )
 endif()
 
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
+include_directories(${PROJECT_BINARY_DIR} src)
 
-find_package( SDL2 REQUIRED )
-find_package( SDL2_image REQUIRED )
-find_package( OpenGL REQUIRED )
-find_package( Bullet REQUIRED )
-
-set( Boost_COMPONENTS program_options log )
-if( UNIX )
-  list( APPEND Boost_COMPONENTS unit_test_framework )
-endif()
-find_package( Boost COMPONENTS ${Boost_COMPONENTS} REQUIRED )
-#find_package( Lua53 REQUIRED )
-
-if( UNIX )
-  # For irony-mode to work
-  set( LIBCLANG_INCLUDES /usr/include/c++/6 )
+if( WIN32 )
+	include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+	conan_basic_setup()
+	
+	include_directories( ${CONAN_INCLUDE_DIRS_BULLET3}/bullet )
+	set( LINK_LIBS ${CONAN_LIBS} )
+	set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
 endif()
 
-include_directories(
-  ${LIBCLANG_INCLUDES}
-  ${PROJECT_BINARY_DIR}
-  src
-  ${SDL2_INCLUDE_DIR}
-  ${SDL2IMAGE_INCLUDE_DIR}
-  ${OPENGL_INCLUDE_DIR}
-  ${Boost_INCLUDE_DIR}
-  ${LUA53_INCLUDE_DIR}
-  ${BULLET_INCLUDE_DIRS}
-)
+if( UNIX )
+	set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
+
+	find_package( SDL2 REQUIRED )
+	find_package( SDL2_image REQUIRED )
+	find_package( OpenGL REQUIRED )
+	find_package( Bullet REQUIRED )
+
+	set( Boost_COMPONENTS program_options log )
+
+	list( APPEND Boost_COMPONENTS unit_test_framework )
+
+	find_package( Boost COMPONENTS ${Boost_COMPONENTS} REQUIRED )
+	#find_package( Lua53 REQUIRED )
+
+	# For irony-mode to work
+	set( LIBCLANG_INCLUDES /usr/include/c++/6 )
+
+	include_directories(
+	  ${LIBCLANG_INCLUDES}
+	  ${SDL2_INCLUDE_DIR}
+	  ${SDL2IMAGE_INCLUDE_DIR}
+	  ${OPENGL_INCLUDE_DIR}
+	  ${Boost_INCLUDE_DIR}
+	  ${LUA53_INCLUDE_DIR}
+	  ${BULLET_INCLUDE_DIRS}
+	)
+
+	set( LINK_LIBS
+	  GL GLU GLEW
+	  ${SDL2_LIBRARY}
+	  ${SDL2MAIN_LIBRARY}
+	  ${SDL2IMAGE_LIBRARY}
+	  ${OPENGL_LIBRARIES}
+	  ${LUA53_LIBRARIES}
+	  ${Boost_LIBRARIES}
+	  ${BULLET_LIBRARIES}
+	)
+endif()
 
 if( Boost_UNIT_TEST_FRAMEWORK_FOUND )
 #  enable_testing()
@@ -57,22 +77,6 @@ configure_file(
   ${PROJECT_SOURCE_DIR}/config.ini.in
   ${PROJECT_BINARY_DIR}/config.ini
 )
-
-set( LINK_LIBS
-  GL GLU GLEW
-  ${SDL2_LIBRARY}
-  ${SDL2MAIN_LIBRARY}
-  ${SDL2IMAGE_LIBRARY}
-  ${OPENGL_LIBRARIES}
-  ${LUA53_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${BULLET_LIBRARIES}
-)
-
-# Add winsock lib
-if( WIN32 )
-  set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
-endif( WIN32 )
 
 add_subdirectory( src )
 
