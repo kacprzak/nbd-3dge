@@ -128,16 +128,31 @@ void GameLogic::update(float elapsedTime)
         auto sctrl = ctrl.lock();
         auto sph   = ph.lock();
         if (sctrl && sph) {
-            sph->force = glm::vec3{};
+            sph->force = glm::vec3{0.f, 9.81f * sph->mass, 0.f};
+            sph->torque = glm::vec3{};
+            
             if (sctrl->actions & ControlComponent::Forward) {
-                sph->force.z = sph->maxForce.z;
+                sph->force.z += sph->maxForce.z;
+            }
+            if (sctrl->actions & ControlComponent::Back) {
+                sph->force.z -= sph->maxForce.z;
             }
             if (sctrl->actions & ControlComponent::Up) {
-                sph->force.y = sph->maxForce.y;
+                sph->force.y += sph->maxForce.y;
+            }
+            if (sctrl->actions & ControlComponent::Down) {
+                sph->force.y -= sph->maxForce.y;
             }
             if (sctrl->actions & ControlComponent::StrafeRight) {
-                sph->force.x = sph->maxForce.x;
+                //sph->force.x -= sph->maxForce.x;
+                sph->torque.y -= 200;
             }
+            if (sctrl->actions & ControlComponent::StrafeLeft) {
+                //sph->force.x += sph->maxForce.x;
+                sph->torque.y += 200;
+            }
+            sph->torque.x = -sctrl->axes.y * 200;
+            sph->torque.z = sctrl->axes.x * 200;
         }
     }
 
