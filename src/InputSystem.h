@@ -13,6 +13,8 @@ class InputSystem
     InputSystem(const InputSystem&) = delete;
     InputSystem& operator=(const InputSystem&) = delete;
 
+    void update(float delta);
+    
     void addActor(int id, ControlComponent* ctrl) { m_nodes[id] = ctrl; }
     void removeActor(int id) { m_nodes.erase(id); }
 
@@ -27,6 +29,7 @@ class InputSystem
 
   private:
     std::map<int, ControlComponent*> m_nodes;
+    ControlComponent m_comp;
 
     bool m_mouseRelativeMode = false;
 };

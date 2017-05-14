@@ -173,6 +173,7 @@ void GameClient::draw()
 
 void GameClient::update(float delta)
 {
+    m_inputSystem.update(delta);
     m_cameraCtrl->update(delta);
     m_renderSystem.update(delta);
 }

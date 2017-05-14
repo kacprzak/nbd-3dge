@@ -1,69 +1,72 @@
 #include "InputSystem.h"
 
+void InputSystem::update(float /*delta*/)
+{
+    for (auto keyVal : m_nodes) {
+        ControlComponent* comp = keyVal.second;
+        *comp                  = m_comp;
+    }
+
+    m_comp.axes = glm::vec4{0.f};
+}
+
+//------------------------------------------------------------------------------
+
 void InputSystem::mouseMoved(const SDL_Event& event)
 {
     float mouseSensitivity = 0.2f;
 
-    for (auto keyVal : m_nodes) {
-        ControlComponent* comp = keyVal.second;
-        comp->axes.x           = event.motion.xrel * mouseSensitivity;
-        comp->axes.y           = event.motion.yrel * mouseSensitivity;
+    if (isMouseRelativeMode()) {
+        m_comp.axes.x = event.motion.xrel * mouseSensitivity;
+        m_comp.axes.y = event.motion.yrel * mouseSensitivity;
     }
 }
 
 void InputSystem::mouseButtonPressed(const SDL_Event& event)
 {
-    for (auto keyVal : m_nodes) {
-        ControlComponent* comp = keyVal.second;
-        switch (event.button.button) {
-        case SDL_BUTTON_LEFT: comp->actions |= ControlComponent::Fire; break;
-        case SDL_BUTTON_RIGHT: comp->actions |= ControlComponent::AltFire; break;
-        }
+    switch (event.button.button) {
+    case SDL_BUTTON_LEFT: m_comp.actions |= ControlComponent::Fire; break;
+    case SDL_BUTTON_RIGHT: m_comp.actions |= ControlComponent::AltFire; break;
     }
 }
 
 void InputSystem::mouseButtonReleased(const SDL_Event& event)
 {
-    for (auto keyVal : m_nodes) {
-        ControlComponent* comp = keyVal.second;
-        switch (event.button.button) {
-        case SDL_BUTTON_LEFT: comp->actions &= ~(ControlComponent::Fire); break;
-        case SDL_BUTTON_RIGHT: comp->actions &= ~(ControlComponent::AltFire); break;
-        }
+    switch (event.button.button) {
+    case SDL_BUTTON_LEFT: m_comp.actions &= ~(ControlComponent::Fire); break;
+    case SDL_BUTTON_RIGHT: m_comp.actions &= ~(ControlComponent::AltFire); break;
     }
 }
 
+//------------------------------------------------------------------------------
+
 void InputSystem::keyPressed(const SDL_Event& event)
 {
-    for (auto keyVal : m_nodes) {
-        ControlComponent* comp = keyVal.second;
-        switch (event.key.keysym.scancode) {
-        case SDL_SCANCODE_W: comp->actions |= ControlComponent::Forward; break;
-        case SDL_SCANCODE_S: comp->actions |= ControlComponent::Back; break;
-        case SDL_SCANCODE_A: comp->actions |= ControlComponent::StrafeLeft; break;
-        case SDL_SCANCODE_D: comp->actions |= ControlComponent::StrafeRight; break;
-        case SDL_SCANCODE_E: comp->actions |= ControlComponent::Up; break;
-        case SDL_SCANCODE_C: comp->actions |= ControlComponent::Down; break;
-        default: break;
-        }
+    switch (event.key.keysym.scancode) {
+    case SDL_SCANCODE_W: m_comp.actions |= ControlComponent::Forward; break;
+    case SDL_SCANCODE_S: m_comp.actions |= ControlComponent::Back; break;
+    case SDL_SCANCODE_A: m_comp.actions |= ControlComponent::StrafeLeft; break;
+    case SDL_SCANCODE_D: m_comp.actions |= ControlComponent::StrafeRight; break;
+    case SDL_SCANCODE_E: m_comp.actions |= ControlComponent::Up; break;
+    case SDL_SCANCODE_C: m_comp.actions |= ControlComponent::Down; break;
+    default: break;
     }
 }
 
 void InputSystem::keyReleased(const SDL_Event& event)
 {
-    for (auto keyVal : m_nodes) {
-        ControlComponent* comp = keyVal.second;
-        switch (event.key.keysym.scancode) {
-        case SDL_SCANCODE_W: comp->actions &= ~(ControlComponent::Forward); break;
-        case SDL_SCANCODE_S: comp->actions &= ~(ControlComponent::Back); break;
-        case SDL_SCANCODE_A: comp->actions &= ~(ControlComponent::StrafeLeft); break;
-        case SDL_SCANCODE_D: comp->actions &= ~(ControlComponent::StrafeRight); break;
-        case SDL_SCANCODE_E: comp->actions &= ~(ControlComponent::Up); break;
-        case SDL_SCANCODE_C: comp->actions &= ~(ControlComponent::Down); break;
-        default: break;
-        }
+    switch (event.key.keysym.scancode) {
+    case SDL_SCANCODE_W: m_comp.actions &= ~(ControlComponent::Forward); break;
+    case SDL_SCANCODE_S: m_comp.actions &= ~(ControlComponent::Back); break;
+    case SDL_SCANCODE_A: m_comp.actions &= ~(ControlComponent::StrafeLeft); break;
+    case SDL_SCANCODE_D: m_comp.actions &= ~(ControlComponent::StrafeRight); break;
+    case SDL_SCANCODE_E: m_comp.actions &= ~(ControlComponent::Up); break;
+    case SDL_SCANCODE_C: m_comp.actions &= ~(ControlComponent::Down); break;
+    default: break;
     }
 }
+
+//------------------------------------------------------------------------------
 
 void InputSystem::setMouseRelativeMode(bool enable)
 {
