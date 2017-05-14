@@ -54,14 +54,14 @@ getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
     std::string orientation = actorTree.get("orientation", "");
     if (!orientation.empty()) {
         // Conversion form euler to quaternion
-		tr->orientation = glm::quat{ glm::vec3{stringToVector(orientation)} };
+        tr->orientation = glm::quat{glm::vec3{stringToVector(orientation)}};
     } else {
         tr->orientation = prototype.orientation;
     }
 
     std::string position = actorTree.get("position", "");
     if (!position.empty()) {
-		tr->position = glm::vec3{ stringToVector(position) };
+        tr->position = glm::vec3{stringToVector(position)};
     } else {
         tr->position = prototype.position;
     }
@@ -108,7 +108,7 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
 
     auto rdNode = actorTree.get_child_optional("render");
     if (rdNode) {
-        auto rd  = getRenderComponent(rdNode.get(), rdProto);
+        auto rd = getRenderComponent(rdNode.get(), rdProto);
         a->addComponent(ComponentId::Render, rd);
     }
 
@@ -163,7 +163,7 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
 
     auto rdNode = actorTree.get_child_optional("render");
     if (rdNode) {
-        auto rd  = getRenderComponent(rdNode.get(), rdProto);
+        auto rd = getRenderComponent(rdNode.get(), rdProto);
         a->addComponent(ComponentId::Render, rd);
     }
 
