@@ -19,11 +19,11 @@ struct TransformationComponent : public Component
     float scale = 1.0f;
 };
 
-enum class Role { Skybox, Terrain, Dynamic, Gui };
+enum class Role { Skybox, Dynamic };
 
 struct RenderComponent : public Component
 {
-    Role role;
+    Role role = Role::Dynamic;
     std::string shaderProgram = "default";
     std::string mesh;
     std::vector<std::string> textures;
@@ -32,7 +32,7 @@ struct RenderComponent : public Component
 struct PhysicsComponent : public Component
 {
     std::string shape;
-    float mass = 0.0f;
+    float mass         = 0.0f;
     glm::vec3 maxForce = glm::vec3{5000, 5000, 5000};
     glm::vec3 maxMomentum;
     glm::vec3 force;
@@ -54,7 +54,8 @@ struct ControlComponent : public Component
         AltFire     = (1 << 9),
     };
 
-    uint16_t actions = 0;
+    uint16_t actions = 0; //< Buttons
+    glm::vec4 axes;       //< Analog control
 };
 
 #endif // COMPONENTS_H

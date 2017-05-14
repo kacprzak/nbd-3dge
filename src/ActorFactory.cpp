@@ -31,7 +31,6 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
 {
     auto rd = std::make_shared<RenderComponent>();
 
-    rd->role          = Role::Dynamic;
     rd->mesh          = actorTree.get("mesh", prototype.mesh);
     rd->shaderProgram = actorTree.get("shaderProgram", prototype.shaderProgram);
 
@@ -110,7 +109,6 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
     auto rdNode = actorTree.get_child_optional("render");
     if (rdNode) {
         auto rd  = getRenderComponent(rdNode.get(), rdProto);
-        rd->role = Role::Skybox;
         a->addComponent(ComponentId::Render, rd);
     }
 
@@ -166,7 +164,6 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     auto rdNode = actorTree.get_child_optional("render");
     if (rdNode) {
         auto rd  = getRenderComponent(rdNode.get(), rdProto);
-        rd->role = Role::Skybox;
         a->addComponent(ComponentId::Render, rd);
     }
 
@@ -184,12 +181,6 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     if (actorType == "skybox") {
         auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
         if (rd) rd->role = Role::Skybox;
-    } else if (actorType == "terrain") {
-        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-        if (rd) rd->role = Role::Terrain;
-    } else if (actorType == "actor") {
-        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-        if (rd) rd->role = Role::Dynamic;
     }
 
     return a;

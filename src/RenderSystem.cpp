@@ -3,6 +3,7 @@
 #include "ResourcesMgr.h"
 #include "Terrain.h"
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
 
 RenderSystem::RenderSystem()
@@ -41,19 +42,20 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
 {
     std::shared_ptr<RenderNode> a;
     if (rd->role == Role::Dynamic) {
-        a = std::make_shared<RenderNode>(id, tr, rd);
-
         if (!rd->mesh.empty()) {
-            auto meshPtr = resourcesMgr.getMesh(rd->mesh);
-            a->setMesh(meshPtr);
+            if (boost::starts_with(rd->mesh, "heightfield:")) {
+                a = std::make_shared<Terrain>(id, tr, rd, *resourcesMgr.getHeightfield(rd->mesh));
+            } else {
+                a            = std::make_shared<RenderNode>(id, tr, rd);
+                auto meshPtr = resourcesMgr.getMesh(rd->mesh);
+                a->setMesh(meshPtr);
+            }
         }
     } else if (rd->role == Role::Skybox) {
         auto skybox = std::make_shared<Skybox>(resourcesMgr.getTexture(rd->textures[0]));
         skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
         setSkybox(skybox);
         return;
-    } else if (rd->role == Role::Terrain) {
-        a = std::make_shared<Terrain>(id, tr, rd, *resourcesMgr.getHeightfield(rd->mesh));
     }
 
     for (const auto& texture : rd->textures) {
@@ -76,7 +78,7 @@ void RenderSystem::update(float delta)
 
     if (m_camera) {
         m_camera->update(delta);
-        
+
         auto p = m_camera->transformation()->position;
         auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / float(M_PI);
         std::stringstream ss;
@@ -107,9 +109,7 @@ void RenderSystem::draw()
 void RenderSystem::draw(const Camera* camera) const
 {
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
-
     if (m_skybox) m_skybox->draw(camera);
-
     if (m_camera) m_camera->draw(camera);
 
     for (const auto& node : m_nodes) {
@@ -125,19 +125,10 @@ void RenderSystem::draw(const Camera* camera) const
 
 void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
-    // if (m_skybox)
-    //    m_skybox->draw(shaderProgram, camera);
-
-    // if (m_camera)
-    //    m_camera->draw(shaderProgram, camera);
-
+    // Used for drawing normals
     for (const auto& node : m_nodes) {
         node.second->draw(shaderProgram, camera);
     }
-
-    // for (const auto& node : m_texts) {
-    //    node->draw();
-    //}
 }
 
 //------------------------------------------------------------------------------

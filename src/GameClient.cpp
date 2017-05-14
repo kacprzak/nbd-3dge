@@ -74,7 +74,7 @@ GameClient::GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> r
 
     m_cameraCtrl         = std::make_unique<CameraController>();
     m_cameraCtrl->camera = m_renderSystem.getCamera()->transformation();
-    m_inputSystem.addActor(INT_MAX, &m_cameraCtrl.get()->cameraActions);
+    m_inputSystem.addActor(-1, &m_cameraCtrl.get()->cameraActions);
 }
 
 //------------------------------------------------------------------------------
@@ -212,6 +212,7 @@ void GameClient::keyReleased(const SDL_Event& event)
         }
     } break;
     case SDL_SCANCODE_V: toggleVSync(); break;
+    case SDL_SCANCODE_TAB: m_cameraCtrl->freeCamera = !m_cameraCtrl->freeCamera;
     default: break;
     }
     m_inputSystem.keyReleased(event);
