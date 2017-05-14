@@ -17,7 +17,7 @@ class CameraController
     TransformationComponent* camera;
     TransformationComponent* player;
 
-    bool freeCamera     = false;//true;
+    bool freeCamera     = false; // true;
     float m_cameraSpeed = 50.0f;
 
     void update(float delta)
@@ -52,10 +52,10 @@ class CameraController
                 camera->position += glm::vec3{delta};
             }
         } else {
-            auto orien = player->orientation;
-            const auto delta = glm::rotate(orien, glm::vec4{0.f, 0.f, 10.f, 0.f});
-            camera->position = player->position + glm::vec3{delta};
-            camera->orientation = orien;
+            auto orien          = player->orientation;
+            const auto delta    = glm::rotate(orien, glm::vec4{0.f, 1.5f, -6.f, 0.f});
+            camera->position    = player->position + glm::vec3{delta};
+            camera->orientation = orien * glm::quat{0.f, 0.f, 1.f, 0.f};
         }
     }
 };
