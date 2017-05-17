@@ -3,6 +3,8 @@
 #include "Logger.h"
 //#include "network/BaseSocketMgr.h"
 
+#include <SDL_image.h>
+
 #include <cstdlib> // exit
 #include <sstream>
 
@@ -49,6 +51,13 @@ void Engine::initializeSDL()
         LOG_INFO << "Current video driver: " << SDL_GetCurrentVideoDriver();
     }
 
+	// Load support for the JPG and PNG image formats
+	int sdl_image_flags = IMG_INIT_JPG | IMG_INIT_PNG;
+	int initted = IMG_Init(sdl_image_flags);
+	if ((initted & sdl_image_flags) != sdl_image_flags) {
+		throw EngineError("Could not initialize SDL_image", IMG_GetError());
+	}
+
     LOG_INFO << "SDL initialized";
 }
 
@@ -62,12 +71,12 @@ void Engine::logSDLInfo()
     SDL_VERSION(&compiled);
     SDL_GetVersion(&linked);
 
-    std::stringstream ss;
-    LOG_INFO << "Compiled against SDL: " << (uint32_t)compiled.major << "."
+    LOG_INFO << "Compiled with SDL: " << (uint32_t)compiled.major << "."
              << (uint32_t)compiled.minor << "." << (uint32_t)compiled.patch;
-    LOG_INFO << "Linked against SDL: " << (uint32_t)linked.major << "." << (uint32_t)linked.minor
+    LOG_INFO << "Running with SDL: " << (uint32_t)linked.major << "." << (uint32_t)linked.minor
              << "." << (uint32_t)linked.patch;
 
+    std::stringstream ss;
     if (m_initVideo) {
         ss << "Video drivers available: ";
         for (int i = 0; i < SDL_GetNumVideoDrivers(); ++i) {
@@ -75,6 +84,15 @@ void Engine::logSDLInfo()
         }
     }
     LOG_INFO << ss.str();
+
+	SDL_version img_compiled;
+	SDL_IMAGE_VERSION(&img_compiled);
+	const SDL_version *img_linked = IMG_Linked_Version();
+
+	LOG_INFO << "Compiled with SDL_image: " << (uint32_t)img_compiled.major << "."
+		<< (uint32_t)img_compiled.minor << "." << (uint32_t)img_compiled.patch;
+	LOG_INFO << "Running with SDL_image: " << (uint32_t)img_linked->major << "." << (uint32_t)img_linked->minor
+		<< "." << (uint32_t)img_linked->patch;
 }
 
 //------------------------------------------------------------------------------

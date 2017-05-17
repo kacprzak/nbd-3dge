@@ -2,16 +2,46 @@
 Boost/1.60.0@lasote/stable
 glew/2.0.0@coding3d/stable
 glm/0.9.7.6@dlarudgus20/stable
-SDL2/2.0.5@lasote/stable
-SDL2_image/2.0.1@lasote/stable
+SDL2/2.0.5@shearer12345/testing
+SDL2_image/2.0.1@a_teammate/testing
 bullet3/2.83.7.98d4780@lasote/vcpkg
 
 [generators]
 cmake
 
 [options]
+SDL2:shared=True
+SDL2_image:shared=True
+libpng:shared=True
+libjpeg-turbo:shared=True
 Boost:shared=True
+Boost:without_atomic=True
+Boost:without_chrono=False
+Boost:without_container=True
+Boost:without_context=True
+Boost:without_coroutine=True
+Boost:without_coroutine2=True
+Boost:without_date_time=False
+Boost:without_exception=True
+Boost:without_filesystem=False
+Boost:without_graph=True
+Boost:without_graph_parallel=True
+Boost:without_iostreams=True
+Boost:without_locale=True
+Boost:without_log=False
+Boost:without_math=True
+Boost:without_mpi=True
+Boost:without_program_options=False
+Boost:without_random=True
+Boost:without_regex=True
+Boost:without_serialization=True
+Boost:without_signals=True
+Boost:without_system=False
 Boost:without_test=True
+Boost:without_thread=False
+Boost:without_timer=True
+Boost:without_type_erasure=True
+Boost:without_wave=True
 
 [imports]
 bin, *.dll -> ./bin

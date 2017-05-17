@@ -130,7 +130,7 @@ std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
         retVal[2] = std::min(retVal[2], positions[i + 1]);
         retVal[3] = std::max(retVal[3], positions[i + 1]);
         retVal[4] = std::min(retVal[4], positions[i + 2]);
-        retVal[5] = std::max(retVal[5], positions[i + 3]);
+        retVal[5] = std::max(retVal[5], positions[i + 2]);
     }
 
     return retVal;
