@@ -1,17 +1,16 @@
 version: 0.1.{build}
-    platform:
-      - x64
+platform: x64
 
-    install:
-      - cmd: echo "Downloading conan..."
-      - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
-      - cmd: pip.exe install conan
-      - cmd: conan user # Create the conan data directory
-      - cmd: conan --version
+install:
+  - cmd: echo "Downloading conan..."
+  - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
+  - cmd: pip.exe install conan
+  - cmd: conan user # Create the conan data directory
+  - cmd: conan --version
 
-    build_script:
-      - cmd: mkdir build
-      - cmd: conan install
-      - cmd: cd build
-      - cmd: cmake ../ -G "Visual Studio 14 2015 Win64"
-      - cmd: cmake --build . --config Release
+  build_script:
+  - cmd: mkdir build
+  - cmd: conan install
+  - cmd: cd build
+  - cmd: cmake ../ -G "Visual Studio 14 2015 Win64"
+  - cmd: cmake --build . --config Release
