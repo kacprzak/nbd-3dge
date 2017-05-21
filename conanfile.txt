@@ -2,18 +2,14 @@
 Boost/1.60.0@lasote/stable
 glew/2.0.0@coding3d/stable
 glm/0.9.7.6@dlarudgus20/stable
-SDL2/2.0.5@shearer12345/testing
-SDL2_image/2.0.1@a_teammate/testing
+SDL2/2.0.5@lasote/stable
+SDL2_image/2.0.1@lasote/stable
 bullet3/2.83.7.98d4780@lasote/vcpkg
 
 [generators]
 cmake
 
 [options]
-SDL2:shared=True
-SDL2_image:shared=True
-libpng:shared=True
-libjpeg-turbo:shared=True
 Boost:shared=True
 Boost:without_atomic=True
 Boost:without_chrono=False
