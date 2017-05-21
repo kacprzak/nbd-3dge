@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/hxr95cc8py7m2blp?svg=true)](https://ci.appveyor.com/project/kacprzak/nbd-3dge)
+
 nbd-3dge
 ========
 
