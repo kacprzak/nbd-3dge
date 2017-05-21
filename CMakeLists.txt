@@ -20,6 +20,7 @@ if( WIN32 )
   
   include_directories( ${CONAN_INCLUDE_DIRS_BULLET3}/bullet )
   set( LINK_LIBS ${CONAN_LIBS} )
+  list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62)
   set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
 endif()
 
