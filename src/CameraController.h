@@ -20,17 +20,17 @@ class CameraController
 class FreeCamera : public CameraController
 {
   private:
-    glm::vec2 m_yawPitch;
-
     void rotateCamera(float yaw, float pitch, float /*roll*/)
     {
-        m_yawPitch += glm::vec2{glm::radians(-yaw), glm::radians(-pitch)};
-        m_yawPitch.x = glm::mod(m_yawPitch.x, glm::two_pi<float>());
-        m_yawPitch.y = glm::mod(m_yawPitch.y, glm::two_pi<float>());
+        static glm::vec2 yawPitch;
+
+        yawPitch += glm::vec2{glm::radians(-yaw), glm::radians(-pitch)};
+        yawPitch.x = glm::mod(yawPitch.x, glm::two_pi<float>());
+        yawPitch.y = glm::mod(yawPitch.y, glm::two_pi<float>());
 
         auto& orient = camera->orientation;
-        orient       = glm::angleAxis(m_yawPitch.x, glm::vec3(0, 1, 0));
-        orient *= glm::angleAxis(m_yawPitch.y, glm::vec3(1, 0, 0));
+        orient       = glm::angleAxis(yawPitch.x, glm::vec3(0, 1, 0));
+        orient *= glm::angleAxis(yawPitch.y, glm::vec3(1, 0, 0));
     }
 
   public:
