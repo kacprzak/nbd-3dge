@@ -2,11 +2,14 @@
 
 void InputSystem::update(float /*delta*/)
 {
-    for (auto keyVal : m_nodes) {
-        ControlComponent* comp = keyVal.second;
-        *comp                  = m_comp;
+    if (m_debugCamera) {
+        *m_debugCamera = m_comp;
+    } else {
+        for (auto keyVal : m_nodes) {
+            ControlComponent* comp = keyVal.second;
+            *comp                  = m_comp;
+        }
     }
-
     m_comp.axes = glm::vec4{0.f};
 }
 
