@@ -5,7 +5,7 @@
 #include "ShaderProgram.h"
 
 static std::string vertexSource = R"==(
-#version 430
+#version 330
 uniform mat4 MVP;
 
 out vec4 color;
@@ -21,7 +21,7 @@ void main()
 )==";
 
 static std::string fragmentSource = R"==(
-#version 430
+#version 330
 in vec4 color;
 out vec4 fragColor;
 

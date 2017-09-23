@@ -31,7 +31,7 @@ class SDLWindow : public GameView
 
   private:
     void createSDLWindow();
-    void initializeOpenGL();
+    void initializeOpenGL(int contextMajorVersion, int contextMinorVersion);
 
     std::string m_title;
     int m_screenWidth;

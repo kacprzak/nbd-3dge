@@ -62,7 +62,7 @@ void SDLWindow::createSDLWindow()
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 #ifndef NDEBUG
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -83,7 +83,7 @@ void SDLWindow::createSDLWindow()
     toggleVSync();
 
     // No SDL related stuff
-    initializeOpenGL();
+    initializeOpenGL(contexMajorVersion, contexMinorVersion);
 }
 
 void SDLWindow::toggleVSync()
@@ -114,8 +114,9 @@ bool SDLWindow::processInput(const SDL_Event& event)
     return true;
 }
 
-void SDLWindow::initializeOpenGL()
+void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersion)
 {
+    glewExperimental = GL_TRUE;
     GLenum glewInitStatus = glewInit();
 
     if (GLEW_OK != glewInitStatus) {
@@ -141,10 +142,12 @@ void SDLWindow::initializeOpenGL()
     glEnable(GL_FRAMEBUFFER_SRGB);
 
 #ifndef NDEBUG
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(openglCallbackFunction, nullptr);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+    if (contextMajorVersion >= 4 && contextMinorVersion >= 3) {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(openglCallbackFunction, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+    }
 #endif
 }
 
