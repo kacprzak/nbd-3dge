@@ -47,10 +47,10 @@ void Texture::setRepeat()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
-Texture* Texture::create(const std::string& filename, bool clamp)
+std::unique_ptr<Texture> Texture::create(const std::string& filename, bool clamp)
 {
-    GLenum target   = GL_TEXTURE_2D;
-    Texture* tex    = new Texture{target};
+    GLenum target = GL_TEXTURE_2D;
+    std::unique_ptr<Texture> tex{new Texture{target}};
 
     SDL_Surface* surface = IMG_Load(filename.c_str());
 
@@ -59,8 +59,10 @@ Texture* Texture::create(const std::string& filename, bool clamp)
     }
 
     // Top down inversion
-    if (SDL_InvertSurface(surface) != 0)
+    if (SDL_InvertSurface(surface) != 0) {
+        SDL_FreeSurface(surface);
         throw std::runtime_error("SDL Error: " + std::string(SDL_GetError()));
+    }
 
     tex->m_w = surface->w;
     tex->m_h = surface->h;
@@ -92,10 +94,10 @@ Texture* Texture::create(const std::string& filename, bool clamp)
     return tex;
 }
 
-Texture* Texture::create(const std::array<std::string, 6> filenames, bool clamp)
+std::unique_ptr<Texture> Texture::create(const std::array<std::string, 6> filenames, bool clamp)
 {
-    GLenum target   = GL_TEXTURE_CUBE_MAP;
-    Texture* tex    = new Texture{target};
+    GLenum target = GL_TEXTURE_CUBE_MAP;
+    std::unique_ptr<Texture> tex{new Texture{target}};
 
     glBindTexture(target, tex->m_textureId);
 
