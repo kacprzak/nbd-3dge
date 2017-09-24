@@ -59,18 +59,30 @@ void ShaderProgram::use() { glUseProgram(m_shaderProgramId); }
 
 void ShaderProgram::setUniform(const char* name, const glm::mat4& matrix)
 {
-    GLint loc = glGetUniformLocation(m_shaderProgramId, name);
+    GLint loc = getUniformLocation(name);
     glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 void ShaderProgram::setUniform(const char* name, float value)
 {
-    GLint loc = glGetUniformLocation(m_shaderProgramId, name);
+    GLint loc = getUniformLocation(name);
     glUniform1f(loc, value);
 }
 
 void ShaderProgram::setUniform(const char* name, int value)
 {
-    GLint loc = glGetUniformLocation(m_shaderProgramId, name);
+    GLint loc = getUniformLocation(name);
     glUniform1i(loc, value);
+}
+
+GLint ShaderProgram::getUniformLocation(const char* name)
+{
+    const auto it = m_uniformLocs.find(name);
+    if (it != m_uniformLocs.cend()) {
+        return it->second;
+    } else {
+        GLint loc = glGetUniformLocation(m_shaderProgramId, name);
+        m_uniformLocs[name] = loc;
+        return loc;
+    }
 }

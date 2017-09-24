@@ -125,10 +125,12 @@ void GameClient::keyReleased(const SDL_Event& event)
         static int magnitude = 2;
 
         if (event.key.keysym.mod & KMOD_SHIFT) {
-            magnitude = std::abs(++magnitude);
+            ++magnitude;
+            magnitude = std::abs(magnitude);
             m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
         } else if (event.key.keysym.mod & KMOD_CTRL) {
-            magnitude = std::abs(--magnitude);
+            --magnitude;
+            magnitude = std::abs(magnitude);
 
             if (magnitude == 0) magnitude = 1;
             m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);

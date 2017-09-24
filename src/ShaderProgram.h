@@ -5,6 +5,7 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <boost/container/flat_map.hpp>
 #include <vector>
 
 class ShaderProgram final
@@ -22,8 +23,11 @@ class ShaderProgram final
     void setUniform(const char* name, int value);
 
   private:
+    GLint getUniformLocation(const char* name);
+    
     GLuint m_shaderProgramId;
     std::vector<Shader*> m_shaders;
+    boost::container::flat_map<std::string, GLint> m_uniformLocs;
     bool m_linked;
 };
 
