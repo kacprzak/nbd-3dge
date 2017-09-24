@@ -9,7 +9,7 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 if( MSVC )
   #add_definitions( "/SUBSYSTEM:WINDOWS" )
 else()
-  add_definitions( "-Wall -Wextra -g -std=c++14" )
+  add_definitions( "-Wall -Wextra -std=c++14" )
 endif()
 
 include_directories(${PROJECT_BINARY_DIR} src)
