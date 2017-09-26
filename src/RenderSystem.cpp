@@ -3,9 +3,9 @@
 #include "ResourcesMgr.h"
 #include "Terrain.h"
 
+#include <array>
 #include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
-#include <array>
 
 RenderSystem::RenderSystem()
 {
@@ -82,13 +82,13 @@ void RenderSystem::update(float delta)
 
         auto p = m_camera->transformation()->position;
         auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / 3.14f;
-        std::stringstream ss;
-        ss.precision(1);
-        ss.setf(std::ios::fixed, std::ios::floatfield);
-        ss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
-        ss.precision(0);
-        ss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
-        m_cameraText->setText(ss.str());
+        std::ostringstream oss;
+        oss.precision(1);
+        oss.setf(std::ios::fixed, std::ios::floatfield);
+        oss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
+        oss.precision(0);
+        oss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
+        m_cameraText->setText(oss.str());
     }
 
     for (const auto& node : m_nodes) {
