@@ -55,29 +55,9 @@ PhysicsDebugDrawer::~PhysicsDebugDrawer()
 
 //------------------------------------------------------------------------------
 
-// Speeds up debug rendering in release. Slows down in debug.
-#ifdef NDEBUG
-#define EARLY_CLIPPING
-#endif
-
 void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to,
                                   const btVector3& color)
 {
-#ifdef EARLY_CLIPPING
-    auto from_homo = m_lastMVP * glm::vec4{from.x(), from.y(), from.z(), 1.f};
-    from_homo      = from_homo / from_homo.w;
-    if (from_homo.x > 1.f || from_homo.x < -1.f || from_homo.y > 1.f || from_homo.y < -1.f ||
-        from_homo.z > 1.f || from_homo.z < -1.f) {
-        return;
-    }
-
-    auto to_homo = m_lastMVP * glm::vec4{to.x(), to.y(), to.z(), 1.f};
-    to_homo      = to_homo / to_homo.w;
-    if (to_homo.x > 1.f || to_homo.x < -1.f || to_homo.y > 1.f || to_homo.y < -1.f ||
-        to_homo.z > 1.f || to_homo.z < -1.f) {
-        return;
-    }
-#endif
     m_requestedLinesDataSize++;
     if (m_linesData.size() < m_requestedLinesDataSize) return;
 
@@ -87,8 +67,7 @@ void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to,
     tmp.pos2 = glm::vec3{to.x(), to.y(), to.z()};
     tmp.col2 = tmp.col2;
 
-    m_linesData[m_currLinesDataIdx] = tmp;
-    m_currLinesDataIdx++;
+    m_linesData[m_currLinesDataIdx++] = tmp;
 }
 
 void PhysicsDebugDrawer::drawContactPoint(const btVector3& /*PointOnB*/,
@@ -109,16 +88,15 @@ int PhysicsDebugDrawer::getDebugMode() const { return m_debugMode; }
 
 void PhysicsDebugDrawer::draw(Camera* camera)
 {
-    m_lastMVP = camera->projectionMatrix() * camera->viewMatrix();
-
     if (m_currLinesDataIdx != 0) {
+        const auto mvp = camera->projectionMatrix() * camera->viewMatrix();
+
         m_shaderProgram->use();
-        m_shaderProgram->setUniform("MVP", m_lastMVP);
+        m_shaderProgram->setUniform("MVP", mvp);
 
         glBindVertexArray(m_vao);
-        glDrawArrays(GL_LINES, 0, std::min(m_bufferReservedSize / sizeof(Line) * 2, m_currLinesDataIdx * 2));
-
         updateBuffer();
+        glDrawArrays(GL_LINES, 0, m_currLinesDataIdx * 2);
     }
 
     if (m_linesData.size() < m_requestedLinesDataSize) m_linesData.resize(m_requestedLinesDataSize);
@@ -140,7 +118,8 @@ void PhysicsDebugDrawer::updateBuffer()
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
 
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                              (void*)(3 * sizeof(float)));
 
         LOG_TRACE << "PhysicsDebugDrawer::m_bufferReservedSize = " << m_bufferReservedSize;
     } else {

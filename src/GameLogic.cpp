@@ -161,7 +161,7 @@ void GameLogic::update(float elapsedTime)
 
 //------------------------------------------------------------------------------
 
-void GameLogic::draw()
+void GameLogic::debugDraw()
 {
     if (m_drawDebug) m_physicsSystem->drawDebugData();
 }

@@ -48,7 +48,6 @@ class PhysicsDebugDrawer final : public btIDebugDraw
     std::size_t m_bufferReservedSize = 0;
 
     std::unique_ptr<ShaderProgram> m_shaderProgram;
-    glm::mat4 m_lastMVP{1.f}; //< ModelViewProjection matrix from previous frame
 };
 
 #endif // PHYSICSDEBUGDRAWER_H

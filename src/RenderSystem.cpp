@@ -5,7 +5,8 @@
 
 #include <array>
 #include <boost/algorithm/string/predicate.hpp>
-#include <sstream>
+#include <boost/iostreams/device/array.hpp>
+#include <boost/iostreams/stream.hpp>
 
 RenderSystem::RenderSystem()
 {
@@ -75,6 +76,8 @@ void RenderSystem::removeActor(int id) { remove(id); }
 
 void RenderSystem::update(float delta)
 {
+    using namespace boost;
+    
     m_fpsCounter.update(delta);
 
     if (m_camera) {
@@ -82,13 +85,18 @@ void RenderSystem::update(float delta)
 
         auto p = m_camera->transformation()->position;
         auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / 3.14f;
-        std::ostringstream oss;
+
+        std::array<char, 64> buffer;
+        std::fill(std::begin(buffer), std::end(buffer), '\0');
+        iostreams::array_sink sink{buffer.data(), buffer.size()};
+        iostreams::stream<iostreams::array_sink> oss{sink};
         oss.precision(1);
         oss.setf(std::ios::fixed, std::ios::floatfield);
         oss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
         oss.precision(0);
         oss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
-        m_cameraText->setText(oss.str());
+        buffer[buffer.size() - 1] = '\0';
+        m_cameraText->setText(buffer.data());
     }
 
     for (const auto& node : m_nodes) {
