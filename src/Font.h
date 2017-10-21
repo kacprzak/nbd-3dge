@@ -47,7 +47,7 @@ class Font final
     {
         uint16_t size;
         uint8_t bitField = 0; //< bit 0: smooth, bit 1: unicode, bit 2: italic, bit 3: bold, bit 4:
-                              //fixedHeigth, bits 5-7: reserved
+                              // fixedHeigth, bits 5-7: reserved
         uint8_t charset;
         uint16_t strechH;
         uint8_t aa;

@@ -7,16 +7,14 @@
 class FontLoader : public Loader
 {
   public:
-    FontLoader();
-
-    Font* getFont();
+    Font getFont();
 
   protected:
     void command(const std::string& cmd, const std::vector<std::string>& args) override;
     void fileLoaded() override;
 
   private:
-    Font* m_font;
+    Font m_font;
 };
 
 #endif // FONTLOADER_H

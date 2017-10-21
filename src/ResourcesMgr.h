@@ -3,11 +3,11 @@
 
 #include "Font.h"
 #include "FontLoader.h"
+#include "Heightfield.h"
 #include "Mesh.h"
 #include "Script.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
-#include "Heightfield.h"
 
 #include <map>
 #include <string>

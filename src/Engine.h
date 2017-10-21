@@ -55,7 +55,7 @@ class Engine final
 
     bool m_breakLoop = false;
     bool m_appActive = true;
-    //bool m_mouseFocus true;
+    // bool m_mouseFocus true;
     bool m_inputFocus = true;
     bool m_initVideo;
 

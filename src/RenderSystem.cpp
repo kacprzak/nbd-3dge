@@ -77,7 +77,7 @@ void RenderSystem::removeActor(int id) { remove(id); }
 void RenderSystem::update(float delta)
 {
     using namespace boost;
-    
+
     m_fpsCounter.update(delta);
 
     if (m_camera) {

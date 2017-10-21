@@ -3,8 +3,8 @@
 
 #include "Actor.h"
 #include "GameView.h"
-#include "Settings.h"
 #include "ResourcesMgr.h"
+#include "Settings.h"
 
 #include <boost/utility.hpp>
 #include <list>

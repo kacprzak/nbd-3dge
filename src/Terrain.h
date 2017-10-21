@@ -1,8 +1,8 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "RenderNode.h"
 #include "Heightfield.h"
+#include "RenderNode.h"
 
 class Terrain : public RenderNode
 {

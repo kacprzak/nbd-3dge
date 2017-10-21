@@ -81,7 +81,7 @@ GLint ShaderProgram::getUniformLocation(const char* name)
     if (it != m_uniformLocs.cend()) {
         return it->second;
     } else {
-        GLint loc = glGetUniformLocation(m_shaderProgramId, name);
+        GLint loc           = glGetUniformLocation(m_shaderProgramId, name);
         m_uniformLocs[name] = loc;
         return loc;
     }

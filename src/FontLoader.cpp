@@ -3,14 +3,14 @@
 #include "Logger.h"
 #include "Util.h"
 
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
 
 static void removeQuotes(std::string& s)
 {
-    if (s.front() == '"') {
-        s.erase(0, 1);         // erase the first character
-        s.erase(s.size() - 1); // erase the last character
-    }
+    using namespace boost::algorithm;
+
+    trim_if(s, is_any_of("\""));
 }
 
 template <typename T>
@@ -31,9 +31,7 @@ int8_t to_int<int8_t>(const std::string& s)
     return boost::numeric_cast<int8_t>(boost::lexical_cast<int>(s));
 }
 
-FontLoader::FontLoader() { m_font = new Font(); }
-
-Font* FontLoader::getFont() { return m_font; }
+Font FontLoader::getFont() { return m_font; }
 
 void FontLoader::command(const std::string& cmd, const std::vector<std::string>& args)
 {
@@ -41,7 +39,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
 
     if (cmd == "info") {
         for (const auto& arg : args) {
-            Font::Info& info = m_font->m_info;
+            Font::Info& info = m_font.m_info;
             keyVal.clear();
             split(arg, '=', keyVal);
             removeQuotes(keyVal[1]);
@@ -84,7 +82,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
         }
     } else if (cmd == "common") {
         for (const auto& arg : args) {
-            Font::Common& common = m_font->m_common;
+            Font::Common& common = m_font.m_common;
             keyVal.clear();
             split(arg, '=', keyVal);
             removeQuotes(keyVal[1]);
@@ -102,7 +100,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
                 common.bitField |= 1 >> 7;
         }
     } else if (cmd == "page") {
-        m_font->m_pages.resize(m_font->m_common.pages);
+        m_font.m_pages.resize(m_font.m_common.pages);
         size_t id = 0;
         std::string file;
         for (const auto& arg : args) {
@@ -114,13 +112,13 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
             else if (keyVal[0] == "file")
                 file = keyVal[1];
         }
-        m_font->m_pages[id] = file;
+        m_font.m_pages[id] = file;
     } else if (cmd == "chars") {
         /*
           keyVal.clear();
           split(args[0], '=', keyVal);
           if (keyVal[0] == "count")
-          m_font->m_chars.reserve(to_int<size_t>(keyVal[1]));
+          m_font.m_chars.reserve(to_int<size_t>(keyVal[1]));
         */
     } else if (cmd == "char") {
         Font::Char c;
@@ -149,7 +147,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
             else if (keyVal[0] == "chnl")
                 c.page = to_int<uint8_t>(keyVal[1]);
         }
-        m_font->m_chars[c.id] = c;
+        m_font.m_chars[c.id] = c;
     } else if (cmd == "kernings") {
         // same as in case of chars
     } else if (cmd == "kerning") {
@@ -160,19 +158,16 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
             keyVal.clear();
             split(arg, '=', keyVal);
             removeQuotes(keyVal[1]);
-            if (keyVal[0] == "first")
-                first = to_int<uint32_t>(keyVal[1]);
-            if (keyVal[0] == "second")
-                second = to_int<uint32_t>(keyVal[1]);
-            if (keyVal[0] == "amount")
-                amount = to_int<int16_t>(keyVal[1]);
+            if (keyVal[0] == "first") first   = to_int<uint32_t>(keyVal[1]);
+            if (keyVal[0] == "second") second = to_int<uint32_t>(keyVal[1]);
+            if (keyVal[0] == "amount") amount = to_int<int16_t>(keyVal[1]);
         }
-        m_font->m_kerning[std::make_pair(first, second)] = amount;
+        m_font.m_kerning[std::make_pair(first, second)] = amount;
     }
 }
 
 void FontLoader::fileLoaded()
 {
-    LOG_INFO << "Loaded: fontFace: " << m_font->m_info.face << ", chars: " << m_font->m_chars.size()
-             << ", kernings: " << m_font->m_kerning.size();
+    LOG_INFO << "Loaded: fontFace: " << m_font.m_info.face << ", chars: " << m_font.m_chars.size()
+             << ", kernings: " << m_font.m_kerning.size();
 }

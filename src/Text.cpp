@@ -24,8 +24,7 @@ void Text::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
 
 void Text::setText(const std::string& text)
 {
-    if (text == m_text)
-        return;
+    if (text == m_text) return;
 
     struct Vertex
     {
@@ -125,8 +124,7 @@ void Text::setPosition(glm::vec3 pos)
 
 void Text::draw()
 {
-    if (m_text.empty())
-        return;
+    if (m_text.empty()) return;
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);

@@ -18,7 +18,8 @@ class Texture final
     int height() const { return m_h; }
 
     static std::unique_ptr<Texture> create(const std::string& filename, bool clamp = false);
-    static std::unique_ptr<Texture> create(const std::array<std::string, 6> filenames, bool clamp = false);
+    static std::unique_ptr<Texture> create(const std::array<std::string, 6> filenames,
+                                           bool clamp = false);
 
   private:
     Texture(GLenum target);

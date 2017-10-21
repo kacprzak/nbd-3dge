@@ -116,7 +116,7 @@ bool SDLWindow::processInput(const SDL_Event& event)
 
 void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersion)
 {
-    glewExperimental = GL_TRUE;
+    glewExperimental      = GL_TRUE;
     GLenum glewInitStatus = glewInit();
 
     if (GLEW_OK != glewInitStatus) {

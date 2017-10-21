@@ -44,8 +44,7 @@ void Loader::parseLine(const std::string& line)
     using namespace boost;
 
     // Ignore lines
-    if (line.empty() || algorithm::starts_with(line, "#"))
-        return;
+    if (line.empty() || algorithm::starts_with(line, "#")) return;
 
     typedef tokenizer<char_separator<char>> tokenizer;
 

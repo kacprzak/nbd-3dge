@@ -15,7 +15,10 @@ RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent
 {
 }
 
-void RenderNode::setTextures(std::vector<std::shared_ptr<Texture>> textures) { m_textures = textures; }
+void RenderNode::setTextures(std::vector<std::shared_ptr<Texture>> textures)
+{
+    m_textures = textures;
+}
 
 void RenderNode::addTexture(std::shared_ptr<Texture> texture) { m_textures.push_back(texture); }
 
@@ -57,8 +60,7 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         glUseProgram(0);
     }
 
-    if (m_mesh)
-        m_mesh->draw();
+    if (m_mesh) m_mesh->draw();
 }
 
 void RenderNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }

@@ -58,8 +58,7 @@ std::vector<unsigned short> ObjLoader::indices() const
 {
     std::vector<unsigned short> indices_a;
 
-    if (m_oglFaces.empty())
-        return indices_a;
+    if (m_oglFaces.empty()) return indices_a;
 
     indices_a.reserve(m_oglFaces.size() * 3);
 
@@ -130,11 +129,9 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
             split(args[i], '/', elems);
             f.vertexIndices[i] = to_int(elems[0]) - 1;
 
-            if (elems.size() > 1 && !elems[1].empty())
-                f.texIndices[i] = to_int(elems[1]) - 1;
+            if (elems.size() > 1 && !elems[1].empty()) f.texIndices[i] = to_int(elems[1]) - 1;
 
-            if (elems.size() > 2 && !elems[2].empty())
-                f.normIndices[i] = to_int(elems[2]) - 1;
+            if (elems.size() > 2 && !elems[2].empty()) f.normIndices[i] = to_int(elems[2]) - 1;
         }
         m_faces.push_back(f);
 

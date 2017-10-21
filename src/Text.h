@@ -15,7 +15,7 @@ class Text final
     ~Text();
 
     void setText(const std::string& text);
-    
+
     //! Position of leftTop corner of text relavtive to leftTop screen coord
     void setPosition(glm::vec3 pos);
 
