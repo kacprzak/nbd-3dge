@@ -17,7 +17,7 @@ ResourcesMgr::ResourcesMgr(const std::string& dataFolder, const std::string& sha
 
 //------------------------------------------------------------------------------
 
-void ResourcesMgr::load(std::string xmlFile)
+void ResourcesMgr::load(const std::string& xmlFile)
 {
     using boost::property_tree::ptree;
     ptree pt;

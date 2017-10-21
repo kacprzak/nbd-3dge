@@ -140,7 +140,7 @@ std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
 
 Mesh* Mesh::fromWavefrontObj(const std::string& objfileName)
 {
-    std::string name = extractFilename(objfileName);
+    // std::string name = extractFilename(objfileName);
 
     ObjLoader objLoader;
     objLoader.load(objfileName);

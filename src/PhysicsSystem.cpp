@@ -12,7 +12,7 @@
 class MotionState : public btMotionState
 {
   public:
-    MotionState(TransformationComponent* tr)
+    explicit MotionState(TransformationComponent* tr)
         : m_tr{tr}
     {
     }

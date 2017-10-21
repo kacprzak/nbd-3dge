@@ -38,7 +38,7 @@ class PhysicsDebugDrawer final : public btIDebugDraw
         glm::vec3 col2;
     };
 
-    int m_debugMode;
+    int m_debugMode{};
     std::vector<Line> m_linesData;
     size_t m_currLinesDataIdx       = 0;
     size_t m_requestedLinesDataSize = 0;
