@@ -22,9 +22,9 @@ class Mesh
 
     std::vector<float> positions() const;
 
-    static Mesh* fromWavefrontObj(const std::string& objfileName);
-    static Mesh* fromHeightmap(const std::vector<float>& heights, int w, int h,
-                               float textureStrech);
+    static std::unique_ptr<Mesh> fromWavefrontObj(const std::string& objfileName);
+    static std::unique_ptr<Mesh> fromHeightmap(const std::vector<float>& heights, int w, int h,
+                                               float textureStrech);
 
   private:
     static std::array<float, 6> calculateAABB(const std::vector<float>& positions);

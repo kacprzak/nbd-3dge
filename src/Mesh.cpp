@@ -138,20 +138,21 @@ std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
 
 //------------------------------------------------------------------------------
 
-Mesh* Mesh::fromWavefrontObj(const std::string& objfileName)
+std::unique_ptr<Mesh> Mesh::fromWavefrontObj(const std::string& objfileName)
 {
     // std::string name = extractFilename(objfileName);
 
     ObjLoader objLoader;
     objLoader.load(objfileName);
 
-    return new Mesh{GLenum(objLoader.primitive()), objLoader.vertices(), objLoader.normals(),
-                    objLoader.texCoords(), objLoader.indices()};
+    return std::make_unique<Mesh>(GLenum(objLoader.primitive()), objLoader.vertices(),
+                                  objLoader.normals(), objLoader.texCoords(), objLoader.indices());
 }
 
 //------------------------------------------------------------------------------
 
-Mesh* Mesh::fromHeightmap(const std::vector<float>& heights, int w, int h, float textureStrech)
+std::unique_ptr<Mesh> Mesh::fromHeightmap(const std::vector<float>& heights, int w, int h,
+                                          float textureStrech)
 {
     if (w % 2 != 0 || h % 2 != 0) {
         throw std::runtime_error{"Heightmap with odd size is not supported."};
@@ -246,5 +247,5 @@ Mesh* Mesh::fromHeightmap(const std::vector<float>& heights, int w, int h, float
         }
     }
 
-    return new Mesh{GL_TRIANGLE_STRIP, vertices, normals, texCoords, indices};
+    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, normals, texCoords, indices);
 }
