@@ -10,6 +10,7 @@
 #define APIENTRY
 #endif
 
+#ifndef NDEBUG
 static void APIENTRY openglCallbackFunction(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/,
                                             GLenum severity, GLsizei /*length*/,
                                             const GLchar* message, const void* /*userParam*/)
@@ -23,6 +24,7 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/, GLenum /*type*/, 
         }
     }
 }
+#endif
 
 //==============================================================================
 
@@ -31,6 +33,7 @@ SDLWindow::SDLWindow(const Settings& settings)
     , m_screenWidth{settings.screenWidth}
     , m_screenHeight{settings.screenHeight}
     , m_screenFull{settings.fullscreen}
+    , m_msaa{settings.msaa}
 {
     try {
         createSDLWindow();
@@ -45,6 +48,11 @@ void SDLWindow::createSDLWindow()
     int screen_flags = SDL_WINDOW_OPENGL;
 
     if (m_screenFull) screen_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+    if (m_msaa != 0) {
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, m_msaa);
+    }
 
     // Screen surface
     m_window = SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -62,7 +70,7 @@ void SDLWindow::createSDLWindow()
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 #ifndef NDEBUG
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -70,6 +78,12 @@ void SDLWindow::createSDLWindow()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     m_glContext = SDL_GL_CreateContext(m_window);
+
+    if (!m_glContext) {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        m_glContext = SDL_GL_CreateContext(m_window);
+    }
+
     if (!m_glContext) {
         SDL_DestroyWindow(m_window);
         throw EngineError("Creating OpenGL context failed", SDL_GetError());
@@ -79,7 +93,15 @@ void SDLWindow::createSDLWindow()
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMajorVersion);
     int contexMinorVersion;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMinorVersion);
-    LOG_INFO << "GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion;
+    LOG_INFO << "  GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion;
+
+    int multisampleBuffers;
+    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &multisampleBuffers);
+    int multisampleSamples;
+    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &multisampleSamples);
+    LOG_INFO << "  Multisample buffers: " << multisampleBuffers
+             << " samples: " << multisampleSamples;
+
     toggleVSync();
 
     // No SDL related stuff
@@ -123,6 +145,8 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
         LOG_FATAL << "glewInitStatus: " << glewGetErrorString(glewInitStatus);
         exit(1);
     }
+
+    if (m_msaa != 0) glEnable(GL_MULTISAMPLE);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 

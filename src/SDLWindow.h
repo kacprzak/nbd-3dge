@@ -37,6 +37,7 @@ class SDLWindow : public GameView
     int m_screenWidth;
     int m_screenHeight;
     bool m_screenFull;
+    int m_msaa;
 
     SDL_Window* m_window;
     SDL_GLContext m_glContext;

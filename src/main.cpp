@@ -46,6 +46,7 @@ bool loadSettings(Settings& s, int ac, char** av)
         ("screenWidth", po::value<unsigned short>()->default_value(s.screenWidth), "Screen resolution")
         ("screenHeight", po::value<unsigned short>()->default_value(s.screenHeight), "Screen resolution")
         ("fullscreen", "Full screen mode")
+        ("msaa", po::value<unsigned short>()->default_value(s.msaa), "Multisample anti-aliasing")
         ("dataFolder", po::value<std::string>(), "Path to textures, sounds etc.")
         ("shadersFolder", po::value<std::string>(), "Path to shaders code")
         ("logLevel", po::value<std::string>()->default_value(s.logLevel),
@@ -83,6 +84,8 @@ bool loadSettings(Settings& s, int ac, char** av)
     s.screenHeight = vm["screenHeight"].as<unsigned short>();
 
     if (vm.count("fullscreen")) s.fullscreen = true;
+
+    s.msaa = vm["msaa"].as<unsigned short>();
 
     s.dataFolder    = vm["dataFolder"].as<std::string>();
     s.shadersFolder = vm["shadersFolder"].as<std::string>();

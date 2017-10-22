@@ -9,6 +9,7 @@ struct Settings
     int screenWidth         = 1024;
     int screenHeight        = 768;
     bool fullscreen         = false;
+    int msaa                = 0;
     std::string dataFolder;
     std::string shadersFolder;
 #ifndef NDEBUG

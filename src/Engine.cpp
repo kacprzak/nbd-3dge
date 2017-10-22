@@ -76,7 +76,7 @@ void Engine::logSDLInfo()
     LOG_INFO << "Running with SDL: " << (uint32_t)linked.major << "." << (uint32_t)linked.minor
              << "." << (uint32_t)linked.patch;
 
-    std::stringstream ss;
+    std::ostringstream ss;
     if (m_initVideo) {
         ss << "Video drivers available: ";
         for (int i = 0; i < SDL_GetNumVideoDrivers(); ++i) {
