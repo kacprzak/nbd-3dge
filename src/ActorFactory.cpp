@@ -33,6 +33,7 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
 
     rd->mesh          = actorTree.get("mesh", prototype.mesh);
     rd->shaderProgram = actorTree.get("shaderProgram", prototype.shaderProgram);
+    rd->transparent   = actorTree.get("transparent", prototype.transparent);
 
     if (auto textures = actorTree.get_child_optional("textures")) {
         for (ptree::value_type& v : actorTree.get_child("textures")) {

@@ -31,6 +31,11 @@
     <fragmentShader>lightAndTex.frag</fragmentShader>
   </shaderProgram>
   <shaderProgram>
+    <name>lightAndTex3</name>
+    <vertexShader>lightAndTex3.vert</vertexShader>
+    <fragmentShader>lightAndTex3.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
     <name>terrain</name>
     <vertexShader>terrain.vert</vertexShader>
     <fragmentShader>terrain.frag</fragmentShader>
@@ -81,31 +86,52 @@
   </heightfield>
 
   <!--mesh>
-    <name>teddy</name>
-    <file>teddy2.obj</file>
-  </mesh>
-  <mesh>
-    <name>cow</name>
-    <file>cow.obj</file>
-  </mesh-->
+      <name>teddy</name>
+      <file>teddy2.obj</file>
+      </mesh>
+      <mesh>
+      <name>cow</name>
+      <file>cow.obj</file>
+      </mesh-->
 
   <!--mesh>
       <name>teapot</name>
       <file>teapot.obj</file>
-    </mesh-->
+      </mesh-->
 
-    <mesh>
-      <name>ship</name>
-      <file>ship.obj</file>
-    </mesh>
+  <mesh>
+    <name>ship</name>
+    <file>ship.obj</file>
+  </mesh>
 
-    <mesh>
-      <name>cube</name>
-      <file>cube.obj</file>
-    </mesh>
+  <mesh>
+    <name>cube</name>
+    <file>cube.obj</file>
+  </mesh>
 
-    <!--mesh>
-        <name>floor</name>
-        <file>floor.obj</file>
-      </mesh-->      
+  <!--mesh>
+      <name>floor</name>
+      <file>floor.obj</file>
+      </mesh-->
+
+  <!-- palm_tree -->
+
+  <texture>
+    <name>palm_tree_diffuse</name>
+    <file>palm_tree_v2/diffus.tga</file>
+  </texture>
+  <texture>
+    <name>palm_tree_normal</name>
+    <file>palm_tree_v2/normal.tga</file>
+  </texture>
+  <texture>
+    <name>palm_tree_specular</name>
+    <file>palm_tree_v2/specular.tga</file>
+  </texture>
+
+  <mesh>
+    <name>palm_tree</name>
+    <file>palm_tree_v2/palm_tree.obj</file>
+  </mesh>
+  
 </assets>

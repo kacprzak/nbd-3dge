@@ -67,10 +67,17 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
 
     a->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
 
-    add(id, a);
+    if (!rd->transparent)
+        add(id, a);
+    else
+        addTransparent(id, a);
 }
 
-void RenderSystem::removeActor(int id) { remove(id); }
+void RenderSystem::removeActor(int id)
+{
+    remove(id);
+    removeTransparent(id);
+}
 
 //------------------------------------------------------------------------------
 
@@ -102,6 +109,10 @@ void RenderSystem::update(float delta)
     for (const auto& node : m_nodes) {
         node.second->update(delta);
     }
+
+    for (const auto& node : m_transparentNodes) {
+        node.second->update(delta);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -125,8 +136,18 @@ void RenderSystem::draw(const Camera* camera) const
         node.second->draw(camera);
     }
 
-    if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //glDisable(GL_CULL_FACE);
+    glDepthMask(GL_FALSE);
 
+    for (const auto& node : m_transparentNodes) {
+        node.second->draw(camera);
+    }
+
+    glDepthMask(GL_TRUE);
+    //glEnable(GL_CULL_FACE);
+    
+    if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    
     for (const auto& node : m_texts) {
         node->draw();
     }

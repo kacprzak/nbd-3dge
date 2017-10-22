@@ -51,20 +51,41 @@
     </physics>
   </actorPrototype>
 
-  <!--actorPrototype>
-    <name>cowPrototype</name>
+  <actorPrototype>
+    <name>palmTreePrototype</name>
     <transformation>
-      <position>-10 100 0</position>
+      <scale>0.02</scale>
     </transformation>
     <render>
-      <mesh>cow</mesh>
-      <shaderProgram>light</shaderProgram>
+      <mesh>palm_tree</mesh>
+      <transparent>true</transparent>
+      <textures>
+        <texture>palm_tree_diffuse</texture>
+        <texture>palm_tree_normal</texture>
+        <texture>palm_tree_specular</texture>
+      </textures>
+      <shaderProgram>lightAndTex3</shaderProgram>
     </render>
     <physics>
+      <shape>box:5:370:5</shape>
+      <mass>0</mass>
+    </physics>
+  </actorPrototype>
+  
+  <!--actorPrototype>
+      <name>cowPrototype</name>
+      <transformation>
+      <position>-10 100 0</position>
+      </transformation>
+      <render>
+      <mesh>cow</mesh>
+      <shaderProgram>light</shaderProgram>
+      </render>
+      <physics>
       <shape>box:5:2.5:1</shape>
       <mass>200</mass>
-    </physics>
-  </actorPrototype-->
+      </physics>
+      </actorPrototype-->
 
   <skybox>
     <render>
@@ -97,14 +118,14 @@
   </terrain>
 
   <!--actor>
-    <name>teddy</name>
-    <prototype>teddyPrototype</prototype>
-    <transformation>
+      <name>teddy</name>
+      <prototype>teddyPrototype</prototype>
+      <transformation>
       <position>22 100 0</position>
-    </transformation>
-    <render/>
-    <physics/>
-  </actor-->
+      </transformation>
+      <render/>
+      <physics/>
+      </actor-->
   
   <actor>
     <prototype>cubePrototype</prototype>
@@ -207,4 +228,40 @@
     <physics/>
   </actor>
 
+  <actor>
+    <prototype>palmTreePrototype</prototype>
+    <transformation>
+      <position>0 0 20</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <prototype>palmTreePrototype</prototype>
+    <transformation>
+      <position>10 -1.5 20</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <prototype>palmTreePrototype</prototype>
+    <transformation>
+      <position>20 -4.2 20</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+
+  <actor>
+    <prototype>palmTreePrototype</prototype>
+    <transformation>
+      <position>30 -6 20</position>
+    </transformation>
+    <render/>
+    <physics/>
+  </actor>
+  
 </scene>
