@@ -11,7 +11,7 @@
 class Text final
 {
   public:
-    Text(std::shared_ptr<Font> font);
+    Text(const std::shared_ptr<Font>& font);
     ~Text();
 
     void setText(const std::string& text);
@@ -19,7 +19,7 @@ class Text final
     //! Position of leftTop corner of text relavtive to leftTop screen coord
     void setPosition(glm::vec3 pos);
 
-    void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
+    void setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram);
 
     void draw();
 

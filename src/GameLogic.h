@@ -19,7 +19,7 @@ class GameLogic final : private boost::noncopyable
     using ActorsList   = std::list<std::shared_ptr<Actor>>;
 
   public:
-    GameLogic(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr = {});
+    GameLogic(const Settings& settings, const std::shared_ptr<ResourcesMgr>& resourcesMgr = {});
     ~GameLogic();
 
     void update(float elapsedTime);

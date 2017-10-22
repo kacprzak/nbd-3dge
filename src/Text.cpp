@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Text::Text(std::shared_ptr<Font> font)
+Text::Text(const std::shared_ptr<Font>& font)
     : m_font{font}
 {
     glGenVertexArrays(1, &m_vao);
@@ -17,7 +17,7 @@ Text::~Text()
     glDeleteBuffers(1, &m_buffer);
 }
 
-void Text::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
+void Text::setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram)
 {
     m_shaderProgram = shaderProgram;
 }

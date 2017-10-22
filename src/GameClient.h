@@ -16,7 +16,7 @@ class GameClient : public SDLWindow
     typedef SDLWindow super;
 
   public:
-    GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr = {});
+    GameClient(const Settings& settings, const std::shared_ptr<ResourcesMgr>& resourcesMgr = {});
     ~GameClient();
 
     void loadResources(const std::string& xmlFile) override;

@@ -28,7 +28,7 @@ private:
 
 //==============================================================================
 
-GameLogic::GameLogic(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr)
+GameLogic::GameLogic(const Settings& settings, const std::shared_ptr<ResourcesMgr>& resourcesMgr)
     : m_settings{settings}
     , m_resourcesMgr(resourcesMgr)
     , m_physicsSystem{new PhysicsSystem}

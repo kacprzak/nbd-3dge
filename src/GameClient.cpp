@@ -6,7 +6,7 @@
 #include "Terrain.h"
 #include "Texture.h"
 
-GameClient::GameClient(const Settings& settings, std::shared_ptr<ResourcesMgr> resourcesMgr)
+GameClient::GameClient(const Settings& settings, const std::shared_ptr<ResourcesMgr>& resourcesMgr)
     : SDLWindow{settings}
     , m_resourcesMgr{resourcesMgr}
     , m_settings{settings}
