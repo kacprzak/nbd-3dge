@@ -95,6 +95,21 @@ void SDLWindow::createSDLWindow()
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMinorVersion);
     LOG_INFO << "  GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion;
 
+    int redSize;
+    SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &redSize);
+    int greenSize;
+    SDL_GL_GetAttribute(SDL_GL_GREEN_SIZE, &greenSize);
+    int blueSize;
+    SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &blueSize);
+    int alphaSize;
+    SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, &alphaSize);
+    LOG_INFO << "  RGBA sizes: " << redSize << " " << greenSize << " " << blueSize << " "
+             << alphaSize;
+
+    int depthSize;
+    SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &depthSize);
+    LOG_INFO << "  Depth size: " << depthSize;
+
     int multisampleBuffers;
     SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &multisampleBuffers);
     int multisampleSamples;
