@@ -8,7 +8,7 @@
 
 class Mesh
 {
-    enum Buffers { POSITIONS, NORMALS, TEXCOORDS, INDICES, NUM_BUFFERS };
+    enum Buffers { POSITIONS, NORMALS, TANGENTS, TEXCOORDS, INDICES, NUM_BUFFERS };
 
   public:
     Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
@@ -28,6 +28,11 @@ class Mesh
 
   private:
     static std::array<float, 6> calculateAABB(const std::vector<float>& positions);
+
+    static std::vector<GLfloat> calculateTangents(const std::vector<GLfloat>& vertices,
+                                                  const std::vector<GLfloat>& normals,
+                                                  const std::vector<GLfloat>& texcoords,
+                                                  const std::vector<GLushort>& indices);
 
     GLuint m_buffers[NUM_BUFFERS];
     GLuint m_vao;

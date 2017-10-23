@@ -20,6 +20,8 @@ ShaderProgram::~ShaderProgram()
 
 void ShaderProgram::link(const std::vector<Shader*>& shaders)
 {
+    m_uniformLocs.clear();
+
     for (Shader* s : shaders) {
         glAttachShader(m_shaderProgramId, s->id());
     }

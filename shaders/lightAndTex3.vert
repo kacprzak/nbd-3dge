@@ -8,11 +8,13 @@ out vec3 ambient;
 out vec3 diffuse;
 out vec3 specular;
 out vec2 texCoord;
-//out vec3 normal;
+out vec3 normal;
+out vec3 tangent;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
 layout(location = 2) in vec3 in_normal;
+layout(location = 3) in vec3 in_tangent;
 
 struct material
 {
@@ -74,4 +76,6 @@ void main()
 
     gl_Position = projectionMatrix * position_eye;
     texCoord = in_texCoord;
+    normal = in_normal;
+    tangent = in_tangent;
 }

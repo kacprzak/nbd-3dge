@@ -18,6 +18,8 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
     m_numberOfVertices = vertices.size();
     m_numberOfElements = indices.size();
 
+    const std::vector<GLfloat>& tangents = calculateTangents(vertices, normals, texcoords, indices);
+
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(NUM_BUFFERS, m_buffers);
 
@@ -25,6 +27,7 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
     LOG_INFO << "Loaded Mesh: " << m_vao;
     LOG_TRACE << "  Vertices: " << vertices.size() / 3 << "\t id: " << m_buffers[POSITIONS] << '\n'
               << "  Normals: " << normals.size() / 3 << "\t id: " << m_buffers[NORMALS] << '\n'
+              << "  Tangents: " << tangents.size() / 3 << "\t id: " << m_buffers[TANGENTS] << '\n'
               << "  TexCoords: " << texcoords.size() / 2 << "\t id: " << m_buffers[TEXCOORDS]
               << '\n'
               << "  Indices: " << indices.size() << "\t id: " << m_buffers[INDICES] << '\n'
@@ -46,6 +49,14 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
         glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[NORMALS], &normals[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    }
+
+    if (tangents.size() > 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TANGENTS]);
+        m_bufferSizes[TANGENTS] = sizeof(float) * tangents.size();
+        glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[TANGENTS], &tangents[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
     }
 
     if (texcoords.size() > 0) {
@@ -134,6 +145,59 @@ std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
     }
 
     return retVal;
+}
+
+//------------------------------------------------------------------------------
+
+std::vector<GLfloat> Mesh::calculateTangents(const std::vector<GLfloat>& vertices,
+                                             const std::vector<GLfloat>& normals,
+                                             const std::vector<GLfloat>& texcoords,
+                                             const std::vector<GLushort>& indices)
+{
+    std::vector<GLfloat> tangents;
+
+    if (texcoords.empty()) return tangents;
+
+    tangents.resize(normals.size());
+
+    for (size_t i = 0; i < indices.size(); i += 3) {
+        auto index0 = 3 * indices[i];
+        auto index1 = 3 * indices[i + 1];
+        auto index2 = 3 * indices[i + 2];
+        // Shortcuts for vertices
+        glm::vec3 v0{vertices[index0 + 0], vertices[index0 + 1], vertices[index0 + 2]};
+        glm::vec3 v1{vertices[index1 + 0], vertices[index1 + 1], vertices[index1 + 2]};
+        glm::vec3 v2{vertices[index2 + 0], vertices[index2 + 1], vertices[index2 + 2]};
+
+        // Shortcuts for UVs
+        glm::vec2 st0{texcoords[index0 + 0], texcoords[index0 + 1]};
+        glm::vec2 st1{texcoords[index1 + 0], texcoords[index1 + 1]};
+        glm::vec2 st2{texcoords[index2 + 0], texcoords[index2 + 1]};
+
+        // Edges of the triangle : postion delta
+        glm::vec3 deltaPos1 = v1 - v0;
+        glm::vec3 deltaPos2 = v2 - v0;
+
+        // ST delta
+        glm::vec2 deltaST1 = st1 - st0;
+        glm::vec2 deltaST2 = st2 - st0;
+
+        float r           = 1.0f / (deltaST1.x * deltaST2.y - deltaST1.y * deltaST2.x);
+        glm::vec3 tangent = (deltaPos1 * deltaST2.y - deltaPos2 * deltaST1.y) * r;
+        // glm::vec3 bitangent = (deltaPos2 * deltaST1.x - deltaPos1 * deltaST2.x) * r;
+
+        tangents[index0 + 0] = tangent.x;
+        tangents[index0 + 1] = tangent.y;
+        tangents[index0 + 2] = tangent.z;
+        tangents[index1 + 0] = tangent.x;
+        tangents[index1 + 1] = tangent.y;
+        tangents[index1 + 2] = tangent.z;
+        tangents[index2 + 0] = tangent.x;
+        tangents[index2 + 1] = tangent.y;
+        tangents[index2 + 2] = tangent.z;
+    }
+
+    return tangents;
 }
 
 //------------------------------------------------------------------------------
