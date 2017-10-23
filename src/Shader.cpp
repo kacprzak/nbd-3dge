@@ -47,4 +47,10 @@ Shader::Shader(GLenum type, const std::string& source)
     }
 }
 
+Shader::Shader(Shader&& other)
+{
+    std::swap(m_shaderId, other.m_shaderId);
+    std::swap(m_type, other.m_type);
+}
+
 Shader::~Shader() { glDeleteShader(m_shaderId); }

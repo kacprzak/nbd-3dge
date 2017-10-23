@@ -93,26 +93,27 @@ void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& 
     };
 
     auto sp = std::make_shared<ShaderProgram>();
+    std::vector<Shader*> shaders;
 
     if (!vertexShaderFile.empty()) {
         vs = std::make_unique<Shader>(GL_VERTEX_SHADER,
                                       extractSource(m_shadersFolder + vertexShaderFile));
-        sp->addShared(vs.get());
+        shaders.push_back(vs.get());
     }
 
     if (!geometryShaderFile.empty()) {
         gs = std::make_unique<Shader>(GL_GEOMETRY_SHADER,
                                       extractSource(m_shadersFolder + geometryShaderFile));
-        sp->addShared(gs.get());
+        shaders.push_back(gs.get());
     }
 
     if (!fragmentShaderFile.empty()) {
         fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER,
                                       extractSource(m_shadersFolder + fragmentShaderFile));
-        sp->addShared(fs.get());
+        shaders.push_back(fs.get());
     }
 
-    sp->link();
+    sp->link(shaders);
 
     m_shaderPrograms[name] = sp;
 }

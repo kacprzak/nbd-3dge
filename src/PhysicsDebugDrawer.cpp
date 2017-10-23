@@ -40,11 +40,9 @@ PhysicsDebugDrawer::PhysicsDebugDrawer()
 
     m_shaderProgram = std::make_unique<ShaderProgram>();
     Shader vertex{GL_VERTEX_SHADER, vertexSource.c_str()};
-    m_shaderProgram->addShared(&vertex);
     Shader fragment{GL_FRAGMENT_SHADER, fragmentSource.c_str()};
-    m_shaderProgram->addShared(&fragment);
 
-    m_shaderProgram->link();
+    m_shaderProgram->link({&vertex, &fragment});
 }
 
 PhysicsDebugDrawer::~PhysicsDebugDrawer()

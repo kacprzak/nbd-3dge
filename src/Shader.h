@@ -9,6 +9,8 @@ class Shader final
 {
   public:
     Shader(GLenum type, const std::string& source);
+    Shader(const Shader& other) = delete;
+    Shader(Shader&& other);
     ~Shader();
 
     GLenum type() { return m_type; }
