@@ -28,7 +28,7 @@ void ShaderProgram::link(const std::vector<Shader*>& shaders)
 
     glLinkProgram(m_shaderProgramId);
 
-    std::stringstream ss;
+    std::ostringstream ss;
     ss << "Linking Program: " << m_shaderProgramId << " ( ";
     for (const auto& s : shaders)
         ss << s->id() << " ";
