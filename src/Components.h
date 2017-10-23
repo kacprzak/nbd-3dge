@@ -26,7 +26,8 @@ struct RenderComponent : public Component
     Role role                 = Role::Dynamic;
     std::string shaderProgram = "default";
     std::string mesh;
-    bool transparent = false;
+    bool transparent     = false;
+    bool backfaceCulling = true;
     std::vector<std::string> textures;
 };
 

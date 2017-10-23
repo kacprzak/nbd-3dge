@@ -42,6 +42,8 @@ void RenderNode::draw(const Camera* camera) const { draw(m_shaderProgram.get(), 
 
 void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
+    if (!m_mesh) return;
+
     for (size_t i = 0; i < m_textures.size(); ++i) {
         m_textures[i]->bind(i);
     }
@@ -60,7 +62,11 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         glUseProgram(0);
     }
 
-    if (m_mesh) m_mesh->draw();
+    if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);
+
+    m_mesh->draw();
+
+    if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
 }
 
 void RenderNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }

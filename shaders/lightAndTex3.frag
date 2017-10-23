@@ -32,5 +32,8 @@ void main()
     fragColor.rgb = texColor.xyz * mtl.ambient * ambient
         + texColor.xyz * mtl.diffuse * diffuse
         + mtl.specular * specular;
-    fragColor.a = texColor.a;;
+    if (texColor.a < 0.6)
+        discard;
+    else
+        fragColor.a = texColor.a;
 }

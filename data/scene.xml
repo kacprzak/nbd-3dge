@@ -58,7 +58,8 @@
     </transformation>
     <render>
       <mesh>palm_tree</mesh>
-      <transparent>true</transparent>
+      <!-- <transparent>true</transparent> -->
+      <backfaceCulling>false</backfaceCulling>
       <textures>
         <texture>palm_tree_diffuse</texture>
         <texture>palm_tree_normal</texture>
