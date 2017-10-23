@@ -18,7 +18,8 @@ class ResourcesMgr
     ResourcesMgr(const std::string& dataFolder, const std::string& shadersFolder);
 
     void load(const std::string& xmlFile);
-
+    void loadShaders(const std::string& xmlFile);
+    
     void addShaderProgram(const std::string& name, const std::string& vertexShaderFile,
                           const std::string& geometryShaderFile,
                           const std::string& fragmentShaderFile);

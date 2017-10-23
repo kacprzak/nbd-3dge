@@ -48,6 +48,8 @@ void GameClient::loadResources(const std::string& xmlFile)
 {
     m_resourcesMgr->load(xmlFile);
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
+
+    m_resourcesFile = xmlFile;
 }
 
 //------------------------------------------------------------------------------
@@ -148,6 +150,9 @@ void GameClient::keyReleased(const SDL_Event& event)
             m_inputSystem.setDebugCamera(nullptr);
             m_cameraCtrl = m_tppCameraCtrl.get();
         }
+    } break;
+    case SDL_SCANCODE_L: {
+        m_resourcesMgr->loadShaders(m_resourcesFile);
     } break;
     default: break;
     }

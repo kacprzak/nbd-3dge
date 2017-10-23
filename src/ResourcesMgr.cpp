@@ -19,6 +19,8 @@ ResourcesMgr::ResourcesMgr(const std::string& dataFolder, const std::string& sha
 
 void ResourcesMgr::load(const std::string& xmlFile)
 {
+    loadShaders(xmlFile);
+
     using boost::property_tree::ptree;
     ptree pt;
 
@@ -28,13 +30,7 @@ void ResourcesMgr::load(const std::string& xmlFile)
         const std::string& assetType = v.first;
         ptree& assetTree             = v.second;
 
-        if (assetType == "shaderProgram") {
-            const std::string& name               = assetTree.get<std::string>("name");
-            const std::string& vertexShaderFile   = assetTree.get("vertexShader", "");
-            const std::string& geometryShaderFile = assetTree.get("geometryShader", "");
-            const std::string& fragmentShaderFile = assetTree.get("fragmentShader", "");
-            addShaderProgram(name, vertexShaderFile, geometryShaderFile, fragmentShaderFile);
-        } else if (assetType == "texture") {
+        if (assetType == "texture") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
             if (assetTree.get_child("file").size() == 0) {
@@ -69,12 +65,33 @@ void ResourcesMgr::load(const std::string& xmlFile)
 
 //------------------------------------------------------------------------------
 
+void ResourcesMgr::loadShaders(const std::string& xmlFile)
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    read_xml(m_dataFolder + xmlFile, pt);
+
+    for (ptree::value_type& v : pt.get_child("assets")) {
+        const std::string& assetType = v.first;
+        ptree& assetTree             = v.second;
+
+        if (assetType == "shaderProgram") {
+            const std::string& name               = assetTree.get<std::string>("name");
+            const std::string& vertexShaderFile   = assetTree.get("vertexShader", "");
+            const std::string& geometryShaderFile = assetTree.get("geometryShader", "");
+            const std::string& fragmentShaderFile = assetTree.get("fragmentShader", "");
+            addShaderProgram(name, vertexShaderFile, geometryShaderFile, fragmentShaderFile);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
 void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& vertexShaderFile,
                                     const std::string& geometryShaderFile,
                                     const std::string& fragmentShaderFile)
 {
-    LOG_TRACE << "Adding ShaderProgram: " << name;
-
     std::unique_ptr<Shader> vs;
     std::unique_ptr<Shader> gs;
     std::unique_ptr<Shader> fs;
@@ -92,7 +109,6 @@ void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& 
         return source;
     };
 
-    auto sp = std::make_shared<ShaderProgram>();
     std::vector<Shader*> shaders;
 
     if (!vertexShaderFile.empty()) {
@@ -113,9 +129,18 @@ void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& 
         shaders.push_back(fs.get());
     }
 
-    sp->link(shaders);
+    auto it = m_shaderPrograms.find(name);
+    if (it == std::end(m_shaderPrograms)) {
+        LOG_TRACE << "Adding ShaderProgram: " << name;
 
-    m_shaderPrograms[name] = sp;
+        auto sp = std::make_shared<ShaderProgram>();
+        sp->link(shaders);
+        m_shaderPrograms[name] = sp;
+    } else {
+        LOG_TRACE << "Reloading ShaderProgram: " << name;
+
+        it->second->link(shaders);
+    }
 }
 
 std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string& name) const
