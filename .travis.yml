@@ -4,6 +4,7 @@ before_install:
   - sudo apt-get install -y libglm-dev libglew-dev
   - sudo apt-get install -y libsdl2-dev libsdl2-image-dev libegl1-mesa-dev libgles2-mesa-dev
   - sudo apt-get install -y libbullet-dev
+  - sudo apt-get install -y libboost-dev liboost-log-dev libboost-program-options-dev
 
 script:
   - mkdir build
