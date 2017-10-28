@@ -8,8 +8,8 @@
 #include <cstring>
 #include <limits>
 
-Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
-           const std::vector<GLfloat>& normals, const std::vector<GLfloat>& texcoords,
+Mesh::Mesh(GLenum primitive, const std::vector<glm::vec3>& vertices,
+           const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& texcoords,
            const std::vector<GLushort>& indices)
     : m_primitive{primitive}
 {
@@ -18,18 +18,17 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
     m_numberOfVertices = vertices.size();
     m_numberOfElements = indices.size();
 
-    const std::vector<GLfloat>& tangents = calculateTangents(vertices, normals, texcoords, indices);
+    const auto& tangents = calculateTangents(vertices, normals, texcoords, indices);
 
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(NUM_BUFFERS, m_buffers);
 
     auto aabb = calculateAABB(vertices);
     LOG_INFO << "Loaded Mesh: " << m_vao;
-    LOG_TRACE << "  Vertices: " << vertices.size() / 3 << "\t id: " << m_buffers[POSITIONS] << '\n'
-              << "  Normals: " << normals.size() / 3 << "\t id: " << m_buffers[NORMALS] << '\n'
-              << "  Tangents: " << tangents.size() / 3 << "\t id: " << m_buffers[TANGENTS] << '\n'
-              << "  TexCoords: " << texcoords.size() / 2 << "\t id: " << m_buffers[TEXCOORDS]
-              << '\n'
+    LOG_TRACE << "  Vertices: " << vertices.size() << "\t id: " << m_buffers[POSITIONS] << '\n'
+              << "  Normals: " << normals.size() << "\t id: " << m_buffers[NORMALS] << '\n'
+              << "  Tangents: " << tangents.size() << "\t id: " << m_buffers[TANGENTS] << '\n'
+              << "  TexCoords: " << texcoords.size() << "\t id: " << m_buffers[TEXCOORDS] << '\n'
               << "  Indices: " << indices.size() << "\t id: " << m_buffers[INDICES] << '\n'
               << "  Primitive: " << primitive << '\n'
               << "  Dimensions: (" << aabb[1] - aabb[0] << " x " << aabb[3] - aabb[2] << " x "
@@ -38,14 +37,14 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
     glBindVertexArray(m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_buffers[POSITIONS]);
-    m_bufferSizes[POSITIONS] = sizeof(float) * vertices.size();
+    m_bufferSizes[POSITIONS] = sizeof(vertices[0]) * vertices.size();
     glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[POSITIONS], &vertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     if (normals.size() > 0) {
         glBindBuffer(GL_ARRAY_BUFFER, m_buffers[NORMALS]);
-        m_bufferSizes[NORMALS] = sizeof(float) * normals.size();
+        m_bufferSizes[NORMALS] = sizeof(normals[0]) * normals.size();
         glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[NORMALS], &normals[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -53,7 +52,7 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
 
     if (tangents.size() > 0) {
         glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TANGENTS]);
-        m_bufferSizes[TANGENTS] = sizeof(float) * tangents.size();
+        m_bufferSizes[TANGENTS] = sizeof(tangents[0]) * tangents.size();
         glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[TANGENTS], &tangents[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -61,7 +60,7 @@ Mesh::Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
 
     if (texcoords.size() > 0) {
         glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TEXCOORDS]);
-        m_bufferSizes[TEXCOORDS] = sizeof(float) * texcoords.size();
+        m_bufferSizes[TEXCOORDS] = sizeof(texcoords[0]) * texcoords.size();
         glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[TEXCOORDS], &texcoords[0], GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
@@ -122,7 +121,7 @@ std::vector<float> Mesh::positions() const
     return retVal;
 }
 
-std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
+std::array<float, 6> Mesh::calculateAABB(const std::vector<glm::vec3>& positions)
 {
     std::array<float, 6> retVal;
     // x axis
@@ -135,13 +134,13 @@ std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
     retVal[4] = std::numeric_limits<float>::max();
     retVal[5] = std::numeric_limits<float>::lowest();
 
-    for (size_t i = 0; i < positions.size(); i = i + 3) {
-        retVal[0] = std::min(retVal[0], positions[i]);
-        retVal[1] = std::max(retVal[1], positions[i]);
-        retVal[2] = std::min(retVal[2], positions[i + 1]);
-        retVal[3] = std::max(retVal[3], positions[i + 1]);
-        retVal[4] = std::min(retVal[4], positions[i + 2]);
-        retVal[5] = std::max(retVal[5], positions[i + 2]);
+    for (const auto pos : positions) {
+        retVal[0] = std::min(retVal[0], pos.x);
+        retVal[1] = std::max(retVal[1], pos.x);
+        retVal[2] = std::min(retVal[2], pos.y);
+        retVal[3] = std::max(retVal[3], pos.y);
+        retVal[4] = std::min(retVal[4], pos.z);
+        retVal[5] = std::max(retVal[5], pos.z);
     }
 
     return retVal;
@@ -149,30 +148,30 @@ std::array<float, 6> Mesh::calculateAABB(const std::vector<float>& positions)
 
 //------------------------------------------------------------------------------
 
-std::vector<GLfloat> Mesh::calculateTangents(const std::vector<GLfloat>& vertices,
-                                             const std::vector<GLfloat>& normals,
-                                             const std::vector<GLfloat>& texcoords,
-                                             const std::vector<GLushort>& indices)
+std::vector<glm::vec3> Mesh::calculateTangents(const std::vector<glm::vec3>& vertices,
+                                               const std::vector<glm::vec3>& normals,
+                                               const std::vector<glm::vec2>& texcoords,
+                                               const std::vector<GLushort>& indices)
 {
-    std::vector<GLfloat> tangents;
+    std::vector<glm::vec3> tangents;
 
     if (texcoords.empty()) return tangents;
 
     tangents.resize(normals.size());
 
     for (size_t i = 0; i < indices.size(); i += 3) {
-        auto index0 = 3 * indices[i];
-        auto index1 = 3 * indices[i + 1];
-        auto index2 = 3 * indices[i + 2];
+        auto index0 = indices[i];
+        auto index1 = indices[i + 1];
+        auto index2 = indices[i + 2];
         // Shortcuts for vertices
-        glm::vec3 v0{vertices[index0 + 0], vertices[index0 + 1], vertices[index0 + 2]};
-        glm::vec3 v1{vertices[index1 + 0], vertices[index1 + 1], vertices[index1 + 2]};
-        glm::vec3 v2{vertices[index2 + 0], vertices[index2 + 1], vertices[index2 + 2]};
+        glm::vec3 v0{vertices[index0]};
+        glm::vec3 v1{vertices[index1]};
+        glm::vec3 v2{vertices[index2]};
 
         // Shortcuts for UVs
-        glm::vec2 st0{texcoords[index0 + 0], texcoords[index0 + 1]};
-        glm::vec2 st1{texcoords[index1 + 0], texcoords[index1 + 1]};
-        glm::vec2 st2{texcoords[index2 + 0], texcoords[index2 + 1]};
+        glm::vec2 st0{texcoords[index0]};
+        glm::vec2 st1{texcoords[index1]};
+        glm::vec2 st2{texcoords[index2]};
 
         // Edges of the triangle : postion delta
         glm::vec3 deltaPos1 = v1 - v0;
@@ -186,15 +185,9 @@ std::vector<GLfloat> Mesh::calculateTangents(const std::vector<GLfloat>& vertice
         glm::vec3 tangent = (deltaPos1 * deltaST2.y - deltaPos2 * deltaST1.y) * r;
         // glm::vec3 bitangent = (deltaPos2 * deltaST1.x - deltaPos1 * deltaST2.x) * r;
 
-        tangents[index0 + 0] = tangent.x;
-        tangents[index0 + 1] = tangent.y;
-        tangents[index0 + 2] = tangent.z;
-        tangents[index1 + 0] = tangent.x;
-        tangents[index1 + 1] = tangent.y;
-        tangents[index1 + 2] = tangent.z;
-        tangents[index2 + 0] = tangent.x;
-        tangents[index2 + 1] = tangent.y;
-        tangents[index2 + 2] = tangent.z;
+        tangents[index0] = tangent;
+        tangents[index1] = tangent;
+        tangents[index2] = tangent;
     }
 
     return tangents;
@@ -256,40 +249,35 @@ std::unique_ptr<Mesh> Mesh::fromHeightmap(const std::vector<float>& heights, int
         return texCoord;
     };
 
-    std::vector<GLfloat> vertices;
-    vertices.resize(w * h * 3);
+    std::vector<glm::vec3> vertices;
+    vertices.resize(w * h);
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            int idx           = (y * h + x) * 3;
-            vertices[idx]     = x - w / 2.0f + 0.5f;
-            vertices[idx + 1] = getHeight(x, y);
-            vertices[idx + 2] = y - h / 2.0f + 0.5f;
+            int idx         = (y * h + x);
+            vertices[idx].x = x - w / 2.0f + 0.5f;
+            vertices[idx].y = getHeight(x, y);
+            vertices[idx].z = y - h / 2.0f + 0.5f;
         }
     }
 
-    std::vector<GLfloat> normals;
-    normals.resize(w * h * 3);
+    std::vector<glm::vec3> normals;
+    normals.resize(w * h);
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            int idx          = (y * h + x) * 3;
-            auto n           = getNormal(x, y);
-            normals[idx]     = n[0];
-            normals[idx + 1] = n[1];
-            normals[idx + 2] = n[2];
+            int idx      = (y * h + x);
+            normals[idx] = getNormal(x, y);
         }
     }
 
-    std::vector<GLfloat> texCoords;
-    texCoords.resize(w * h * 2);
+    std::vector<glm::vec2> texCoords;
+    texCoords.resize(w * h);
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            int idx            = (y * h + x) * 2;
-            auto t             = getTexCoord(x, y);
-            texCoords[idx]     = t[0];
-            texCoords[idx + 1] = t[1];
+            int idx        = (y * h + x);
+            texCoords[idx] = getTexCoord(x, y);
         }
     }
 

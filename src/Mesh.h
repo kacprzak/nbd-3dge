@@ -2,6 +2,7 @@
 #define MESH_H
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,8 +12,8 @@ class Mesh
     enum Buffers { POSITIONS, NORMALS, TANGENTS, TEXCOORDS, INDICES, NUM_BUFFERS };
 
   public:
-    Mesh(GLenum primitive, const std::vector<GLfloat>& vertices,
-         const std::vector<GLfloat>& normals, const std::vector<GLfloat>& texcoords,
+    Mesh(GLenum primitive, const std::vector<glm::vec3>& vertices,
+         const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& texcoords,
          const std::vector<GLushort>& indices);
 
     ~Mesh();
@@ -27,12 +28,12 @@ class Mesh
                                                float textureStrech);
 
   private:
-    static std::array<float, 6> calculateAABB(const std::vector<float>& positions);
+    static std::array<float, 6> calculateAABB(const std::vector<glm::vec3>& positions);
 
-    static std::vector<GLfloat> calculateTangents(const std::vector<GLfloat>& vertices,
-                                                  const std::vector<GLfloat>& normals,
-                                                  const std::vector<GLfloat>& texcoords,
-                                                  const std::vector<GLushort>& indices);
+    static std::vector<glm::vec3> calculateTangents(const std::vector<glm::vec3>& vertices,
+                                                    const std::vector<glm::vec3>& normals,
+                                                    const std::vector<glm::vec2>& texcoords,
+                                                    const std::vector<GLushort>& indices);
 
     GLuint m_buffers[NUM_BUFFERS];
     GLuint m_vao;

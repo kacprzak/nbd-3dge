@@ -34,10 +34,10 @@ class ObjLoader : public Loader
   public:
     ObjLoader() {}
 
-    std::vector<float> vertices() const;
-    std::vector<float> normals() const;
+    std::vector<glm::vec3> vertices() const;
+    std::vector<glm::vec3> normals() const;
     std::vector<unsigned short> indices() const;
-    std::vector<float> texCoords() const;
+    std::vector<glm::vec2> texCoords() const;
     int primitive() const { return m_primitive; }
 
   protected:

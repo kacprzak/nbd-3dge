@@ -8,50 +8,36 @@ static inline float to_float(const std::string& s) { return boost::lexical_cast<
 
 static inline int to_int(const std::string& s) { return boost::lexical_cast<int>(s); }
 
-std::vector<float> ObjLoader::vertices() const
+std::vector<glm::vec3> ObjLoader::vertices() const
 {
-    std::vector<float> vertices_a;
+    std::vector<glm::vec3> vertices_a;
 
     if (!m_oglFaces.empty()) {
-        vertices_a.reserve(m_oglVertices.size() * 3);
+        vertices_a.reserve(m_oglVertices.size());
 
         for (const auto& v : m_oglVertices) {
-            vertices_a.push_back(v.p.x);
-            vertices_a.push_back(v.p.y);
-            vertices_a.push_back(v.p.z);
+            vertices_a.push_back(v.p);
         }
         return vertices_a;
     }
 
-    for (const auto& v : m_vertices) {
-        vertices_a.push_back(v.x);
-        vertices_a.push_back(v.y);
-        vertices_a.push_back(v.z);
-    }
-    return vertices_a;
+    return m_vertices;
 }
 
-std::vector<float> ObjLoader::normals() const
+std::vector<glm::vec3> ObjLoader::normals() const
 {
-    std::vector<float> normals_a;
+    std::vector<glm::vec3> normals_a;
 
     if (!m_oglFaces.empty()) {
-        normals_a.reserve(m_oglVertices.size() * 3);
+        normals_a.reserve(m_oglVertices.size());
 
         for (const auto& v : m_oglVertices) {
-            normals_a.push_back(v.n.x);
-            normals_a.push_back(v.n.y);
-            normals_a.push_back(v.n.z);
+            normals_a.push_back(v.n);
         }
         return normals_a;
     }
 
-    for (const auto& n : m_normals) {
-        normals_a.push_back(n.x);
-        normals_a.push_back(n.y);
-        normals_a.push_back(n.z);
-    }
-    return normals_a;
+    return m_normals;
 }
 
 std::vector<unsigned short> ObjLoader::indices() const
@@ -70,25 +56,20 @@ std::vector<unsigned short> ObjLoader::indices() const
     return indices_a;
 }
 
-std::vector<float> ObjLoader::texCoords() const
+std::vector<glm::vec2> ObjLoader::texCoords() const
 {
-    std::vector<float> texcoords_a;
+    std::vector<glm::vec2> texcoords_a;
 
     if (!m_oglFaces.empty()) {
-        texcoords_a.reserve(m_oglVertices.size() * 2);
+        texcoords_a.reserve(m_oglVertices.size());
 
         for (const auto& v : m_oglVertices) {
-            texcoords_a.push_back(v.t.s);
-            texcoords_a.push_back(v.t.t);
+            texcoords_a.push_back(v.t);
         }
         return texcoords_a;
     }
 
-    for (const auto& t : m_texCoords) {
-        texcoords_a.push_back(t.s);
-        texcoords_a.push_back(t.t);
-    }
-    return texcoords_a;
+    return m_texCoords;
 }
 
 void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& args)
