@@ -54,7 +54,7 @@ Mesh::Mesh(GLenum primitive, const std::vector<glm::vec3>& vertices,
         glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TANGENTS]);
         m_bufferSizes[TANGENTS] = sizeof(tangents[0]) * tangents.size();
         glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[TANGENTS], &tangents[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
     }
 
@@ -185,9 +185,9 @@ std::vector<glm::vec3> Mesh::calculateTangents(const std::vector<glm::vec3>& ver
         glm::vec3 tangent = (deltaPos1 * deltaST2.y - deltaPos2 * deltaST1.y) * r;
         // glm::vec3 bitangent = (deltaPos2 * deltaST1.x - deltaPos1 * deltaST2.x) * r;
 
-        tangents[index0] = tangent;
-        tangents[index1] = tangent;
-        tangents[index2] = tangent;
+        tangents[index0] = glm::normalize(tangent);
+        tangents[index1] = glm::normalize(tangent);
+        tangents[index2] = glm::normalize(tangent);
     }
 
     return tangents;
