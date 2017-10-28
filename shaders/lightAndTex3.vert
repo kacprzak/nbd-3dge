@@ -1,81 +1,31 @@
 #version 330 core
 
-uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
-
-out vec3 ambient;
-out vec3 diffuse;
-out vec3 specular;
-out vec2 texCoord;
-out vec3 normal;
-out vec3 tangent;
-
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
 layout(location = 2) in vec3 in_normal;
 layout(location = 3) in vec3 in_tangent;
 
-struct material
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+
+out VS_OUT
 {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float shininess;
-};
-
-struct light
-{
-    vec4 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-const light sun = light(
-    vec4(1, -1, -1, 0),
-    vec3(1.0, 0.8863, 0.8078),
-    vec3(1.0, 0.8863, 0.8078),
-    vec3(1, 1, 1)
-);
-
-const material mtl = material(
-    vec3(1, 1, 1) * 0.1,
-    vec3(1, 1, 1) * 0.9,
-    vec3(1, 1, 1) * 0.4,
-    32
-);
-
+    vec3 pos_world;
+    vec2 texCoord;
+    mat3 TBN;
+} vs_out;
+    
 void main()
 {
-    vec3 normal_world = normalize(modelMatrix * vec4(in_normal, 0)).xyz;
+    vec3 N = normalize(vec3(modelMatrix * vec4(in_normal,    0.0)));
+    vec3 T = normalize(vec3(modelMatrix * vec4(in_tangent,   0.0)));
+    vec3 B = cross(T, N);
+    vs_out.TBN = mat3(T, B, N);
     
-    vec4 position_world = modelMatrix * vec4(position, 1.0);
-    vec4 position_eye = viewMatrix * position_world;
-
-    vec3 surfaceToLight;
-    if (sun.position.w == 0.0) {
-        surfaceToLight = normalize(-sun.position.xyz);
-    }
-    else {
-        surfaceToLight = normalize(sun.position.xyz - position_world.xyz);
-    }
-
-    ambient = sun.ambient;
-    
-    diffuse = sun.diffuse * max(dot(normal_world, surfaceToLight), 0.0);
-
-    if (dot(normal_world, surfaceToLight) < 0.0) {
-        specular = vec3(0.0, 0.0, 0.0);
-    }
-    else { 
-        vec3 reflection = -reflect(surfaceToLight, normal_world);
-        vec3 vertexToEye = normalize(-position_eye.xyz);
-        specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), mtl.shininess);
-    }
-
-    gl_Position = projectionMatrix * position_eye;
-    texCoord = in_texCoord;
-    normal = in_normal;
-    tangent = in_tangent;
+    vs_out.pos_world = vec3(modelMatrix * vec4(position, 1.0));
+    vs_out.texCoord = in_texCoord;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    //normal = in_normal;
+    //tangent = in_tangent;
 }

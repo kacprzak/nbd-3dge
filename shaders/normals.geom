@@ -12,14 +12,24 @@ out GS_OUT {
     vec3 color;
 } gs_out;
 
-uniform float magnitude = 1.0f;
+uniform float magnitude = 1.0;
+
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+
+mat4 VP;
+mat4 MVP;
 
 void GenerateNormal(int index)
 {
-    gl_Position = gl_in[index].gl_Position;
+    vec4 pos = gl_in[index].gl_Position;
+    vec4 norm = (modelMatrix * pos) + normalize(modelMatrix * vec4(gs_in[index].normal, 0.0)) * magnitude * 0.25;
+
+    gl_Position = MVP * pos;
     gs_out.color = vec3(0.0, 0.0, 1.0);
     EmitVertex();
-    gl_Position = gl_in[index].gl_Position + vec4(gs_in[index].normal, 0.0f) * magnitude;
+    gl_Position = VP * norm;
     gs_out.color = vec3(0.0, 0.0, 1.0);
     EmitVertex();
     EndPrimitive();
@@ -27,10 +37,13 @@ void GenerateNormal(int index)
 
 void GenerateTangent(int index)
 {
-    gl_Position = gl_in[index].gl_Position;
+    vec4 pos = gl_in[index].gl_Position;
+    vec4 tang = (modelMatrix * pos) + normalize(modelMatrix * vec4(gs_in[index].tangent, 0.0)) * magnitude * 0.25;
+    
+    gl_Position = MVP * pos;
     gs_out.color = vec3(1.0, 0.0, 0.0);
     EmitVertex();
-    gl_Position = gl_in[index].gl_Position + vec4(gs_in[index].tangent, 0.0f) * magnitude;
+    gl_Position = VP * tang;
     gs_out.color = vec3(1.0, 0.0, 0.0);
     EmitVertex();
     EndPrimitive();
@@ -38,10 +51,12 @@ void GenerateTangent(int index)
 
 void main()
 {
-    GenerateNormal(0); // First vertex normal
-    GenerateTangent(0);
-    GenerateNormal(1); // Second vertex normal
-    GenerateTangent(1);
-    GenerateNormal(2); // Third vertex normal
-    GenerateTangent(2);
+    VP = projectionMatrix * viewMatrix;
+    MVP = VP * modelMatrix;
+
+    int i;
+    for(i = 0; i < gl_in.length(); ++i) {
+        GenerateNormal(i);
+        GenerateTangent(i);
+    }
 }  
