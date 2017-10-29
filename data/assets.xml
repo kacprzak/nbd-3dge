@@ -52,26 +52,32 @@
       <back>envmap_stormydays/stormydays_rt.tga</back>
     </file>
     <wrap>GL_CLAMP_TO_EDGE</wrap>
+    <internalFormat>GL_SRGB8</internalFormat>
   </texture>
   <texture>
     <name>cube_texture</name>
     <file>texture_I.png</file>
+    <internalFormat>GL_SRGB8</internalFormat>
   </texture>
   <texture>
     <name>grass_diffuse</name>
     <file>terrain/grass_green_d.jpg</file>
+    <internalFormat>GL_SRGB8</internalFormat>
   </texture>
   <texture>
     <name>snow_diffuse</name>
     <file>terrain/snow_grass_d.jpg</file>
+    <internalFormat>GL_SRGB8</internalFormat>
   </texture>
   <texture>
     <name>rocky_diffuse</name>
     <file>terrain/grass_rocky_d.jpg</file>
+    <internalFormat>GL_SRGB8</internalFormat>
   </texture>
   <texture>
     <name>ship_texture</name>
     <file>ship.jpg</file>
+    <internalFormat>GL_SRGB8</internalFormat>
   </texture>
 
   <font>
@@ -104,6 +110,20 @@
     <file>ship.obj</file>
   </mesh>
 
+  <texture>
+    <name>wall_diffuse</name>
+    <file>Stone_Wall_004/color.jpg</file>
+    <internalFormat>GL_SRGB8</internalFormat>
+  </texture>
+  <texture>
+    <name>wall_normal</name>
+    <file>Stone_Wall_004/normal.jpg</file>
+  </texture>
+  <texture>
+    <name>wall_specular</name>
+    <file>Stone_Wall_004/specular.jpg</file>
+  </texture>
+
   <mesh>
     <name>cube</name>
     <file>cube.obj</file>
@@ -119,14 +139,17 @@
   <texture>
     <name>palm_tree_diffuse</name>
     <file>palm_tree_v2/diffus.tga</file>
+    <internalFormat>GL_SRGB8_ALPHA8</internalFormat>
   </texture>
   <texture>
     <name>palm_tree_normal</name>
     <file>palm_tree_v2/normal.tga</file>
+    <internalFormat>GL_RGBA8</internalFormat>
   </texture>
   <texture>
     <name>palm_tree_specular</name>
     <file>palm_tree_v2/specular.tga</file>
+    <internalFormat>GL_RGBA8</internalFormat>
   </texture>
 
   <mesh>

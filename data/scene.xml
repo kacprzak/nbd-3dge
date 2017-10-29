@@ -42,9 +42,11 @@
     <render>
       <mesh>cube</mesh>
       <textures>
-        <texture>cube_texture</texture>
+        <texture>wall_diffuse</texture>
+	<texture>wall_normal</texture>
+	<texture>wall_specular</texture>
       </textures>
-      <shaderProgram>lightAndTex</shaderProgram>
+      <shaderProgram>lightAndTex3</shaderProgram>
     </render>
     <physics>
       <shape>box:1:1:1</shape>

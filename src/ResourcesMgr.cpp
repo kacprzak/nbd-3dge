@@ -31,11 +31,12 @@ void ResourcesMgr::load(const std::string& xmlFile)
         ptree& assetTree             = v.second;
 
         if (assetType == "texture") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
+            const std::string& name           = assetTree.get<std::string>("name");
+            const std::string& wrap           = assetTree.get<std::string>("wrap", "GL_REPEAT");
+            const std::string& internalFormat = assetTree.get<std::string>("internalFormat", "");
             if (assetTree.get_child("file").size() == 0) {
                 const std::string& file = assetTree.get<std::string>("file");
-                addTexture(name, file, wrap);
+                addTexture(name, file, wrap, internalFormat);
             } else {
                 std::array<std::string, 6> files;
                 files[0] = assetTree.get<std::string>("file.right");
@@ -44,7 +45,7 @@ void ResourcesMgr::load(const std::string& xmlFile)
                 files[3] = assetTree.get<std::string>("file.bottom");
                 files[4] = assetTree.get<std::string>("file.back");
                 files[5] = assetTree.get<std::string>("file.front");
-                addTexture(name, files, wrap);
+                addTexture(name, files, wrap, internalFormat);
             }
         } else if (assetType == "font") {
             const std::string& name = assetTree.get<std::string>("name");
@@ -155,19 +156,19 @@ std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string&
 //------------------------------------------------------------------------------
 
 void ResourcesMgr::addTexture(const std::string& name, const std::string& filename,
-                              const std::string& wrap)
+                              const std::string& wrap, const std::string& internalFormat)
 {
     LOG_TRACE << "Adding Texture: " << name;
 
     bool clamp                            = false;
     if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
 
-    std::shared_ptr<Texture> tex{Texture::create(m_dataFolder + filename, clamp)};
+    std::shared_ptr<Texture> tex{Texture::create(m_dataFolder + filename, internalFormat, clamp)};
     m_textures[name] = tex;
 }
 
 void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6> filenames,
-                              const std::string& wrap)
+                              const std::string& wrap, const std::string& internalFormat)
 {
     LOG_TRACE << "Adding Texture: " << name;
 
@@ -178,7 +179,7 @@ void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6
         filename = m_dataFolder + filename;
     }
 
-    std::shared_ptr<Texture> tex{Texture::create(filenames, clamp)};
+    std::shared_ptr<Texture> tex{Texture::create(filenames, internalFormat, clamp)};
     m_textures[name] = tex;
 }
 
@@ -223,7 +224,7 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 
     std::vector<std::shared_ptr<Texture>> textures;
     for (const auto& texFilename : font->getTexturesFilenames()) {
-        textures.emplace_back(Texture::create(m_dataFolder + texFilename));
+        textures.emplace_back(Texture::create(m_dataFolder + texFilename, "GL_RGBA8"));
     }
     font->setTextures(textures);
 

@@ -47,7 +47,8 @@ void Texture::setRepeat()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
-std::unique_ptr<Texture> Texture::create(const std::string& filename, bool clamp)
+std::unique_ptr<Texture> Texture::create(const std::string& filename,
+                                         const std::string& internalFormat, bool clamp)
 {
     GLenum target = GL_TEXTURE_2D;
     std::unique_ptr<Texture> tex{new Texture{target}};
@@ -69,10 +70,11 @@ std::unique_ptr<Texture> Texture::create(const std::string& filename, bool clamp
 
     glBindTexture(target, tex->m_textureId);
 
-    GLenum format = textureFormat(&surface);
+    GLenum format   = textureFormat(&surface);
+    GLint intFormat = internalFormatToInt(internalFormat);
 
     SDL_LockSurface(surface);
-    glTexImage2D(target, 0, GL_SRGB8_ALPHA8, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE,
+    glTexImage2D(target, 0, intFormat, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE,
                  surface->pixels);
     SDL_UnlockSurface(surface);
 
@@ -94,7 +96,8 @@ std::unique_ptr<Texture> Texture::create(const std::string& filename, bool clamp
     return tex;
 }
 
-std::unique_ptr<Texture> Texture::create(const std::array<std::string, 6> filenames, bool clamp)
+std::unique_ptr<Texture> Texture::create(const std::array<std::string, 6> filenames,
+                                         const std::string& internalFormat, bool clamp)
 {
     GLenum target = GL_TEXTURE_CUBE_MAP;
     std::unique_ptr<Texture> tex{new Texture{target}};
@@ -111,11 +114,12 @@ std::unique_ptr<Texture> Texture::create(const std::array<std::string, 6> filena
         tex->m_w = surface->w;
         tex->m_h = surface->h;
 
-        GLenum format = textureFormat(&surface);
+        GLenum format   = textureFormat(&surface);
+        GLint intFormat = internalFormatToInt(internalFormat);
 
         SDL_LockSurface(surface);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB8, tex->m_w, tex->m_h, 0, format,
-                     GL_UNSIGNED_BYTE, surface->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, intFormat, tex->m_w, tex->m_h, 0,
+                     format, GL_UNSIGNED_BYTE, surface->pixels);
         SDL_UnlockSurface(surface);
 
         SDL_FreeSurface(surface);
@@ -133,6 +137,23 @@ std::unique_ptr<Texture> Texture::create(const std::array<std::string, 6> filena
         tex->setRepeat();
 
     return tex;
+}
+
+//------------------------------------------------------------------------------
+
+GLint Texture::internalFormatToInt(const std::string& internalFormat)
+{
+    if (internalFormat == "GL_RGB8")
+        return GL_RGB8;
+    else if (internalFormat == "GL_RGBA8")
+        return GL_RGBA8;
+    else if (internalFormat == "GL_SRGB8")
+        return GL_SRGB8;
+    else if (internalFormat == "GL_SRGB8_ALPHA8")
+        return GL_SRGB8_ALPHA8;
+
+    LOG_WARNING << "Unknown internalFormat: " << internalFormat;
+    return GL_RGB8;
 }
 
 //==============================================================================
