@@ -9,6 +9,7 @@ class Texture final
 {
   public:
     Texture(const Texture&) = delete;
+    Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;
     ~Texture();
 
@@ -19,11 +20,11 @@ class Texture final
     int width() const { return m_w; }
     int height() const { return m_h; }
 
-    static std::unique_ptr<Texture> create(const std::string& filename,
-                                           const std::string& internalFormat, bool clamp = false);
+    static Texture create(const std::string& filename, const std::string& internalFormat,
+                          bool clamp = false);
 
-    static std::unique_ptr<Texture> create(const std::array<std::string, 6> filenames,
-                                           const std::string& internalFormat, bool clamp = false);
+    static Texture create(const std::array<std::string, 6> filenames,
+                          const std::string& internalFormat, bool clamp = false);
 
   private:
     Texture(GLenum target);
@@ -31,8 +32,8 @@ class Texture final
     static GLint internalFormatToInt(const std::string& internalFormat);
 
     GLenum m_target;
-    GLuint m_textureId;
-    GLuint m_samplerId;
+    GLuint m_textureId = 0;
+    GLuint m_samplerId = 0;
 
     int m_w = -1;
     int m_h = -1;

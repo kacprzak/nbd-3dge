@@ -17,7 +17,7 @@ class Shader final
     GLuint id() { return m_shaderId; }
 
   private:
-    GLuint m_shaderId;
+    GLuint m_shaderId = 0;
     GLenum m_type;
 };
 

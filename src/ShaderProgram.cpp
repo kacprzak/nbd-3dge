@@ -7,9 +7,16 @@
 #include <sstream>
 
 ShaderProgram::ShaderProgram()
-    : m_linked(false)
 {
     m_shaderProgramId = glCreateProgram();
+    LOG_TRACE << "CreatedProgram: " << m_shaderProgramId;
+}
+
+ShaderProgram::ShaderProgram(ShaderProgram&& other)
+{
+    std::swap(m_shaderProgramId, other.m_shaderProgramId);
+    std::swap(m_linked, other.m_linked);
+    std::swap(m_uniformLocs, other.m_uniformLocs);
 }
 
 ShaderProgram::~ShaderProgram()

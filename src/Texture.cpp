@@ -19,11 +19,21 @@ Texture::Texture(GLenum target)
     glGenSamplers(1, &m_samplerId);
 }
 
+Texture::Texture(Texture&& other)
+{
+    std::swap(m_target, other.m_target);
+    std::swap(m_textureId, other.m_textureId);
+    std::swap(m_samplerId, other.m_samplerId);
+    std::swap(m_w, other.m_w);
+    std::swap(m_h, other.m_h);
+}
+
 Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureId);
     glDeleteSamplers(1, &m_samplerId);
-    LOG_INFO << "Released Texture: " << m_textureId;
+
+    if (m_textureId || m_samplerId) LOG_INFO << "Released Texture: " << m_textureId;
 }
 
 void Texture::bind(int textureUnit)
@@ -47,11 +57,10 @@ void Texture::setRepeat()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
-std::unique_ptr<Texture> Texture::create(const std::string& filename,
-                                         const std::string& internalFormat, bool clamp)
+Texture Texture::create(const std::string& filename, const std::string& internalFormat, bool clamp)
 {
     GLenum target = GL_TEXTURE_2D;
-    std::unique_ptr<Texture> tex{new Texture{target}};
+    Texture tex{target};
 
     SDL_Surface* surface = IMG_Load(filename.c_str());
 
@@ -65,16 +74,16 @@ std::unique_ptr<Texture> Texture::create(const std::string& filename,
         throw std::runtime_error("SDL Error: " + std::string(SDL_GetError()));
     }
 
-    tex->m_w = surface->w;
-    tex->m_h = surface->h;
+    tex.m_w = surface->w;
+    tex.m_h = surface->h;
 
-    glBindTexture(target, tex->m_textureId);
+    glBindTexture(target, tex.m_textureId);
 
     GLenum format   = textureFormat(&surface);
     GLint intFormat = internalFormatToInt(internalFormat);
 
     SDL_LockSurface(surface);
-    glTexImage2D(target, 0, intFormat, tex->m_w, tex->m_h, 0, format, GL_UNSIGNED_BYTE,
+    glTexImage2D(target, 0, intFormat, tex.m_w, tex.m_h, 0, format, GL_UNSIGNED_BYTE,
                  surface->pixels);
     SDL_UnlockSurface(surface);
 
@@ -82,27 +91,26 @@ std::unique_ptr<Texture> Texture::create(const std::string& filename,
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    LOG_INFO << "Loaded Texture: " << tex->m_textureId << " (" << tex->m_w << " x " << tex->m_h
-             << ")";
+    LOG_INFO << "Loaded Texture: " << tex.m_textureId << " (" << tex.m_w << " x " << tex.m_h << ")";
 
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     if (clamp)
-        tex->setClampToEdge();
+        tex.setClampToEdge();
     else
-        tex->setRepeat();
+        tex.setRepeat();
 
     return tex;
 }
 
-std::unique_ptr<Texture> Texture::create(const std::array<std::string, 6> filenames,
-                                         const std::string& internalFormat, bool clamp)
+Texture Texture::create(const std::array<std::string, 6> filenames,
+                        const std::string& internalFormat, bool clamp)
 {
     GLenum target = GL_TEXTURE_CUBE_MAP;
-    std::unique_ptr<Texture> tex{new Texture{target}};
+    Texture tex{target};
 
-    glBindTexture(target, tex->m_textureId);
+    glBindTexture(target, tex.m_textureId);
 
     for (size_t i = 0; i < filenames.size(); ++i) {
         SDL_Surface* surface = IMG_Load(filenames[i].c_str());
@@ -111,30 +119,29 @@ std::unique_ptr<Texture> Texture::create(const std::array<std::string, 6> filena
             throw std::runtime_error("SDL_Image load error: " + std::string(IMG_GetError()));
         }
 
-        tex->m_w = surface->w;
-        tex->m_h = surface->h;
+        tex.m_w = surface->w;
+        tex.m_h = surface->h;
 
         GLenum format   = textureFormat(&surface);
         GLint intFormat = internalFormatToInt(internalFormat);
 
         SDL_LockSurface(surface);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, intFormat, tex->m_w, tex->m_h, 0,
-                     format, GL_UNSIGNED_BYTE, surface->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, intFormat, tex.m_w, tex.m_h, 0, format,
+                     GL_UNSIGNED_BYTE, surface->pixels);
         SDL_UnlockSurface(surface);
 
         SDL_FreeSurface(surface);
     }
 
-    LOG_INFO << "Loaded CubeTex: " << tex->m_textureId << " (" << tex->m_w << " x " << tex->m_h
-             << ")";
+    LOG_INFO << "Loaded CubeTex: " << tex.m_textureId << " (" << tex.m_w << " x " << tex.m_h << ")";
 
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameteri(tex->m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     if (clamp)
-        tex->setClampToEdge();
+        tex.setClampToEdge();
     else
-        tex->setRepeat();
+        tex.setRepeat();
 
     return tex;
 }

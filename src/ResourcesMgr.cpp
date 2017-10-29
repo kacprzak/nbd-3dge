@@ -163,8 +163,8 @@ void ResourcesMgr::addTexture(const std::string& name, const std::string& filena
     bool clamp                            = false;
     if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
 
-    std::shared_ptr<Texture> tex{Texture::create(m_dataFolder + filename, internalFormat, clamp)};
-    m_textures[name] = tex;
+    m_textures[name] =
+        std::make_shared<Texture>(Texture::create(m_dataFolder + filename, internalFormat, clamp));
 }
 
 void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6> filenames,
@@ -179,8 +179,7 @@ void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6
         filename = m_dataFolder + filename;
     }
 
-    std::shared_ptr<Texture> tex{Texture::create(filenames, internalFormat, clamp)};
-    m_textures[name] = tex;
+    m_textures[name] = std::make_shared<Texture>(Texture::create(filenames, internalFormat, clamp));
 }
 
 std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
@@ -224,7 +223,7 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 
     std::vector<std::shared_ptr<Texture>> textures;
     for (const auto& texFilename : font->getTexturesFilenames()) {
-        textures.emplace_back(Texture::create(m_dataFolder + texFilename, "GL_RGBA8"));
+        textures.emplace_back(new Texture{Texture::create(m_dataFolder + texFilename, "GL_RGBA8")});
     }
     font->setTextures(textures);
 

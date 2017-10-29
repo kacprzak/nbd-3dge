@@ -13,6 +13,7 @@ class ShaderProgram final
   public:
     ShaderProgram();
     ShaderProgram(const ShaderProgram& other) = delete;
+    ShaderProgram(ShaderProgram&& other);
     ~ShaderProgram();
 
     void link(const std::vector<Shader*>& shaders);
@@ -25,9 +26,9 @@ class ShaderProgram final
   private:
     GLint getUniformLocation(const char* name);
 
-    GLuint m_shaderProgramId;
+    GLuint m_shaderProgramId = 0;
     boost::container::flat_map<std::string, GLint> m_uniformLocs;
-    bool m_linked;
+    bool m_linked = false;
 };
 
 #endif // SHADERPROGRAM_H

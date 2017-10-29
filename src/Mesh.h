@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-class Mesh
+class Mesh final
 {
     enum Buffers { POSITIONS, NORMALS, TANGENTS, TEXCOORDS, INDICES, NUM_BUFFERS };
 
@@ -15,6 +15,8 @@ class Mesh
     Mesh(GLenum primitive, const std::vector<glm::vec3>& vertices,
          const std::vector<glm::vec3>& normals, const std::vector<glm::vec2>& texcoords,
          const std::vector<GLushort>& indices);
+    Mesh(const Mesh&) = delete;
+    Mesh& operator=(const Mesh&) = delete;
 
     ~Mesh();
 

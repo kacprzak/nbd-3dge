@@ -12,6 +12,8 @@ class Text final
 {
   public:
     Text(const std::shared_ptr<Font>& font);
+    Text(const Text&) = delete;
+    Text& operator=(const Text&) = delete;
     ~Text();
 
     void setText(const std::string& text);

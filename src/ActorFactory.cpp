@@ -102,20 +102,17 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
     RenderComponent rdProto;
     PhysicsComponent phProto;
 
-    auto trNode = actorTree.get_child_optional("transformation");
-    if (trNode) {
+    if (auto trNode = actorTree.get_child_optional("transformation")) {
         auto tr = getTransformationComponent(trNode.get(), trProto);
         a->addComponent(ComponentId::Transformation, tr);
     }
 
-    auto rdNode = actorTree.get_child_optional("render");
-    if (rdNode) {
+    if (auto rdNode = actorTree.get_child_optional("render")) {
         auto rd = getRenderComponent(rdNode.get(), rdProto);
         a->addComponent(ComponentId::Render, rd);
     }
 
-    auto phNode = actorTree.get_child_optional("physics");
-    if (phNode) {
+    if (auto phNode = actorTree.get_child_optional("physics")) {
         auto ph = getPhysicsComponent(phNode.get(), phProto);
         a->addComponent(ComponentId::Physics, ph);
     }
@@ -136,8 +133,7 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     RenderComponent rdProto;
     PhysicsComponent phProto;
 
-    auto prototypeNode = actorTree.get_child_optional("prototype");
-    if (prototypeNode) {
+    if (auto prototypeNode = actorTree.get_child_optional("prototype")) {
         auto prototypeName = actorTree.get<std::string>("prototype");
         auto it            = m_prototypes.find(prototypeName);
         if (it != std::end(m_prototypes)) {
@@ -157,26 +153,22 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
         }
     }
 
-    auto trNode = actorTree.get_child_optional("transformation");
-    if (trNode) {
+    if (auto trNode = actorTree.get_child_optional("transformation")) {
         auto tr = getTransformationComponent(trNode.get(), trProto);
         a->addComponent(ComponentId::Transformation, tr);
     }
 
-    auto rdNode = actorTree.get_child_optional("render");
-    if (rdNode) {
+    if (auto rdNode = actorTree.get_child_optional("render")) {
         auto rd = getRenderComponent(rdNode.get(), rdProto);
         a->addComponent(ComponentId::Render, rd);
     }
 
-    auto phNode = actorTree.get_child_optional("physics");
-    if (phNode) {
+    if (auto phNode = actorTree.get_child_optional("physics")) {
         auto ph = getPhysicsComponent(phNode.get(), phProto);
         a->addComponent(ComponentId::Physics, ph);
     }
 
-    auto ctrlNode = actorTree.get_child_optional("control");
-    if (ctrlNode) {
+    if (auto ctrlNode = actorTree.get_child_optional("control")) {
         a->addComponent(ComponentId::Control, std::make_shared<ControlComponent>());
     }
 
