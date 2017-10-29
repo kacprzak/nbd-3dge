@@ -8,20 +8,20 @@ static inline float to_float(const std::string& s) { return boost::lexical_cast<
 
 static inline int to_int(const std::string& s) { return boost::lexical_cast<int>(s); }
 
-std::vector<glm::vec3> ObjLoader::vertices() const
+std::vector<glm::vec3> ObjLoader::positions() const
 {
-    std::vector<glm::vec3> vertices_a;
+    std::vector<glm::vec3> positions_a;
 
     if (!m_oglFaces.empty()) {
-        vertices_a.reserve(m_oglVertices.size());
+        positions_a.reserve(m_oglVertices.size());
 
         for (const auto& v : m_oglVertices) {
-            vertices_a.push_back(v.p);
+            positions_a.push_back(v.p);
         }
-        return vertices_a;
+        return positions_a;
     }
 
-    return m_vertices;
+    return m_positions;
 }
 
 std::vector<glm::vec3> ObjLoader::normals() const
@@ -82,7 +82,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
         v.x = to_float(args[0]);
         v.y = to_float(args[1]);
         v.z = to_float(args[2]);
-        m_vertices.push_back(v);
+        m_positions.push_back(v);
 
     } else if (cmd == "vn") {
         // vn -0.002913 -0.974373 -0.224919
@@ -108,7 +108,7 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
         for (int i = 0; i < 3; ++i) {
             elems.clear();
             split(args[i], '/', elems);
-            f.vertexIndices[i] = to_int(elems[0]) - 1;
+            f.posIndices[i] = to_int(elems[0]) - 1;
 
             if (elems.size() > 1 && !elems[1].empty()) f.texIndices[i] = to_int(elems[1]) - 1;
 
@@ -122,9 +122,9 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
             elems.clear();
             split(args[3], '/', elems);
 
-            f2.vertexIndices[0] = f.vertexIndices[2];
-            f2.vertexIndices[1] = to_int(elems[0]) - 1;
-            f2.vertexIndices[2] = f.vertexIndices[0];
+            f2.posIndices[0] = f.posIndices[2];
+            f2.posIndices[1] = to_int(elems[0]) - 1;
+            f2.posIndices[2] = f.posIndices[0];
 
             if (elems.size() > 1 && !elems[1].empty()) {
                 f2.texIndices[0] = f.texIndices[2];
@@ -153,7 +153,7 @@ void ObjLoader::fileLoaded()
             OpenGlFace face;
             for (int i = 0; i < 3; ++i) {
                 OpenGlVertex vert;
-                vert.p = m_vertices[f.vertexIndices[i]];
+                vert.p = m_positions[f.posIndices[i]];
                 vert.n =
                     !m_normals.empty() ? m_normals[f.normIndices[i]] : glm::vec3{0.0f, 0.0f, 0.0f};
                 vert.t =
@@ -172,7 +172,7 @@ void ObjLoader::fileLoaded()
         }
 
         m_faces.clear();
-        m_vertices.clear();
+        m_positions.clear();
         m_normals.clear();
         m_texCoords.clear();
     }

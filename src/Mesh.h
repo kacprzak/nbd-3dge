@@ -32,7 +32,8 @@ class Mesh final
   private:
     static std::array<float, 6> calculateAABB(const std::vector<glm::vec3>& positions);
 
-    static std::vector<glm::vec3> calculateTangents(const std::vector<glm::vec3>& vertices,
+    static std::vector<glm::vec3> calculateTangents(GLenum primitive,
+                                                    const std::vector<glm::vec3>& positions,
                                                     const std::vector<glm::vec3>& normals,
                                                     const std::vector<glm::vec2>& texcoords,
                                                     const std::vector<GLushort>& indices);

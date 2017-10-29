@@ -18,7 +18,7 @@ Mesh::Mesh(GLenum primitive, const std::vector<glm::vec3>& vertices,
     m_numberOfVertices = vertices.size();
     m_numberOfElements = indices.size();
 
-    const auto& tangents = calculateTangents(vertices, normals, texcoords, indices);
+    const auto& tangents = calculateTangents(primitive, vertices, normals, texcoords, indices);
 
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(NUM_BUFFERS, m_buffers);
@@ -148,7 +148,8 @@ std::array<float, 6> Mesh::calculateAABB(const std::vector<glm::vec3>& positions
 
 //------------------------------------------------------------------------------
 
-std::vector<glm::vec3> Mesh::calculateTangents(const std::vector<glm::vec3>& vertices,
+std::vector<glm::vec3> Mesh::calculateTangents(GLenum primitive,
+                                               const std::vector<glm::vec3>& positions,
                                                const std::vector<glm::vec3>& normals,
                                                const std::vector<glm::vec2>& texcoords,
                                                const std::vector<GLushort>& indices)
@@ -159,19 +160,22 @@ std::vector<glm::vec3> Mesh::calculateTangents(const std::vector<glm::vec3>& ver
 
     tangents.resize(normals.size());
 
-    for (size_t i = 0; i < indices.size(); i += 3) {
-        auto index0 = indices[i];
-        auto index1 = indices[i + 1];
-        auto index2 = indices[i + 2];
-        // Shortcuts for vertices
-        glm::vec3 v0{vertices[index0]};
-        glm::vec3 v1{vertices[index1]};
-        glm::vec3 v2{vertices[index2]};
+    auto inc                           = 1;
+    if (primitive == GL_TRIANGLES) inc = 3;
+
+    for (size_t i = 2; i < indices.size(); i += inc) {
+        auto index0 = indices[i - 2];
+        auto index1 = indices[i - 1];
+        auto index2 = indices[i - 0];
+        // Shortcuts for positions
+        glm::vec3 v0 = positions[index0];
+        glm::vec3 v1 = positions[index1];
+        glm::vec3 v2 = positions[index2];
 
         // Shortcuts for UVs
-        glm::vec2 st0{texcoords[index0]};
-        glm::vec2 st1{texcoords[index1]};
-        glm::vec2 st2{texcoords[index2]};
+        glm::vec2 st0 = texcoords[index0];
+        glm::vec2 st1 = texcoords[index1];
+        glm::vec2 st2 = texcoords[index2];
 
         // Edges of the triangle : postion delta
         glm::vec3 deltaPos1 = v1 - v0;
@@ -185,9 +189,11 @@ std::vector<glm::vec3> Mesh::calculateTangents(const std::vector<glm::vec3>& ver
         glm::vec3 tangent = (deltaPos1 * deltaST2.y - deltaPos2 * deltaST1.y) * r;
         // glm::vec3 bitangent = (deltaPos2 * deltaST1.x - deltaPos1 * deltaST2.x) * r;
 
-        tangents[index0] = glm::normalize(tangent);
-        tangents[index1] = glm::normalize(tangent);
-        tangents[index2] = glm::normalize(tangent);
+        tangent = glm::normalize(tangent);
+
+        tangents[index0] = tangent;
+        tangents[index1] = tangent;
+        tangents[index2] = tangent;
     }
 
     return tangents;
@@ -202,7 +208,7 @@ std::unique_ptr<Mesh> Mesh::fromWavefrontObj(const std::string& objfileName)
     ObjLoader objLoader;
     objLoader.load(objfileName);
 
-    return std::make_unique<Mesh>(GLenum(objLoader.primitive()), objLoader.vertices(),
+    return std::make_unique<Mesh>(GLenum(objLoader.primitive()), objLoader.positions(),
                                   objLoader.normals(), objLoader.texCoords(), objLoader.indices());
 }
 
@@ -249,15 +255,15 @@ std::unique_ptr<Mesh> Mesh::fromHeightmap(const std::vector<float>& heights, int
         return texCoord;
     };
 
-    std::vector<glm::vec3> vertices;
-    vertices.resize(w * h);
+    std::vector<glm::vec3> positions;
+    positions.resize(w * h);
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            int idx         = (y * h + x);
-            vertices[idx].x = x - w / 2.0f + 0.5f;
-            vertices[idx].y = getHeight(x, y);
-            vertices[idx].z = y - h / 2.0f + 0.5f;
+            int idx          = (y * h + x);
+            positions[idx].x = x - w / 2.0f + 0.5f;
+            positions[idx].y = getHeight(x, y);
+            positions[idx].z = y - h / 2.0f + 0.5f;
         }
     }
 
@@ -299,5 +305,5 @@ std::unique_ptr<Mesh> Mesh::fromHeightmap(const std::vector<float>& heights, int
         }
     }
 
-    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, vertices, normals, texCoords, indices);
+    return std::make_unique<Mesh>(GL_TRIANGLE_STRIP, positions, normals, texCoords, indices);
 }

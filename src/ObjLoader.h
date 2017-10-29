@@ -10,7 +10,7 @@ class ObjLoader : public Loader
 {
     struct Face
     {
-        unsigned short vertexIndices[3];
+        unsigned short posIndices[3];
         unsigned short normIndices[3];
         unsigned short texIndices[3];
     };
@@ -34,7 +34,7 @@ class ObjLoader : public Loader
   public:
     ObjLoader() {}
 
-    std::vector<glm::vec3> vertices() const;
+    std::vector<glm::vec3> positions() const;
     std::vector<glm::vec3> normals() const;
     std::vector<unsigned short> indices() const;
     std::vector<glm::vec2> texCoords() const;
@@ -47,7 +47,7 @@ class ObjLoader : public Loader
   private:
     GLenum m_primitive = GL_TRIANGLES; //< triangles by deafult
 
-    std::vector<glm::vec3> m_vertices;
+    std::vector<glm::vec3> m_positions;
     std::vector<Face> m_faces;
     std::vector<glm::vec3> m_normals;
     std::vector<glm::vec2> m_texCoords;
