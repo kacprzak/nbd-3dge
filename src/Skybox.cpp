@@ -22,8 +22,11 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
      *
      */
 
+    MeshData md;
+    md.primitive = GL_TRIANGLES;
+
     // clang-format off
-    std::vector<glm::vec3> vertices = {
+    md.positions = {
         { x, -x,  x},
         {-x, -x,  x},
         {-x,  x,  x},
@@ -34,7 +37,7 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
         { x,  x, -x}
     };
 
-    std::vector<GLushort> indices = {
+    md.indices = {
         // front
         0, 1, 3,
         1, 2, 3,
@@ -56,8 +59,7 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
     };
     // clang-format on
 
-    m_mesh = std::make_shared<Mesh>(GL_TRIANGLES, vertices, std::vector<glm::vec3>{},
-                                    std::vector<glm::vec2>{}, indices);
+    m_mesh = std::make_shared<Mesh>(md);
 }
 
 void Skybox::draw(const Camera* camera) const

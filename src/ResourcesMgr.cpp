@@ -197,8 +197,7 @@ void ResourcesMgr::addMesh(const std::string& name, const std::string& filename)
 {
     LOG_TRACE << "Adding Mesh: " << name;
 
-    std::shared_ptr<Mesh> mesh{Mesh::fromWavefrontObj(m_dataFolder + filename)};
-    m_meshes[name] = mesh;
+    m_meshes[name] = std::make_shared<Mesh>(MeshData::fromWavefrontObj(m_dataFolder + filename));
 }
 
 std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name) const

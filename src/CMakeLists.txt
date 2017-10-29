@@ -5,6 +5,7 @@ set( nbd-3dge_SRCS
     FpsCounter.cpp
     RenderNode.cpp
     Mesh.cpp
+    MeshData.cpp
     RenderSystem.cpp
     InputSystem.cpp
     SDLWindow.cpp
