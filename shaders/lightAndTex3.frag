@@ -8,14 +8,6 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
-
-//in vec3 ambient;
-//in vec3 diffuse;
-//in vec3 specular;
-//in vec2 texCoord;
-//in vec3 normal;
-//in vec3 tangent;
-
 in VS_OUT
 {
     vec3 pos_world;
@@ -94,15 +86,15 @@ void main()
 
     fragColor.rgb = texColor.xyz * mtl.ambient * ambient
         + texColor.xyz * mtl.diffuse * diffuse
-        + specularColor.xyz * specular;
+        + specularColor.xyz * specular * 16;
 
     //fragColor.rgb = texColor.rgb;
-    //fragColor.rgb = specularColor.rgb * specular;
+    //fragColor.rgb = specularColor.rgb;
     //fragColor.rgb = normal_world.rgb * 0.5 + 0.5;
     //fragColor.rgb = normalColor.rgb * 0.5 + 0.5;
     //fragColor.rgb = diffuse;
     //fragColor.rgb = specular;
-    
+    //fragColor.rgb = specularColor.rgb * specular * 32; 
 
     if (texColor.a < 0.6)
         discard;
