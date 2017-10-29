@@ -10,8 +10,6 @@ else()
   add_definitions( "-Wall -Wextra" )
 endif()
 
-include_directories(${PROJECT_BINARY_DIR} src)
-
 if( WIN32 )
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
