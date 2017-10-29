@@ -2,8 +2,8 @@ version: 0.1.{build}
 platform: x64
 
 clone_script:
-  - cmd: git lfs clone -q --exclude=data --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
-  - cmd: git checkout -qf %APPVEYOR_REPO_COMMIT%
+  - git lfs clone -q --exclude=data --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+  - git checkout -qf %APPVEYOR_REPO_COMMIT%
 
 install:
   - cmd: echo "Downloading conan..."
