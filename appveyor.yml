@@ -2,7 +2,7 @@ version: 0.1.{build}
 platform: x64
 
 clone_script:
-  - cmd: git clone -q --exclude=data --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+  - cmd: git lfs clone -q --exclude=data --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
   - cmd: git checkout -qf %APPVEYOR_REPO_COMMIT%
 
 install:
