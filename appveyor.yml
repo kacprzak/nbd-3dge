@@ -18,6 +18,9 @@ build_script:
   - cmd: conan install .. --build=missing
   - cmd: cmake ../ -G "Visual Studio 14 2015 Win64"
   - cmd: cmake --build . --config Release
+  - cmd: cd ..
 
 test_script:
-  - cmd: make test
+  - cmd: cd build
+  - cmd: ctest
+  - cmd: cd ..
