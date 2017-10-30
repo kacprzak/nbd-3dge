@@ -1,3 +1,5 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR} )
+
 macro( add_test_exec test_name srcs )
     string( TOLOWER ${test_name} test_lower_name srcs )
     set( exec_name ${test_lower_name}_test)

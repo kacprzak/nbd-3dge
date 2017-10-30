@@ -2,11 +2,6 @@
 
 #include "Util.h"
 #include <algorithm>
-#include <boost/lexical_cast.hpp>
-
-static inline float to_float(const std::string& s) { return boost::lexical_cast<float>(s); }
-
-static inline int to_int(const std::string& s) { return boost::lexical_cast<int>(s); }
 
 std::vector<glm::vec3> ObjLoader::positions() const
 {
