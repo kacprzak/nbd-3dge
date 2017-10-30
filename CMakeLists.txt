@@ -32,7 +32,7 @@ if( UNIX )
   #find_package( Lua53 REQUIRED )
 
   set( Boost_COMPONENTS program_options log )
-  #list( APPEND Boost_COMPONENTS unit_test_framework )
+  list( APPEND Boost_COMPONENTS unit_test_framework )
 
   find_package( Boost REQUIRED COMPONENTS ${Boost_COMPONENTS} )
 
@@ -95,11 +95,6 @@ if( UNIX )
     )
 endif()
 
-if( Boost_UNIT_TEST_FRAMEWORK_FOUND )
-  #  enable_testing()
-  #  add_subdirectory( tests )
-endif()
-
 configure_file(
   ${PROJECT_SOURCE_DIR}/config.h.in
   ${PROJECT_BINARY_DIR}/config.h
@@ -112,4 +107,8 @@ configure_file(
 
 add_subdirectory( src )
 
+if( Boost_UNIT_TEST_FRAMEWORK_FOUND )
+  enable_testing()
+  add_subdirectory( tests )
+endif()
 
