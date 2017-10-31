@@ -10,11 +10,12 @@ newmtl MyMaterial
 Ka 0.0435 0.0435 0.0435
 Kd 0.1086 0.1086 0.1086
 Ks 0.0000 0.0000 0.0000
+Ns 32
 
 map_Ka ambient.tga
 map_Kd diffuse.tga
 map_Ks specular.tga
-map_Ns normals.tga
+map_Kn normals.tga
 )==";
 
 BOOST_AUTO_TEST_CASE(Color_test)
@@ -33,6 +34,7 @@ BOOST_AUTO_TEST_CASE(Color_test)
     BOOST_CHECK(mtl.ambient == glm::vec3(0.0435, 0.0435, 0.0435));
     BOOST_CHECK(mtl.diffuse == glm::vec3(0.1086, 0.1086, 0.1086));
     BOOST_CHECK(mtl.specular == glm::vec3(0.0, 0.0, 0.0));
+    BOOST_CHECK_EQUAL(mtl.shininess, 32);
 }
 
 BOOST_AUTO_TEST_CASE(Textures_test)

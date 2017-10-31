@@ -2,25 +2,9 @@
 #define MTLLOADER_H
 
 #include "Loader.h"
+#include "MaterialData.h"
 
-#include <glm/glm.hpp>
-
-#include <string>
 #include <vector>
-
-struct MaterialData
-{
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
-
-    std::string ambientTex;
-    std::string diffuseTex;
-    std::string specularTex;
-    std::string normalsTex;
-
-    std::string name;
-};
 
 class MtlLoader : public Loader
 {
