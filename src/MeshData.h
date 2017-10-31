@@ -17,7 +17,8 @@ struct MeshData final
 
     static MeshData fromWavefrontObj(const std::string& objfileName);
     static MeshData fromHeightmap(const std::vector<float>& heights, int w, int h,
-                                  float textureStrech);
+                                  float textureStrech,
+                                  glm::vec2 turbulence = glm::vec2(0.0f, 0.0f));
 
     static std::array<float, 6> calculateAABB(const std::vector<glm::vec3>& positions);
 

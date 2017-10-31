@@ -36,7 +36,7 @@ std::vector<glm::vec3> MeshData::calculateTangents(const MeshData& md)
 
     tangents.resize(md.normals.size());
 
-    auto inc                           = 1;
+    auto inc                              = 1;
     if (md.primitive == GL_TRIANGLES) inc = 3;
 
     for (size_t i = 2; i < md.indices.size(); i += inc) {
@@ -91,7 +91,7 @@ MeshData MeshData::fromWavefrontObj(const std::string& objfileName)
 //------------------------------------------------------------------------------
 
 MeshData MeshData::fromHeightmap(const std::vector<float>& heights, int w, int h,
-                                 float textureStrech)
+                                 float textureStrech, glm::vec2 turbulence)
 {
     if (w % 2 != 0 || h % 2 != 0) {
         throw std::runtime_error{"Heightmap with odd size is not supported."};
@@ -122,11 +122,28 @@ MeshData MeshData::fromHeightmap(const std::vector<float>& heights, int w, int h
         return glm::normalize(n);
     };
 
-    const auto getTexCoord = [textureStrech](int x, int y) -> glm::vec2 {
+    //turbulence = glm::vec2(0.15, 0.15);
+
+    const auto getTexCoord = [textureStrech, turbulence](int x, int y) -> glm::vec2 {
         auto texCoord = glm::vec2{0.0, 0.0};
 
         texCoord[0] = x / textureStrech;
         texCoord[1] = y / textureStrech;
+
+        // todo: Not a real turbulence function
+        const auto frand = [](float low, float hi) -> float {
+            return low + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (hi - low)));
+        };
+
+        if (turbulence.x > 0.0f) {
+            float xTurb = frand(-turbulence.x, turbulence.x);
+            texCoord += xTurb / textureStrech;
+        }
+
+        if (turbulence.y > 0.0f) {
+            float yTurb = frand(-turbulence.y, turbulence.y);
+            texCoord += yTurb / textureStrech;
+        }
 
         return texCoord;
     };
