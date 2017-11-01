@@ -4,6 +4,7 @@
 #include "Font.h"
 #include "FontLoader.h"
 #include "Heightfield.h"
+#include "Material.h"
 #include "Mesh.h"
 #include "Script.h"
 #include "ShaderProgram.h"
@@ -19,6 +20,7 @@ class ResourcesMgr
 
     void load(const std::string& xmlFile);
     void loadShaders(const std::string& xmlFile);
+    void loadMaterials(const std::string& xmlFile);
 
     void addShaderProgram(const std::string& name, const std::string& vertexShaderFile,
                           const std::string& geometryShaderFile,
@@ -30,6 +32,9 @@ class ResourcesMgr
     void addTexture(const std::string& name, std::array<std::string, 6> filenames,
                     const std::string& wrap, const std::string& internalFormat);
     std::shared_ptr<Texture> getTexture(const std::string& name) const;
+
+    void addMaterial(const MaterialData& materialData);
+    std::shared_ptr<Material> getMaterial(const std::string& name) const;
 
     void addMesh(const std::string& name, const std::string& filename);
     std::shared_ptr<Mesh> getMesh(const std::string& name) const;
@@ -50,6 +55,7 @@ class ResourcesMgr
     std::map<std::string, std::shared_ptr<Texture>> m_textures;
     std::map<std::string, std::shared_ptr<Font>> m_fonts;
     std::map<std::string, std::shared_ptr<ShaderProgram>> m_shaderPrograms;
+    std::map<std::string, std::shared_ptr<Material>> m_materials;
     std::map<std::string, std::shared_ptr<Script>> m_scripts;
     std::map<std::string, std::shared_ptr<Heightfield>> m_heightfields;
 };

@@ -20,11 +20,24 @@ void RenderNode::setTextures(std::vector<std::shared_ptr<Texture>> textures)
     m_textures = textures;
 }
 
-void RenderNode::addTexture(std::shared_ptr<Texture> texture) { m_textures.push_back(texture); }
+void RenderNode::addTexture(const std::shared_ptr<Texture>& texture)
+{
+    m_textures.push_back(texture);
+}
 
-void RenderNode::setMesh(std::shared_ptr<Mesh> mesh) { m_mesh = mesh; }
+void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
 
-void RenderNode::setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
+void RenderNode::setMaterials(std::vector<std::shared_ptr<Material>> materials)
+{
+    m_materials = materials;
+}
+
+void RenderNode::addMaterial(const std::shared_ptr<Material>& material)
+{
+    m_materials.push_back(material);
+}
+
+void RenderNode::setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram)
 {
     m_shaderProgram = shaderProgram;
 }

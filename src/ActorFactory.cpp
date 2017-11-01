@@ -44,6 +44,14 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
         rd->textures = prototype.textures;
     }
 
+    if (auto textures = actorTree.get_child_optional("materials")) {
+        for (ptree::value_type& v : actorTree.get_child("materials")) {
+            rd->materials.push_back(v.second.data());
+        }
+    } else {
+        rd->materials = prototype.materials;
+    }
+
     return rd;
 }
 

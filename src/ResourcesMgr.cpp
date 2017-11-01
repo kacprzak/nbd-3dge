@@ -1,6 +1,7 @@
 #include "ResourcesMgr.h"
 
 #include "Logger.h"
+#include "MtlLoader.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -31,11 +32,12 @@ void ResourcesMgr::load(const std::string& xmlFile)
         ptree& assetTree             = v.second;
 
         if (assetType == "texture") {
-            const std::string& name           = assetTree.get<std::string>("name");
+            std::string name                  = assetTree.get<std::string>("name", "");
             const std::string& wrap           = assetTree.get<std::string>("wrap", "GL_REPEAT");
             const std::string& internalFormat = assetTree.get<std::string>("internalFormat", "");
             if (assetTree.get_child("file").size() == 0) {
                 const std::string& file = assetTree.get<std::string>("file");
+                if (name.empty()) name  = file;
                 addTexture(name, file, wrap, internalFormat);
             } else {
                 std::array<std::string, 6> files;
@@ -45,6 +47,8 @@ void ResourcesMgr::load(const std::string& xmlFile)
                 files[3] = assetTree.get<std::string>("file.bottom");
                 files[4] = assetTree.get<std::string>("file.back");
                 files[5] = assetTree.get<std::string>("file.front");
+
+                if (name.empty()) name = files[5];
                 addTexture(name, files, wrap, internalFormat);
             }
         } else if (assetType == "font") {
@@ -62,6 +66,8 @@ void ResourcesMgr::load(const std::string& xmlFile)
             addHeightfield(name, file, amplitude);
         }
     }
+
+    loadMaterials(xmlFile);
 }
 
 //------------------------------------------------------------------------------
@@ -85,6 +91,79 @@ void ResourcesMgr::loadShaders(const std::string& xmlFile)
             addShaderProgram(name, vertexShaderFile, geometryShaderFile, fragmentShaderFile);
         }
     }
+}
+
+//------------------------------------------------------------------------------
+
+void ResourcesMgr::loadMaterials(const std::string& xmlFile)
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    read_xml(m_dataFolder + xmlFile, pt);
+
+    for (ptree::value_type& v : pt.get_child("assets")) {
+        const std::string& assetType = v.first;
+        ptree& assetTree             = v.second;
+
+        if (assetType == "materials") {
+            const std::string& file = assetTree.get<std::string>("file");
+            MtlLoader mtlLoader;
+            mtlLoader.load(m_dataFolder + file);
+
+            for (const auto& mtl : mtlLoader.materials()) {
+                addMaterial(mtl);
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void ResourcesMgr::addMaterial(const MaterialData& materialData)
+{
+    std::vector<std::shared_ptr<Texture>> textures;
+    textures.resize(4);
+    // Update and get textures
+    if (!materialData.ambientTex.empty()) {
+        const auto& file = materialData.ambientTex;
+        addTexture(file, file, "", "GL_RGB8");
+        textures[0] = getTexture(file);
+    }
+    if (!materialData.diffuseTex.empty()) {
+        const auto& file = materialData.diffuseTex;
+        addTexture(file, file, "", "GL_SRGB8_ALPHA8");
+        textures[1] = getTexture(file);
+    }
+    if (!materialData.specularTex.empty()) {
+        const auto& file = materialData.specularTex;
+        addTexture(file, file, "", "GL_RGB8");
+        textures[2] = getTexture(file);
+    }
+    if (!materialData.normalsTex.empty()) {
+        const auto& file = materialData.normalsTex;
+        addTexture(file, file, "", "GL_RGB8");
+        textures[3] = getTexture(file);
+    }
+
+    auto it = m_materials.find(materialData.name);
+    if (it == m_materials.end()) {
+        LOG_TRACE << "Adding Material: " << materialData.name;
+
+        m_materials[materialData.name] = std::make_shared<Material>(materialData, textures);
+    } else {
+        LOG_TRACE << "Reloading Material: " << materialData.name;
+        *it->second = Material{materialData, textures};
+    }
+}
+
+std::shared_ptr<Material> ResourcesMgr::getMaterial(const std::string& name) const
+{
+    auto it = m_materials.find(name);
+    if (it == std::end(m_materials))
+        throw std::runtime_error("Material '" + name + "' not loaded.");
+    else
+        return it->second;
 }
 
 //------------------------------------------------------------------------------

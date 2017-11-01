@@ -60,6 +60,11 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
         return;
     }
 
+    for (const auto& material : rd->materials) {
+        auto materialPtr = resourcesMgr.getMaterial(material);
+        a->addMaterial(materialPtr);
+    }
+
     for (const auto& texture : rd->textures) {
         auto texturePtr = resourcesMgr.getTexture(texture);
         a->addTexture(texturePtr);

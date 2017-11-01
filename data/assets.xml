@@ -40,6 +40,10 @@
     <vertexShader>terrain.vert</vertexShader>
     <fragmentShader>terrain.frag</fragmentShader>
   </shaderProgram>
+
+  <materials>
+    <file>materials.mtl</file>
+  </materials>
   
   <texture>
     <name>skybox_cubemap</name>
@@ -110,19 +114,16 @@
     <file>ship.obj</file>
   </mesh>
 
-  <texture>
-    <name>wall_diffuse</name>
+  <!--texture>
     <file>Stone_Wall_004/color.jpg</file>
     <internalFormat>GL_SRGB8</internalFormat>
   </texture>
   <texture>
-    <name>wall_normal</name>
     <file>Stone_Wall_004/normal.jpg</file>
   </texture>
   <texture>
-    <name>wall_specular</name>
     <file>Stone_Wall_004/specular.jpg</file>
-  </texture>
+  </texture-->
 
   <mesh>
     <name>cube</name>
@@ -144,12 +145,12 @@
   <texture>
     <name>palm_tree_normal</name>
     <file>palm_tree_v2/normal.tga</file>
-    <internalFormat>GL_RGBA8</internalFormat>
+    <internalFormat>GL_RGB8</internalFormat>
   </texture>
   <texture>
     <name>palm_tree_specular</name>
     <file>palm_tree_v2/specular.tga</file>
-    <internalFormat>GL_RGBA8</internalFormat>
+    <internalFormat>GL_RGB8</internalFormat>
   </texture>
 
   <mesh>

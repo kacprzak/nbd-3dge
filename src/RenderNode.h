@@ -2,6 +2,7 @@
 #define RENDERNODE_H
 
 #include "Components.h"
+#include "Material.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
@@ -17,10 +18,13 @@ class RenderNode
     virtual ~RenderNode() = default;
 
     void setTextures(std::vector<std::shared_ptr<Texture>> textures);
-    void addTexture(std::shared_ptr<Texture> texture);
+    void addTexture(const std::shared_ptr<Texture>& texture);
 
-    void setMesh(std::shared_ptr<Mesh> mesh);
-    void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
+    void setMaterials(std::vector<std::shared_ptr<Material>> materials);
+    void addMaterial(const std::shared_ptr<Material>& material);
+
+    void setMesh(const std::shared_ptr<Mesh>& mesh);
+    void setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram);
 
     virtual void draw(const Camera* camera) const;
     virtual void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
@@ -43,6 +47,7 @@ class RenderNode
     void rebuildModelMatrix();
 
     std::shared_ptr<Mesh> m_mesh;
+    std::vector<std::shared_ptr<Material>> m_materials;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
     std::vector<std::shared_ptr<Texture>> m_textures;
 

@@ -41,11 +41,9 @@
     </transformation>
     <render>
       <mesh>cube</mesh>
-      <textures>
-        <texture>wall_diffuse</texture>
-	<texture>wall_normal</texture>
-	<texture>wall_specular</texture>
-      </textures>
+      <materials>
+        <material>wall_mtl</material>
+      </materials>
       <shaderProgram>lightAndTex3</shaderProgram>
     </render>
     <physics>
