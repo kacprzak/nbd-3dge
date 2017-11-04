@@ -32,7 +32,7 @@ const light sun = light(
     vec3(1, 1, 1)
 );
 
-struct material
+struct Material
 {
     vec3 ambient;
     vec3 diffuse;
@@ -40,12 +40,7 @@ struct material
     float shininess;
 };
 
-const material mtl = material(
-    vec3(1, 1, 1) * 0.1,
-    vec3(1, 1, 1) * 0.9,
-    vec3(1, 1, 1) * 0.4,
-    32
-);
+uniform Material material;
 
 
 void main()
@@ -80,12 +75,12 @@ void main()
     else { 
         vec3 reflection = -reflect(surfaceToLight, normal_world);
         vec3 vertexToEye = normalize(-position_eye.xyz);
-        specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), mtl.shininess);
+        specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), material.shininess);
     }
        
 
-    fragColor.rgb = texColor.xyz * mtl.ambient * ambient
-        + texColor.xyz * mtl.diffuse * diffuse
+    fragColor.rgb = texColor.xyz * material.ambient * ambient
+        + texColor.xyz * material.diffuse * diffuse
         + specularColor.xyz * specular * 16;
 
     //fragColor.rgb = texColor.rgb;

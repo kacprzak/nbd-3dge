@@ -1,6 +1,7 @@
 #include "MtlLoader.h"
 
 #include "Util.h"
+#include "Logger.h"
 
 #include <glm/glm.hpp>
 
@@ -26,18 +27,20 @@ void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& 
         mtl.specular      = to_glmvec3(args);
     } else if (cmd == "Ns") {
         MaterialData& mtl = m_materials.back();
-        mtl.shininess     = to_int(args.at(0));
-    } else if (cmd == "map_Ka") {
+        mtl.shininess     = to_float(args.at(0));
+    } else if (cmd == "map_Ka" || cmd == "map_Kd") {
         MaterialData& mtl = m_materials.back();
-        mtl.ambientTex    = args.back();
-    } else if (cmd == "map_Kd") {
+        TextureData tex;
+        tex.filename    = args.back();
+        tex.linearColor = false;
+        mtl.textures.push_back(tex);
+    } else if (cmd == "map_Ks" || cmd == "map_Kn") {
         MaterialData& mtl = m_materials.back();
-        mtl.diffuseTex    = args.back();
-    } else if (cmd == "map_Ks") {
-        MaterialData& mtl = m_materials.back();
-        mtl.specularTex   = args.back();
-    } else if (cmd == "map_Kn") {
-        MaterialData& mtl = m_materials.back();
-        mtl.normalsTex    = args.back();
+        TextureData tex;
+        tex.filename    = args.back();
+        tex.linearColor = true;
+        mtl.textures.push_back(tex);
+    } else {
+        LOG_WARNING << "Unknown command: " << cmd;
     }
 }

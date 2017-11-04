@@ -20,4 +20,6 @@ newmtl rocky_mtl
 map_Kd terrain/grass_rocky_d.jpg
 
 newmtl ship_mtl
+Ks 0.5 0.5 0.5
+Ns 32
 map_Kd ship.jpg

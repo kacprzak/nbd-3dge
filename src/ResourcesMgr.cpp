@@ -123,27 +123,12 @@ void ResourcesMgr::loadMaterials(const std::string& xmlFile)
 void ResourcesMgr::addMaterial(const MaterialData& materialData)
 {
     std::vector<std::shared_ptr<Texture>> textures;
-    textures.resize(4);
-    // Update and get textures
-    if (!materialData.ambientTex.empty()) {
-        const auto& file = materialData.ambientTex;
-        addTexture(file, file, "", "GL_RGB8");
-        textures[0] = getTexture(file);
-    }
-    if (!materialData.diffuseTex.empty()) {
-        const auto& file = materialData.diffuseTex;
-        addTexture(file, file, "", "GL_SRGB8_ALPHA8");
-        textures[1] = getTexture(file);
-    }
-    if (!materialData.specularTex.empty()) {
-        const auto& file = materialData.specularTex;
-        addTexture(file, file, "", "GL_RGB8");
-        textures[2] = getTexture(file);
-    }
-    if (!materialData.normalsTex.empty()) {
-        const auto& file = materialData.normalsTex;
-        addTexture(file, file, "", "GL_RGB8");
-        textures[3] = getTexture(file);
+
+    for (const auto& texData : materialData.textures) {
+        const auto& file          = texData.filename;
+        const auto internalFormat = texData.linearColor ? "GL_RGB8" : "GL_SRGB8_ALPHA8";
+        addTexture(file, file, "", internalFormat);
+        textures.push_back(getTexture(file));
     }
 
     auto it = m_materials.find(materialData.name);

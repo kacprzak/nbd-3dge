@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(Color_test)
     BOOST_CHECK(mtl.ambient == glm::vec3(0.0435, 0.0435, 0.0435));
     BOOST_CHECK(mtl.diffuse == glm::vec3(0.1086, 0.1086, 0.1086));
     BOOST_CHECK(mtl.specular == glm::vec3(0.0, 0.0, 0.0));
-    BOOST_CHECK_EQUAL(mtl.shininess, 32);
+    BOOST_CHECK_EQUAL(mtl.shininess, 32.0f);
 }
 
 BOOST_AUTO_TEST_CASE(Textures_test)
@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE(Textures_test)
 
     auto mtl = ldr.materials()[0];
 
-    BOOST_CHECK_EQUAL(mtl.ambientTex, "ambient.tga");
-    BOOST_CHECK_EQUAL(mtl.diffuseTex, "diffuse.tga");
-    BOOST_CHECK_EQUAL(mtl.specularTex, "specular.tga");
-    BOOST_CHECK_EQUAL(mtl.normalsTex, "normals.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[0].filename, "ambient.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[1].filename, "diffuse.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[2].filename, "specular.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[3].filename, "normals.tga");
 }

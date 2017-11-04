@@ -8,9 +8,9 @@
     </transformation>
     <render>
       <mesh>ship</mesh>
-      <textures>
-        <texture>ship_texture</texture>
-      </textures>
+      <materials>
+        <material>ship_mtl</material>
+      </materials>
       <shaderProgram>lightAndTex</shaderProgram>
     </render>
     <physics>

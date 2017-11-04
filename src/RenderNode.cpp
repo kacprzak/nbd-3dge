@@ -57,12 +57,29 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
 {
     if (!m_mesh) return;
 
+    int textureUnit = 0;
+    for (size_t i = 0; i < m_materials.size(); ++i) {
+        for (size_t j = 0; j < m_materials[i]->textures.size(); ++j) {
+            m_materials[i]->textures[j]->bind(textureUnit++);
+        }
+    }
+
     for (size_t i = 0; i < m_textures.size(); ++i) {
-        m_textures[i]->bind(i);
+        m_textures[i]->bind(textureUnit++);
     }
 
     if (shaderProgram) {
         shaderProgram->use();
+
+        for (size_t i = 0; i < m_materials.size(); ++i) {
+            const auto& material = *m_materials[i];
+            shaderProgram->setUniform("material.ambient", material.ambient());
+            shaderProgram->setUniform("material.diffuse", material.diffuse());
+            shaderProgram->setUniform("material.specular", material.specular());
+            shaderProgram->setUniform("material.emission", material.emission());
+            shaderProgram->setUniform("material.shininess", material.shininess());
+        }
+
         shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
         shaderProgram->setUniform("modelMatrix", m_modelMatrix);

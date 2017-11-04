@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "TextureData.h"
+
 struct MaterialData
 {
     glm::vec3 ambient{0.2f, 0.2f, 0.2f};
@@ -12,15 +14,11 @@ struct MaterialData
     glm::vec3 specular;
     glm::vec3 emission;
 
-    int shininess = 0;
+    float shininess = 1.0f;
 
-    std::string ambientTex;
-    std::string diffuseTex;
-    std::string specularTex;
-    std::string normalsTex;
+    std::vector<TextureData> textures;
 
     std::string name;
 };
-
 
 #endif /* MATERIALDATA_H */
