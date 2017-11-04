@@ -97,6 +97,18 @@
     </render>
   </skybox>
 
+  <light>
+    <name>sun</name>
+    <transformation>
+      <position>1 -1 -1</position>
+    </transformation>
+    <render>
+      <ambient>1 1 1</ambient>
+      <diffuse>1 1 1</diffuse>
+      <specular>1 1 1</specular>
+    </render>
+  </light>
+
   <terrain>
     <name>terrain</name>
     <transformation>

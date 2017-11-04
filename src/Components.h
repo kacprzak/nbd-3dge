@@ -19,7 +19,7 @@ struct TransformationComponent : public Component
     float scale = 1.0f;
 };
 
-enum class Role { Skybox, Dynamic };
+enum class Role { Skybox, Dynamic, Light };
 
 struct RenderComponent : public Component
 {
@@ -28,6 +28,7 @@ struct RenderComponent : public Component
     std::string mesh;
     bool transparent     = false;
     bool backfaceCulling = true;
+    std::string light;
     std::vector<std::string> textures;
     std::vector<std::string> materials;
 };

@@ -2,6 +2,7 @@
 
 #include "ResourcesMgr.h"
 #include "Terrain.h"
+#include "Light.h"
 
 #include <array>
 #include <boost/algorithm/string/predicate.hpp>
@@ -57,6 +58,11 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
         auto skybox = std::make_shared<Skybox>(resourcesMgr.getTexture(rd->textures[0]));
         skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
         setSkybox(skybox);
+        return;
+    } else if (rd->role == Role::Light) {
+        auto light = std::make_shared<Light>();
+        // todo
+        //addLight(skybox);
         return;
     }
 

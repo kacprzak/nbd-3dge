@@ -185,6 +185,11 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
         if (rd) rd->role = Role::Skybox;
     }
 
+    if (actorType == "light") {
+        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        if (rd) rd->role = Role::Light;
+    }
+
     return a;
 }
 
