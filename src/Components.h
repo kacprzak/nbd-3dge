@@ -28,9 +28,8 @@ struct RenderComponent : public Component
     std::string mesh;
     bool transparent     = false;
     bool backfaceCulling = true;
-    std::string light;
+    std::string material;
     std::vector<std::string> textures;
-    std::vector<std::string> materials;
 };
 
 struct PhysicsComponent : public Component

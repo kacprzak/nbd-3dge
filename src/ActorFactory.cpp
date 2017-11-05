@@ -32,6 +32,7 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
     auto rd = std::make_shared<RenderComponent>();
 
     rd->mesh            = actorTree.get("mesh", prototype.mesh);
+    rd->material        = actorTree.get("material", prototype.material);
     rd->shaderProgram   = actorTree.get("shaderProgram", prototype.shaderProgram);
     rd->transparent     = actorTree.get("transparent", prototype.transparent);
     rd->backfaceCulling = actorTree.get("backfaceCulling", prototype.backfaceCulling);
@@ -42,14 +43,6 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
         }
     } else {
         rd->textures = prototype.textures;
-    }
-
-    if (auto textures = actorTree.get_child_optional("materials")) {
-        for (ptree::value_type& v : actorTree.get_child("materials")) {
-            rd->materials.push_back(v.second.data());
-        }
-    } else {
-        rd->materials = prototype.materials;
     }
 
     return rd;

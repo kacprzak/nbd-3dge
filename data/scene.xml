@@ -8,9 +8,7 @@
     </transformation>
     <render>
       <mesh>ship</mesh>
-      <materials>
-        <material>ship_mtl</material>
-      </materials>
+      <material>ship_mtl</material>
       <shaderProgram>lightAndTex</shaderProgram>
     </render>
     <physics>
@@ -20,19 +18,19 @@
   </actorPrototype>
 
   <!--actorPrototype>
-    <name>teddyPrototype</name>
-    <transformation>
+      <name>teddyPrototype</name>
+      <transformation>
       <scale>0.2</scale>
-    </transformation>
-    <render>
+      </transformation>
+      <render>
       <mesh>teddy</mesh>
       <shaderProgram>light</shaderProgram>
-    </render>
-    <physics>
+      </render>
+      <physics>
       <shape>capsule:11:17</shape>
       <mass>10</mass>
-    </physics>
-  </actorPrototype-->
+      </physics>
+      </actorPrototype-->
 
   <actorPrototype>
     <name>cubePrototype</name>
@@ -41,9 +39,7 @@
     </transformation>
     <render>
       <mesh>cube</mesh>
-      <materials>
-        <material>wall_mtl</material>
-      </materials>
+      <material>wall_mtl</material>
       <shaderProgram>lightAndTex3</shaderProgram>
     </render>
     <physics>
@@ -60,11 +56,7 @@
       <mesh>palm_tree</mesh>
       <!-- <transparent>true</transparent> -->
       <backfaceCulling>false</backfaceCulling>
-      <textures>
-        <texture>palm_tree_diffuse</texture>
-        <texture>palm_tree_normal</texture>
-        <texture>palm_tree_specular</texture>
-      </textures>
+      <material>palm_tree_mtl</material>
       <shaderProgram>lightAndTex3</shaderProgram>
     </render>
     <physics>
@@ -117,9 +109,7 @@
     </transformation>
     <render>
       <mesh>heightfield:terrain-heightmap</mesh>
-      <materials>
-        <material>terrain_mtl</material>
-      </materials>
+      <material>terrain_mtl</material>
       <shaderProgram>terrain</shaderProgram>
     </render>
     <physics>

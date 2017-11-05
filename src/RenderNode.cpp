@@ -27,15 +27,7 @@ void RenderNode::addTexture(const std::shared_ptr<Texture>& texture)
 
 void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
 
-void RenderNode::setMaterials(const std::vector<std::shared_ptr<Material>>& materials)
-{
-    m_materials = materials;
-}
-
-void RenderNode::addMaterial(const std::shared_ptr<Material>& material)
-{
-    m_materials.push_back(material);
-}
+void RenderNode::setMaterial(const std::shared_ptr<Material>& material) { m_material = material; }
 
 void RenderNode::setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram)
 {
@@ -65,8 +57,8 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
         shaderProgram->use();
 
         int textureUnit = 0;
-        for (const auto& material : m_materials) {
-            for (const auto& texture : material->textures) {
+        if (m_material) {
+            for (const auto& texture : m_material->textures) {
                 const std::string& name = "sampler" + std::to_string(textureUnit);
                 shaderProgram->setUniform(name.c_str(), textureUnit);
 
@@ -92,8 +84,8 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
             }
         }
 
-        for (size_t i = 0; i < m_materials.size(); ++i) {
-            const auto& material = *m_materials[i];
+        if (m_material) {
+            const auto& material = *m_material;
             shaderProgram->setUniform("material.ambient", material.ambient());
             shaderProgram->setUniform("material.diffuse", material.diffuse());
             shaderProgram->setUniform("material.specular", material.specular());
