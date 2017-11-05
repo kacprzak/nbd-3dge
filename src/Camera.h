@@ -10,7 +10,7 @@ class Camera : public RenderNode
     Camera();
     ~Camera();
 
-    void draw(const Camera* /*c*/) const override {}
+    void draw(const Camera* /*c*/, const std::array<Light*, 8>& /*lights*/) const override {}
     void update(float delta) override;
     void setPerspective(float angle, float ratio, float near, float far);
 

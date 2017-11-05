@@ -20,6 +20,7 @@ class ShaderProgram final
     void use();
 
     void setUniform(const char* name, const glm::mat4& matrix);
+    void setUniform(const char* name, const glm::vec4& vector);
     void setUniform(const char* name, const glm::vec3& vector);
     void setUniform(const char* name, float value);
     void setUniform(const char* name, int value);

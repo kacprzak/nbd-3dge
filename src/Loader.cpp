@@ -7,10 +7,6 @@
 
 #include "Util.h"
 
-Loader::Loader() {}
-
-Loader::~Loader() {}
-
 void Loader::load(const std::string& filename)
 {
     using namespace std;

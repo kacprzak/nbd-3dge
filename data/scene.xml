@@ -117,12 +117,10 @@
     </transformation>
     <render>
       <mesh>heightfield:terrain-heightmap</mesh>
+      <materials>
+        <material>terrain_mtl</material>
+      </materials>
       <shaderProgram>terrain</shaderProgram>
-      <textures>
-        <texture>grass_diffuse</texture>
-        <texture>snow_diffuse</texture>
-        <texture>rocky_diffuse</texture>
-      </textures>
     </render>
     <physics>
       <shape>heightfield:terrain-heightmap</shape>

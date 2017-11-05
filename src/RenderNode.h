@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
+#include "Light.h"
 
 #include <glm/glm.hpp>
 
@@ -17,17 +18,19 @@ class RenderNode
     RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
     virtual ~RenderNode() = default;
 
-    void setTextures(std::vector<std::shared_ptr<Texture>> textures);
+    void setTextures(const std::vector<std::shared_ptr<Texture>>& textures);
     void addTexture(const std::shared_ptr<Texture>& texture);
 
-    void setMaterials(std::vector<std::shared_ptr<Material>> materials);
+    void setMaterials(const std::vector<std::shared_ptr<Material>>& materials);
     void addMaterial(const std::shared_ptr<Material>& material);
 
     void setMesh(const std::shared_ptr<Mesh>& mesh);
     void setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram);
 
-    virtual void draw(const Camera* camera) const;
-    virtual void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
+    virtual void draw(const Camera* camera, const std::array<Light*, 8>& lights) const;
+    virtual void draw(ShaderProgram* shaderProgram, const Camera* camera,
+                      const std::array<Light*, 8>& lights) const;
+    
     virtual void update(float delta);
 
     TransformationComponent* transformation() { return m_tr; }

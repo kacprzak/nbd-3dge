@@ -17,7 +17,7 @@ in VS_OUT
 
 out vec4 fragColor;
 
-struct light
+struct Light
 {
     vec4 position;
     vec3 ambient;
@@ -25,12 +25,7 @@ struct light
     vec3 specular;
 };
 
-const light sun = light(
-    vec4(1, -1, -1, 0),
-    vec3(1.0, 0.8863, 0.8078),
-    vec3(1.0, 0.8863, 0.8078),
-    vec3(1, 1, 1)
-);
+uniform Light lights[8];
 
 struct Material
 {
@@ -45,6 +40,8 @@ uniform Material material;
 
 void main()
 {
+    Light sun = lights[0];
+    
     vec4 texColor = texture2D(sampler0, fs_in.texCoord);
     vec4 normalColor = normalize(texture2D(sampler1, fs_in.texCoord) * 2 - 0.5);
     vec4 specularColor = texture2D(sampler2, fs_in.texCoord);

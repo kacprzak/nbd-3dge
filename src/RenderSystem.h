@@ -7,6 +7,7 @@
 #include "ShaderProgram.h"
 #include "Skybox.h"
 #include "Text.h"
+#include "Light.h"
 
 #include <map>
 #include <set>
@@ -44,14 +45,18 @@ class RenderSystem final
     void add(int id, std::shared_ptr<RenderNode> actor) { m_nodes[id] = actor; }
     void remove(int id) { m_nodes.erase(id); }
 
-    void addTransparent(int id, std::shared_ptr<RenderNode> actor) { m_transparentNodes[id] = actor; }
+    void addTransparent(int id, std::shared_ptr<RenderNode> actor)
+    {
+        m_transparentNodes[id] = actor;
+    }
     void removeTransparent(int id) { m_transparentNodes.erase(id); }
-    
+
     void add(std::shared_ptr<Text> actor) { m_texts.insert(actor); }
     void remove(std::shared_ptr<Text> actor) { m_texts.erase(actor); }
 
-    void draw(const Camera* camera) const;
-    void draw(ShaderProgram* shaderProgram, const Camera* camera) const;
+    void draw(const Camera* camera, std::array<Light*, 8>& lights) const;
+    void draw(ShaderProgram* shaderProgram, const Camera* camera,
+              std::array<Light*, 8>& lights) const;
 
     GLenum m_polygonMode = GL_FILL;
 

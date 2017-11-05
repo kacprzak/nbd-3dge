@@ -10,13 +10,9 @@ map_Kn Stone_Wall_004/normal.jpg
 map_Ks Stone_Wall_004/specular.jpg
 Ns 100
 
-newmtl grass_mtl
+newmtl terrain_mtl
 map_Kd terrain/grass_green_d.jpg
-
-newmtl snow_mtl
 map_Kd terrain/snow_grass_d.jpg
-
-newmtl rocky_mtl
 map_Kd terrain/grass_rocky_d.jpg
 
 newmtl ship_mtl

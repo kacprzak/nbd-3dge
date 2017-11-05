@@ -13,8 +13,8 @@
 class Loader
 {
   public:
-    Loader();
-    virtual ~Loader();
+    Loader() = default;
+    virtual ~Loader() = default;
 
     void load(const std::string& filename);
     void load(std::istream& stream);

@@ -62,7 +62,7 @@ Skybox::Skybox(std::shared_ptr<Texture> texture)
     m_mesh = std::make_shared<Mesh>(md);
 }
 
-void Skybox::draw(const Camera* camera) const
+void Skybox::draw(const Camera* camera, const std::array<Light*, 8>& /*lights*/) const
 {
     if (m_shaderProgram) {
         m_shaderProgram->use();

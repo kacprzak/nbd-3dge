@@ -1,8 +1,8 @@
 #include "RenderSystem.h"
 
+#include "Light.h"
 #include "ResourcesMgr.h"
 #include "Terrain.h"
-#include "Light.h"
 
 #include <array>
 #include <boost/algorithm/string/predicate.hpp>
@@ -62,7 +62,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
     } else if (rd->role == Role::Light) {
         auto light = std::make_shared<Light>();
         // todo
-        //addLight(skybox);
+        // addLight(skybox);
         return;
     }
 
@@ -130,45 +130,56 @@ void RenderSystem::update(float delta)
 
 void RenderSystem::draw()
 {
-    draw(m_camera.get());
+    std::array<Light*, 8> lights = {};
+
+    Light sun;
+    sun.setPosition({1, -1, -1, 0}); // Zero on end changes pos to direction
+    sun.setAmbient({1.0, 0.8863, 0.8078});
+    sun.setDiffuse({1.0, 0.8863, 0.8078});
+    sun.setSpecular({1, 1, 1});
+
+    lights[0] = &sun;
+
+    draw(m_camera.get(), lights);
 
     if (m_drawNormals) {
-        draw(m_normalsShader.get(), m_camera.get());
+        draw(m_normalsShader.get(), m_camera.get(), lights);
     }
 }
 
-void RenderSystem::draw(const Camera* camera) const
+void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) const
 {
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
-    if (m_skybox) m_skybox->draw(camera);
-    if (m_camera) m_camera->draw(camera);
+    if (m_skybox) m_skybox->draw(camera, lights);
+    if (m_camera) m_camera->draw(camera, lights);
 
     for (const auto& node : m_nodes) {
-        node.second->draw(camera);
+        node.second->draw(camera, lights);
     }
 
-    //glDisable(GL_CULL_FACE);
+    // glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE);
 
     for (const auto& node : m_transparentNodes) {
-        node.second->draw(camera);
+        node.second->draw(camera, lights);
     }
 
     glDepthMask(GL_TRUE);
-    //glEnable(GL_CULL_FACE);
-    
+    // glEnable(GL_CULL_FACE);
+
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    
+
     for (const auto& node : m_texts) {
         node->draw();
     }
 }
 
-void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
+                        std::array<Light*, 8>& lights) const
 {
     // Used for drawing normals
     for (const auto& node : m_nodes) {
-        node.second->draw(shaderProgram, camera);
+        node.second->draw(shaderProgram, camera, lights);
     }
 }
 

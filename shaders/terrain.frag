@@ -4,14 +4,6 @@ uniform sampler2D sampler0;
 uniform sampler2D sampler1;
 uniform sampler2D sampler2;
 
-struct material
-{
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float shininess;
-};
-
 in vec3 ambient;
 in vec3 diffuse;
 in vec3 specular;
@@ -21,12 +13,15 @@ in float height;
 
 out vec4 fragColor;
 
-const material mtl = material(
-    vec3(1, 1, 1) * 0.1,
-    vec3(1, 1, 1) * 0.9,
-    vec3(1, 1, 1) * 0.02,
-    1
-);
+struct Material
+{
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+uniform Material material;
 
 void main()
 {
@@ -51,8 +46,8 @@ void main()
     
     texColor = mix(mix(rocks, grass, grassFactor), snow, snowFactor);
         
-    fragColor.rgb = texColor.xyz * mtl.ambient * ambient;
-    fragColor.rgb += texColor.xyz * mtl.diffuse * diffuse;
-    fragColor.rgb += mtl.specular * specular;
+    fragColor.rgb = texColor.xyz * material.ambient * ambient;
+    fragColor.rgb += texColor.xyz * material.diffuse * diffuse;
+    fragColor.rgb += material.specular * specular;
     fragColor.a = 1.0;
 }

@@ -14,7 +14,7 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
 layout(location = 2) in vec3 in_normal;
 
-struct light
+struct Light
 {
     vec4 position;
     vec3 ambient;
@@ -22,8 +22,7 @@ struct light
     vec3 specular;
 };
 
-const light sun =
-    light(vec4(1, -1, -1, 0), vec3(1.0, 0.8863, 0.8078), vec3(1.0, 0.8863, 0.8078), vec3(1, 1, 1));
+uniform Light lights[8];
 
 struct Material
 {
@@ -37,6 +36,8 @@ uniform Material material;
 
 void main()
 {
+    Light sun = lights[0];
+    
     vec3 normal_world = normalize(modelMatrix * vec4(in_normal, 0)).xyz;
 
     vec4 position_world = modelMatrix * vec4(position, 1.0);

@@ -15,7 +15,7 @@ RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent
 {
 }
 
-void RenderNode::setTextures(std::vector<std::shared_ptr<Texture>> textures)
+void RenderNode::setTextures(const std::vector<std::shared_ptr<Texture>>& textures)
 {
     m_textures = textures;
 }
@@ -27,7 +27,7 @@ void RenderNode::addTexture(const std::shared_ptr<Texture>& texture)
 
 void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
 
-void RenderNode::setMaterials(std::vector<std::shared_ptr<Material>> materials)
+void RenderNode::setMaterials(const std::vector<std::shared_ptr<Material>>& materials)
 {
     m_materials = materials;
 }
@@ -51,25 +51,46 @@ void RenderNode::rebuildModelMatrix()
     m_modelMatrix = T * R * S;
 }
 
-void RenderNode::draw(const Camera* camera) const { draw(m_shaderProgram.get(), camera); }
+void RenderNode::draw(const Camera* camera, const std::array<Light*, 8>& lights) const
+{
+    draw(m_shaderProgram.get(), camera, lights);
+}
 
-void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
+void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
+                      const std::array<Light*, 8>& lights) const
 {
     if (!m_mesh) return;
 
-    int textureUnit = 0;
-    for (size_t i = 0; i < m_materials.size(); ++i) {
-        for (size_t j = 0; j < m_materials[i]->textures.size(); ++j) {
-            m_materials[i]->textures[j]->bind(textureUnit++);
-        }
-    }
-
-    for (size_t i = 0; i < m_textures.size(); ++i) {
-        m_textures[i]->bind(textureUnit++);
-    }
-
     if (shaderProgram) {
         shaderProgram->use();
+
+        int textureUnit = 0;
+        for (const auto& material : m_materials) {
+            for (const auto& texture : material->textures) {
+                const std::string& name = "sampler" + std::to_string(textureUnit);
+                shaderProgram->setUniform(name.c_str(), textureUnit);
+
+                texture->bind(textureUnit++);
+            }
+        }
+
+        for (const auto& texture : m_textures) {
+            const std::string& name = "sampler" + std::to_string(textureUnit);
+            shaderProgram->setUniform(name.c_str(), textureUnit);
+
+            texture->bind(textureUnit++);
+        }
+
+        for (size_t i = 0; i < lights.size(); ++i) {
+            if (lights[i]) {
+                const auto& light    = *lights[i];
+                const auto& lightIdx = "lights[" + std::to_string(i) + "]";
+                shaderProgram->setUniform((lightIdx + ".position").c_str(), light.position());
+                shaderProgram->setUniform((lightIdx + ".ambient").c_str(), light.ambient());
+                shaderProgram->setUniform((lightIdx + ".diffuse").c_str(), light.diffuse());
+                shaderProgram->setUniform((lightIdx + ".specular").c_str(), light.specular());
+            }
+        }
 
         for (size_t i = 0; i < m_materials.size(); ++i) {
             const auto& material = *m_materials[i];
@@ -84,10 +105,6 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera) const
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
         shaderProgram->setUniform("modelMatrix", m_modelMatrix);
 
-        for (size_t i = 0; i < m_textures.size(); ++i) {
-            const std::string& name = "sampler" + std::to_string(i);
-            shaderProgram->setUniform(name.c_str(), int(i));
-        }
     } else {
         glUseProgram(0);
     }
