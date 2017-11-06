@@ -5,9 +5,8 @@
 
 std::vector<glm::vec3> ObjLoader::positions() const
 {
-    std::vector<glm::vec3> positions_a;
-
     if (!m_oglFaces.empty()) {
+        std::vector<glm::vec3> positions_a;
         positions_a.reserve(m_oglVertices.size());
 
         for (const auto& v : m_oglVertices) {
@@ -21,9 +20,8 @@ std::vector<glm::vec3> ObjLoader::positions() const
 
 std::vector<glm::vec3> ObjLoader::normals() const
 {
-    std::vector<glm::vec3> normals_a;
-
     if (!m_oglFaces.empty()) {
+        std::vector<glm::vec3> normals_a;
         normals_a.reserve(m_oglVertices.size());
 
         for (const auto& v : m_oglVertices) {
@@ -53,9 +51,8 @@ std::vector<unsigned short> ObjLoader::indices() const
 
 std::vector<glm::vec2> ObjLoader::texCoords() const
 {
-    std::vector<glm::vec2> texcoords_a;
-
     if (!m_oglFaces.empty()) {
+        std::vector<glm::vec2> texcoords_a;
         texcoords_a.reserve(m_oglVertices.size());
 
         for (const auto& v : m_oglVertices) {

@@ -5,7 +5,7 @@ set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 if( MSVC )
-  #add_definitions( "/SUBSYSTEM:WINDOWS" )
+  #set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /subsystem:windows" )
 else()
   add_definitions( "-Wall -Wextra" )
 endif()
