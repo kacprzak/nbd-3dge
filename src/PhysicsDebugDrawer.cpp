@@ -63,7 +63,7 @@ void PhysicsDebugDrawer::drawLine(const btVector3& from, const btVector3& to,
     tmp.pos1 = glm::vec3{from.x(), from.y(), from.z()};
     tmp.col1 = glm::vec3{color.x(), color.y(), color.z()};
     tmp.pos2 = glm::vec3{to.x(), to.y(), to.z()};
-    tmp.col2 = tmp.col2;
+    tmp.col2 = tmp.col1;
 
     m_linesData[m_currLinesDataIdx++] = tmp;
 }
