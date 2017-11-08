@@ -28,7 +28,7 @@ if( UNIX )
   set( Boost_COMPONENTS program_options log )
   list( APPEND Boost_COMPONENTS unit_test_framework )
 
-  find_package( Boost 1.61 REQUIRED COMPONENTS ${Boost_COMPONENTS} )
+  find_package( Boost 1.54 REQUIRED COMPONENTS ${Boost_COMPONENTS} )
 
   add_library( OpenGL::gl UNKNOWN IMPORTED )
   set_property( TARGET OpenGL::gl PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${OPENGL_INCLUDE_DIR} )
