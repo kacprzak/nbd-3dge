@@ -4,12 +4,6 @@ project( nbd-3dge VERSION 0.1 LANGUAGES CXX )
 set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
-if( MSVC )
-  #set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /subsystem:windows" )
-else()
-  add_definitions( "-Wall -Wextra" )
-endif()
-
 if( WIN32 )
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
