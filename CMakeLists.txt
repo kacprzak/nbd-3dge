@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.2 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.5 FATAL_ERROR )
 project( nbd-3dge VERSION 0.1 LANGUAGES CXX )
 
 set( CMAKE_CXX_STANDARD 14 )
@@ -16,7 +16,7 @@ if( WIN32 )
   
   include_directories( ${CONAN_INCLUDE_DIRS_BULLET3}/bullet )
   set( LINK_LIBS ${CONAN_LIBS} )
-  list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62)
+  list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62 )
   set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
 endif()
 
@@ -34,7 +34,7 @@ if( UNIX )
   set( Boost_COMPONENTS program_options log )
   list( APPEND Boost_COMPONENTS unit_test_framework )
 
-  find_package( Boost REQUIRED COMPONENTS ${Boost_COMPONENTS} )
+  find_package( Boost 1.61 REQUIRED COMPONENTS ${Boost_COMPONENTS} )
 
   add_library( OpenGL::gl UNKNOWN IMPORTED )
   set_property( TARGET OpenGL::gl PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${OPENGL_INCLUDE_DIR} )
