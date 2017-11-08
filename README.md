@@ -15,7 +15,7 @@ Requirements
 
 * C++14
 * OpengGL 3.3
-* CMake 3.2
+* CMake 3.5
 
 Dependencies
 ------------

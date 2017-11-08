@@ -34,10 +34,15 @@ set( nbd-3dge_SRCS
     PhysicsDebugDrawer.cpp
 )
 
-file(GLOB_RECURSE nbd-3dge_HDRS "*.h" )
+file( GLOB_RECURSE nbd-3dge_HDRS "*.h" )
 
-source_group("Headers" FILES ${nbd-3dge_HDRS})
+source_group( "Headers" FILES ${nbd-3dge_HDRS} )
 
-add_executable( nbd-3dge ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} )
+add_executable( nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} )
+if( MSVC )
+  target_compile_options( nbd-3dge PRIVATE /W3 )
+else()
+  target_compile_options( nbd-3dge PRIVATE -Wall -Wextra )
+endif()
 target_include_directories( nbd-3dge PRIVATE ${PROJECT_BINARY_DIR} )
 target_link_libraries( nbd-3dge PRIVATE ${LINK_LIBS} )
