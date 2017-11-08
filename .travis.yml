@@ -11,7 +11,7 @@ install:
   - sudo apt-get install -qq g++-6
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   - sudo apt-get install -y libglm-dev libglew-dev
-  - sudo apt-get install -y libsdl2-dev libsdl2-image-dev libegl1-mesa-dev libgles2-mesa-dev
+  - sudo apt-get install -y libsdl2-dev libsdl2-image-dev libegl1-mesa-dev libgles2-mesa-dev libpthread-stubs0-dev
   - sudo apt-get install -y libbullet-dev
   - sudo apt-get install -y libboost-dev libboost-log-dev libboost-program-options-dev libboost-test-dev
 
