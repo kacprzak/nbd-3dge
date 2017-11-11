@@ -12,4 +12,8 @@
 #define LOG_ERROR BOOST_LOG_TRIVIAL(error)
 #define LOG_FATAL BOOST_LOG_TRIVIAL(fatal)
 
+void logGlError();
+
+#define LOG_GL_ERROR logGlError()
+
 #endif // LOGGER_H

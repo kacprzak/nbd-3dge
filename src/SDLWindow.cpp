@@ -162,6 +162,7 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
     }
 
     if (m_msaa != 0) glEnable(GL_MULTISAMPLE);
+    LOG_GL_ERROR;
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -170,15 +171,18 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
 
     /* Enables Depth Testing */
     glEnable(GL_DEPTH_TEST);
+    LOG_GL_ERROR;
 
     /* The Type Of Depth Test To Do */
     glDepthFunc(GL_LESS);
 
     /* Render only front of polygon */
     glEnable(GL_CULL_FACE);
+    LOG_GL_ERROR;
 
     /* Gamma correction */
     glEnable(GL_FRAMEBUFFER_SRGB);
+    LOG_GL_ERROR;
 
 #ifndef NDEBUG
     if (contextMajorVersion >= 4 && contextMinorVersion >= 3) {
