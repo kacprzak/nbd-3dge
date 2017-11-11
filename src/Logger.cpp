@@ -1,6 +1,6 @@
 #include "Logger.h"
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 
 void logGlError()
 {
