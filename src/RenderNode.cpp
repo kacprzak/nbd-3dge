@@ -43,13 +43,14 @@ void RenderNode::rebuildModelMatrix()
     m_modelMatrix = T * R * S;
 }
 
-void RenderNode::draw(const Camera* camera, const std::array<Light*, 8>& lights) const
+void RenderNode::draw(const Camera* camera, const std::array<Light*, 8>& lights,
+                      Texture* environment) const
 {
-    draw(m_shaderProgram.get(), camera, lights);
+    draw(m_shaderProgram.get(), camera, lights, environment);
 }
 
 void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
-                      const std::array<Light*, 8>& lights) const
+                      const std::array<Light*, 8>& lights, Texture* environment) const
 {
     if (!m_mesh) return;
 
@@ -96,6 +97,13 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
         shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
         shaderProgram->setUniform("modelMatrix", m_modelMatrix);
+
+        if (environment) {
+            shaderProgram->setUniform("cameraPosition", camera->m_tr->position);
+            shaderProgram->setUniform("environmentCube", textureUnit);
+
+            environment->bind(textureUnit++);
+        }
 
     } else {
         glUseProgram(0);

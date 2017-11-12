@@ -26,9 +26,10 @@ class RenderNode
     void setMesh(const std::shared_ptr<Mesh>& mesh);
     void setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram);
 
-    virtual void draw(const Camera* camera, const std::array<Light*, 8>& lights) const;
+    virtual void draw(const Camera* camera, const std::array<Light*, 8>& lights,
+                      Texture* environment) const;
     virtual void draw(ShaderProgram* shaderProgram, const Camera* camera,
-                      const std::array<Light*, 8>& lights) const;
+                      const std::array<Light*, 8>& lights, Texture* environment) const;
 
     virtual void update(float delta);
 

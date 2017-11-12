@@ -150,17 +150,19 @@ void RenderSystem::draw()
 void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) const
 {
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
-    if (m_camera) m_camera->draw(camera, lights);
+    if (m_camera) m_camera->draw(camera, lights, nullptr);
+
+    auto envirnoment = m_skybox->texture();
 
     for (const auto& node : m_nodes) {
-        node.second->draw(camera, lights);
+        node.second->draw(camera, lights, envirnoment);
     }
 
-    if (m_polygonMode == GL_FILL && m_skybox) m_skybox->draw(camera, lights);
+    if (m_polygonMode == GL_FILL && m_skybox) m_skybox->draw(camera);
 
     glDepthMask(GL_FALSE);
     for (const auto& node : m_transparentNodes) {
-        node.second->draw(camera, lights);
+        node.second->draw(camera, lights, envirnoment);
     }
     glDepthMask(GL_TRUE);
 
@@ -177,7 +179,7 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
 {
     // Used for drawing normals
     for (const auto& node : m_nodes) {
-        node.second->draw(shaderProgram, camera, lights);
+        node.second->draw(shaderProgram, camera, lights, nullptr);
     }
 }
 

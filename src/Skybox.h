@@ -4,7 +4,6 @@
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
-#include "Light.h"
 
 #include <glm/glm.hpp>
 
@@ -20,7 +19,9 @@ class Skybox final
         m_shaderProgram = shaderProgram;
     }
 
-    void draw(const Camera* camera, const std::array<Light*, 8>& lights) const;
+    void draw(const Camera* camera) const;
+
+    Texture* texture() { return m_texture.get(); }
 
   private:
     std::shared_ptr<ShaderProgram> m_shaderProgram;

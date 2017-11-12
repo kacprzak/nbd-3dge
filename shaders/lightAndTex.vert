@@ -8,7 +8,8 @@ out vec3 ambient;
 out vec3 diffuse;
 out vec3 specular;
 out vec2 texCoord;
-// out vec3 normal;
+out vec3 position_w;
+out vec3 normal_w;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
@@ -37,7 +38,7 @@ uniform Material material;
 void main()
 {
     Light sun = lights[0];
-    
+
     vec3 normal_world = normalize(modelMatrix * vec4(in_normal, 0)).xyz;
 
     vec4 position_world = modelMatrix * vec4(position, 1.0);
@@ -64,4 +65,6 @@ void main()
 
     gl_Position = projectionMatrix * position_eye;
     texCoord    = in_texCoord;
+    position_w  = position_world.xyz;
+    normal_w    = normal_world;
 }
