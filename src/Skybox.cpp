@@ -77,14 +77,12 @@ void Skybox::draw(const Camera* camera, const std::array<Light*, 8>& /*lights*/)
         glUseProgram(0);
     }
 
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
+    glDepthMask(GL_FALSE);
 
     if (m_texture) {
         m_texture->bind(0);
         m_mesh->draw();
     }
 
-    glEnable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 }

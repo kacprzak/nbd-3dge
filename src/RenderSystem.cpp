@@ -150,25 +150,23 @@ void RenderSystem::draw()
 void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) const
 {
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
-    if (m_skybox) m_skybox->draw(camera, lights);
     if (m_camera) m_camera->draw(camera, lights);
 
     for (const auto& node : m_nodes) {
         node.second->draw(camera, lights);
     }
 
-    // glDisable(GL_CULL_FACE);
-    glDepthMask(GL_FALSE);
+    if (m_polygonMode == GL_FILL && m_skybox) m_skybox->draw(camera, lights);
 
+    glDepthMask(GL_FALSE);
     for (const auto& node : m_transparentNodes) {
         node.second->draw(camera, lights);
     }
-
     glDepthMask(GL_TRUE);
-    // glEnable(GL_CULL_FACE);
 
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    // UI
     for (const auto& node : m_texts) {
         node->draw();
     }

@@ -10,6 +10,7 @@ layout(location = 0) in vec3 position;
 
 void main()
 {
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1);
-    texCoord = position;
+    vec4 pos    = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1);
+    gl_Position = pos.xyww; // This moves Skybox far
+    texCoord    = position;
 }

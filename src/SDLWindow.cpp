@@ -177,7 +177,7 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
     LOG_GL_ERROR;
 
     /* The Type Of Depth Test To Do */
-    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
 
     /* Render only front of polygon */
     glEnable(GL_CULL_FACE);
