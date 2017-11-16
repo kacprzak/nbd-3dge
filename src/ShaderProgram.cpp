@@ -27,6 +27,7 @@ ShaderProgram::~ShaderProgram()
 
 void ShaderProgram::link(const std::vector<Shader*>& shaders)
 {
+    m_linked = false;
     m_uniformLocs.clear();
 
     for (Shader* s : shaders) {
@@ -52,13 +53,13 @@ void ShaderProgram::link(const std::vector<Shader*>& shaders)
         glGetProgramInfoLog(m_shaderProgramId, infoLogLength, 0, strInfoLog);
         LOG_WARNING << "Linker failure: " << strInfoLog;
         delete[] strInfoLog;
+    } else {
+        m_linked = true;
     }
 
     for (Shader* s : shaders) {
         glDetachShader(m_shaderProgramId, s->id());
     }
-
-    m_linked = true;
 }
 
 void ShaderProgram::use() { glUseProgram(m_shaderProgramId); }

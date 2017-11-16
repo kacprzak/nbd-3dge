@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE(Textures_test)
 
     auto mtl = ldr.materials()[0];
 
-    BOOST_CHECK_EQUAL(mtl.textures[0].filename, "ambient.tga");
-    BOOST_CHECK_EQUAL(mtl.textures[1].filename, "diffuse.tga");
-    BOOST_CHECK_EQUAL(mtl.textures[2].filename, "specular.tga");
-    BOOST_CHECK_EQUAL(mtl.textures[3].filename, "normals.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[0].filenames.at(0), "ambient.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[1].filenames.at(0), "diffuse.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[2].filenames.at(0), "specular.tga");
+    BOOST_CHECK_EQUAL(mtl.textures[3].filenames.at(0), "normals.tga");
 }

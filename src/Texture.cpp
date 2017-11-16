@@ -57,12 +57,12 @@ void Texture::setRepeat()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
-Texture Texture::create(const std::string& filename, const std::string& internalFormat, bool clamp)
+Texture Texture::create2D(const TextureData& texData)
 {
     GLenum target = GL_TEXTURE_2D;
     Texture tex{target};
 
-    SDL_Surface* surface = IMG_Load(filename.c_str());
+    SDL_Surface* surface = IMG_Load(texData.filenames.at(0).c_str());
 
     if (!surface) {
         throw std::runtime_error("SDL_Image load error: " + std::string(IMG_GetError()));
@@ -80,7 +80,7 @@ Texture Texture::create(const std::string& filename, const std::string& internal
     glBindTexture(target, tex.m_textureId);
 
     GLenum format   = textureFormat(&surface);
-    GLint intFormat = internalFormatToInt(internalFormat);
+    GLint intFormat = formatToInternalFormat(format, texData.linearColor);
 
     SDL_LockSurface(surface);
     glTexImage2D(target, 0, intFormat, tex.m_w, tex.m_h, 0, format, GL_UNSIGNED_BYTE,
@@ -91,12 +91,14 @@ Texture Texture::create(const std::string& filename, const std::string& internal
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    LOG_INFO << "Loaded Texture: " << tex.m_textureId << " (" << tex.m_w << " x " << tex.m_h << ")";
+    LOG_INFO << "Loaded Texture: " << tex.m_textureId << " (" << tex.m_w << "x" << tex.m_h << ") "
+             << formatToString(format) << "->" << internalFormatToString(intFormat) << " | "
+             << texData.filenames.at(0);
 
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    if (clamp)
+    if (texData.clamp)
         tex.setClampToEdge();
     else
         tex.setRepeat();
@@ -104,16 +106,17 @@ Texture Texture::create(const std::string& filename, const std::string& internal
     return tex;
 }
 
-Texture Texture::create(const std::array<std::string, 6> filenames,
-                        const std::string& internalFormat, bool clamp)
+Texture Texture::createCube(const TextureData& texData)
 {
     GLenum target = GL_TEXTURE_CUBE_MAP;
     Texture tex{target};
+    GLenum format;
+    GLint intFormat;
 
     glBindTexture(target, tex.m_textureId);
 
-    for (size_t i = 0; i < filenames.size(); ++i) {
-        SDL_Surface* surface = IMG_Load(filenames[i].c_str());
+    for (size_t i = 0; i < 6; ++i) {
+        SDL_Surface* surface = IMG_Load(texData.filenames.at(i).c_str());
 
         if (!surface) {
             throw std::runtime_error("SDL_Image load error: " + std::string(IMG_GetError()));
@@ -122,8 +125,8 @@ Texture Texture::create(const std::array<std::string, 6> filenames,
         tex.m_w = surface->w;
         tex.m_h = surface->h;
 
-        GLenum format   = textureFormat(&surface);
-        GLint intFormat = internalFormatToInt(internalFormat);
+        format    = textureFormat(&surface);
+        intFormat = formatToInternalFormat(format, texData.linearColor);
 
         SDL_LockSurface(surface);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, intFormat, tex.m_w, tex.m_h, 0, format,
@@ -133,12 +136,14 @@ Texture Texture::create(const std::array<std::string, 6> filenames,
         SDL_FreeSurface(surface);
     }
 
-    LOG_INFO << "Loaded CubeTex: " << tex.m_textureId << " (" << tex.m_w << " x " << tex.m_h << ")";
+    LOG_INFO << "Loaded CubeTex: " << tex.m_textureId << " (" << tex.m_w << "x" << tex.m_h << ") "
+             << formatToString(format) << "->" << internalFormatToString(intFormat) << " | "
+             << *texData.filenames.begin();
 
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    if (clamp)
+    if (texData.clamp)
         tex.setClampToEdge();
     else
         tex.setRepeat();
@@ -148,19 +153,48 @@ Texture Texture::create(const std::array<std::string, 6> filenames,
 
 //------------------------------------------------------------------------------
 
-GLint Texture::internalFormatToInt(const std::string& internalFormat)
+GLint Texture::formatToInternalFormat(GLenum format, bool linearColor)
 {
-    if (internalFormat == "GL_RGB8")
-        return GL_RGB8;
-    else if (internalFormat == "GL_RGBA8")
-        return GL_RGBA8;
-    else if (internalFormat == "GL_SRGB8")
-        return GL_SRGB8;
-    else if (internalFormat == "GL_SRGB8_ALPHA8")
-        return GL_SRGB8_ALPHA8;
+    switch (format) {
+    case GL_RED: return GL_LUMINANCE8;
+    case GL_RG: return GL_RG8;
+    case GL_RGB:
+    case GL_BGR: return linearColor ? GL_RGB8 : GL_SRGB8;
+    case GL_RGBA:
+    case GL_BGRA: return linearColor ? GL_RGBA8 : GL_SRGB8_ALPHA8;
+    }
+    LOG_WARNING << "Unknown format: " << format;
 
-    LOG_WARNING << "Unknown internalFormat: " << internalFormat;
-    return GL_RGB8;
+    return GL_RGBA8;
+}
+
+//------------------------------------------------------------------------------
+
+std::string Texture::formatToString(GLenum format)
+{
+    switch (format) {
+    case GL_RED: return "GL_RED";
+    case GL_RG: return "GL_RG";
+    case GL_RGB: return "GL_RGB";
+    case GL_BGR: return "GL_BGR";
+    case GL_RGBA: return "GL_RGBA";
+    case GL_BGRA: return "GL_BGRA";
+    default: return "Unknown format";
+    }
+}
+
+//------------------------------------------------------------------------------
+
+std::string Texture::internalFormatToString(GLint internalFormat)
+{
+    switch (internalFormat) {
+    case GL_LUMINANCE8: return "GL_LUMINANCE8";
+    case GL_RGB8: return "GL_RGB8";
+    case GL_RGBA8: return "GL_RGBA8";
+    case GL_SRGB8: return "GL_SRGB8";
+    case GL_SRGB8_ALPHA8: return "GL_SRGB8_ALPHA8";
+    default: return "Unknown internalFormat";
+    }
 }
 
 //==============================================================================

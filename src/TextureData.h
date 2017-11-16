@@ -2,10 +2,11 @@
 #define TEXTUREDATA_H
 
 #include <string>
+#include <vector>
 
 struct TextureData
 {
-    std::string filename;
+    std::vector<std::string> filenames;
     bool linearColor = true;
     bool clamp       = false;
 };

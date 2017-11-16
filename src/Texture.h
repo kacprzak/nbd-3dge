@@ -1,6 +1,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include "TextureData.h"
+
 #include <GL/glew.h>
 #include <memory>
 #include <string>
@@ -20,16 +22,24 @@ class Texture final
     int width() const { return m_w; }
     int height() const { return m_h; }
 
-    static Texture create(const std::string& filename, const std::string& internalFormat,
-                          bool clamp = false);
-
-    static Texture create(const std::array<std::string, 6> filenames,
-                          const std::string& internalFormat, bool clamp = false);
+    static Texture create(const TextureData& texData)
+    {
+        if (texData.filenames.size() == 1)
+            return create2D(texData);
+        else
+            return createCube(texData);
+    }
 
   private:
+    static Texture create2D(const TextureData& texData);
+    static Texture createCube(const TextureData& texData);
+
     Texture(GLenum target);
 
-    static GLint internalFormatToInt(const std::string& internalFormat);
+    static GLint formatToInternalFormat(GLenum format, bool linearColor);
+
+    static std::string formatToString(GLenum format);
+    static std::string internalFormatToString(GLint internalFormat);
 
     GLenum m_target;
     GLuint m_textureId = 0;

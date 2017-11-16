@@ -1,7 +1,7 @@
 #include "MtlLoader.h"
 
-#include "Util.h"
 #include "Logger.h"
+#include "Util.h"
 
 #include <glm/glm.hpp>
 
@@ -31,13 +31,13 @@ void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& 
     } else if (cmd == "map_Ka" || cmd == "map_Kd") {
         MaterialData& mtl = m_materials.back();
         TextureData tex;
-        tex.filename    = args.back();
+        tex.filenames.push_back(args.back());
         tex.linearColor = false;
         mtl.textures.push_back(tex);
     } else if (cmd == "map_Ks" || cmd == "map_Kn") {
         MaterialData& mtl = m_materials.back();
         TextureData tex;
-        tex.filename    = args.back();
+        tex.filenames.push_back(args.back());
         tex.linearColor = true;
         mtl.textures.push_back(tex);
     } else {

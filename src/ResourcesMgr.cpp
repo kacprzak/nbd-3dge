@@ -32,25 +32,27 @@ void ResourcesMgr::load(const std::string& xmlFile)
         ptree& assetTree             = v.second;
 
         if (assetType == "texture") {
-            std::string name                  = assetTree.get<std::string>("name", "");
-            const std::string& wrap           = assetTree.get<std::string>("wrap", "GL_REPEAT");
-            const std::string& internalFormat = assetTree.get<std::string>("internalFormat", "");
-            if (assetTree.get_child("file").size() == 0) {
-                const std::string& file = assetTree.get<std::string>("file");
-                if (name.empty()) name  = file;
-                addTexture(name, file, wrap, internalFormat);
-            } else {
-                std::array<std::string, 6> files;
-                files[0] = assetTree.get<std::string>("file.right");
-                files[1] = assetTree.get<std::string>("file.left");
-                files[2] = assetTree.get<std::string>("file.top");
-                files[3] = assetTree.get<std::string>("file.bottom");
-                files[4] = assetTree.get<std::string>("file.back");
-                files[5] = assetTree.get<std::string>("file.front");
+            TextureData texData;
+            std::string name        = assetTree.get<std::string>("name", "");
+            const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
+            const std::string& internalFormat =
+                assetTree.get<std::string>("internalFormat", "GL_RGBA");
 
-                if (name.empty()) name = files[5];
-                addTexture(name, files, wrap, internalFormat);
+            texData.clamp       = wrap == "GL_CLAMP_TO_EDGE";
+            texData.linearColor = internalFormat.at(3) != 'S';
+
+            if (assetTree.get_child("file").size() == 0) {
+                texData.filenames.push_back(assetTree.get<std::string>("file"));
+            } else {
+                texData.filenames.resize(6);
+                texData.filenames[0] = assetTree.get<std::string>("file.right");
+                texData.filenames[1] = assetTree.get<std::string>("file.left");
+                texData.filenames[2] = assetTree.get<std::string>("file.top");
+                texData.filenames[3] = assetTree.get<std::string>("file.bottom");
+                texData.filenames[4] = assetTree.get<std::string>("file.back");
+                texData.filenames[5] = assetTree.get<std::string>("file.front");
             }
+            addTexture(name, texData);
         } else if (assetType == "font") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
@@ -125,9 +127,8 @@ void ResourcesMgr::addMaterial(const MaterialData& materialData)
     std::vector<std::shared_ptr<Texture>> textures;
 
     for (const auto& texData : materialData.textures) {
-        const auto& file          = texData.filename;
-        const auto internalFormat = texData.linearColor ? "GL_RGB8" : "GL_SRGB8_ALPHA8";
-        addTexture(file, file, "", internalFormat);
+        const auto& file = texData.filenames.at(0);
+        addTexture("", texData);
         textures.push_back(getTexture(file));
     }
 
@@ -219,31 +220,18 @@ std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string&
 
 //------------------------------------------------------------------------------
 
-void ResourcesMgr::addTexture(const std::string& name, const std::string& filename,
-                              const std::string& wrap, const std::string& internalFormat)
+void ResourcesMgr::addTexture(std::string name, const TextureData& texData)
 {
+    if (name.empty()) name = texData.filenames.at(0);
+
+    TextureData tmp = texData;
+
     LOG_TRACE << "Adding Texture: " << name;
 
-    bool clamp                            = false;
-    if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
-
-    m_textures[name] =
-        std::make_shared<Texture>(Texture::create(m_dataFolder + filename, internalFormat, clamp));
-}
-
-void ResourcesMgr::addTexture(const std::string& name, std::array<std::string, 6> filenames,
-                              const std::string& wrap, const std::string& internalFormat)
-{
-    LOG_TRACE << "Adding Texture: " << name;
-
-    bool clamp                            = false;
-    if (wrap == "GL_CLAMP_TO_EDGE") clamp = true;
-
-    for (auto& filename : filenames) {
+    for (auto& filename : tmp.filenames)
         filename = m_dataFolder + filename;
-    }
 
-    m_textures[name] = std::make_shared<Texture>(Texture::create(filenames, internalFormat, clamp));
+    m_textures[name] = std::make_shared<Texture>(Texture::create(tmp));
 }
 
 std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
@@ -286,7 +274,9 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 
     std::vector<std::shared_ptr<Texture>> textures;
     for (const auto& texFilename : font->getTexturesFilenames()) {
-        textures.emplace_back(new Texture{Texture::create(m_dataFolder + texFilename, "GL_RGBA8")});
+        TextureData texData;
+        texData.filenames.push_back(m_dataFolder + texFilename);
+        textures.emplace_back(new Texture{Texture::create(texData)});
     }
     font->setTextures(textures);
 

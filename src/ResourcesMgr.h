@@ -27,10 +27,7 @@ class ResourcesMgr
                           const std::string& fragmentShaderFile);
     std::shared_ptr<ShaderProgram> getShaderProgram(const std::string& name) const;
 
-    void addTexture(const std::string& name, const std::string& filename, const std::string& wrap,
-                    const std::string& internalFormat);
-    void addTexture(const std::string& name, std::array<std::string, 6> filenames,
-                    const std::string& wrap, const std::string& internalFormat);
+    void addTexture(std::string name, const TextureData& texData);
     std::shared_ptr<Texture> getTexture(const std::string& name) const;
 
     void addMaterial(const MaterialData& materialData);
