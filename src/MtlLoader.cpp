@@ -28,19 +28,38 @@ void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& 
     } else if (cmd == "Ns") {
         MaterialData& mtl = m_materials.back();
         mtl.shininess     = to_float(args.at(0));
-    } else if (cmd == "map_Ka" || cmd == "map_Kd") {
+    } else if (cmd == "map_Ka" || cmd == "map_Kd" || cmd == "map_Ks" || cmd == "map_Kn" ||
+               cmd == "cube_Ka" || cmd == "cube_Kd" || cmd == "cube_Ks" || cmd == "cube_Kn") {
         MaterialData& mtl = m_materials.back();
-        TextureData tex;
-        tex.filenames.push_back(args.back());
-        tex.linearColor = false;
-        mtl.textures.push_back(tex);
-    } else if (cmd == "map_Ks" || cmd == "map_Kn") {
-        MaterialData& mtl = m_materials.back();
-        TextureData tex;
-        tex.filenames.push_back(args.back());
-        tex.linearColor = true;
+        TextureData tex   = toTextureData(cmd, args);
         mtl.textures.push_back(tex);
     } else {
         LOG_WARNING << "Unknown command: " << cmd;
     }
+}
+
+TextureData MtlLoader::toTextureData(const std::string& cmd,
+                                     const std::vector<std::string>& args) const
+{
+    TextureData texData;
+    std::string currOpt;
+
+    for (std::size_t i = 0; i < args.size(); ++i) {
+        if (args.at(i)[0] == '-') {
+            currOpt = args.at(i);
+            continue;
+        }
+
+        if (currOpt == "-clamp") {
+            texData.clamp = args.at(i) == "on";
+        } else if (currOpt == "-cc") {
+            texData.linearColor = args.at(i) != "on";
+        } else {
+            texData.filenames.push_back(args.at(i));
+        }
+
+        currOpt = "";
+    }
+
+    return texData;
 }

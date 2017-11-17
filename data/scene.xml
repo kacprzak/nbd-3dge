@@ -83,9 +83,7 @@
   <skybox>
     <render>
       <shaderProgram>skybox</shaderProgram>
-      <textures>
-        <texture>skybox_cubemap</texture>
-      </textures>
+      <material>skybox_mtl</material>
     </render>
   </skybox>
 

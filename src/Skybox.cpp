@@ -7,10 +7,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Skybox::Skybox(std::shared_ptr<Texture> texture)
-    : m_texture{texture}
+Skybox::Skybox(std::shared_ptr<Material> material)
+    : m_material{material}
 {
-    float x = texture->width() / 2.0f;
+    const float x = 1.0f;
 
     /*
      *    6----7     y
@@ -79,8 +79,8 @@ void Skybox::draw(const Camera* camera) const
 
     glDepthMask(GL_FALSE);
 
-    if (m_texture) {
-        m_texture->bind(0);
+    if (m_material) {
+        m_material->textures.at(0)->bind(0);
         m_mesh->draw();
     }
 

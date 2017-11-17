@@ -15,6 +15,8 @@ class MtlLoader : public Loader
     void command(const std::string& cmd, const std::vector<std::string>& args);
 
   private:
+    TextureData toTextureData(const std::string& cmd, const std::vector<std::string>& args) const;
+
     std::vector<MaterialData> m_materials;
 };
 

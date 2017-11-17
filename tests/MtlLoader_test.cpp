@@ -13,7 +13,7 @@ Ks 0.0000 0.0000 0.0000
 Ns 32
 
 map_Ka ambient.tga
-map_Kd diffuse.tga
+map_Kd -cc on diffuse.tga
 map_Ks specular.tga
 map_Kn normals.tga
 )==";

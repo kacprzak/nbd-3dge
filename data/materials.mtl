@@ -1,21 +1,27 @@
+newmtl skybox_mtl
+cube_Kd -clamp on -cc on envmap_stormydays/stormydays_ft.tga envmap_stormydays/stormydays_bk.tga envmap_stormydays/stormydays_up.tga envmap_stormydays/stormydays_dn.tga envmap_stormydays/stormydays_rt.tga envmap_stormydays/stormydays_lf.tga 
+
 newmtl palm_tree_mtl
-map_Kd palm_tree_v2/diffus.tga
+map_Kd -cc on palm_tree_v2/diffus.tga
 map_Kn palm_tree_v2/normal.tga
 map_Ks palm_tree_v2/specular.tga
 Ns 100
 
 newmtl wall_mtl
-map_Kd Stone_Wall_004/color.jpg
+map_Kd -cc on Stone_Wall_004/color.jpg
 map_Kn Stone_Wall_004/normal.jpg
 map_Ks Stone_Wall_004/specular.jpg
 Ns 100
 
+newmtl cube_mtl
+map_Kd -cc on texture_I.png
+
 newmtl terrain_mtl
-map_Kd terrain/grass_green_d.jpg
-map_Kd terrain/snow_grass_d.jpg
-map_Kd terrain/grass_rocky_d.jpg
+map_Kd -cc on terrain/grass_green_d.jpg
+map_Kd -cc on terrain/snow_grass_d.jpg
+map_Kd -cc on terrain/grass_rocky_d.jpg
 
 newmtl ship_mtl
 Ks 0.5 0.5 0.5
 Ns 32
-map_Kd ship.jpg
+map_Kd -cc on ship.jpg

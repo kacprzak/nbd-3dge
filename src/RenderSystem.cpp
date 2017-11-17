@@ -55,7 +55,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
             }
         }
     } else if (rd->role == Role::Skybox) {
-        auto skybox = std::make_shared<Skybox>(resourcesMgr.getTexture(rd->textures[0]));
+        auto skybox = std::make_shared<Skybox>(resourcesMgr.getMaterial(rd->material));
         skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
         setSkybox(skybox);
         return;
@@ -152,7 +152,7 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
     if (m_camera) m_camera->draw(camera, lights, nullptr);
 
-    auto envirnoment = m_skybox->texture();
+    auto envirnoment = m_skybox->material()->textures.at(0).get();
 
     for (const auto& node : m_nodes) {
         node.second->draw(camera, lights, envirnoment);

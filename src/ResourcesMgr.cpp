@@ -31,29 +31,7 @@ void ResourcesMgr::load(const std::string& xmlFile)
         const std::string& assetType = v.first;
         ptree& assetTree             = v.second;
 
-        if (assetType == "texture") {
-            TextureData texData;
-            std::string name        = assetTree.get<std::string>("name", "");
-            const std::string& wrap = assetTree.get<std::string>("wrap", "GL_REPEAT");
-            const std::string& internalFormat =
-                assetTree.get<std::string>("internalFormat", "GL_RGBA");
-
-            texData.clamp       = wrap == "GL_CLAMP_TO_EDGE";
-            texData.linearColor = internalFormat.at(3) != 'S';
-
-            if (assetTree.get_child("file").size() == 0) {
-                texData.filenames.push_back(assetTree.get<std::string>("file"));
-            } else {
-                texData.filenames.resize(6);
-                texData.filenames[0] = assetTree.get<std::string>("file.right");
-                texData.filenames[1] = assetTree.get<std::string>("file.left");
-                texData.filenames[2] = assetTree.get<std::string>("file.top");
-                texData.filenames[3] = assetTree.get<std::string>("file.bottom");
-                texData.filenames[4] = assetTree.get<std::string>("file.back");
-                texData.filenames[5] = assetTree.get<std::string>("file.front");
-            }
-            addTexture(name, texData);
-        } else if (assetType == "font") {
+        if (assetType == "font") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
             addFont(name, file);

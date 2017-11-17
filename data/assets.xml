@@ -45,45 +45,6 @@
     <file>materials.mtl</file>
   </materials>
   
-  <texture>
-    <name>skybox_cubemap</name>
-    <file>
-      <right>envmap_stormydays/stormydays_ft.tga</right>
-      <left>envmap_stormydays/stormydays_bk.tga</left>
-      <top>envmap_stormydays/stormydays_up.tga</top>
-      <bottom>envmap_stormydays/stormydays_dn.tga</bottom>
-      <front>envmap_stormydays/stormydays_lf.tga</front>
-      <back>envmap_stormydays/stormydays_rt.tga</back>
-    </file>
-    <wrap>GL_CLAMP_TO_EDGE</wrap>
-    <internalFormat>GL_SRGB8</internalFormat>
-  </texture>
-  <texture>
-    <name>cube_texture</name>
-    <file>texture_I.png</file>
-    <internalFormat>GL_SRGB8</internalFormat>
-  </texture>
-  <texture>
-    <name>grass_diffuse</name>
-    <file>terrain/grass_green_d.jpg</file>
-    <internalFormat>GL_SRGB8</internalFormat>
-  </texture>
-  <texture>
-    <name>snow_diffuse</name>
-    <file>terrain/snow_grass_d.jpg</file>
-    <internalFormat>GL_SRGB8</internalFormat>
-  </texture>
-  <texture>
-    <name>rocky_diffuse</name>
-    <file>terrain/grass_rocky_d.jpg</file>
-    <internalFormat>GL_SRGB8</internalFormat>
-  </texture>
-  <texture>
-    <name>ship_texture</name>
-    <file>ship.jpg</file>
-    <internalFormat>GL_SRGB8</internalFormat>
-  </texture>
-
   <font>
     <name>ubuntu</name>
     <file>ubuntu.fnt</file>
@@ -114,17 +75,6 @@
     <file>ship.obj</file>
   </mesh>
 
-  <!--texture>
-    <file>Stone_Wall_004/color.jpg</file>
-    <internalFormat>GL_SRGB8</internalFormat>
-  </texture>
-  <texture>
-    <file>Stone_Wall_004/normal.jpg</file>
-  </texture>
-  <texture>
-    <file>Stone_Wall_004/specular.jpg</file>
-  </texture-->
-
   <mesh>
     <name>cube</name>
     <file>cube.obj</file>
@@ -136,22 +86,6 @@
       </mesh-->
 
   <!-- palm_tree -->
-
-  <texture>
-    <name>palm_tree_diffuse</name>
-    <file>palm_tree_v2/diffus.tga</file>
-    <internalFormat>GL_SRGB8_ALPHA8</internalFormat>
-  </texture>
-  <texture>
-    <name>palm_tree_normal</name>
-    <file>palm_tree_v2/normal.tga</file>
-    <internalFormat>GL_RGB8</internalFormat>
-  </texture>
-  <texture>
-    <name>palm_tree_specular</name>
-    <file>palm_tree_v2/specular.tga</file>
-    <internalFormat>GL_RGB8</internalFormat>
-  </texture>
 
   <mesh>
     <name>palm_tree</name>
