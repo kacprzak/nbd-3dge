@@ -70,7 +70,34 @@ void ResourcesMgr::loadShaders(const std::string& xmlFile)
             const std::string& vertexShaderFile   = assetTree.get("vertexShader", "");
             const std::string& geometryShaderFile = assetTree.get("geometryShader", "");
             const std::string& fragmentShaderFile = assetTree.get("fragmentShader", "");
-            addShaderProgram(name, vertexShaderFile, geometryShaderFile, fragmentShaderFile);
+
+            ShaderProgramData spData;
+            spData.name = name;
+
+            const auto extractSource = [](const std::string& filename) -> std::string {
+                std::string source;
+                std::ifstream f(filename.c_str());
+
+                if (f.is_open() == true) {
+                    source.assign((std::istreambuf_iterator<char>(f)),
+                                  (std::istreambuf_iterator<char>()));
+                    f.close();
+                } else {
+                    throw std::runtime_error{"File not found: " + filename};
+                }
+                return source;
+            };
+
+            if (!vertexShaderFile.empty())
+                spData.vertexSrc = extractSource(m_shadersFolder + vertexShaderFile);
+
+            if (!geometryShaderFile.empty())
+                spData.geometrySrc = extractSource(m_shadersFolder + geometryShaderFile);
+
+            if (!fragmentShaderFile.empty())
+                spData.fragmentSrc = extractSource(m_shadersFolder + fragmentShaderFile);
+
+            addShaderProgram(spData);
         }
     }
 }
@@ -134,58 +161,38 @@ std::shared_ptr<Material> ResourcesMgr::getMaterial(const std::string& name) con
 
 //------------------------------------------------------------------------------
 
-void ResourcesMgr::addShaderProgram(const std::string& name, const std::string& vertexShaderFile,
-                                    const std::string& geometryShaderFile,
-                                    const std::string& fragmentShaderFile)
+void ResourcesMgr::addShaderProgram(const ShaderProgramData& spData)
 {
-    std::unique_ptr<Shader> vs;
-    std::unique_ptr<Shader> gs;
-    std::unique_ptr<Shader> fs;
+    std::vector<std::unique_ptr<Shader>> shaders;
 
-    const auto extractSource = [](const std::string& filename) -> std::string {
-        std::string source;
-        std::ifstream f(filename.c_str());
-
-        if (f.is_open() == true) {
-            source.assign((std::istreambuf_iterator<char>(f)), (std::istreambuf_iterator<char>()));
-            f.close();
-        } else {
-            throw std::runtime_error{"File not found: " + filename};
-        }
-        return source;
-    };
-
-    std::vector<Shader*> shaders;
-
-    if (!vertexShaderFile.empty()) {
-        vs = std::make_unique<Shader>(GL_VERTEX_SHADER,
-                                      extractSource(m_shadersFolder + vertexShaderFile));
-        shaders.push_back(vs.get());
+    if (!spData.vertexSrc.empty()) {
+        shaders.emplace_back(new Shader{GL_VERTEX_SHADER, spData.vertexSrc});
     }
 
-    if (!geometryShaderFile.empty()) {
-        gs = std::make_unique<Shader>(GL_GEOMETRY_SHADER,
-                                      extractSource(m_shadersFolder + geometryShaderFile));
-        shaders.push_back(gs.get());
+    if (!spData.geometrySrc.empty()) {
+        shaders.emplace_back(new Shader{GL_GEOMETRY_SHADER, spData.geometrySrc});
     }
 
-    if (!fragmentShaderFile.empty()) {
-        fs = std::make_unique<Shader>(GL_FRAGMENT_SHADER,
-                                      extractSource(m_shadersFolder + fragmentShaderFile));
-        shaders.push_back(fs.get());
+    if (!spData.fragmentSrc.empty()) {
+        shaders.emplace_back(new Shader{GL_FRAGMENT_SHADER, spData.fragmentSrc});
     }
 
-    auto it = m_shaderPrograms.find(name);
+    std::vector<Shader*> shadersRaw;
+    shadersRaw.resize(shaders.size());
+    std::transform(cbegin(shaders), cend(shaders), begin(shadersRaw),
+                   [](const auto& p) { return p.get(); });
+
+    auto it = m_shaderPrograms.find(spData.name);
     if (it == std::end(m_shaderPrograms)) {
-        LOG_TRACE << "Adding ShaderProgram: " << name;
+        LOG_TRACE << "Adding ShaderProgram: " << spData.name;
 
         auto sp = std::make_shared<ShaderProgram>();
-        sp->link(shaders);
-        m_shaderPrograms[name] = sp;
+        sp->link(shadersRaw);
+        m_shaderPrograms[spData.name] = sp;
     } else {
-        LOG_TRACE << "Reloading ShaderProgram: " << name;
+        LOG_TRACE << "Reloading ShaderProgram: " << spData.name;
 
-        it->second->link(shaders);
+        it->second->link(shadersRaw);
     }
 }
 

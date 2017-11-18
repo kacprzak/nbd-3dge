@@ -13,6 +13,14 @@
 #include <map>
 #include <string>
 
+struct ShaderProgramData
+{
+    std::string vertexSrc;
+    std::string geometrySrc;
+    std::string fragmentSrc;
+    std::string name;
+};
+
 class ResourcesMgr
 {
   public:
@@ -22,9 +30,7 @@ class ResourcesMgr
     void loadShaders(const std::string& xmlFile);
     void loadMaterials(const std::string& xmlFile);
 
-    void addShaderProgram(const std::string& name, const std::string& vertexShaderFile,
-                          const std::string& geometryShaderFile,
-                          const std::string& fragmentShaderFile);
+    void addShaderProgram(const ShaderProgramData& spData);
     std::shared_ptr<ShaderProgram> getShaderProgram(const std::string& name) const;
 
     void addTexture(const TextureData& texData);

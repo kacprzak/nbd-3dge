@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Skybox::Skybox(std::shared_ptr<Material> material)
+Skybox::Skybox(const std::shared_ptr<Material>& material)
     : m_material{material}
 {
     const float x = 1.0f;
@@ -59,7 +59,8 @@ Skybox::Skybox(std::shared_ptr<Material> material)
     };
     // clang-format on
 
-    m_mesh = std::make_shared<Mesh>(md);
+    md.name = "SKYBOX";
+    m_mesh  = std::make_shared<Mesh>(md);
 }
 
 void Skybox::draw(const Camera* camera) const

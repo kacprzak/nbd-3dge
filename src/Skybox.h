@@ -12,7 +12,7 @@ class Camera;
 class Skybox final
 {
   public:
-    Skybox(std::shared_ptr<Material> material);
+    Skybox(const std::shared_ptr<Material>& material);
 
     void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
     {

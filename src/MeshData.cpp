@@ -206,5 +206,6 @@ MeshData MeshData::fromHeightmap(const std::vector<float>& heights, int w, int h
         }
     }
 
+    md.name = "HEIGHTMAP";
     return md;
 }
