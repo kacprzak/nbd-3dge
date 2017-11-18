@@ -9,12 +9,16 @@
 
 class Texture final
 {
+    friend class Framebuffer;
+
   public:
     Texture(const TextureData& texData);
     Texture(const Texture&) = delete;
     Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;
     ~Texture();
+
+    static Texture createShadowMap(std::pair<int, int> size);
 
     void bind(int textureUnit);
     void setClampToEdge();

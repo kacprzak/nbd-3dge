@@ -3,11 +3,12 @@
 
 #include "Camera.h"
 #include "FpsCounter.h"
+#include "Framebuffer.h"
+#include "Light.h"
 #include "RenderNode.h"
 #include "ShaderProgram.h"
 #include "Skybox.h"
 #include "Text.h"
-#include "Light.h"
 
 #include <map>
 #include <set>
@@ -68,6 +69,8 @@ class RenderSystem final
     std::set<std::shared_ptr<Text>> m_texts;
 
     std::shared_ptr<ShaderProgram> m_normalsShader;
+    std::unique_ptr<Framebuffer> m_shadowMapFB;
+
     bool m_drawNormals = false;
     FpsCounter m_fpsCounter;
 };

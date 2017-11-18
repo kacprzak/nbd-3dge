@@ -11,6 +11,8 @@
 
 RenderSystem::RenderSystem()
 {
+    m_shadowMapFB = std::make_unique<Framebuffer>();
+
     m_camera                             = std::make_shared<Camera>();
     m_camera->transformation()->position = {-3.5f, 11.0f, 3.9f};
     setCamera(m_camera);
@@ -139,6 +141,13 @@ void RenderSystem::draw()
     sun.setSpecular({1, 1, 1});
 
     lights[0] = &sun;
+
+    if (m_shadowMapFB) {
+        m_shadowMapFB->bindForWriting();
+        glClear(GL_DEPTH_BUFFER_BIT);
+        draw(m_camera.get(), lights);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
     draw(m_camera.get(), lights);
 

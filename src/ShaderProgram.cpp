@@ -9,7 +9,7 @@
 ShaderProgram::ShaderProgram()
 {
     m_shaderProgramId = glCreateProgram();
-    LOG_TRACE << "CreatedProgram: " << m_shaderProgramId;
+    LOG_TRACE << "Created Program: " << m_shaderProgramId;
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& other)

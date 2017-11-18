@@ -12,11 +12,16 @@ static int SDL_InvertSurface(SDL_Surface* image);
 
 //==============================================================================
 
-Texture::Texture(const TextureData& texData)
+Texture::Texture(GLenum target)
+    : m_target{target}
 {
     glGenTextures(1, &m_textureId);
     glGenSamplers(1, &m_samplerId);
+}
 
+Texture::Texture(const TextureData& texData)
+    : Texture{GL_TEXTURE_2D}
+{
     if (texData.filenames.size() == 1)
         create2D(texData);
     else
@@ -38,6 +43,22 @@ Texture::~Texture()
     glDeleteSamplers(1, &m_samplerId);
 
     if (m_textureId || m_samplerId) LOG_INFO << "Released Texture: " << m_textureId;
+}
+
+Texture Texture::createShadowMap(std::pair<int, int> size)
+{
+    Texture tex{GL_TEXTURE_2D};
+
+    glBindTexture(tex.m_target, tex.m_textureId);
+    glTexImage2D(tex.m_target, 0, GL_DEPTH_COMPONENT, size.first, size.second, 0,
+                 GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    tex.setClampToEdge();
+
+    return tex;
 }
 
 void Texture::bind(int textureUnit)

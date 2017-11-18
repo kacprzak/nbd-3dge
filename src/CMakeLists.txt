@@ -2,36 +2,37 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR} )
 
 set( nbd-3dge_SRCS
     main.cpp
-    FpsCounter.cpp
-    RenderNode.cpp
-    Mesh.cpp
-    MeshData.cpp
-    RenderSystem.cpp
-    InputSystem.cpp
-    SDLWindow.cpp
-    GameClient.cpp
-    GameLogic.cpp
-    Util.cpp
-    Texture.cpp
-    Loader.cpp
-    ObjLoader.cpp
-    MtlLoader.cpp
-    FontLoader.cpp
-    Font.cpp
-    Skybox.cpp
-    Shader.cpp
-    ShaderProgram.cpp
-    Camera.cpp
-    Terrain.cpp
-    Script.cpp
-    Engine.cpp
-    Logger.cpp
-    Text.cpp
-    ResourcesMgr.cpp
     Actor.cpp
     ActorFactory.cpp
-    PhysicsSystem.cpp
+    Camera.cpp
+    Engine.cpp
+    Font.cpp
+    FontLoader.cpp
+    FpsCounter.cpp
+    Framebuffer.cpp
+    GameClient.cpp
+    GameLogic.cpp
+    InputSystem.cpp
+    Loader.cpp
+    Logger.cpp
+    Mesh.cpp
+    MeshData.cpp
+    MtlLoader.cpp
+    ObjLoader.cpp
     PhysicsDebugDrawer.cpp
+    PhysicsSystem.cpp
+    RenderNode.cpp
+    RenderSystem.cpp
+    ResourcesMgr.cpp
+    SDLWindow.cpp
+    Script.cpp
+    Shader.cpp
+    ShaderProgram.cpp
+    Skybox.cpp
+    Terrain.cpp
+    Text.cpp
+    Texture.cpp
+    Util.cpp
 )
 
 file( GLOB_RECURSE nbd-3dge_HDRS "*.h" )
