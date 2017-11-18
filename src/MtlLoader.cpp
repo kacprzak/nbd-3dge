@@ -38,7 +38,7 @@ void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& 
     }
 }
 
-TextureData MtlLoader::toTextureData(const std::string& cmd,
+TextureData MtlLoader::toTextureData(const std::string& /*cmd*/,
                                      const std::vector<std::string>& args) const
 {
     TextureData texData;
@@ -61,5 +61,6 @@ TextureData MtlLoader::toTextureData(const std::string& cmd,
         currOpt = "";
     }
 
+    texData.name = texData.filenames.at(0);
     return texData;
 }

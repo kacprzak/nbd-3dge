@@ -79,13 +79,18 @@ std::vector<glm::vec3> MeshData::calculateTangents(const MeshData& md)
 
 MeshData MeshData::fromWavefrontObj(const std::string& objfileName)
 {
-    // std::string name = extractFilename(objfileName);
+    MeshData meshData;
 
     ObjLoader objLoader;
     objLoader.load(objfileName);
 
-    return {GLenum(objLoader.primitive()), objLoader.positions(), objLoader.normals(),
-            objLoader.texCoords(), objLoader.indices()};
+    meshData.primitive = GLenum(objLoader.primitive());
+    meshData.positions = objLoader.positions();
+    meshData.normals   = objLoader.normals();
+    meshData.texcoords = objLoader.texCoords();
+    meshData.indices   = objLoader.indices();
+
+    return meshData;
 }
 
 //------------------------------------------------------------------------------
@@ -122,7 +127,7 @@ MeshData MeshData::fromHeightmap(const std::vector<float>& heights, int w, int h
         return glm::normalize(n);
     };
 
-    //turbulence = glm::vec2(0.15, 0.15);
+    // turbulence = glm::vec2(0.15, 0.15);
 
     const auto getTexCoord = [textureStrech, turbulence](int x, int y) -> glm::vec2 {
         auto texCoord = glm::vec2{0.0, 0.0};

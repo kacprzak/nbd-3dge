@@ -22,7 +22,7 @@ Mesh::Mesh(const MeshData& md)
     glGenBuffers(NUM_BUFFERS, m_buffers);
 
     auto aabb = MeshData::calculateAABB(md.positions);
-    LOG_INFO << "Loaded Mesh: " << m_vao;
+    LOG_INFO << "Loaded Mesh: " << m_vao << " | " << md.name;
     LOG_TRACE << "  Positions: " << md.positions.size() << "\t id: " << m_buffers[POSITIONS] << '\n'
               << "  Normals: " << md.normals.size() << "\t id: " << m_buffers[NORMALS] << '\n'
               << "  Tangents: " << tangents.size() << "\t id: " << m_buffers[TANGENTS] << '\n'

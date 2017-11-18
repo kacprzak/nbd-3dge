@@ -10,6 +10,7 @@
 class Texture final
 {
   public:
+    Texture(const TextureData& texData);
     Texture(const Texture&) = delete;
     Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;
@@ -22,17 +23,9 @@ class Texture final
     int width() const { return m_w; }
     int height() const { return m_h; }
 
-    static Texture create(const TextureData& texData)
-    {
-        if (texData.filenames.size() == 1)
-            return create2D(texData);
-        else
-            return createCube(texData);
-    }
-
   private:
-    static Texture create2D(const TextureData& texData);
-    static Texture createCube(const TextureData& texData);
+    void create2D(const TextureData& texData);
+    void createCube(const TextureData& texData);
 
     Texture(GLenum target);
 

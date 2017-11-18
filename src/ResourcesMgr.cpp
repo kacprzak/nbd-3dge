@@ -38,7 +38,9 @@ void ResourcesMgr::load(const std::string& xmlFile)
         } else if (assetType == "mesh") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
-            addMesh(name, file);
+            MeshData meshData       = MeshData::fromWavefrontObj(m_dataFolder + file);
+            meshData.name           = name;
+            addMesh(meshData);
         } else if (assetType == "heightfield") {
             const std::string& name = assetTree.get<std::string>("name");
             const std::string& file = assetTree.get<std::string>("file");
@@ -106,7 +108,7 @@ void ResourcesMgr::addMaterial(const MaterialData& materialData)
 
     for (const auto& texData : materialData.textures) {
         const auto& file = texData.filenames.at(0);
-        addTexture("", texData);
+        addTexture(texData);
         textures.push_back(getTexture(file));
     }
 
@@ -198,18 +200,16 @@ std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string&
 
 //------------------------------------------------------------------------------
 
-void ResourcesMgr::addTexture(std::string name, const TextureData& texData)
+void ResourcesMgr::addTexture(const TextureData& texData)
 {
-    if (name.empty()) name = texData.filenames.at(0);
-
     TextureData tmp = texData;
 
-    LOG_TRACE << "Adding Texture: " << name;
+    LOG_TRACE << "Adding Texture: " << tmp.name;
 
     for (auto& filename : tmp.filenames)
         filename = m_dataFolder + filename;
 
-    m_textures[name] = std::make_shared<Texture>(Texture::create(tmp));
+    m_textures[tmp.name] = std::make_shared<Texture>(tmp);
 }
 
 std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
@@ -223,11 +223,11 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
 
 //------------------------------------------------------------------------------
 
-void ResourcesMgr::addMesh(const std::string& name, const std::string& filename)
+void ResourcesMgr::addMesh(const MeshData& meshData)
 {
-    LOG_TRACE << "Adding Mesh: " << name;
+    LOG_TRACE << "Adding Mesh: " << meshData.name;
 
-    m_meshes[name] = std::make_shared<Mesh>(MeshData::fromWavefrontObj(m_dataFolder + filename));
+    m_meshes[meshData.name] = std::make_shared<Mesh>(meshData);
 }
 
 std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name) const
@@ -253,8 +253,9 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
     std::vector<std::shared_ptr<Texture>> textures;
     for (const auto& texFilename : font->getTexturesFilenames()) {
         TextureData texData;
+        texData.name = texFilename;
         texData.filenames.push_back(m_dataFolder + texFilename);
-        textures.emplace_back(new Texture{Texture::create(texData)});
+        textures.emplace_back(std::make_shared<Texture>(texData));
     }
     font->setTextures(textures);
 

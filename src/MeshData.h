@@ -14,6 +14,7 @@ struct MeshData final
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> texcoords;
     std::vector<unsigned short> indices;
+    std::string name;
 
     static MeshData fromWavefrontObj(const std::string& objfileName);
     static MeshData fromHeightmap(const std::vector<float>& heights, int w, int h,

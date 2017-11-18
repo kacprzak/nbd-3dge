@@ -9,6 +9,7 @@ struct TextureData
     std::vector<std::string> filenames;
     bool linearColor = true;
     bool clamp       = false;
+    std::string name;
 };
 
 #endif /* TEXTUREDATA_H */
