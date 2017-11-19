@@ -90,9 +90,13 @@
   <actor>
     <name>sun</name>
     <transformation>
-      <position>1 -1 -1</position>
+      <position>-60 60 60</position>
       <orientation>-45 -45 0</orientation>
     </transformation>
+    <render>
+      <mesh>cube</mesh>
+      <material>sun_light</material>
+    </render>
     <light>
       <material>sun_light</material>
     </light>

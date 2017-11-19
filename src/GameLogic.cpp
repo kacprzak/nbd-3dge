@@ -82,7 +82,7 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
             auto lt = a->getComponent<LightComponent>(ComponentId::Light).lock();
             auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control).lock();
 
-            if (rd) gv->addActor(a->id(), tr.get(), rd.get(), lt.get(), ctrl.get());
+            if (rd || lt) gv->addActor(a->id(), tr.get(), rd.get(), lt.get(), ctrl.get());
         }
     }
 

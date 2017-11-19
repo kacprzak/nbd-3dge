@@ -49,46 +49,62 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
                             LightComponent* lt, const ResourcesMgr& resourcesMgr)
 {
-    std::shared_ptr<RenderNode> a;
-    if (rd->role == Role::Dynamic) {
-        if (!rd->mesh.empty()) {
-            if (boost::starts_with(rd->mesh, "heightfield:")) {
-                a = std::make_shared<Terrain>(id, tr, rd, *resourcesMgr.getHeightfield(rd->mesh));
-            } else {
-                a            = std::make_shared<RenderNode>(id, tr, rd);
-                auto meshPtr = resourcesMgr.getMesh(rd->mesh);
-                a->setMesh(meshPtr);
+    // Render component
+    if (rd) {
+        if (rd->role == Role::Dynamic) {
+            std::shared_ptr<RenderNode> actor;
+            if (!rd->mesh.empty()) {
+                if (boost::starts_with(rd->mesh, "heightfield:")) {
+                    actor = std::make_shared<Terrain>(id, tr, rd,
+                                                      *resourcesMgr.getHeightfield(rd->mesh));
+                } else {
+                    actor        = std::make_shared<RenderNode>(id, tr, rd);
+                    auto meshPtr = resourcesMgr.getMesh(rd->mesh);
+                    actor->setMesh(meshPtr);
+                }
             }
-        }
-    } else if (rd->role == Role::Skybox) {
-        auto skybox = std::make_shared<Skybox>(resourcesMgr.getMaterial(rd->material));
-        skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
-        setSkybox(skybox);
-        return;
-    } /*else if (rd->role == Role::Light) {
-        auto light = std::make_shared<Light>();
-        // todo
-        // addLight(skybox);
-        return;
-        }*/
 
-    if (!rd->material.empty()) {
-        auto materialPtr = resourcesMgr.getMaterial(rd->material);
-        a->setMaterial(materialPtr);
+            if (!rd->material.empty()) {
+                auto materialPtr = resourcesMgr.getMaterial(rd->material);
+                actor->setMaterial(materialPtr);
+            }
+
+            actor->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
+            if (!actor->render()->transparent)
+                m_nodes[id] = actor;
+            else
+                m_transparentNodes[id] = actor;
+
+        } else if (rd->role == Role::Skybox) {
+            auto skybox = std::make_shared<Skybox>();
+
+            if (!rd->material.empty()) {
+                auto materialPtr = resourcesMgr.getMaterial(rd->material);
+                skybox->setMaterial(materialPtr);
+            }
+            skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
+            setSkybox(skybox);
+        }
     }
 
-    a->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
+    // Light component
+    if (lt) {
+        auto light = std::make_shared<Light>(id, tr, rd, lt, m_windowSize);
 
-    if (!rd->transparent)
-        add(id, a);
-    else
-        addTransparent(id, a);
+        if (!lt->material.empty()) {
+            auto materialPtr = resourcesMgr.getMaterial(lt->material);
+            light->setMaterial(materialPtr);
+        }
+
+        m_lights[id] = light;
+    }
 }
 
 void RenderSystem::removeActor(int id)
 {
-    remove(id);
-    removeTransparent(id);
+    m_nodes.erase(id);
+    m_transparentNodes.erase(id);
+    m_lights.erase(id);
 }
 
 //------------------------------------------------------------------------------
@@ -125,6 +141,10 @@ void RenderSystem::update(float delta)
     for (const auto& node : m_transparentNodes) {
         node.second->update(delta);
     }
+
+    for (const auto& node : m_lights) {
+        node.second->update(delta);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -133,37 +153,23 @@ void RenderSystem::draw()
 {
     std::array<Light*, 8> lights = {};
 
-    Light sun;
-    TransformationComponent lightTr;
-    lightTr.position    = {-100.f, 100.f, 100.f};
-    const auto lookAt   = glm::lookAt(lightTr.position, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
-    lightTr.orientation = glm::conjugate(glm::quat_cast(lookAt));
-
-    Camera lightCam{m_shadowMapSize};
-    *lightCam.transformation() = lightTr;
-    lightCam.setOrtho();
-    lightCam.update(0); // to recalc matrix
-
-    sun.setPosition({1, -1, -1, 0}); // Zero on end changes pos to direction
-    sun.setAmbient({1.0, 0.8863, 0.8078});
-    sun.setDiffuse({1.0, 0.8863, 0.8078});
-    sun.setSpecular({1, 1, 1});
+    Light* sun = m_lights.begin()->second.get();
+    // setCamera(m_lights.begin()->second);
 
     if (m_shadowMapFB) {
         m_shadowMapFB->bindForWriting();
         glViewport(0, 0, m_shadowMapSize.w, m_shadowMapSize.h);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        draw(&lightCam, lights);
+        draw(sun, lights);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.w, m_windowSize.h);
     }
 
-    lights[0] = &sun;
+    lights[0] = sun;
 
     draw(m_camera.get(), lights);
-    // draw(&lightCam, lights);
 
     if (m_drawNormals) {
         draw(m_normalsShader.get(), m_camera.get(), lights);

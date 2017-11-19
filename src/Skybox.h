@@ -12,16 +12,17 @@ class Camera;
 class Skybox final
 {
   public:
-    Skybox(const std::shared_ptr<Material>& material);
+    Skybox();
 
-    void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
+    void setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram)
     {
         m_shaderProgram = shaderProgram;
     }
 
-    void draw(const Camera* camera) const;
-
+    void setMaterial(const std::shared_ptr<Material>& material) { m_material = material; }
     Material* material() { return m_material.get(); }
+
+    void draw(const Camera* camera) const;
 
   private:
     std::shared_ptr<ShaderProgram> m_shaderProgram;

@@ -3,7 +3,14 @@
 in vec4 color;
 out vec4 fragColor;
 
-void main()
+struct Material
 {
-    fragColor = color;
-}
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+uniform Material material;
+
+void main() { fragColor = vec4(material.diffuse, 1.0); }

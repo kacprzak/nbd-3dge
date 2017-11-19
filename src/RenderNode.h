@@ -2,15 +2,16 @@
 #define RENDERNODE_H
 
 #include "Components.h"
-#include "Light.h"
+//#include "Light.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
-#include "Texture.h"
+//#include "Texture.h"
 
 #include <glm/glm.hpp>
 
 class Camera;
+class Light;
 
 class RenderNode
 {
@@ -18,7 +19,7 @@ class RenderNode
     RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
     virtual ~RenderNode() = default;
 
-    //void setTextures(const std::vector<std::shared_ptr<Texture>>& textures);
+    // void setTextures(const std::vector<std::shared_ptr<Texture>>& textures);
     // void addTexture(const std::shared_ptr<Texture>& texture);
 
     void setMaterial(const std::shared_ptr<Material>& material);
@@ -46,13 +47,14 @@ class RenderNode
     TransformationComponent* m_tr = nullptr;
     RenderComponent* m_rd         = nullptr;
 
+    std::shared_ptr<Material> m_material;
+
   private:
     void rebuildModelMatrix();
 
     std::shared_ptr<Mesh> m_mesh;
-    std::shared_ptr<Material> m_material;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
-    //std::vector<std::shared_ptr<Texture>> m_textures;
+    // std::vector<std::shared_ptr<Texture>> m_textures;
 
     glm::mat4 m_modelMatrix;
 };

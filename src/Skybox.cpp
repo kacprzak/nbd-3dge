@@ -7,8 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Skybox::Skybox(const std::shared_ptr<Material>& material)
-    : m_material{material}
+Skybox::Skybox()
 {
     const float x = 1.0f;
 

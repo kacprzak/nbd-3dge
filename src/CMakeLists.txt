@@ -13,6 +13,7 @@ set( nbd-3dge_SRCS
     GameClient.cpp
     GameLogic.cpp
     InputSystem.cpp
+    Light.cpp
     Loader.cpp
     Logger.cpp
     Mesh.cpp
@@ -40,6 +41,7 @@ file( GLOB_RECURSE nbd-3dge_HDRS "*.h" )
 source_group( "Headers" FILES ${nbd-3dge_HDRS} )
 
 add_executable( nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} )
+target_compile_definitions( nbd-3dge PRIVATE GLM_FORCE_RADIANS )
 if( MSVC )
   target_compile_options( nbd-3dge PRIVATE /W3 )
 else()

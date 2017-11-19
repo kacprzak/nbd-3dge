@@ -27,6 +27,6 @@ Ns 32
 map_Kd -cc on ship.jpg
 
 newmtl sun_light
-Ka 1.0 0.8863 0.8078
+Ka 0.2 0.1772 0.1616
 Kd 1.0 0.8863 0.8078
 Ks 1   1      1

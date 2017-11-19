@@ -61,7 +61,8 @@ getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
     std::string orientation = actorTree.get("orientation", "");
     if (!orientation.empty()) {
         // Conversion form euler to quaternion
-        tr->orientation = glm::quat{glm::vec3{stringToVector(orientation)}};
+        auto degs       = glm::vec3{stringToVector(orientation)};
+        tr->orientation = glm::quat{glm::radians(degs)};
     } else {
         tr->orientation = prototype.orientation;
     }

@@ -45,15 +45,6 @@ class RenderSystem final
 
     void setCamera(std::shared_ptr<Camera> camera) { m_camera = camera; }
 
-    void add(int id, std::shared_ptr<RenderNode> actor) { m_nodes[id] = actor; }
-    void remove(int id) { m_nodes.erase(id); }
-
-    void addTransparent(int id, std::shared_ptr<RenderNode> actor)
-    {
-        m_transparentNodes[id] = actor;
-    }
-    void removeTransparent(int id) { m_transparentNodes.erase(id); }
-
     void add(std::shared_ptr<Text> actor) { m_texts.insert(actor); }
     void remove(std::shared_ptr<Text> actor) { m_texts.erase(actor); }
 
@@ -66,6 +57,8 @@ class RenderSystem final
 
     std::map<int, std::shared_ptr<RenderNode>> m_nodes;
     std::map<int, std::shared_ptr<RenderNode>> m_transparentNodes;
+    std::map<int, std::shared_ptr<Light>> m_lights;
+
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Text> m_cameraText;

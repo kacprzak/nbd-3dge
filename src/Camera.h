@@ -7,6 +7,7 @@
 class Camera : public RenderNode
 {
   public:
+    Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, Texture::Size windowSize);
     Camera(Texture::Size windowSize);
     ~Camera();
 
@@ -29,6 +30,7 @@ class Camera : public RenderNode
     glm::mat4 m_viewMatrix;
     Texture::Size m_windowSize;
     bool m_perspective = true;
+    bool m_ownsTransformation = false;
 };
 
 #endif // CAMERA_H

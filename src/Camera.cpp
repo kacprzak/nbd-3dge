@@ -3,14 +3,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-Camera::Camera(Texture::Size windowSize)
-    : RenderNode{-1, new TransformationComponent, nullptr}
+Camera::Camera(int actorId, TransformationComponent* tr, RenderComponent* rd,
+               Texture::Size windowSize)
+    : RenderNode{actorId, tr, rd}
     , m_windowSize{windowSize}
 {
     setPerspective();
 }
 
-Camera::~Camera() { delete transformation(); }
+Camera::Camera(Texture::Size windowSize)
+    : Camera{-1, new TransformationComponent, nullptr, windowSize}
+{
+    m_ownsTransformation = true;
+}
+
+Camera::~Camera()
+{
+    if (m_ownsTransformation) delete transformation();
+}
 
 void Camera::setPerspective()
 {
