@@ -23,8 +23,8 @@ class GameView : private boost::noncopyable
     virtual void unloadResources()                         = 0;
 
     virtual void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
-                          ControlComponent* ctrl) = 0;
-    virtual void removeActor(int id)              = 0;
+                          LightComponent* lt, ControlComponent* ctrl) = 0;
+    virtual void removeActor(int id) = 0;
 
     virtual PhysicsDebugDrawer* debugDrawer() { return nullptr; }
 };

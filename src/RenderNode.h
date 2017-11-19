@@ -18,8 +18,8 @@ class RenderNode
     RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
     virtual ~RenderNode() = default;
 
-    void setTextures(const std::vector<std::shared_ptr<Texture>>& textures);
-    void addTexture(const std::shared_ptr<Texture>& texture);
+    //void setTextures(const std::vector<std::shared_ptr<Texture>>& textures);
+    // void addTexture(const std::shared_ptr<Texture>& texture);
 
     void setMaterial(const std::shared_ptr<Material>& material);
 
@@ -52,7 +52,7 @@ class RenderNode
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<Material> m_material;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
-    std::vector<std::shared_ptr<Texture>> m_textures;
+    //std::vector<std::shared_ptr<Texture>> m_textures;
 
     glm::mat4 m_modelMatrix;
 };

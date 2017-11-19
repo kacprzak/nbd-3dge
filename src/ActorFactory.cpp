@@ -37,15 +37,19 @@ static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
     rd->transparent     = actorTree.get("transparent", prototype.transparent);
     rd->backfaceCulling = actorTree.get("backfaceCulling", prototype.backfaceCulling);
 
-    if (auto textures = actorTree.get_child_optional("textures")) {
-        for (ptree::value_type& v : actorTree.get_child("textures")) {
-            rd->textures.push_back(v.second.data());
-        }
-    } else {
-        rd->textures = prototype.textures;
-    }
-
     return rd;
+}
+
+//------------------------------------------------------------------------------
+
+static std::shared_ptr<LightComponent> getLightComponent(ptree& actorTree, LightComponent prototype)
+{
+    auto lt = std::make_shared<LightComponent>();
+
+    lt->castsShadows = actorTree.get("castsShadows", prototype.castsShadows);
+    lt->material     = actorTree.get("material", prototype.material);
+
+    return lt;
 }
 
 //------------------------------------------------------------------------------
@@ -101,6 +105,7 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
 
     TransformationComponent trProto;
     RenderComponent rdProto;
+    LightComponent ltProto;
     PhysicsComponent phProto;
 
     if (auto trNode = actorTree.get_child_optional("transformation")) {
@@ -111,6 +116,11 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
     if (auto rdNode = actorTree.get_child_optional("render")) {
         auto rd = getRenderComponent(rdNode.get(), rdProto);
         a->addComponent(ComponentId::Render, rd);
+    }
+
+    if (auto ltNode = actorTree.get_child_optional("light")) {
+        auto lt = getLightComponent(ltNode.get(), ltProto);
+        a->addComponent(ComponentId::Light, lt);
     }
 
     if (auto phNode = actorTree.get_child_optional("physics")) {
@@ -132,6 +142,7 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
 
     TransformationComponent trProto;
     RenderComponent rdProto;
+    LightComponent ltProto;
     PhysicsComponent phProto;
 
     if (auto prototypeNode = actorTree.get_child_optional("prototype")) {
@@ -145,6 +156,9 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
 
             auto rd         = p.second->getComponent<RenderComponent>(ComponentId::Render).lock();
             if (rd) rdProto = *rd;
+
+            auto lt         = p.second->getComponent<LightComponent>(ComponentId::Light).lock();
+            if (lt) ltProto = *lt;
 
             auto ph         = p.second->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
             if (ph) phProto = *ph;
@@ -164,6 +178,11 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
         a->addComponent(ComponentId::Render, rd);
     }
 
+    if (auto ltNode = actorTree.get_child_optional("light")) {
+        auto lt = getLightComponent(ltNode.get(), ltProto);
+        a->addComponent(ComponentId::Light, lt);
+    }
+
     if (auto phNode = actorTree.get_child_optional("physics")) {
         auto ph = getPhysicsComponent(phNode.get(), phProto);
         a->addComponent(ComponentId::Physics, ph);
@@ -176,11 +195,6 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     if (actorType == "skybox") {
         auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
         if (rd) rd->role = Role::Skybox;
-    }
-
-    if (actorType == "light") {
-        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-        if (rd) rd->role = Role::Light;
     }
 
     return a;

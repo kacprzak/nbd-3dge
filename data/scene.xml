@@ -87,17 +87,16 @@
     </render>
   </skybox>
 
-  <light>
+  <actor>
     <name>sun</name>
     <transformation>
       <position>1 -1 -1</position>
+      <orientation>-45 -45 0</orientation>
     </transformation>
-    <render>
-      <ambient>1 1 1</ambient>
-      <diffuse>1 1 1</diffuse>
-      <specular>1 1 1</specular>
-    </render>
-  </light>
+    <light>
+      <material>sun_light</material>
+    </light>
+  </actor>
 
   <terrain>
     <name>terrain</name>

@@ -15,6 +15,7 @@ RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent
 {
 }
 
+/*
 void RenderNode::setTextures(const std::vector<std::shared_ptr<Texture>>& textures)
 {
     m_textures = textures;
@@ -24,6 +25,7 @@ void RenderNode::addTexture(const std::shared_ptr<Texture>& texture)
 {
     m_textures.push_back(texture);
 }
+*/
 
 void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
 
@@ -67,12 +69,14 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
             }
         }
 
+        /*
         for (const auto& texture : m_textures) {
             const std::string& name = "sampler" + std::to_string(textureUnit);
             shaderProgram->setUniform(name.c_str(), textureUnit);
 
             texture->bind(textureUnit++);
         }
+        */
 
         for (size_t i = 0; i < lights.size(); ++i) {
             if (lights[i]) {

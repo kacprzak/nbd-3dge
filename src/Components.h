@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-enum class ComponentId { Transformation, Render, Physics, Control };
+enum class ComponentId { Transformation, Render, Light, Physics, Control };
 struct Component
 {
 };
@@ -19,7 +19,7 @@ struct TransformationComponent : public Component
     float scale = 1.0f;
 };
 
-enum class Role { Skybox, Dynamic, Light };
+enum class Role { Skybox, Dynamic };
 
 struct RenderComponent : public Component
 {
@@ -29,7 +29,15 @@ struct RenderComponent : public Component
     bool transparent     = false;
     bool backfaceCulling = true;
     std::string material;
-    std::vector<std::string> textures;
+};
+
+struct LightComponent : public Component
+{
+    enum class Type { Directional, Point, Spot };
+
+    Type type         = Type::Directional;
+    bool castsShadows = true;
+    std::string material;
 };
 
 struct PhysicsComponent : public Component

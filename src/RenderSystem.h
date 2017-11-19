@@ -25,7 +25,7 @@ class RenderSystem final
 
     void loadCommonResources(const ResourcesMgr& resourcesMgr);
 
-    void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+    void addActor(int id, TransformationComponent* tr, RenderComponent* rd, LightComponent* lt,
                   const ResourcesMgr& resourcesMgr);
     void removeActor(int id);
 

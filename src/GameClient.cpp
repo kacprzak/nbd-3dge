@@ -58,9 +58,9 @@ void GameClient::unloadResources() { m_resourcesMgr.reset(); }
 //------------------------------------------------------------------------------
 
 void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
-                          ControlComponent* ctrl)
+                          LightComponent* lt, ControlComponent* ctrl)
 {
-    m_renderSystem.addActor(id, tr, rd, *m_resourcesMgr);
+    m_renderSystem.addActor(id, tr, rd, lt, *m_resourcesMgr);
     if (ctrl) {
         m_inputSystem.addActor(id, ctrl);
         m_tppCameraCtrl->player = tr;

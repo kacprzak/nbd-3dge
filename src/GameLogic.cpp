@@ -77,23 +77,20 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 
     for (auto& gv : m_gameViews) {
         for (auto& a : m_actors) {
-            auto tr   = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-            auto rd   = a->getComponent<RenderComponent>(ComponentId::Render);
-            auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control);
+            auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation).lock();
+            auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+            auto lt = a->getComponent<LightComponent>(ComponentId::Light).lock();
+            auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control).lock();
 
-            auto str   = tr.lock();
-            auto srd   = rd.lock();
-            auto sctrl = ctrl.lock();
-            if (srd) gv->addActor(a->id(), str.get(), srd.get(), sctrl.get());
+            if (rd) gv->addActor(a->id(), tr.get(), rd.get(), lt.get(), ctrl.get());
         }
     }
 
     for (auto& a : m_actors) {
-        auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-        auto ph  = a->getComponent<PhysicsComponent>(ComponentId::Physics);
-        auto str = tr.lock();
-        auto sph = ph.lock();
-        if (str && sph) m_physicsSystem->addActor(a->id(), str.get(), sph.get(), *m_resourcesMgr);
+        auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation).lock();
+        auto ph = a->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
+
+        if (tr && ph) m_physicsSystem->addActor(a->id(), tr.get(), ph.get(), *m_resourcesMgr);
     }
 }
 
@@ -101,20 +98,18 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
 {
     for (auto& gv : m_gameViews) {
         for (auto& a : m_actors) {
-            auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-            auto rd  = a->getComponent<RenderComponent>(ComponentId::Render);
-            auto str = tr.lock();
-            auto srd = rd.lock();
-            if (srd) gv->removeActor(a->id());
+            auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation).lock();
+            auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+
+            if (rd) gv->removeActor(a->id());
         }
     }
 
     for (auto& a : m_actors) {
-        auto tr  = a->getComponent<TransformationComponent>(ComponentId::Transformation);
-        auto ph  = a->getComponent<PhysicsComponent>(ComponentId::Physics);
-        auto str = tr.lock();
-        auto sph = ph.lock();
-        if (str && sph) m_physicsSystem->removeActor(a->id());
+        auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation).lock();
+        auto ph = a->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
+
+        if (tr && ph) m_physicsSystem->removeActor(a->id());
     }
 }
 
@@ -123,36 +118,35 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
 void GameLogic::update(float elapsedTime)
 {
     for (auto& a : m_actors) {
-        auto ctrl  = a->getComponent<ControlComponent>(ComponentId::Control);
-        auto ph    = a->getComponent<PhysicsComponent>(ComponentId::Physics);
-        auto sctrl = ctrl.lock();
-        auto sph   = ph.lock();
-        if (sctrl && sph) {
-            sph->force  = glm::vec3{0.f, 9.81f * sph->mass, 0.f};
-            sph->torque = glm::vec3{};
+        auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control).lock();
+        auto ph   = a->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
 
-            if (sctrl->actions & ControlComponent::Forward) {
-                sph->force.z += sph->maxForce.z;
+        if (ctrl && ph) {
+            ph->force  = glm::vec3{0.f, 9.81f * ph->mass, 0.f};
+            ph->torque = glm::vec3{};
+
+            if (ctrl->actions & ControlComponent::Forward) {
+                ph->force.z += ph->maxForce.z;
             }
-            if (sctrl->actions & ControlComponent::Back) {
-                sph->force.z -= sph->maxForce.z;
+            if (ctrl->actions & ControlComponent::Back) {
+                ph->force.z -= ph->maxForce.z;
             }
-            if (sctrl->actions & ControlComponent::Up) {
-                sph->force.y += sph->maxForce.y;
+            if (ctrl->actions & ControlComponent::Up) {
+                ph->force.y += ph->maxForce.y;
             }
-            if (sctrl->actions & ControlComponent::Down) {
-                sph->force.y -= sph->maxForce.y;
+            if (ctrl->actions & ControlComponent::Down) {
+                ph->force.y -= ph->maxForce.y;
             }
-            if (sctrl->actions & ControlComponent::StrafeRight) {
-                // sph->force.x -= sph->maxForce.x;
-                sph->torque.y -= 200;
+            if (ctrl->actions & ControlComponent::StrafeRight) {
+                // ph->force.x -= ph->maxForce.x;
+                ph->torque.y -= 200;
             }
-            if (sctrl->actions & ControlComponent::StrafeLeft) {
-                // sph->force.x += sph->maxForce.x;
-                sph->torque.y += 200;
+            if (ctrl->actions & ControlComponent::StrafeLeft) {
+                // ph->force.x += ph->maxForce.x;
+                ph->torque.y += 200;
             }
-            sph->torque.x = -sctrl->axes.y * 200;
-            sph->torque.z = sctrl->axes.x * 200;
+            ph->torque.x = -ctrl->axes.y * 200;
+            ph->torque.z = ctrl->axes.x * 200;
         }
     }
 

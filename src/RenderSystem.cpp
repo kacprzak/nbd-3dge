@@ -47,7 +47,7 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 //------------------------------------------------------------------------------
 
 void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
-                            const ResourcesMgr& resourcesMgr)
+                            LightComponent* lt, const ResourcesMgr& resourcesMgr)
 {
     std::shared_ptr<RenderNode> a;
     if (rd->role == Role::Dynamic) {
@@ -65,21 +65,16 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
         skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
         setSkybox(skybox);
         return;
-    } else if (rd->role == Role::Light) {
+    } /*else if (rd->role == Role::Light) {
         auto light = std::make_shared<Light>();
         // todo
         // addLight(skybox);
         return;
-    }
+        }*/
 
     if (!rd->material.empty()) {
         auto materialPtr = resourcesMgr.getMaterial(rd->material);
         a->setMaterial(materialPtr);
-    }
-
-    for (const auto& texture : rd->textures) {
-        auto texturePtr = resourcesMgr.getTexture(texture);
-        a->addTexture(texturePtr);
     }
 
     a->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));

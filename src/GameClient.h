@@ -22,7 +22,7 @@ class GameClient : public SDLWindow
     void loadResources(const std::string& xmlFile) override;
     void unloadResources() override;
 
-    void addActor(int id, TransformationComponent* tr, RenderComponent* rd,
+    void addActor(int id, TransformationComponent* tr, RenderComponent* rd, LightComponent* lt,
                   ControlComponent* ctrl) override;
     void removeActor(int id) override;
 
