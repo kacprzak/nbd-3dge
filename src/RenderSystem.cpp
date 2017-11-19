@@ -4,6 +4,8 @@
 #include "ResourcesMgr.h"
 #include "Terrain.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <array>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/iostreams/device/array.hpp>
@@ -11,10 +13,11 @@
 
 RenderSystem::RenderSystem(Texture::Size windowSize)
     : m_windowSize{windowSize}
+    , m_shadowMapSize{1024, 1024}
 {
-    m_shadowMapFB = std::make_unique<Framebuffer>(Texture::Size{1024, 1024});
+    m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
-    m_camera                             = std::make_shared<Camera>();
+    m_camera                             = std::make_shared<Camera>(m_windowSize);
     m_camera->transformation()->position = {-3.5f, 11.0f, 3.9f};
     setCamera(m_camera);
 }
@@ -136,21 +139,36 @@ void RenderSystem::draw()
     std::array<Light*, 8> lights = {};
 
     Light sun;
+    TransformationComponent lightTr;
+    lightTr.position    = {-100.f, 100.f, 100.f};
+    const auto lookAt   = glm::lookAt(lightTr.position, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
+    lightTr.orientation = glm::conjugate(glm::quat_cast(lookAt));
+
+    Camera lightCam{m_shadowMapSize};
+    *lightCam.transformation() = lightTr;
+    lightCam.setOrtho();
+    lightCam.update(0); // to recalc matrix
+
     sun.setPosition({1, -1, -1, 0}); // Zero on end changes pos to direction
     sun.setAmbient({1.0, 0.8863, 0.8078});
     sun.setDiffuse({1.0, 0.8863, 0.8078});
     sun.setSpecular({1, 1, 1});
 
-    lights[0] = &sun;
-
     if (m_shadowMapFB) {
         m_shadowMapFB->bindForWriting();
+        glViewport(0, 0, m_shadowMapSize.w, m_shadowMapSize.h);
         glClear(GL_DEPTH_BUFFER_BIT);
-        draw(m_camera.get(), lights);
+
+        draw(&lightCam, lights);
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, m_windowSize.w, m_windowSize.h);
     }
 
+    lights[0] = &sun;
+
     draw(m_camera.get(), lights);
+    // draw(&lightCam, lights);
 
     if (m_drawNormals) {
         draw(m_normalsShader.get(), m_camera.get(), lights);
@@ -197,9 +215,8 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
 
 void RenderSystem::resizeWindow(Texture::Size size)
 {
-    m_windowSize  = size;
-    GLfloat ratio = GLfloat(size.w) / GLfloat(size.h);
-    getCamera()->setPerspective(45.0f, ratio, 5.0f, 1250.0f);
+    m_windowSize = size;
+    m_camera->setWindowSize(size);
 }
 
 //------------------------------------------------------------------------------

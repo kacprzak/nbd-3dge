@@ -7,7 +7,7 @@
 class Camera : public RenderNode
 {
   public:
-    Camera();
+    Camera(Texture::Size windowSize);
     ~Camera();
 
     void draw(const Camera* /*c*/, const std::array<Light*, 8>& /*lights*/,
@@ -16,7 +16,10 @@ class Camera : public RenderNode
     }
 
     void update(float delta) override;
-    void setPerspective(float angle, float ratio, float near, float far);
+    void setPerspective();
+    void setOrtho();
+
+    void setWindowSize(Texture::Size size);
 
     const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
@@ -24,6 +27,8 @@ class Camera : public RenderNode
   private:
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;
+    Texture::Size m_windowSize;
+    bool m_perspective = true;
 };
 
 #endif // CAMERA_H

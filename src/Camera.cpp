@@ -3,18 +3,33 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-Camera::Camera()
+Camera::Camera(Texture::Size windowSize)
     : RenderNode{-1, new TransformationComponent, nullptr}
+    , m_windowSize{windowSize}
 {
-    float ratio = 800 / float(600);
-    setPerspective(45.0f, ratio, 1.0f, 1200.0f);
+    setPerspective();
 }
 
 Camera::~Camera() { delete transformation(); }
 
-void Camera::setPerspective(float angle, float ratio, float near, float far)
+void Camera::setPerspective()
 {
-    m_projectionMatrix = glm::perspective(angle, ratio, near, far);
+    float ratio        = m_windowSize.w / float(m_windowSize.h);
+    m_projectionMatrix = glm::perspective(45.f, ratio, 1.f, 1200.f);
+}
+
+void Camera::setOrtho()
+{
+    m_projectionMatrix = glm::ortho(-100.f, 100.f, -100.f, 100.f, 1.f, 1200.f);
+}
+
+void Camera::setWindowSize(Texture::Size size)
+{
+    m_windowSize = size;
+    if (m_perspective)
+        setPerspective();
+    else
+        setOrtho();
 }
 
 const glm::mat4& Camera::viewMatrix() const { return m_viewMatrix; }

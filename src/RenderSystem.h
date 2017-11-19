@@ -72,6 +72,8 @@ class RenderSystem final
     std::set<std::shared_ptr<Text>> m_texts;
 
     std::shared_ptr<ShaderProgram> m_normalsShader;
+
+    Texture::Size m_shadowMapSize;
     std::unique_ptr<Framebuffer> m_shadowMapFB;
 
     bool m_drawNormals = false;
