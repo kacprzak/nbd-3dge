@@ -10,6 +10,7 @@ GameClient::GameClient(const Settings& settings, const std::shared_ptr<Resources
     : SDLWindow{settings}
     , m_resourcesMgr{resourcesMgr}
     , m_settings{settings}
+    , m_renderSystem({m_settings.screenWidth, m_settings.screenHeight})
 {
     if (!m_resourcesMgr) {
         m_resourcesMgr =
@@ -36,9 +37,7 @@ void GameClient::resizeWindow(int width, int height)
     /* Protect against a divide by zero */
     if (height == 0) height = 1;
 
-    // GLfloat ratio = GLfloat(width) / GLfloat(height);
-    // m_renderSystem.getCamera()->setPerspective(45.0f, ratio, 5.0f, 1250.0f);
-
+    m_renderSystem.resizeWindow({width, height});
     super::resizeWindow(width, height);
 }
 

@@ -99,7 +99,7 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
         shaderProgram->setUniform("modelMatrix", m_modelMatrix);
 
         if (environment) {
-            shaderProgram->setUniform("cameraPosition", camera->m_tr->position);
+            shaderProgram->setUniform("cameraPosition", camera->transformation()->position);
             shaderProgram->setUniform("environmentCube", textureUnit);
 
             environment->bind(textureUnit++);

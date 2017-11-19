@@ -45,13 +45,13 @@ Texture::~Texture()
     if (m_textureId || m_samplerId) LOG_INFO << "Released Texture: " << m_textureId;
 }
 
-Texture Texture::createShadowMap(std::pair<int, int> size)
+Texture Texture::createShadowMap(Size size)
 {
     Texture tex{GL_TEXTURE_2D};
 
     glBindTexture(tex.m_target, tex.m_textureId);
-    glTexImage2D(tex.m_target, 0, GL_DEPTH_COMPONENT, size.first, size.second, 0,
-                 GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.w, size.h, 0, GL_DEPTH_COMPONENT,
+                 GL_FLOAT, NULL);
 
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

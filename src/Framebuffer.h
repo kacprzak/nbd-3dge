@@ -8,7 +8,7 @@
 class Framebuffer final
 {
   public:
-    Framebuffer();
+    Framebuffer(Texture::Size size);
     ~Framebuffer();
 
     void bindForWriting();

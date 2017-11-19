@@ -9,9 +9,10 @@
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/stream.hpp>
 
-RenderSystem::RenderSystem()
+RenderSystem::RenderSystem(Texture::Size windowSize)
+    : m_windowSize{windowSize}
 {
-    m_shadowMapFB = std::make_unique<Framebuffer>();
+    m_shadowMapFB = std::make_unique<Framebuffer>(Texture::Size{1024, 1024});
 
     m_camera                             = std::make_shared<Camera>();
     m_camera->transformation()->position = {-3.5f, 11.0f, 3.9f};
@@ -190,6 +191,15 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
     for (const auto& node : m_nodes) {
         node.second->draw(shaderProgram, camera, lights, nullptr);
     }
+}
+
+//------------------------------------------------------------------------------
+
+void RenderSystem::resizeWindow(Texture::Size size)
+{
+    m_windowSize  = size;
+    GLfloat ratio = GLfloat(size.w) / GLfloat(size.h);
+    getCamera()->setPerspective(45.0f, ratio, 5.0f, 1250.0f);
 }
 
 //------------------------------------------------------------------------------

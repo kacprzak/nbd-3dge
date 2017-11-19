@@ -2,8 +2,8 @@
 
 #include "Logger.h"
 
-Framebuffer::Framebuffer()
-    : m_shadowMap{Texture::createShadowMap({1024, 1024})}
+Framebuffer::Framebuffer(Texture::Size size)
+    : m_shadowMap{Texture::createShadowMap(size)}
 {
     glGenFramebuffers(1, &m_framebufferId);
     LOG_TRACE << "Created Framebuffer: " << m_framebufferId;

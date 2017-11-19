@@ -18,7 +18,7 @@ class ResourcesMgr;
 class RenderSystem final
 {
   public:
-    RenderSystem();
+    RenderSystem(Texture::Size windowSize);
     ~RenderSystem();
     RenderSystem(const RenderSystem&) = delete;
     RenderSystem& operator=(const RenderSystem&) = delete;
@@ -37,6 +37,8 @@ class RenderSystem final
     bool isDrawNormals() const { return m_drawNormals; }
 
     Camera* getCamera() { return m_camera.get(); }
+
+    void resizeWindow(Texture::Size size);
 
   private:
     void setSkybox(std::shared_ptr<Skybox> skybox) { m_skybox = skybox; }
@@ -60,6 +62,7 @@ class RenderSystem final
               std::array<Light*, 8>& lights) const;
 
     GLenum m_polygonMode = GL_FILL;
+    Texture::Size m_windowSize;
 
     std::map<int, std::shared_ptr<RenderNode>> m_nodes;
     std::map<int, std::shared_ptr<RenderNode>> m_transparentNodes;
