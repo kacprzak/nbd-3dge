@@ -45,7 +45,7 @@ SDLWindow::SDLWindow(const Settings& settings)
 
 void SDLWindow::createSDLWindow()
 {
-    int screen_flags = SDL_WINDOW_OPENGL;
+    int screen_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
     if (m_screenFull) screen_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
@@ -149,6 +149,14 @@ bool SDLWindow::processInput(const SDL_Event& event)
     case SDL_MOUSEMOTION: mouseMoved(event); break;
     case SDL_MOUSEBUTTONUP: mouseButtonReleased(event); break;
     case SDL_MOUSEBUTTONDOWN: mouseButtonPressed(event); break;
+    case SDL_WINDOWEVENT: {
+        switch (event.window.event) {
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+            resizeWindow(event.window.data1, event.window.data2);
+            break;
+        }
+        break;
+    }
     }
 
     return true;
