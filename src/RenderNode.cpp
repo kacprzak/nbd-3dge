@@ -87,6 +87,11 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
                 shaderProgram->setUniform((lightIdx + ".ambient").c_str(), light.ambient());
                 shaderProgram->setUniform((lightIdx + ".diffuse").c_str(), light.diffuse());
                 shaderProgram->setUniform((lightIdx + ".specular").c_str(), light.specular());
+
+                if (i == 0) {
+                    shaderProgram->setUniform(
+                        "lightMVP", light.projectionMatrix() * light.viewMatrix() * m_modelMatrix);
+                }
             }
         }
 

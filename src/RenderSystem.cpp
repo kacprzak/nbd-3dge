@@ -161,11 +161,22 @@ void RenderSystem::draw()
         m_shadowMapFB->bindForWriting();
         glViewport(0, 0, m_shadowMapSize.w, m_shadowMapSize.h);
         glClear(GL_DEPTH_BUFFER_BIT);
-
+        glCullFace(GL_FRONT);
         draw(m_shadowShader.get(), sun, lights);
-
+        glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.w, m_windowSize.h);
+
+        std::set<ShaderProgram*> shaders;
+        for (const auto& node : m_nodes) {
+            shaders.insert(node.second->getShaderProgram());
+        }
+        const int shadowTextureUnit = 7;
+        m_shadowMapFB->bindDepthComponent(shadowTextureUnit);
+        for (auto shader : shaders) {
+            shader->use();
+            shader->setUniform("shadowSampler", shadowTextureUnit);
+        }
     }
 
     lights[0] = sun;
