@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.2 )
+cmake_minimum_required( VERSION 3.5 )
 project( nbd-3dge VERSION 0.1 LANGUAGES CXX C )
 
 set( CMAKE_CXX_STANDARD 14 )
