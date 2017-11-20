@@ -29,6 +29,7 @@ RenderSystem::~RenderSystem() {}
 void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 {
     m_normalsShader = resourcesMgr.getShaderProgram("normals");
+    m_shadowShader  = resourcesMgr.getShaderProgram("shadow");
 
     auto guiFont   = resourcesMgr.getFont("ubuntu");
     auto guiShader = resourcesMgr.getShaderProgram("font");
@@ -161,7 +162,7 @@ void RenderSystem::draw()
         glViewport(0, 0, m_shadowMapSize.w, m_shadowMapSize.h);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        draw(sun, lights);
+        draw(m_shadowShader.get(), sun, lights);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.w, m_windowSize.h);
@@ -206,7 +207,7 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
 void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
                         std::array<Light*, 8>& lights) const
 {
-    // Used for drawing normals
+    // Used for drawing normals and shadows
     for (const auto& node : m_nodes) {
         node.second->draw(shaderProgram, camera, lights, nullptr);
     }

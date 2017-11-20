@@ -5,6 +5,11 @@
     <fragmentShader>default.frag</fragmentShader>
   </shaderProgram>
   <shaderProgram>
+    <name>shadow</name>
+    <vertexShader>default.vert</vertexShader>
+    <fragmentShader>shadow.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
     <name>font</name>
     <vertexShader>font.vert</vertexShader>
     <fragmentShader>font.frag</fragmentShader>
