@@ -134,7 +134,7 @@ inline Aabb operator*(const glm::mat4& matrix, const Aabb& aabb)
 {
     auto positions = aabb.toPositions();
     for (auto& pos : positions) {
-        pos = matrix * glm::vec4(pos, 1.f);
+        pos = glm::vec3(matrix * glm::vec4(pos, 1.f));
     }
     return Aabb(positions);
 }
