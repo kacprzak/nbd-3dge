@@ -42,6 +42,17 @@ class RenderNode
     RenderComponent* render() { return m_rd; }
     const RenderComponent* render() const { return m_rd; }
 
+    Aabb aabb() const
+    {
+        if (m_mesh)
+            return m_modelMatrix * m_mesh->aabb();
+        else
+            return Aabb{};
+    }
+
+    void setCastShadows(bool castsShadows) { m_castsShadows = castsShadows; }
+    bool castsShadows() const { return m_castsShadows; }
+
   protected:
     const glm::mat4& modelMatrix() const { return m_modelMatrix; }
 
@@ -54,11 +65,13 @@ class RenderNode
   private:
     void rebuildModelMatrix();
 
+    glm::mat4 m_modelMatrix;
+
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<ShaderProgram> m_shaderProgram;
     // std::vector<std::shared_ptr<Texture>> m_textures;
 
-    glm::mat4 m_modelMatrix;
+    bool m_castsShadows = false;
 };
 
 #endif // RENDERNODE_H

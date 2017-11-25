@@ -33,6 +33,12 @@ void Camera::setOrtho()
     m_projectionMatrix = glm::ortho(-100.f, 100.f, -100.f, 100.f, 1.f, 1200.f);
 }
 
+void Camera::setOrtho(const Aabb& aabb)
+{
+    m_projectionMatrix =
+        glm::ortho(aabb.left(), aabb.right(), aabb.bottom(), aabb.top(), -aabb.far(), -aabb.near());
+}
+
 void Camera::setWindowSize(Texture::Size size)
 {
     m_windowSize = size;
@@ -55,4 +61,12 @@ void Camera::update(float delta)
     const auto T = glm::translate(glm::mat4(1.f), -transformation()->position);
     const auto R = glm::toMat4(glm::inverse(orien));
     m_viewMatrix = R * T;
+}
+
+//------------------------------------------------------------------------------
+
+bool Camera::isVisible(const Aabb& aabb) const
+{
+    const Aabb& homogeneous = m_projectionMatrix * m_viewMatrix * aabb;
+    return Aabb::unit().intersects(homogeneous);
 }

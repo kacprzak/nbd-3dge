@@ -52,6 +52,8 @@ class RenderSystem final
     void draw(ShaderProgram* shaderProgram, const Camera* camera,
               std::array<Light*, 8>& lights) const;
 
+    std::set<ShaderProgram*> getShaders() const;
+
     GLenum m_polygonMode = GL_FILL;
     Texture::Size m_windowSize;
 

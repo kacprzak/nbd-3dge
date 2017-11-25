@@ -53,28 +53,29 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
     // Render component
     if (rd) {
         if (rd->role == Role::Dynamic) {
-            std::shared_ptr<RenderNode> actor;
+            std::shared_ptr<RenderNode> node;
             if (!rd->mesh.empty()) {
                 if (boost::starts_with(rd->mesh, "heightfield:")) {
-                    actor = std::make_shared<Terrain>(id, tr, rd,
-                                                      *resourcesMgr.getHeightfield(rd->mesh));
+                    node = std::make_shared<Terrain>(id, tr, rd,
+                                                     *resourcesMgr.getHeightfield(rd->mesh));
                 } else {
-                    actor        = std::make_shared<RenderNode>(id, tr, rd);
+                    node         = std::make_shared<RenderNode>(id, tr, rd);
                     auto meshPtr = resourcesMgr.getMesh(rd->mesh);
-                    actor->setMesh(meshPtr);
+                    node->setMesh(meshPtr);
+                    node->setCastShadows(true);
                 }
             }
 
             if (!rd->material.empty()) {
                 auto materialPtr = resourcesMgr.getMaterial(rd->material);
-                actor->setMaterial(materialPtr);
+                node->setMaterial(materialPtr);
             }
 
-            actor->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
-            if (!actor->render()->transparent)
-                m_nodes[id] = actor;
+            node->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
+            if (!node->render()->transparent)
+                m_nodes[id] = node;
             else
-                m_transparentNodes[id] = actor;
+                m_transparentNodes[id] = node;
 
         } else if (rd->role == Role::Skybox) {
             auto skybox = std::make_shared<Skybox>();
@@ -155,9 +156,19 @@ void RenderSystem::draw()
     std::array<Light*, 8> lights = {};
 
     Light* sun = m_lights.begin()->second.get();
-    // setCamera(m_lights.begin()->second);
 
     if (m_shadowMapFB) {
+        Aabb allNodes;
+        for (auto& node : m_nodes) {
+            if (!node.second->castsShadows()) continue;
+
+            const auto& aabb = node.second->aabb();
+            /*if (m_camera->isVisible(aabb)) */ {
+                allNodes = allNodes.mbr(sun->viewMatrix() * aabb);
+            }
+        }
+        sun->setOrtho(allNodes);
+
         m_shadowMapFB->bindForWriting();
         glViewport(0, 0, m_shadowMapSize.w, m_shadowMapSize.h);
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -167,13 +178,9 @@ void RenderSystem::draw()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.w, m_windowSize.h);
 
-        std::set<ShaderProgram*> shaders;
-        for (const auto& node : m_nodes) {
-            shaders.insert(node.second->getShaderProgram());
-        }
         const int shadowTextureUnit = 7;
         m_shadowMapFB->bindDepthComponent(shadowTextureUnit);
-        for (auto shader : shaders) {
+        for (auto shader : getShaders()) {
             shader->use();
             shader->setUniform("shadowSampler", shadowTextureUnit);
         }
@@ -181,6 +188,7 @@ void RenderSystem::draw()
 
     lights[0] = sun;
 
+    // draw(sun, lights);
     draw(m_camera.get(), lights);
 
     if (m_drawNormals) {
@@ -222,6 +230,17 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
     for (const auto& node : m_nodes) {
         node.second->draw(shaderProgram, camera, lights, nullptr);
     }
+}
+
+//------------------------------------------------------------------------------
+
+std::set<ShaderProgram*> RenderSystem::getShaders() const
+{
+    std::set<ShaderProgram*> shaders;
+    for (const auto& node : m_nodes) {
+        shaders.insert(node.second->getShaderProgram());
+    }
+    return shaders;
 }
 
 //------------------------------------------------------------------------------

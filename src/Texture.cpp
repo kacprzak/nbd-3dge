@@ -56,7 +56,12 @@ Texture Texture::createShadowMap(Size size)
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    tex.setClampToEdge();
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glSamplerParameterfv(tex.m_samplerId, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 
     return tex;
 }
