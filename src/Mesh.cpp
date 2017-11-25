@@ -21,7 +21,7 @@ Mesh::Mesh(const MeshData& md)
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(NUM_BUFFERS, m_buffers);
 
-    auto aabb = MeshData::calculateAABB(md.positions);
+    auto aabb = MeshData::calculateAABB(md.positions).dimensions();
     LOG_INFO << "Loaded Mesh: " << m_vao << " | " << md.name;
     LOG_TRACE << "  Positions: " << md.positions.size() << "\t id: " << m_buffers[POSITIONS] << '\n'
               << "  Normals: " << md.normals.size() << "\t id: " << m_buffers[NORMALS] << '\n'
@@ -29,8 +29,7 @@ Mesh::Mesh(const MeshData& md)
               << "  TexCoords: " << md.texcoords.size() << "\t id: " << m_buffers[TEXCOORDS] << '\n'
               << "  Indices: " << md.indices.size() << "\t id: " << m_buffers[INDICES] << '\n'
               << "  Primitive: " << md.primitive << '\n'
-              << "  Dimensions: (" << aabb[1] - aabb[0] << " x " << aabb[3] - aabb[2] << " x "
-              << aabb[5] - aabb[4] << ")";
+              << "  Dimensions: (" << aabb[0] << " x " << aabb[1] << " x " << aabb[2] << ")";
 
     glBindVertexArray(m_vao);
 

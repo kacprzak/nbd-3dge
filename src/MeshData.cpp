@@ -1,33 +1,6 @@
 #include "MeshData.h"
 #include "ObjLoader.h"
 
-std::array<float, 6> MeshData::calculateAABB(const std::vector<glm::vec3>& positions)
-{
-    std::array<float, 6> retVal;
-    // x axis
-    retVal[0] = std::numeric_limits<float>::max();
-    retVal[1] = std::numeric_limits<float>::lowest();
-    // y axis
-    retVal[2] = std::numeric_limits<float>::max();
-    retVal[3] = std::numeric_limits<float>::lowest();
-    // z axis
-    retVal[4] = std::numeric_limits<float>::max();
-    retVal[5] = std::numeric_limits<float>::lowest();
-
-    for (const auto pos : positions) {
-        retVal[0] = std::min(retVal[0], pos.x);
-        retVal[1] = std::max(retVal[1], pos.x);
-        retVal[2] = std::min(retVal[2], pos.y);
-        retVal[3] = std::max(retVal[3], pos.y);
-        retVal[4] = std::min(retVal[4], pos.z);
-        retVal[5] = std::max(retVal[5], pos.z);
-    }
-
-    return retVal;
-}
-
-//------------------------------------------------------------------------------
-
 std::vector<glm::vec3> MeshData::calculateTangents(const MeshData& md)
 {
     std::vector<glm::vec3> tangents;
