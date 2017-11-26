@@ -3,7 +3,9 @@
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
+uniform mat4 lightMVP;
 
+out vec4 position_lightSpace;
 out vec3 ambient;
 out vec3 diffuse;
 out vec3 specular;
@@ -37,6 +39,8 @@ uniform Material material;
 
 void main()
 {
+    position_lightSpace = lightMVP * vec4(position, 1.0);
+    
     Light sun = lights[0];
 
     vec3 normal_world = normalize(modelMatrix * vec4(in_normal, 0)).xyz;
