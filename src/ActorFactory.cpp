@@ -94,6 +94,18 @@ static std::shared_ptr<PhysicsComponent> getPhysicsComponent(ptree& actorTree,
 
 //------------------------------------------------------------------------------
 
+static std::shared_ptr<ScriptComponent> getScriptComponent(ptree& actorTree,
+                                                           ScriptComponent prototype)
+{
+    auto sc = std::make_shared<ScriptComponent>();
+
+    sc->name = actorTree.get_value<std::string>(prototype.name);
+
+    return sc;
+}
+
+//------------------------------------------------------------------------------
+
 void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
 {
     const std::string& actorType = v.first;
@@ -108,6 +120,7 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
     RenderComponent rdProto;
     LightComponent ltProto;
     PhysicsComponent phProto;
+    ScriptComponent scProto;
 
     if (auto trNode = actorTree.get_child_optional("transformation")) {
         auto tr = getTransformationComponent(trNode.get(), trProto);
@@ -129,6 +142,11 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
         a->addComponent(ComponentId::Physics, ph);
     }
 
+    if (auto scNode = actorTree.get_child_optional("script")) {
+        auto sc = getScriptComponent(scNode.get(), scProto);
+        a->addComponent(ComponentId::Script, sc);
+    }
+
     m_prototypes[prototypeName] = std::move(a);
 }
 
@@ -145,6 +163,7 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     RenderComponent rdProto;
     LightComponent ltProto;
     PhysicsComponent phProto;
+    ScriptComponent scProto;
 
     if (auto prototypeNode = actorTree.get_child_optional("prototype")) {
         auto prototypeName = actorTree.get<std::string>("prototype");
@@ -163,6 +182,9 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
 
             auto ph         = p.second->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
             if (ph) phProto = *ph;
+
+            auto sc         = p.second->getComponent<ScriptComponent>(ComponentId::Script).lock();
+            if (sc) scProto = *sc;
 
         } else {
             LOG_WARNING << "Unkonown actor prototype: " << prototypeName;
@@ -187,6 +209,11 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     if (auto phNode = actorTree.get_child_optional("physics")) {
         auto ph = getPhysicsComponent(phNode.get(), phProto);
         a->addComponent(ComponentId::Physics, ph);
+    }
+
+    if (auto scNode = actorTree.get_child_optional("script")) {
+        auto sc = getScriptComponent(scNode.get(), scProto);
+        a->addComponent(ComponentId::Script, sc);
     }
 
     if (auto ctrlNode = actorTree.get_child_optional("control")) {

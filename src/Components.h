@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 
-enum class ComponentId { Transformation, Render, Light, Physics, Control };
+enum class ComponentId { Transformation, Render, Light, Physics, Control, Script };
+
 struct Component
 {
 };
@@ -67,6 +68,11 @@ struct ControlComponent : public Component
 
     uint16_t actions = 0; //< Buttons
     glm::vec4 axes;       //< Analog control
+};
+
+struct ScriptComponent : public Component
+{
+    std::string name;
 };
 
 #endif // COMPONENTS_H

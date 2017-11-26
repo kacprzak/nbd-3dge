@@ -4,27 +4,24 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
-/*
 class RotationScript : public Script
 {
-public:
-    void execute(float delta, Actor *a) override
+  public:
+    void execute(float elapsedTime, Actor* a) override
     {
-        if (m_paused)
-            return;
+        if (m_paused) return;
 
-        a->rotate(0.0f, delta * 0.5f, 0.0f);
-        a->moveForward(delta * 20.0f);
+        auto trWeak = a->getComponent<TransformationComponent>(ComponentId::Transformation);
+        if (auto tr = trWeak.lock()) {
+            tr->orientation = glm::rotate(tr->orientation, elapsedTime * 0.15f, {0.f, 1.f, 0.f});
+        }
     }
 
-    void togglePause()
-    {
-        m_paused = !m_paused;
-    }
+    void togglePause() { m_paused = !m_paused; }
 
-private:
+  private:
     bool m_paused = false;
-    };*/
+};
 
 //==============================================================================
 
@@ -37,6 +34,8 @@ GameLogic::GameLogic(const Settings& settings, const std::shared_ptr<ResourcesMg
         m_resourcesMgr =
             std::make_shared<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     }
+
+    m_resourcesMgr->addScript("sun_script", std::make_shared<RotationScript>());
 }
 
 GameLogic::~GameLogic() {}
@@ -147,6 +146,12 @@ void GameLogic::update(float elapsedTime)
             }
             ph->torque.x = -ctrl->axes.y * 200;
             ph->torque.z = ctrl->axes.x * 200;
+        }
+
+        auto sc = a->getComponent<ScriptComponent>(ComponentId::Script).lock();
+        if (sc) {
+            auto script = m_resourcesMgr->getScript(sc->name);
+            script->execute(elapsedTime, a.get());
         }
     }
 

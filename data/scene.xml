@@ -100,6 +100,7 @@
     <light>
       <material>sun_light</material>
     </light>
+    <script>sun_script</script>
   </actor>
 
   <terrain>
