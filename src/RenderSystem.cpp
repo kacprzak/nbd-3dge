@@ -62,7 +62,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
                     node         = std::make_shared<RenderNode>(id, tr, rd);
                     auto meshPtr = resourcesMgr.getMesh(rd->mesh);
                     node->setMesh(meshPtr);
-                    node->setCastShadows(true);
+                    if (!lt) node->setCastShadows(true);
                 }
             }
 
@@ -158,16 +158,7 @@ void RenderSystem::draw()
     Light* sun = m_lights.begin()->second.get();
 
     if (m_shadowMapFB) {
-        Aabb allNodes;
-        for (auto& node : m_nodes) {
-            if (!node.second->castsShadows()) continue;
-
-            const auto& aabb = node.second->aabb();
-            /*if (m_camera->isVisible(aabb)) */ {
-                allNodes = allNodes.mbr(sun->viewMatrix() * aabb);
-            }
-        }
-        sun->setOrtho(allNodes);
+        sun->setOrtho(calcDirectionalLightProjection(*sun));
 
         m_shadowMapFB->bindForWriting();
         glViewport(0, 0, m_shadowMapSize.w, m_shadowMapSize.h);
@@ -241,6 +232,34 @@ std::set<ShaderProgram*> RenderSystem::getShaders() const
         shaders.insert(node.second->getShaderProgram());
     }
     return shaders;
+}
+
+//------------------------------------------------------------------------------
+
+Aabb RenderSystem::calcDirectionalLightProjection(const Light& light) const
+{
+    Aabb ans;
+    // All visible nodes for camera
+    for (const auto& node : m_nodes) {
+        if (!node.second->castsShadows()) continue;
+
+        const auto& aabb = node.second->aabb();
+        if (m_camera->isVisible(aabb)) {
+            ans = ans.mbr(light.viewMatrix() * aabb);
+        }
+    }
+    Aabb tmp          = ans;
+    tmp.rightTopFar.z = 0.f;
+    // Nodes between light and visible nodes
+    for (const auto& node : m_nodes) {
+        if (!node.second->castsShadows()) continue;
+
+        const auto& aabb = light.viewMatrix() * node.second->aabb();
+        if (tmp.intersects(aabb)) {
+            ans = ans.mbr(aabb);
+        }
+    }
+    return ans;
 }
 
 //------------------------------------------------------------------------------

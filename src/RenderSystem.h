@@ -54,6 +54,8 @@ class RenderSystem final
 
     std::set<ShaderProgram*> getShaders() const;
 
+    Aabb calcDirectionalLightProjection(const Light& light) const;
+
     GLenum m_polygonMode = GL_FILL;
     Texture::Size m_windowSize;
 
