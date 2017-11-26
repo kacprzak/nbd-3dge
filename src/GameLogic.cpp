@@ -9,18 +9,49 @@ class RotationScript : public Script
   public:
     void execute(float elapsedTime, Actor* a) override
     {
-        if (m_paused) return;
-
         auto trWeak = a->getComponent<TransformationComponent>(ComponentId::Transformation);
         if (auto tr = trWeak.lock()) {
             tr->orientation = glm::rotate(tr->orientation, elapsedTime * 0.15f, {0.f, 1.f, 0.f});
         }
     }
+};
 
-    void togglePause() { m_paused = !m_paused; }
+class ControlScript : public Script
+{
+  public:
+    void execute(float /*elapsedTime*/, Actor* a) override
+    {
+        auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control).lock();
+        auto ph   = a->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
 
-  private:
-    bool m_paused = false;
+        if (ctrl && ph) {
+            ph->force  = glm::vec3{0.f, 9.81f * ph->mass, 0.f};
+            ph->torque = glm::vec3{};
+
+            if (ctrl->actions & ControlComponent::Forward) {
+                ph->force.z += ph->maxForce.z;
+            }
+            if (ctrl->actions & ControlComponent::Back) {
+                ph->force.z -= ph->maxForce.z;
+            }
+            if (ctrl->actions & ControlComponent::Up) {
+                ph->force.y += ph->maxForce.y;
+            }
+            if (ctrl->actions & ControlComponent::Down) {
+                ph->force.y -= ph->maxForce.y;
+            }
+            if (ctrl->actions & ControlComponent::StrafeRight) {
+                // ph->force.x -= ph->maxForce.x;
+                ph->torque.y -= 200;
+            }
+            if (ctrl->actions & ControlComponent::StrafeLeft) {
+                // ph->force.x += ph->maxForce.x;
+                ph->torque.y += 200;
+            }
+            ph->torque.x = -ctrl->axes.y * 200;
+            ph->torque.z = ctrl->axes.x * 200;
+        }
+    }
 };
 
 //==============================================================================
@@ -95,20 +126,12 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 
 void GameLogic::onAfterMainLoop(Engine* /*e*/)
 {
-    for (auto& gv : m_gameViews) {
-        for (auto& a : m_actors) {
-            auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation).lock();
-            auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-
-            if (rd) gv->removeActor(a->id());
-        }
-    }
-
     for (auto& a : m_actors) {
-        auto tr = a->getComponent<TransformationComponent>(ComponentId::Transformation).lock();
-        auto ph = a->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
+        for (auto& gv : m_gameViews) {
+            gv->removeActor(a->id());
+        }
 
-        if (tr && ph) m_physicsSystem->removeActor(a->id());
+        m_physicsSystem->removeActor(a->id());
     }
 }
 
@@ -117,36 +140,8 @@ void GameLogic::onAfterMainLoop(Engine* /*e*/)
 void GameLogic::update(float elapsedTime)
 {
     for (auto& a : m_actors) {
-        auto ctrl = a->getComponent<ControlComponent>(ComponentId::Control).lock();
-        auto ph   = a->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
-
-        if (ctrl && ph) {
-            ph->force  = glm::vec3{0.f, 9.81f * ph->mass, 0.f};
-            ph->torque = glm::vec3{};
-
-            if (ctrl->actions & ControlComponent::Forward) {
-                ph->force.z += ph->maxForce.z;
-            }
-            if (ctrl->actions & ControlComponent::Back) {
-                ph->force.z -= ph->maxForce.z;
-            }
-            if (ctrl->actions & ControlComponent::Up) {
-                ph->force.y += ph->maxForce.y;
-            }
-            if (ctrl->actions & ControlComponent::Down) {
-                ph->force.y -= ph->maxForce.y;
-            }
-            if (ctrl->actions & ControlComponent::StrafeRight) {
-                // ph->force.x -= ph->maxForce.x;
-                ph->torque.y -= 200;
-            }
-            if (ctrl->actions & ControlComponent::StrafeLeft) {
-                // ph->force.x += ph->maxForce.x;
-                ph->torque.y += 200;
-            }
-            ph->torque.x = -ctrl->axes.y * 200;
-            ph->torque.z = ctrl->axes.x * 200;
-        }
+        ControlScript ctrlScript;
+        ctrlScript.execute(elapsedTime, a.get());
 
         auto sc = a->getComponent<ScriptComponent>(ComponentId::Script).lock();
         if (sc) {
