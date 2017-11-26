@@ -1,24 +1,25 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
-#include "Camera.h"
+#include "Aabb.h"
+#include "Components.h"
 #include "FpsCounter.h"
-#include "Framebuffer.h"
-#include "Light.h"
-#include "RenderNode.h"
 #include "ShaderProgram.h"
-#include "Skybox.h"
-#include "Text.h"
 
 #include <map>
 #include <set>
 
 class ResourcesMgr;
+class RenderNode;
+class Light;
+class Camera;
+class Framebuffer;
+class Skybox;
 
 class RenderSystem final
 {
   public:
-    RenderSystem(Texture::Size windowSize);
+    RenderSystem(glm::ivec2 windowSize);
     ~RenderSystem();
     RenderSystem(const RenderSystem&) = delete;
     RenderSystem& operator=(const RenderSystem&) = delete;
@@ -38,7 +39,7 @@ class RenderSystem final
 
     Camera* getCamera() { return m_camera.get(); }
 
-    void resizeWindow(Texture::Size size);
+    void resizeWindow(glm::ivec2 size);
 
   private:
     void setSkybox(std::shared_ptr<Skybox> skybox) { m_skybox = skybox; }
@@ -57,7 +58,7 @@ class RenderSystem final
     Aabb calcDirectionalLightProjection(const Light& light) const;
 
     GLenum m_polygonMode = GL_FILL;
-    Texture::Size m_windowSize;
+    glm::ivec2 m_windowSize;
 
     std::map<int, std::shared_ptr<RenderNode>> m_nodes;
     std::map<int, std::shared_ptr<RenderNode>> m_transparentNodes;
@@ -71,7 +72,7 @@ class RenderSystem final
     std::shared_ptr<ShaderProgram> m_normalsShader;
     std::shared_ptr<ShaderProgram> m_shadowShader;
 
-    Texture::Size m_shadowMapSize;
+    glm::ivec2 m_shadowMapSize;
     std::unique_ptr<Framebuffer> m_shadowMapFB;
 
     bool m_drawNormals = false;

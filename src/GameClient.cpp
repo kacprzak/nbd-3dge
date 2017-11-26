@@ -5,6 +5,7 @@
 #include "Skybox.h"
 #include "Terrain.h"
 #include "Texture.h"
+#include "Camera.h"
 
 GameClient::GameClient(const Settings& settings, const std::shared_ptr<ResourcesMgr>& resourcesMgr)
     : SDLWindow{settings}

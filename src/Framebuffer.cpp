@@ -1,8 +1,11 @@
 #include "Framebuffer.h"
 
-#include "Logger.h"
+#include <glm/glm.hpp>
 
-Framebuffer::Framebuffer(Texture::Size size)
+#include "Logger.h"
+#include "Texture.h"
+
+Framebuffer::Framebuffer(glm::ivec2 size)
     : m_shadowMap{Texture::createShadowMap(size)}
 {
     glGenFramebuffers(1, &m_framebufferId);

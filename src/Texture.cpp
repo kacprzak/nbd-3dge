@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include <glm/glm.hpp>
+
 #include <array>
 
 static GLenum textureFormat(SDL_Surface** surface);
@@ -45,12 +47,12 @@ Texture::~Texture()
     if (m_textureId || m_samplerId) LOG_INFO << "Released Texture: " << m_textureId;
 }
 
-Texture Texture::createShadowMap(Size size)
+Texture Texture::createShadowMap(glm::ivec2 size)
 {
     Texture tex{GL_TEXTURE_2D};
 
     glBindTexture(tex.m_target, tex.m_textureId);
-    glTexImage2D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.w, size.h, 0, GL_DEPTH_COMPONENT,
+    glTexImage2D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.x, size.y, 0, GL_DEPTH_COMPONENT,
                  GL_FLOAT, NULL);
 
     glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -3,15 +3,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-Camera::Camera(int actorId, TransformationComponent* tr, RenderComponent* rd,
-               Texture::Size windowSize)
+Camera::Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, glm::ivec2 windowSize)
     : RenderNode{actorId, tr, rd}
     , m_windowSize{windowSize}
 {
     setPerspective();
 }
 
-Camera::Camera(Texture::Size windowSize)
+Camera::Camera(glm::ivec2 windowSize)
     : Camera{-1, new TransformationComponent, nullptr, windowSize}
 {
     m_ownsTransformation = true;
@@ -24,7 +23,7 @@ Camera::~Camera()
 
 void Camera::setPerspective()
 {
-    float ratio        = m_windowSize.w / float(m_windowSize.h);
+    float ratio        = m_windowSize.x / float(m_windowSize.y);
     m_projectionMatrix = glm::perspective(45.f, ratio, 1.f, 1200.f);
 }
 
@@ -39,7 +38,7 @@ void Camera::setOrtho(const Aabb& aabb)
         glm::ortho(aabb.left(), aabb.right(), aabb.bottom(), aabb.top(), -aabb.far(), -aabb.near());
 }
 
-void Camera::setWindowSize(Texture::Size size)
+void Camera::setWindowSize(glm::ivec2 size)
 {
     m_windowSize = size;
     if (m_perspective)

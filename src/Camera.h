@@ -7,8 +7,8 @@
 class Camera : public RenderNode
 {
   public:
-    Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, Texture::Size windowSize);
-    Camera(Texture::Size windowSize);
+    Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, glm::ivec2 windowSize);
+    Camera(glm::ivec2 windowSize);
     ~Camera();
 
     void draw(const Camera* /*c*/, const std::array<Light*, 8>& /*lights*/,
@@ -21,7 +21,7 @@ class Camera : public RenderNode
     void setOrtho();
     void setOrtho(const Aabb& aabb);
 
-    void setWindowSize(Texture::Size size);
+    void setWindowSize(glm::ivec2 size);
 
     const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
@@ -31,7 +31,7 @@ class Camera : public RenderNode
   private:
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;
-    Texture::Size m_windowSize;
+    glm::ivec2 m_windowSize;
     bool m_perspective        = true;
     bool m_ownsTransformation = false;
 };

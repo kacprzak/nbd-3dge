@@ -1,7 +1,9 @@
 #include "RenderSystem.h"
 
+#include "Framebuffer.h"
 #include "Light.h"
 #include "ResourcesMgr.h"
+#include "Skybox.h"
 #include "Terrain.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,7 +13,7 @@
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/stream.hpp>
 
-RenderSystem::RenderSystem(Texture::Size windowSize)
+RenderSystem::RenderSystem(glm::ivec2 windowSize)
     : m_windowSize{windowSize}
     , m_shadowMapSize{1024, 1024}
 {
@@ -161,13 +163,13 @@ void RenderSystem::draw()
         sun->setOrtho(calcDirectionalLightProjection(*sun));
 
         m_shadowMapFB->bindForWriting();
-        glViewport(0, 0, m_shadowMapSize.w, m_shadowMapSize.h);
+        glViewport(0, 0, m_shadowMapSize.x, m_shadowMapSize.y);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
         draw(m_shadowShader.get(), sun, lights);
         glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, m_windowSize.w, m_windowSize.h);
+        glViewport(0, 0, m_windowSize.x, m_windowSize.y);
 
         const int shadowTextureUnit = 7;
         m_shadowMapFB->bindDepthComponent(shadowTextureUnit);
@@ -264,7 +266,7 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Light& light) const
 
 //------------------------------------------------------------------------------
 
-void RenderSystem::resizeWindow(Texture::Size size)
+void RenderSystem::resizeWindow(glm::ivec2 size)
 {
     m_windowSize = size;
     m_camera->setWindowSize(size);

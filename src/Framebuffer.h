@@ -1,14 +1,15 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
-#include "Texture.h"
-
 #include <GL/glew.h>
+#include <glm/fwd.hpp>
+
+#include "Texture.h"
 
 class Framebuffer final
 {
   public:
-    Framebuffer(Texture::Size size);
+    Framebuffer(glm::ivec2 size);
     ~Framebuffer();
 
     void bindForWriting();

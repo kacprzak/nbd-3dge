@@ -9,7 +9,7 @@ class Light : public Camera
 {
   public:
     Light(int actorId, TransformationComponent* tr, RenderComponent* rd, LightComponent* lt,
-          Texture::Size windowSize)
+          glm::ivec2 windowSize)
         : Camera{actorId, tr, rd, windowSize}
         , m_lt{lt}
     {

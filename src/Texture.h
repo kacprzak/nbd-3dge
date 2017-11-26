@@ -4,6 +4,8 @@
 #include "TextureData.h"
 
 #include <GL/glew.h>
+#include <glm/fwd.hpp>
+
 #include <memory>
 #include <string>
 
@@ -12,18 +14,13 @@ class Texture final
     friend class Framebuffer;
 
   public:
-    struct Size
-    {
-        int w, h;
-    };
-
     Texture(const TextureData& texData);
     Texture(const Texture&) = delete;
     Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;
     ~Texture();
 
-    static Texture createShadowMap(Size size);
+    static Texture createShadowMap(glm::ivec2 size);
 
     void bind(int textureUnit);
     void setClampToEdge();
