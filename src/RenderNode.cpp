@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "Light.h"
+#include "Material.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -16,17 +17,7 @@ RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent
 {
 }
 
-/*
-void RenderNode::setTextures(const std::vector<std::shared_ptr<Texture>>& textures)
-{
-    m_textures = textures;
-}
-
-void RenderNode::addTexture(const std::shared_ptr<Texture>& texture)
-{
-    m_textures.push_back(texture);
-}
-*/
+//------------------------------------------------------------------------------
 
 void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
 
@@ -37,6 +28,8 @@ void RenderNode::setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderPr
     m_shaderProgram = shaderProgram;
 }
 
+//------------------------------------------------------------------------------
+
 void RenderNode::rebuildModelMatrix()
 {
     const auto T = glm::translate(glm::mat4(1.f), m_tr->position);
@@ -45,6 +38,8 @@ void RenderNode::rebuildModelMatrix()
 
     m_modelMatrix = T * R * S;
 }
+
+//------------------------------------------------------------------------------
 
 void RenderNode::draw(const Camera* camera, const std::array<Light*, 8>& lights,
                       Texture* environment) const
@@ -69,15 +64,6 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
                 texture->bind(textureUnit++);
             }
         }
-
-        /*
-        for (const auto& texture : m_textures) {
-            const std::string& name = "sampler" + std::to_string(textureUnit);
-            shaderProgram->setUniform(name.c_str(), textureUnit);
-
-            texture->bind(textureUnit++);
-        }
-        */
 
         for (size_t i = 0; i < lights.size(); ++i) {
             if (lights[i]) {
@@ -125,5 +111,7 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
 
     if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
 }
+
+//------------------------------------------------------------------------------
 
 void RenderNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }

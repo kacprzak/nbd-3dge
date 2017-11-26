@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Material.h"
+
 glm::vec4 Light::position() const
 {
     if (m_lt->type == LightComponent::Type::Directional) {
