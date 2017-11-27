@@ -10,7 +10,7 @@ struct Aabb final
 {
     Aabb() = default;
 
-    Aabb(const std::vector<glm::vec3>& positions)
+    explicit Aabb(const std::vector<glm::vec3>& positions)
     {
         setToMaximum();
 
@@ -26,7 +26,7 @@ struct Aabb final
         sort();
     }
 
-    Aabb(const std::array<glm::vec4, 8>& positions)
+    explicit Aabb(const std::array<glm::vec4, 8>& positions)
     {
         setToMaximum();
 

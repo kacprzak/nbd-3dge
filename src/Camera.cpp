@@ -28,7 +28,7 @@ void Camera::setPerspective()
     float fov   = 45.f;
     float ratio = m_windowSize.x / float(m_windowSize.y);
     float near  = 1.f;
-    float far   = 1200.f;
+    float far   = 600.f;
 
     m_projectionMatrix = glm::perspective(fov, ratio, near, far);
 

@@ -15,7 +15,7 @@
 
 RenderSystem::RenderSystem(glm::ivec2 windowSize)
     : m_windowSize{windowSize}
-    , m_shadowMapSize{1024, 1024}
+    , m_shadowMapSize{2048, 2048}
 {
     m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
@@ -226,6 +226,7 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Light& light) const
 {
     Aabb ans;
     // All visible nodes for camera
+    /*
     for (const auto& node : m_nodes) {
         if (!node.second->castsShadows()) continue;
 
@@ -234,17 +235,25 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Light& light) const
             ans = ans.mbr(light.viewMatrix() * aabb);
         }
     }
-    Aabb tmp          = ans;
-    tmp.rightTopFar.z = 0.f;
-    // Nodes between light and visible nodes
-    for (const auto& node : m_nodes) {
-        if (!node.second->castsShadows()) continue;
+    */
+    auto lightViewMatrix = light.viewMatrix();
+    auto frustum         = m_camera->frustum();
+    for (auto& p : frustum)
+        p = lightViewMatrix * p;
 
-        const auto& aabb = light.viewMatrix() * node.second->aabb();
-        if (tmp.intersects(aabb)) {
-            ans = ans.mbr(aabb);
-        }
-    }
+    ans = Aabb{frustum};
+    // Aabb tmp          = ans;
+    // tmp.rightTopFar.z = 0.f;
+    // Nodes between light and visible nodes
+    // for (const auto& node : m_nodes) {
+    //     if (!node.second->castsShadows()) continue;
+
+    //     const auto& aabb = light.viewMatrix() * node.second->aabb();
+    //     if (tmp.intersects(aabb)) {
+    //         ans.rightTopFar.z = aabb.rightTopFar.z;
+    //     }
+    // }
+
     return ans;
 }
 
