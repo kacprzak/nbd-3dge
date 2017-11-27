@@ -26,7 +26,7 @@ struct Aabb final
         sort();
     }
 
-    Aabb(const std::array<glm::vec3, 8>& positions)
+    Aabb(const std::array<glm::vec4, 8>& positions)
     {
         setToMaximum();
 
@@ -65,19 +65,19 @@ struct Aabb final
     float near() const { return leftBottomNear.z; };
     float far() const { return rightTopFar.z; };
 
-    std::array<glm::vec3, 8> toPositions() const
+    std::array<glm::vec4, 8> toPositions() const
     {
-        std::array<glm::vec3, 8> ans;
+        std::array<glm::vec4, 8> ans;
 
-        ans[0] = leftBottomNear;
-        ans[1] = {rightTopFar.x, leftBottomNear.y, leftBottomNear.z};
-        ans[2] = {rightTopFar.x, rightTopFar.y, leftBottomNear.z};
-        ans[3] = {leftBottomNear.x, rightTopFar.y, leftBottomNear.z};
+        ans[0] = glm::vec4(leftBottomNear, 1.f);
+        ans[1] = {rightTopFar.x, leftBottomNear.y, leftBottomNear.z, 1.f};
+        ans[2] = {rightTopFar.x, rightTopFar.y, leftBottomNear.z, 1.f};
+        ans[3] = {leftBottomNear.x, rightTopFar.y, leftBottomNear.z, 1.f};
 
-        ans[4] = rightTopFar;
-        ans[5] = {rightTopFar.x, leftBottomNear.y, rightTopFar.z};
-        ans[6] = {leftBottomNear.x, leftBottomNear.y, rightTopFar.z};
-        ans[7] = {leftBottomNear.x, rightTopFar.y, rightTopFar.z};
+        ans[4] = glm::vec4(rightTopFar, 1.f);
+        ans[5] = {rightTopFar.x, leftBottomNear.y, rightTopFar.z, 1.f};
+        ans[6] = {leftBottomNear.x, leftBottomNear.y, rightTopFar.z, 1.f};
+        ans[7] = {leftBottomNear.x, rightTopFar.y, rightTopFar.z, 1.f};
 
         return ans;
     }
@@ -134,8 +134,8 @@ inline Aabb operator*(const glm::mat4& matrix, const Aabb& aabb)
 {
     auto positions = aabb.toPositions();
     for (auto& pos : positions) {
-        auto tmp = matrix * glm::vec4(pos, 1.f);
-        pos      = glm::vec3(tmp) / tmp.w;
+        pos = matrix * pos;
+        pos /= pos.w;
     }
     return Aabb(positions);
 }

@@ -56,6 +56,7 @@ class RenderSystem final
     std::set<ShaderProgram*> getShaders() const;
 
     Aabb calcDirectionalLightProjection(const Light& light) const;
+    void updateCameraText();
 
     GLenum m_polygonMode = GL_FILL;
     glm::ivec2 m_windowSize;

@@ -115,27 +115,11 @@ void RenderSystem::removeActor(int id)
 
 void RenderSystem::update(float delta)
 {
-    using namespace boost;
-
     m_fpsCounter.update(delta);
 
     if (m_camera) {
         m_camera->update(delta);
-
-        auto p = m_camera->transformation()->position;
-        auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / 3.14f;
-
-        std::array<char, 64> buffer;
-        std::fill(std::begin(buffer), std::end(buffer), '\0');
-        iostreams::array_sink sink{buffer.data(), buffer.size()};
-        iostreams::stream<iostreams::array_sink> oss{sink};
-        oss.precision(1);
-        oss.setf(std::ios::fixed, std::ios::floatfield);
-        oss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
-        oss.precision(0);
-        oss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
-        buffer[buffer.size() - 1] = '\0';
-        m_cameraText->setText(buffer.data());
+        updateCameraText();
     }
 
     for (const auto& node : m_nodes) {
@@ -290,4 +274,26 @@ void RenderSystem::setNextPolygonMode()
     static size_t curr = 0;
     ++curr %= modes.size();
     m_polygonMode = modes[curr];
+}
+
+//------------------------------------------------------------------------------
+
+void RenderSystem::updateCameraText()
+{
+    using namespace boost;
+
+    auto p = m_camera->transformation()->position;
+    auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / 3.14f;
+
+    std::array<char, 64> buffer;
+    std::fill(std::begin(buffer), std::end(buffer), '\0');
+    iostreams::array_sink sink{buffer.data(), buffer.size()};
+    iostreams::stream<iostreams::array_sink> oss{sink};
+    oss.precision(1);
+    oss.setf(std::ios::fixed, std::ios::floatfield);
+    oss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
+    oss.precision(0);
+    oss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
+    buffer[buffer.size() - 1] = '\0';
+    m_cameraText->setText(buffer.data());
 }

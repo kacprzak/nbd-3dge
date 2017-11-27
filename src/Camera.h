@@ -28,10 +28,15 @@ class Camera : public RenderNode
 
     bool isVisible(const Aabb& aabb) const;
 
+    //! Returns view frustum in world space.
+    std::array<glm::vec4, 8> frustum() const;
+
   private:
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;
+    glm::mat4 m_viewMatrixInv;
     glm::ivec2 m_windowSize;
+    std::array<glm::vec4, 8> m_frustum;
     bool m_perspective        = true;
     bool m_ownsTransformation = false;
 };
