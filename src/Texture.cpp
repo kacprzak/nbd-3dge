@@ -68,6 +68,27 @@ Texture Texture::createShadowMap(glm::ivec2 size)
     return tex;
 }
 
+Texture Texture::createShadowMap(glm::ivec3 size)
+{
+    Texture tex{GL_TEXTURE_2D_ARRAY};
+
+    glBindTexture(tex.m_target, tex.m_textureId);
+    glTexImage3D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.x, size.y, size.z, 0,
+                 GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glSamplerParameterfv(tex.m_samplerId, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+    return tex;
+}
+
 void Texture::bind(int textureUnit)
 {
     glActiveTexture(GL_TEXTURE0 + textureUnit);

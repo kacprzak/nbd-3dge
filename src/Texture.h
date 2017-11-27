@@ -21,6 +21,7 @@ class Texture final
     ~Texture();
 
     static Texture createShadowMap(glm::ivec2 size);
+    static Texture createShadowMap(glm::ivec3 size);
 
     void bind(int textureUnit);
     void setClampToEdge();

@@ -57,6 +57,7 @@ class Engine final
     bool m_appActive = true;
     // bool m_mouseFocus true;
     bool m_inputFocus = true;
+    bool m_pause      = false;
     bool m_initVideo;
 
     GameLogic* m_game = nullptr;

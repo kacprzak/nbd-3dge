@@ -109,7 +109,7 @@ void Engine::mainLoop(GameLogic* game)
     for (;;) {
         if (m_breakLoop || !processEvents()) break;
         if (m_appActive) {
-            if (/*m_inputFocus &&*/ delta > 0.0f) {
+            if (delta > 0.0f) {
                 while (delta > DELTA_MAX) {
                     update(DELTA_MAX);
                     delta -= DELTA_MAX;
@@ -138,6 +138,7 @@ bool Engine::processEvents()
         switch (event.type) {
         case SDL_KEYUP: break;
         case SDL_KEYDOWN:
+            if (event.key.keysym.scancode == SDL_SCANCODE_P) m_pause = !m_pause;
             if (event.key.keysym.scancode == SDL_SCANCODE_G) m_game->toggleDrawDebug();
             if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) return false;
             break;
@@ -165,7 +166,7 @@ bool Engine::processEvents()
 void Engine::update(float elapsedTime)
 {
     // Update game logic
-    m_game->update(elapsedTime);
+    if (!m_pause) m_game->update(elapsedTime);
 
     // Update views
     for (auto gv : m_game->gameViews())
