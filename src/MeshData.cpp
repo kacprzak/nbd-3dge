@@ -1,4 +1,5 @@
 #include "MeshData.h"
+
 #include "ObjLoader.h"
 
 std::vector<glm::vec3> MeshData::calculateTangents(const MeshData& md)

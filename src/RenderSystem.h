@@ -53,12 +53,16 @@ class RenderSystem final
     void draw(ShaderProgram* shaderProgram, const Camera* camera,
               std::array<Light*, 8>& lights) const;
 
+    void drawAabb(ShaderProgram* shaderProgram, const Camera* camera) const;
+
     std::set<ShaderProgram*> getShaders() const;
 
     Aabb calcDirectionalLightProjection(const Light& light) const;
     void updateCameraText();
 
     GLenum m_polygonMode = GL_FILL;
+    GLuint m_emptyVao    = 0; // For drawing with no data
+
     glm::ivec2 m_windowSize;
 
     std::map<int, std::shared_ptr<RenderNode>> m_nodes;
@@ -72,6 +76,7 @@ class RenderSystem final
 
     std::shared_ptr<ShaderProgram> m_normalsShader;
     std::shared_ptr<ShaderProgram> m_shadowShader;
+    std::shared_ptr<ShaderProgram> m_aabbShader;
 
     glm::ivec2 m_shadowMapSize;
     std::unique_ptr<Framebuffer> m_shadowMapFB;

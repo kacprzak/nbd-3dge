@@ -32,6 +32,8 @@ class RenderNode
     virtual void draw(ShaderProgram* shaderProgram, const Camera* camera,
                       const std::array<Light*, 8>& lights, Texture* environment) const;
 
+    virtual void drawAabb(ShaderProgram* shaderProgram, const Camera* camera);
+
     virtual void update(float delta);
 
     TransformationComponent* transformation() { return m_tr; }

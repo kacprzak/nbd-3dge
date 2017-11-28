@@ -69,15 +69,15 @@ struct Aabb final
     {
         std::array<glm::vec4, 8> ans;
 
-        ans[0] = glm::vec4(leftBottomNear, 1.f);
-        ans[1] = {rightTopFar.x, leftBottomNear.y, leftBottomNear.z, 1.f};
-        ans[2] = {rightTopFar.x, rightTopFar.y, leftBottomNear.z, 1.f};
-        ans[3] = {leftBottomNear.x, rightTopFar.y, leftBottomNear.z, 1.f};
+        ans[0] = glm::vec4(leftBottomNear, 1.f);                           // lbn
+        ans[1] = {rightTopFar.x, leftBottomNear.y, leftBottomNear.z, 1.f}; // rbn
+        ans[2] = {rightTopFar.x, rightTopFar.y, leftBottomNear.z, 1.f};    // rtn
+        ans[3] = {leftBottomNear.x, rightTopFar.y, leftBottomNear.z, 1.f}; // ltn
 
-        ans[4] = glm::vec4(rightTopFar, 1.f);
-        ans[5] = {rightTopFar.x, leftBottomNear.y, rightTopFar.z, 1.f};
-        ans[6] = {leftBottomNear.x, leftBottomNear.y, rightTopFar.z, 1.f};
-        ans[7] = {leftBottomNear.x, rightTopFar.y, rightTopFar.z, 1.f};
+        ans[4] = glm::vec4(rightTopFar, 1.f);                              // rtf
+        ans[5] = {rightTopFar.x, leftBottomNear.y, rightTopFar.z, 1.f};    // rbf
+        ans[6] = {leftBottomNear.x, leftBottomNear.y, rightTopFar.z, 1.f}; // lbf
+        ans[7] = {leftBottomNear.x, rightTopFar.y, rightTopFar.z, 1.f};    // ltf
 
         return ans;
     }

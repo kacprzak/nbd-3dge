@@ -17,6 +17,8 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
     : m_windowSize{windowSize}
     , m_shadowMapSize{2048, 2048}
 {
+    glGenVertexArrays(1, &m_emptyVao);
+
     m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
     m_camera                             = std::make_shared<Camera>(m_windowSize);
@@ -24,13 +26,16 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
     setCamera(m_camera);
 }
 
-RenderSystem::~RenderSystem() {}
+//------------------------------------------------------------------------------
+
+RenderSystem::~RenderSystem() { glDeleteVertexArrays(1, &m_emptyVao); }
 
 //------------------------------------------------------------------------------
 
 void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 {
     m_normalsShader = resourcesMgr.getShaderProgram("normals");
+    m_aabbShader    = resourcesMgr.getShaderProgram("aabb");
     m_shadowShader  = resourcesMgr.getShaderProgram("shadow");
 
     auto guiFont   = resourcesMgr.getFont("ubuntu");
@@ -74,6 +79,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
             }
 
             node->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
+
             if (!node->render()->transparent)
                 m_nodes[id] = node;
             else
@@ -170,6 +176,7 @@ void RenderSystem::draw()
 
     if (m_drawNormals) {
         draw(m_normalsShader.get(), m_camera.get(), lights);
+        drawAabb(m_aabbShader.get(), m_camera.get());
     }
 }
 
@@ -206,6 +213,15 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
     // Used for drawing normals and shadows
     for (const auto& node : m_nodes) {
         node.second->draw(shaderProgram, camera, lights, nullptr);
+    }
+}
+
+void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) const
+{
+    glBindVertexArray(m_emptyVao);
+
+    for (const auto& node : m_nodes) {
+        node.second->drawAabb(shaderProgram, camera);
     }
 }
 

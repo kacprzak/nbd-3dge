@@ -115,3 +115,18 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
 //------------------------------------------------------------------------------
 
 void RenderNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }
+
+//------------------------------------------------------------------------------
+
+void RenderNode::drawAabb(ShaderProgram* shaderProgram, const Camera* camera)
+{
+    shaderProgram->use();
+
+    shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
+    shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
+    shaderProgram->setUniform("modelMatrix", m_modelMatrix);
+    shaderProgram->setUniform("minimum", m_mesh->aabb().leftBottomNear);
+    shaderProgram->setUniform("maximum", m_mesh->aabb().rightTopFar);
+
+    glDrawArrays(GL_POINTS, 0, 1);
+}

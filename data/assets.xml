@@ -21,6 +21,12 @@
     <fragmentShader>normals.frag</fragmentShader>
   </shaderProgram>
   <shaderProgram>
+    <name>aabb</name>
+    <vertexShader>aabb.vert</vertexShader>
+    <geometryShader>aabb.geom</geometryShader>
+    <fragmentShader>aabb.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
     <name>skybox</name>
     <vertexShader>skybox.vert</vertexShader>
     <fragmentShader>skybox.frag</fragmentShader>

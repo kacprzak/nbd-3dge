@@ -4,8 +4,8 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 struct MeshData final
 {
