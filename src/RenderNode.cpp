@@ -125,8 +125,9 @@ void RenderNode::drawAabb(ShaderProgram* shaderProgram, const Camera* camera)
     shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
     shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
     shaderProgram->setUniform("modelMatrix", m_modelMatrix);
-    shaderProgram->setUniform("minimum", m_mesh->aabb().leftBottomNear);
-    shaderProgram->setUniform("maximum", m_mesh->aabb().rightTopFar);
+
+    shaderProgram->setUniform("minimum", m_mesh->aabb().minimum);
+    shaderProgram->setUniform("maximum", m_mesh->aabb().maximum);
 
     glDrawArrays(GL_POINTS, 0, 1);
 }

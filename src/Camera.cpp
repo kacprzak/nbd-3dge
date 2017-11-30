@@ -65,8 +65,8 @@ void Camera::setOrtho()
 
 void Camera::setOrtho(const Aabb& aabb)
 {
-    m_projectionMatrix =
-        glm::ortho(aabb.left(), aabb.right(), aabb.bottom(), aabb.top(), -aabb.far(), -aabb.near());
+    m_projectionMatrix = glm::ortho(aabb.minimum.x, aabb.maximum.x, aabb.minimum.y, aabb.maximum.y,
+                                    -aabb.maximum.z, -aabb.minimum.z);
 
     m_frustum = aabb.toPositions();
 }

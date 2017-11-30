@@ -15,12 +15,12 @@ struct Aabb final
         setToMaximum();
 
         for (const auto pos : positions) {
-            leftBottomNear.x = std::max(leftBottomNear.x, pos.x);
-            leftBottomNear.y = std::max(leftBottomNear.y, pos.y);
-            leftBottomNear.z = std::max(leftBottomNear.z, pos.z);
-            rightTopFar.x    = std::min(rightTopFar.x, pos.x);
-            rightTopFar.y    = std::min(rightTopFar.y, pos.y);
-            rightTopFar.z    = std::min(rightTopFar.z, pos.z);
+            minimum.x = std::max(minimum.x, pos.x);
+            minimum.y = std::max(minimum.y, pos.y);
+            minimum.z = std::max(minimum.z, pos.z);
+            maximum.x = std::min(maximum.x, pos.x);
+            maximum.y = std::min(maximum.y, pos.y);
+            maximum.z = std::min(maximum.z, pos.z);
         }
 
         sort();
@@ -31,25 +31,25 @@ struct Aabb final
         setToMaximum();
 
         for (const auto pos : positions) {
-            leftBottomNear.x = std::max(leftBottomNear.x, pos.x);
-            leftBottomNear.y = std::max(leftBottomNear.y, pos.y);
-            leftBottomNear.z = std::max(leftBottomNear.z, pos.z);
-            rightTopFar.x    = std::min(rightTopFar.x, pos.x);
-            rightTopFar.y    = std::min(rightTopFar.y, pos.y);
-            rightTopFar.z    = std::min(rightTopFar.z, pos.z);
+            minimum.x = std::max(minimum.x, pos.x);
+            minimum.y = std::max(minimum.y, pos.y);
+            minimum.z = std::max(minimum.z, pos.z);
+            maximum.x = std::min(maximum.x, pos.x);
+            maximum.y = std::min(maximum.y, pos.y);
+            maximum.z = std::min(maximum.z, pos.z);
         }
 
         sort();
     }
 
     Aabb(glm::vec3 p1, glm::vec3 p2)
-        : leftBottomNear{p1}
-        , rightTopFar{p2}
+        : minimum{p1}
+        , maximum{p2}
     {
         sort();
     }
 
-    bool isEmpty() const { return leftBottomNear == rightTopFar; }
+    bool isEmpty() const { return minimum == maximum; }
 
     static Aabb unit()
     {
@@ -58,37 +58,38 @@ struct Aabb final
         return Aabb{lbn, rtf};
     }
 
-    float left() const { return leftBottomNear.x; };
-    float right() const { return rightTopFar.x; };
-    float bottom() const { return leftBottomNear.y; };
-    float top() const { return rightTopFar.y; };
-    float near() const { return leftBottomNear.z; };
-    float far() const { return rightTopFar.z; };
-
+    /**
+     *    3----2     y
+     *   /|   /|     |
+     *  7----4 |     o--x
+     *  | 0--|-1    /
+     *  |/   |/    z
+     *  6----5
+     */
     std::array<glm::vec4, 8> toPositions() const
     {
         std::array<glm::vec4, 8> ans;
 
-        ans[0] = glm::vec4(leftBottomNear, 1.f);                           // lbn
-        ans[1] = {rightTopFar.x, leftBottomNear.y, leftBottomNear.z, 1.f}; // rbn
-        ans[2] = {rightTopFar.x, rightTopFar.y, leftBottomNear.z, 1.f};    // rtn
-        ans[3] = {leftBottomNear.x, rightTopFar.y, leftBottomNear.z, 1.f}; // ltn
+        ans[0] = glm::vec4(minimum, 1.f);                // lbf
+        ans[1] = {maximum.x, minimum.y, minimum.z, 1.f}; // rbf
+        ans[2] = {maximum.x, maximum.y, minimum.z, 1.f}; // rtf
+        ans[3] = {minimum.x, maximum.y, minimum.z, 1.f}; // ltf
 
-        ans[4] = glm::vec4(rightTopFar, 1.f);                              // rtf
-        ans[5] = {rightTopFar.x, leftBottomNear.y, rightTopFar.z, 1.f};    // rbf
-        ans[6] = {leftBottomNear.x, leftBottomNear.y, rightTopFar.z, 1.f}; // lbf
-        ans[7] = {leftBottomNear.x, rightTopFar.y, rightTopFar.z, 1.f};    // ltf
+        ans[4] = glm::vec4(maximum, 1.f);                // rtn
+        ans[5] = {maximum.x, minimum.y, maximum.z, 1.f}; // rbn
+        ans[6] = {minimum.x, minimum.y, maximum.z, 1.f}; // lbn
+        ans[7] = {minimum.x, maximum.y, maximum.z, 1.f}; // ltn
 
         return ans;
     }
 
-    glm::vec3 dimensions() const { return rightTopFar - leftBottomNear; }
+    glm::vec3 dimensions() const { return maximum - minimum; }
 
     void sort()
     {
-        if (leftBottomNear.x > rightTopFar.x) std::swap(leftBottomNear.x, rightTopFar.x);
-        if (leftBottomNear.y > rightTopFar.y) std::swap(leftBottomNear.y, rightTopFar.y);
-        if (leftBottomNear.z > rightTopFar.z) std::swap(leftBottomNear.z, rightTopFar.z);
+        if (minimum.x > maximum.x) std::swap(minimum.x, maximum.x);
+        if (minimum.y > maximum.y) std::swap(minimum.y, maximum.y);
+        if (minimum.z > maximum.z) std::swap(minimum.z, maximum.z);
     }
 
     Aabb mbr(const Aabb& other) const
@@ -98,36 +99,36 @@ struct Aabb final
 
         Aabb copy = *this;
 
-        copy.leftBottomNear.x = std::min(copy.leftBottomNear.x, other.leftBottomNear.x);
-        copy.leftBottomNear.y = std::min(copy.leftBottomNear.y, other.leftBottomNear.y);
-        copy.leftBottomNear.z = std::min(copy.leftBottomNear.z, other.leftBottomNear.z);
+        copy.minimum.x = std::min(copy.minimum.x, other.minimum.x);
+        copy.minimum.y = std::min(copy.minimum.y, other.minimum.y);
+        copy.minimum.z = std::min(copy.minimum.z, other.minimum.z);
 
-        copy.rightTopFar.x = std::max(copy.rightTopFar.x, other.rightTopFar.x);
-        copy.rightTopFar.y = std::max(copy.rightTopFar.y, other.rightTopFar.y);
-        copy.rightTopFar.z = std::max(copy.rightTopFar.z, other.rightTopFar.z);
+        copy.maximum.x = std::max(copy.maximum.x, other.maximum.x);
+        copy.maximum.y = std::max(copy.maximum.y, other.maximum.y);
+        copy.maximum.z = std::max(copy.maximum.z, other.maximum.z);
 
         return copy;
     }
 
     bool intersects(const Aabb& other) const
     {
-        return !(leftBottomNear.x > other.rightTopFar.x || other.leftBottomNear.x > rightTopFar.x ||
-                 leftBottomNear.y > other.rightTopFar.y || other.leftBottomNear.y > rightTopFar.y ||
-                 leftBottomNear.z > other.rightTopFar.z || other.leftBottomNear.z > rightTopFar.z);
+        return !(minimum.x > other.maximum.x || other.minimum.x > maximum.x ||
+                 minimum.y > other.maximum.y || other.minimum.y > maximum.y ||
+                 minimum.z > other.maximum.z || other.minimum.z > maximum.z);
     }
 
     void setToMaximum()
     {
-        leftBottomNear.x = std::numeric_limits<float>::lowest();
-        leftBottomNear.y = std::numeric_limits<float>::lowest();
-        leftBottomNear.z = std::numeric_limits<float>::lowest();
-        rightTopFar.x    = std::numeric_limits<float>::max();
-        rightTopFar.y    = std::numeric_limits<float>::max();
-        rightTopFar.z    = std::numeric_limits<float>::max();
+        minimum.x = std::numeric_limits<float>::lowest();
+        minimum.y = std::numeric_limits<float>::lowest();
+        minimum.z = std::numeric_limits<float>::lowest();
+        maximum.x = std::numeric_limits<float>::max();
+        maximum.y = std::numeric_limits<float>::max();
+        maximum.z = std::numeric_limits<float>::max();
     }
 
-    glm::vec3 leftBottomNear;
-    glm::vec3 rightTopFar;
+    glm::vec3 minimum;
+    glm::vec3 maximum;
 };
 
 inline Aabb operator*(const glm::mat4& matrix, const Aabb& aabb)
