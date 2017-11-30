@@ -53,9 +53,9 @@ struct Aabb final
 
     static Aabb unit()
     {
-        glm::vec3 lbn = {-1.f, -1.f, -1.f};
-        glm::vec3 rtf = {1.f, 1.f, 1.f};
-        return Aabb{lbn, rtf};
+        const glm::vec3 min = {-1.f, -1.f, -1.f};
+        const glm::vec3 max = {1.f, 1.f, 1.f};
+        return Aabb{min, max};
     }
 
     /**
