@@ -5,13 +5,13 @@ uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 uniform mat4 lightMVP;
 
-out vec4 position_lightSpace;
+out vec3 position_shadowMap;
 out vec3 ambient;
 out vec3 diffuse;
 out vec3 specular;
 out vec2 texCoord;
-out vec3 normal;
-out float height;
+out vec3 position_w;
+out vec3 normal_w;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
@@ -39,7 +39,10 @@ uniform Material material;
 
 void main()
 {
-    position_lightSpace = lightMVP * vec4(position, 1.0);
+    const mat4 biasMatrix =
+        mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
+
+    position_shadowMap = vec3(biasMatrix * lightMVP * vec4(position, 1.0));
 
     Light sun = lights[0];
 
@@ -65,6 +68,6 @@ void main()
 
     gl_Position = projectionMatrix * position_eye;
     texCoord    = in_texCoord;
-    normal      = normal_world;
-    height      = position_world.y;
+    position_w  = position_world.xyz;
+    normal_w    = normal_world;
 }

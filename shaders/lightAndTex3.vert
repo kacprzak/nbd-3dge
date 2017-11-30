@@ -12,8 +12,9 @@ uniform mat4 lightMVP;
 
 out VS_OUT
 {
-    vec4 pos_lightSpace;
-    vec3 pos_world;
+    vec3 position_shadowMap;
+    vec3 position_w;
+    vec3 position_v;
     vec2 texCoord;
     mat3 TBN;
 }
@@ -21,16 +22,20 @@ vs_out;
 
 void main()
 {
-    vs_out.pos_lightSpace = lightMVP * vec4(position, 1.0);
+    const mat4 biasMatrix =
+        mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
+
+    vs_out.position_shadowMap = vec3(biasMatrix * lightMVP * vec4(position, 1.0));
 
     vec3 N     = normalize(vec3(modelMatrix * vec4(in_normal, 0.0)));
     vec3 T     = normalize(vec3(modelMatrix * vec4(in_tangent, 0.0)));
     vec3 B     = cross(T, N);
     vs_out.TBN = mat3(T, B, N);
 
-    vs_out.pos_world = vec3(modelMatrix * vec4(position, 1.0));
-    vs_out.texCoord  = in_texCoord;
-    gl_Position      = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    vs_out.position_w = vec3(modelMatrix * vec4(position, 1.0));
+    vs_out.position_v = vec3(viewMatrix * vec4(vs_out.position_w, 1.0));
+    vs_out.texCoord   = in_texCoord;
+    gl_Position       = projectionMatrix * vec4(vs_out.position_v, 1.0);
     // normal = in_normal;
     // tangent = in_tangent;
 }

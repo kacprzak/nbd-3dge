@@ -12,8 +12,9 @@ uniform mat4 lightMVP;
 
 in VS_OUT
 {
-    vec4 pos_lightSpace;
-    vec3 pos_world;
+    vec3 position_shadowMap;
+    vec3 position_w;
+    vec3 position_v;
     vec2 texCoord;
     mat3 TBN;
 }
@@ -41,16 +42,15 @@ struct Material
 
 uniform Material material;
 
-float calcShadow(vec4 position_lightSpace)
+float calcShadowRev(vec3 position_shadowMap, float cosTheta)
 {
-    // perform perspective divide
-    vec3 projCoords = position_lightSpace.xyz / position_lightSpace.w;
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float shadow = texture(shadowSampler, projCoords.xyz);
+    float bias = 0.005 * tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
+    bias       = clamp(bias, 0, 0.01);
 
-    return 1.0 - shadow;
+    position_shadowMap.z -= bias;
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    return texture(shadowSampler, position_shadowMap);
 }
 
 void main()
@@ -61,16 +61,11 @@ void main()
     vec4 normalColor   = normalize(texture2D(sampler1, fs_in.texCoord) * 2 - 0.5);
     vec4 specularColor = texture2D(sampler2, fs_in.texCoord);
 
-    // vec3 normal_world = normalize(modelMatrix * vec4(in_normal, 0)).xyz;
-
-    vec4 position_world = vec4(fs_in.pos_world, 1.0);
-    vec4 position_eye   = viewMatrix * position_world;
-
     vec3 surfaceToLight;
     if (sun.position.w == 0.0) {
         surfaceToLight = normalize(-sun.position.xyz);
     } else {
-        surfaceToLight = normalize(sun.position.xyz - position_world.xyz);
+        surfaceToLight = normalize(sun.position.xyz - fs_in.position_w);
     }
 
     vec3 ambient = sun.ambient;
@@ -83,15 +78,18 @@ void main()
         specular = vec3(0.0, 0.0, 0.0);
     } else {
         vec3 reflection  = -reflect(surfaceToLight, normal_world);
-        vec3 vertexToEye = normalize(-position_eye.xyz);
+        vec3 vertexToEye = normalize(-fs_in.position_v);
         specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), material.shininess);
     }
 
-    float shadow = calcShadow(fs_in.pos_lightSpace);
+    float cosTheta = clamp(dot(normal_world, surfaceToLight), 0.0, 1.0);
+    // fragColor = vec4(cosTheta, 0, 0, 1); return;
+
+    float shadow = calcShadowRev(fs_in.position_shadowMap, cosTheta);
 
     fragColor.rgb = texColor.xyz * material.ambient * ambient;
-    fragColor.rgb += texColor.xyz * material.diffuse * diffuse * (1.0 - shadow);
-    fragColor.rgb += specularColor.xyz * specular * 16 * (1.0 - shadow);
+    fragColor.rgb += texColor.xyz * material.diffuse * diffuse * shadow;
+    fragColor.rgb += specularColor.xyz * specular * 16 * shadow;
 
     // fragColor.rgb = texColor.rgb;
     // fragColor.rgb = specularColor.rgb;

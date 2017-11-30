@@ -5,18 +5,21 @@ uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 uniform mat4 lightMVP;
 
-out vec4 position_lightSpace;
-out vec3 ambient;
-out vec3 diffuse;
-out vec3 specular;
-out vec2 texCoord;
-out vec3 position_w;
-out vec3 normal_w;
+out VS_OUT
+{
+    vec3 position_shadowMap;
+    vec2 texCoord;
+    vec3 position_v;
+    vec3 position_w;
+    vec3 normal_w;
+}
+vs_out;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
 layout(location = 2) in vec3 in_normal;
 
+/*
 struct Light
 {
     vec4 position;
@@ -36,39 +39,21 @@ struct Material
 };
 
 uniform Material material;
-
+*/
 void main()
 {
-    position_lightSpace = lightMVP * vec4(position, 1.0);
-    
-    Light sun = lights[0];
+    const mat4 biasMatrix =
+        mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 
-    vec3 normal_world = normalize(modelMatrix * vec4(in_normal, 0)).xyz;
+    vs_out.position_shadowMap = vec3(biasMatrix * lightMVP * vec4(position, 1.0));
+
+    vs_out.normal_w = normalize(modelMatrix * vec4(in_normal, 0)).xyz;
 
     vec4 position_world = modelMatrix * vec4(position, 1.0);
     vec4 position_eye   = viewMatrix * position_world;
 
-    vec3 surfaceToLight;
-    if (sun.position.w == 0.0) {
-        surfaceToLight = normalize(-sun.position.xyz);
-    } else {
-        surfaceToLight = normalize(sun.position.xyz - position_world.xyz);
-    }
-
-    ambient = sun.ambient;
-
-    diffuse = sun.diffuse * max(dot(normal_world, surfaceToLight), 0.0);
-
-    if (dot(normal_world, surfaceToLight) < 0.0) {
-        specular = vec3(0.0, 0.0, 0.0);
-    } else {
-        vec3 reflection  = -reflect(surfaceToLight, normal_world);
-        vec3 vertexToEye = normalize(-position_eye.xyz);
-        specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), material.shininess);
-    }
-
-    gl_Position = projectionMatrix * position_eye;
-    texCoord    = in_texCoord;
-    position_w  = position_world.xyz;
-    normal_w    = normal_world;
+    gl_Position       = projectionMatrix * position_eye;
+    vs_out.texCoord   = in_texCoord;
+    vs_out.position_v = position_eye.xyz;
+    vs_out.position_w = position_world.xyz;
 }
