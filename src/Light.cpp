@@ -1,8 +1,10 @@
 #include "Light.h"
 
+#include "Material.h"
+
 #include <glm/glm.hpp>
 
-#include "Material.h"
+#include <algorithm>
 
 glm::vec4 Light::position() const
 {

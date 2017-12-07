@@ -11,7 +11,7 @@ class RotationScript : public Script
     {
         auto trWeak = a->getComponent<TransformationComponent>(ComponentId::Transformation);
         if (auto tr = trWeak.lock()) {
-            tr->orientation = glm::rotate(tr->orientation, elapsedTime * 0.15f, {0.f, 1.f, 0.f});
+            tr->orientation = glm::rotate(tr->orientation, elapsedTime * 0.55f, {0.f, 1.f, 0.f});
         }
     }
 };

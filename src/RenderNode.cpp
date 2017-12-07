@@ -74,10 +74,10 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
                 shaderProgram->setUniform((lightIdx + ".diffuse").c_str(), light.diffuse());
                 shaderProgram->setUniform((lightIdx + ".specular").c_str(), light.specular());
 
-                if (i == 0) {
-                    shaderProgram->setUniform(
-                        "lightMVP", light.projectionMatrix() * light.viewMatrix() * m_modelMatrix);
-                }
+                const auto& lightMVPIndex = "lightMVP[" + std::to_string(i) + "]";
+                shaderProgram->setUniform(lightMVPIndex.c_str(),
+                                          light.projectionMatrix() * light.viewMatrix() *
+                                              m_modelMatrix);
             }
         }
 

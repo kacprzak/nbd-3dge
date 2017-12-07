@@ -5,7 +5,7 @@
 #include "Logger.h"
 #include "Texture.h"
 
-Framebuffer::Framebuffer(glm::ivec2 size)
+Framebuffer::Framebuffer(glm::ivec3 size)
     : m_shadowMap{Texture::createShadowMap(size)}
 {
     glGenFramebuffers(1, &m_framebufferId);
@@ -13,8 +13,7 @@ Framebuffer::Framebuffer(glm::ivec2 size)
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           m_shadowMap.m_textureId, 0);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_shadowMap.m_textureId, 0, 0);
 
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
@@ -34,6 +33,11 @@ Framebuffer::~Framebuffer()
     LOG_TRACE << "Deleted Framebuffer: " << m_framebufferId;
 }
 
-void Framebuffer::bindForWriting() { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferId); }
+void Framebuffer::bindForWriting(unsigned cascadeIndex)
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferId);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_shadowMap.m_textureId, 0,
+                              cascadeIndex);
+}
 
 void Framebuffer::bindDepthComponent(int textureUnit) { m_shadowMap.bind(textureUnit); }

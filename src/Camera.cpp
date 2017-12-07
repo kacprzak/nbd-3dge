@@ -8,6 +8,7 @@
 Camera::Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, glm::ivec2 windowSize)
     : RenderNode{actorId, tr, rd}
     , m_windowSize{windowSize}
+    , m_ratio{m_windowSize.x / float(m_windowSize.y)}
 {
     setPerspective();
 }
@@ -25,42 +26,21 @@ Camera::~Camera()
 
 void Camera::setPerspective()
 {
-    float fov   = 45.f;
-    float ratio = m_windowSize.x / float(m_windowSize.y);
-    float near  = 1.f;
-    float far   = 600.f;
+    m_projectionMatrix = glm::perspective(m_fov, m_ratio, m_near, m_far);
+    m_frustum          = perspectiveArgsToFrustum(m_fov, m_ratio, m_near, m_far);
 
-    m_projectionMatrix = glm::perspective(fov, ratio, near, far);
-
-    const glm::vec4 up    = {0.f, 1.f, 0.f, 0.f};
-    const glm::vec4 right = {1.f, 0.f, 0.f, 0.f};
-
-    float nearHeight = 2.f * tan(fov / 2.f) * near;
-    float nearWidth  = nearHeight * ratio;
-
-    float farHeight = 2.f * tan(fov / 2.f) * far;
-    float farWidth  = farHeight * ratio;
-
-    glm::vec4 fc = {0.f, 0.f, -far, 1.f};
-
-    glm::vec4 ftl = fc + (up * farHeight / 2.f) - (right * farWidth / 2.f);
-    glm::vec4 ftr = fc + (up * farHeight / 2.f) + (right * farWidth / 2.f);
-    glm::vec4 fbl = fc - (up * farHeight / 2.f) - (right * farWidth / 2.f);
-    glm::vec4 fbr = fc - (up * farHeight / 2.f) + (right * farWidth / 2.f);
-
-    glm::vec4 nc = {0.f, 0.f, -near, 1.f};
-
-    glm::vec4 ntl = nc + (up * nearHeight / 2.f) - (right * nearWidth / 2.f);
-    glm::vec4 ntr = nc + (up * nearHeight / 2.f) + (right * nearWidth / 2.f);
-    glm::vec4 nbl = nc - (up * nearHeight / 2.f) - (right * nearWidth / 2.f);
-    glm::vec4 nbr = nc - (up * nearHeight / 2.f) + (right * nearWidth / 2.f);
-
-    m_frustum = {{nbl, nbr, ntr, ntl, ftr, fbr, fbl, ftl}};
+    for (int i = 0; i < s_shadowCascadesMax; ++i) {
+        auto nearFar                 = cascadeIdx2NearFar(i);
+        m_cascadeProjectionMatrix[i] = glm::perspective(m_fov, m_ratio, nearFar.x, nearFar.y);
+    }
 }
 
 void Camera::setOrtho()
 {
-    m_projectionMatrix = glm::ortho(-100.f, 100.f, -100.f, 100.f, 1.f, 1200.f);
+    float w2 = m_windowSize.x / 2.f;
+    float h2 = m_windowSize.y / 2.f;
+
+    m_projectionMatrix = glm::ortho(-w2, w2, -h2, h2, m_near, m_far);
 }
 
 void Camera::setOrtho(const Aabb& aabb)
@@ -74,6 +54,8 @@ void Camera::setOrtho(const Aabb& aabb)
 void Camera::setWindowSize(glm::ivec2 size)
 {
     m_windowSize = size;
+    m_ratio      = m_windowSize.x / float(m_windowSize.y);
+
     if (m_perspective)
         setPerspective();
     else
@@ -110,10 +92,74 @@ bool Camera::isVisible(const Aabb& aabb) const
 
 //------------------------------------------------------------------------------
 
-std::array<glm::vec4, 8> Camera::frustum() const
+Camera::Frustum Camera::perspectiveArgsToFrustum(float fov, float ratio, float near,
+                                                 float far) const
+{
+    const glm::vec4 up    = {0.f, 1.f, 0.f, 0.f};
+    const glm::vec4 right = {1.f, 0.f, 0.f, 0.f};
+
+    float nearHeight = 2.f * tan(fov / 2.f) * near;
+    float nearWidth  = nearHeight * ratio;
+
+    float farHeight = 2.f * tan(fov / 2.f) * far;
+    float farWidth  = farHeight * ratio;
+
+    glm::vec4 fc = {0.f, 0.f, -far, 1.f};
+
+    glm::vec4 ftl = fc + (up * farHeight / 2.f) - (right * farWidth / 2.f);
+    glm::vec4 ftr = fc + (up * farHeight / 2.f) + (right * farWidth / 2.f);
+    glm::vec4 fbl = fc - (up * farHeight / 2.f) - (right * farWidth / 2.f);
+    glm::vec4 fbr = fc - (up * farHeight / 2.f) + (right * farWidth / 2.f);
+
+    glm::vec4 nc = {0.f, 0.f, -near, 1.f};
+
+    glm::vec4 ntl = nc + (up * nearHeight / 2.f) - (right * nearWidth / 2.f);
+    glm::vec4 ntr = nc + (up * nearHeight / 2.f) + (right * nearWidth / 2.f);
+    glm::vec4 nbl = nc - (up * nearHeight / 2.f) - (right * nearWidth / 2.f);
+    glm::vec4 nbr = nc - (up * nearHeight / 2.f) + (right * nearWidth / 2.f);
+
+    return {{nbl, nbr, ntr, ntl, ftr, fbr, fbl, ftl}};
+}
+
+//------------------------------------------------------------------------------
+
+glm::vec2 Camera::cascadeIdx2NearFar(int cascadeIndex) const
+{
+    // http://developer.download.nvidia.com/SDK/10.5/opengl/src/cascaded_shadow_maps/doc/cascaded_shadow_maps.pdf
+    float near = (cascadeIndex == 0)
+                     ? m_near
+                     : m_near * std::pow(m_far / m_near, cascadeIndex / float(s_shadowCascadesMax));
+    float far =
+        (cascadeIndex == s_shadowCascadesMax - 1)
+            ? m_far
+            : m_near * std::pow(m_far / m_near, (cascadeIndex + 1) / float(s_shadowCascadesMax));
+    ;
+    return {near, far};
+}
+
+//------------------------------------------------------------------------------
+
+Camera::Frustum Camera::frustum() const
 {
     std::array<glm::vec4, 8> ans;
     std::transform(std::cbegin(m_frustum), std::cend(m_frustum), std::begin(ans),
                    [this](auto p) { return m_viewMatrixInv * p; });
     return ans;
+}
+
+Camera::Frustum Camera::frustum(int cascadeIndex) const
+{
+    assert(cascadeIndex < s_shadowCascadesMax);
+    auto nearFar = cascadeIdx2NearFar(cascadeIndex);
+
+    std::array<glm::vec4, 8> ans = perspectiveArgsToFrustum(m_fov, m_ratio, nearFar.x, nearFar.y);
+
+    std::transform(std::cbegin(ans), std::cend(ans), std::begin(ans),
+                   [this](auto p) { return m_viewMatrixInv * p; });
+    return ans;
+}
+
+const glm::mat4& Camera::projectionMatrix(int cascadeIndex) const
+{
+    return m_cascadeProjectionMatrix[cascadeIndex];
 }

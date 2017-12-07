@@ -1,17 +1,26 @@
 #version 330 core
 
+const int MAX_LIGHTS   = 8;
+const int MAX_CASCADES = 4;
+
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
-uniform mat4 lightMVP;
+uniform mat4 lightMVP[MAX_LIGHTS];
+uniform mat4 cascadeVP[MAX_CASCADES];
 
-out vec3 position_shadowMap;
-out vec3 ambient;
-out vec3 diffuse;
-out vec3 specular;
-out vec2 texCoord;
-out vec3 position_w;
-out vec3 normal_w;
+out VS_OUT
+{
+    float clipZ;
+    vec3 position_shadowMap[MAX_CASCADES];
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    vec2 texCoord;
+    vec3 position_w;
+    vec3 normal_w;
+}
+vs_out;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 in_texCoord;
@@ -25,7 +34,7 @@ struct Light
     vec3 specular;
 };
 
-uniform Light lights[8];
+uniform Light lights[MAX_LIGHTS];
 
 struct Material
 {
@@ -42,7 +51,10 @@ void main()
     const mat4 biasMatrix =
         mat4(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 
-    position_shadowMap = vec3(biasMatrix * lightMVP * vec4(position, 1.0));
+    for (int i = 0; i < MAX_CASCADES; ++i) {
+        vs_out.position_shadowMap[i] =
+            vec3(biasMatrix * cascadeVP[i] * modelMatrix * vec4(position, 1.0));
+    }
 
     Light sun = lights[0];
 
@@ -58,16 +70,18 @@ void main()
         surfaceToLight = normalize(sun.position.xyz - position_world.xyz);
     }
 
-    ambient = sun.ambient;
+    vs_out.ambient = sun.ambient;
 
-    diffuse = sun.diffuse * max(dot(normal_world, surfaceToLight), 0.0);
+    vs_out.diffuse = sun.diffuse * max(dot(normal_world, surfaceToLight), 0.0);
 
     vec3 reflection  = -reflect(surfaceToLight, normal_world);
     vec3 vertexToEye = normalize(-position_eye.xyz);
-    specular = sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), material.shininess);
+    vs_out.specular =
+        sun.specular * pow(max(dot(vertexToEye, reflection), 0.0), material.shininess);
 
-    gl_Position = projectionMatrix * position_eye;
-    texCoord    = in_texCoord;
-    position_w  = position_world.xyz;
-    normal_w    = normal_world;
+    gl_Position       = projectionMatrix * position_eye;
+    vs_out.texCoord   = in_texCoord;
+    vs_out.position_w = position_world.xyz;
+    vs_out.normal_w   = normal_world;
+    vs_out.clipZ      = gl_Position.z;
 }

@@ -14,8 +14,9 @@
 #include <boost/iostreams/stream.hpp>
 
 RenderSystem::RenderSystem(glm::ivec2 windowSize)
-    : m_windowSize{windowSize}
-    , m_shadowMapSize{2048, 2048}
+    : m_shadowCascadesSize{Camera::s_shadowCascadesMax}
+    , m_windowSize{windowSize}
+    , m_shadowMapSize{2048, 2048, m_shadowCascadesSize}
 {
     glGenVertexArrays(1, &m_emptyVao);
 
@@ -150,22 +151,39 @@ void RenderSystem::draw()
     Light* sun = m_lights.begin()->second.get();
 
     if (m_shadowMapFB) {
-        sun->setOrtho(calcDirectionalLightProjection(*sun));
-
-        m_shadowMapFB->bindForWriting();
         glViewport(0, 0, m_shadowMapSize.x, m_shadowMapSize.y);
-        glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
-        draw(m_shadowShader.get(), sun, lights);
+
+        glm::mat4 cascadeProj[Camera::s_shadowCascadesMax];
+
+        for (int cascadeIndex = 0; cascadeIndex < m_shadowCascadesSize; ++cascadeIndex) {
+            sun->setOrtho(calcDirectionalLightProjection(*sun, cascadeIndex));
+            cascadeProj[cascadeIndex] = sun->projectionMatrix();
+
+            m_shadowMapFB->bindForWriting(cascadeIndex);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            draw(m_shadowShader.get(), sun, lights);
+        }
+
         glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.x, m_windowSize.y);
 
         const int shadowTextureUnit = 7;
         m_shadowMapFB->bindDepthComponent(shadowTextureUnit);
-        for (auto shader : getShaders()) {
-            shader->use();
-            shader->setUniform("shadowSampler", shadowTextureUnit);
+        for (auto shaderProgram : getShaders()) {
+            shaderProgram->use();
+            shaderProgram->setUniform("shadowSampler", shadowTextureUnit);
+
+            for (int cascadeIndex = 0; cascadeIndex < m_shadowCascadesSize; ++cascadeIndex) {
+                const auto far              = m_camera->cascadeIdx2NearFar(cascadeIndex).y;
+                const auto& cascadeFarIndex = "cascadeFar[" + std::to_string(cascadeIndex) + "]";
+                shaderProgram->setUniform(cascadeFarIndex.c_str(), far);
+
+                const auto& cascadeVPIndex = "cascadeVP[" + std::to_string(cascadeIndex) + "]";
+                shaderProgram->setUniform(cascadeVPIndex.c_str(),
+                                          cascadeProj[cascadeIndex] * sun->viewMatrix());
+            }
         }
     }
 
@@ -238,7 +256,7 @@ std::set<ShaderProgram*> RenderSystem::getShaders() const
 
 //------------------------------------------------------------------------------
 
-Aabb RenderSystem::calcDirectionalLightProjection(const Light& light) const
+Aabb RenderSystem::calcDirectionalLightProjection(const Light& light, int cascadeIndex) const
 {
     Aabb ans;
     // All visible nodes for camera
@@ -252,8 +270,9 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Light& light) const
         }
     }
     */
+
     auto lightViewMatrix = light.viewMatrix();
-    auto frustum         = m_camera->frustum();
+    auto frustum         = m_camera->frustum(cascadeIndex);
     for (auto& p : frustum)
         p = lightViewMatrix * p;
 

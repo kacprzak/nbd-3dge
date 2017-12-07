@@ -9,10 +9,10 @@
 class Framebuffer final
 {
   public:
-    Framebuffer(glm::ivec2 size);
+    Framebuffer(glm::ivec3 size);
     ~Framebuffer();
 
-    void bindForWriting();
+    void bindForWriting(unsigned cascadeIndex);
     void bindDepthComponent(int textureUnit);
 
   private:

@@ -1,13 +1,17 @@
 #version 330
 
+const int MAX_CASCADES = 4;
+
 uniform sampler2D sampler0;
 uniform samplerCube environmentCube;
 uniform vec3 cameraPosition;
-uniform sampler2DShadow shadowSampler;
+uniform sampler2DArrayShadow shadowSampler;
+uniform float cascadeFar[MAX_CASCADES];
 
 in VS_OUT
 {
-    vec3 position_shadowMap;
+    float clipZ;
+    vec3 position_shadowMap[MAX_CASCADES];
     vec2 texCoord;
     vec3 position_v;
     vec3 position_w;
@@ -37,15 +41,27 @@ struct Material
 
 uniform Material material;
 
-float calcShadowRev(vec3 position_shadowMap, float cosTheta)
+int cascadeIndex(float z)
 {
+    for (int i = 0; i < MAX_CASCADES; ++i) {
+        if (z < cascadeFar[i]) {
+            return i;
+        }
+    }
+    return MAX_CASCADES - 1;
+}
+
+float calcShadowRev(vec3 position_shadowMap, int cascadeIdx, float cosTheta)
+{
+    vec4 coord = vec4(position_shadowMap.x, position_shadowMap.y, cascadeIdx, position_shadowMap.z);
+
     float bias = 0.005 * tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
     bias       = clamp(bias, 0, 0.01);
 
-    position_shadowMap.z -= bias;
+    coord.w -= bias;
 
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    return texture(shadowSampler, position_shadowMap);
+    return texture(shadowSampler, coord);
 }
 
 void main()
@@ -83,7 +99,9 @@ void main()
     float cosTheta = clamp(dot(fs_in.normal_w, surfaceToLight), 0.0, 1.0);
     // fragColor = vec4(cosTheta, 0, 0, 1); return;
 
-    float shadow = calcShadowRev(fs_in.position_shadowMap, cosTheta);
+    int cascadeIdx = cascadeIndex(fs_in.clipZ);
+    // fragColor = vec4(0); fragColor[cascadeIdx] = 1.0; return;
+    float shadow = calcShadowRev(fs_in.position_shadowMap[cascadeIdx], cascadeIdx, cosTheta);
 
     vec4 texColor = texture2D(sampler0, fs_in.texCoord);
     fragColor.rgb = mix(texColor.xyz, reflectionColor, 0.5) * material.ambient * ambient;
