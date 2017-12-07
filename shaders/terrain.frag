@@ -102,11 +102,12 @@ void main()
     // fragColor = vec4(cosTheta, 0, 0, 1); return;
 
     int cascadeIdx = cascadeIndex(fs_in.clipZ);
-    //fragColor = vec4(0); fragColor[cascadeIdx] = 1.0; return;
-    float shadow = calcShadowRev(fs_in.position_shadowMap[cascadeIdx], cascadeIdx, cosTheta);
+    float shadow   = calcShadowRev(fs_in.position_shadowMap[cascadeIdx], cascadeIdx, cosTheta);
 
     fragColor.rgb = texColor.xyz * material.ambient * fs_in.ambient;
     fragColor.rgb += texColor.xyz * material.diffuse * fs_in.diffuse * shadow;
     fragColor.rgb += material.specular * fs_in.specular * shadow;
     fragColor.a = 1.0;
+
+    // fragColor[cascadeIdx] = mix(fragColor[cascadeIdx], 1.0, 0.05); // return;
 }
