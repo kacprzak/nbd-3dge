@@ -22,8 +22,11 @@ class Camera : public RenderNode
     {
     }
 
+    void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera);
+
     void update(float delta) override;
     void setPerspective();
+    void setPerspective(float fov, float near, float far);
     void setOrtho();
     void setOrtho(const Aabb& aabb);
 
@@ -45,12 +48,18 @@ class Camera : public RenderNode
 
   protected:
     Frustum perspectiveArgsToFrustum(float fov, float ratio, float near, float far) const;
+    Frustum ortoArgsToFrustum(float left, float right, float bottom, float top, float near,
+                              float far) const;
 
     glm::ivec2 m_windowSize;
-    float m_near  = 1.f;
-    float m_far   = 1000.f;
-    float m_fov   = 45.f;
-    float m_ratio = 1.f;
+    float m_near   = 1.f;
+    float m_far    = 1000.f;
+    float m_fov    = 45.f;
+    float m_ratio  = 1.f;
+    float m_left   = -100.f;
+    float m_right  = 100.f;
+    float m_bottom = -100.f;
+    float m_top    = 100.f;
 
     glm::mat4 m_projectionMatrix;
     glm::mat4 m_viewMatrix;

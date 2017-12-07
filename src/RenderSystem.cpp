@@ -241,6 +241,13 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
     for (const auto& node : m_nodes) {
         node.second->drawAabb(shaderProgram, camera);
     }
+
+    for (const auto& light : m_lights) {
+        // light.second->setPerspective(45, 1, 100);
+        // light.second->setOrtho(Aabb{{-10, -10, 1}, {10, 10, 100}});
+        light.second->drawFrustum(shaderProgram, camera);
+        // light.second->setOrtho();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -258,36 +265,24 @@ std::set<ShaderProgram*> RenderSystem::getShaders() const
 
 Aabb RenderSystem::calcDirectionalLightProjection(const Light& light, int cascadeIndex) const
 {
-    Aabb ans;
-    // All visible nodes for camera
-    /*
-    for (const auto& node : m_nodes) {
-        if (!node.second->castsShadows()) continue;
-
-        const auto& aabb = node.second->aabb();
-        if (m_camera->isVisible(aabb)) {
-            ans = ans.mbr(light.viewMatrix() * aabb);
-        }
-    }
-    */
-
     auto lightViewMatrix = light.viewMatrix();
     auto frustum         = m_camera->frustum(cascadeIndex);
     for (auto& p : frustum)
         p = lightViewMatrix * p;
 
-    ans = Aabb{frustum};
-    // Aabb tmp          = ans;
-    // tmp.rightTopFar.z = 0.f;
-    // Nodes between light and visible nodes
-    // for (const auto& node : m_nodes) {
-    //     if (!node.second->castsShadows()) continue;
+    Aabb ans = Aabb{frustum};
 
-    //     const auto& aabb = light.viewMatrix() * node.second->aabb();
-    //     if (tmp.intersects(aabb)) {
-    //         ans.rightTopFar.z = aabb.rightTopFar.z;
-    //     }
-    // }
+    Aabb tmp      = ans;
+    tmp.maximum.z = std::numeric_limits<float>::max();
+    // Nodes between light and visible nodes
+    for (const auto& node : m_nodes) {
+        if (!node.second->castsShadows()) continue;
+
+        const auto& aabb = light.viewMatrix() * node.second->aabb();
+        if (tmp.intersects(aabb)) {
+            ans.maximum.z = std::max(ans.maximum.z, aabb.maximum.z);
+        }
+    }
 
     return ans;
 }

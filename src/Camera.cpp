@@ -24,6 +24,39 @@ Camera::~Camera()
     if (m_ownsTransformation) delete transformation();
 }
 
+//------------------------------------------------------------------------------
+
+void Camera::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera)
+{
+    shaderProgram->use();
+
+    shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
+    shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
+    shaderProgram->setUniform("modelMatrix", m_viewMatrixInv);
+
+    for (int i = 0; i < s_shadowCascadesMax; ++i) {
+
+        auto nearFar = cascadeIdx2NearFar(i);
+
+        std::array<glm::vec4, 8> ans;
+        if (m_perspective) {
+            ans = perspectiveArgsToFrustum(m_fov, m_ratio, nearFar.x, nearFar.y);
+        } else {
+            ans = ortoArgsToFrustum(m_left, m_right, m_bottom, m_top, nearFar.x, nearFar.y);
+        }
+
+        Aabb aabb{ans};
+        aabb.sort();
+
+        shaderProgram->setUniform("minimum", aabb.minimum);
+        shaderProgram->setUniform("maximum", aabb.maximum);
+
+        glDrawArrays(GL_POINTS, 0, 1);
+    }
+}
+
+//------------------------------------------------------------------------------
+
 void Camera::setPerspective()
 {
     m_projectionMatrix = glm::perspective(m_fov, m_ratio, m_near, m_far);
@@ -33,22 +66,44 @@ void Camera::setPerspective()
         auto nearFar                 = cascadeIdx2NearFar(i);
         m_cascadeProjectionMatrix[i] = glm::perspective(m_fov, m_ratio, nearFar.x, nearFar.y);
     }
+
+    m_perspective = true;
+}
+
+void Camera::setPerspective(float fov, float near, float far)
+{
+    m_fov  = fov;
+    m_near = near;
+    m_far  = far;
+
+    setPerspective();
+    m_perspective = true;
 }
 
 void Camera::setOrtho()
 {
-    float w2 = m_windowSize.x / 2.f;
-    float h2 = m_windowSize.y / 2.f;
+    m_projectionMatrix = glm::ortho(m_left, m_right, m_bottom, m_top, m_near, m_far);
+    m_frustum          = ortoArgsToFrustum(m_left, m_right, m_bottom, m_top, m_near, m_far);
 
-    m_projectionMatrix = glm::ortho(-w2, w2, -h2, h2, m_near, m_far);
+    for (int i = 0; i < s_shadowCascadesMax; ++i) {
+        auto nearFar = cascadeIdx2NearFar(i);
+        m_cascadeProjectionMatrix[i] =
+            glm::ortho(m_left, m_right, m_bottom, m_top, nearFar.x, nearFar.y);
+    }
+
+    m_perspective = false;
 }
 
 void Camera::setOrtho(const Aabb& aabb)
 {
-    m_projectionMatrix = glm::ortho(aabb.minimum.x, aabb.maximum.x, aabb.minimum.y, aabb.maximum.y,
-                                    -aabb.maximum.z, -aabb.minimum.z);
+    m_left   = aabb.minimum.x;
+    m_right  = aabb.maximum.x;
+    m_bottom = aabb.minimum.y;
+    m_top    = aabb.maximum.y;
+    m_near   = -aabb.maximum.z;
+    m_far    = -aabb.minimum.z;
 
-    m_frustum = aabb.toPositions();
+    setOrtho();
 }
 
 void Camera::setWindowSize(glm::ivec2 size)
@@ -121,6 +176,22 @@ Camera::Frustum Camera::perspectiveArgsToFrustum(float fov, float ratio, float n
     return {{nbl, nbr, ntr, ntl, ftr, fbr, fbl, ftl}};
 }
 
+Camera::Frustum Camera::ortoArgsToFrustum(float left, float right, float bottom, float top,
+                                          float near, float far) const
+{
+    glm::vec4 ftl{left, top, far, 1.f};
+    glm::vec4 ftr{right, top, far, 1.f};
+    glm::vec4 fbl{left, bottom, far, 1.f};
+    glm::vec4 fbr{right, bottom, far, 1.f};
+
+    glm::vec4 ntl{left, top, near, 1.f};
+    glm::vec4 ntr{right, top, near, 1.f};
+    glm::vec4 nbl{left, bottom, near, 1.f};
+    glm::vec4 nbr{right, bottom, near, 1.f};
+
+    return {{nbl, nbr, ntr, ntl, ftr, fbr, fbl, ftl}};
+}
+
 //------------------------------------------------------------------------------
 
 glm::vec2 Camera::cascadeIdx2NearFar(int cascadeIndex) const
@@ -152,7 +223,11 @@ Camera::Frustum Camera::frustum(int cascadeIndex) const
     assert(cascadeIndex < s_shadowCascadesMax);
     auto nearFar = cascadeIdx2NearFar(cascadeIndex);
 
-    std::array<glm::vec4, 8> ans = perspectiveArgsToFrustum(m_fov, m_ratio, nearFar.x, nearFar.y);
+    std::array<glm::vec4, 8> ans;
+    if (m_perspective)
+        ans = perspectiveArgsToFrustum(m_fov, m_ratio, nearFar.x, nearFar.y);
+    else
+        ans = ortoArgsToFrustum(m_left, m_right, m_bottom, m_top, nearFar.x, nearFar.y);
 
     std::transform(std::cbegin(ans), std::cend(ans), std::begin(ans),
                    [this](auto p) { return m_viewMatrixInv * p; });
