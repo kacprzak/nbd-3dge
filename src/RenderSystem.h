@@ -56,6 +56,7 @@ class RenderSystem final
     void drawShadows(ShaderProgram* shaderProgram, Camera* camera,
                      std::array<Light*, 8>& lights) const;
     void drawAabb(ShaderProgram* shaderProgram, const Camera* camera) const;
+    void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const;
 
     std::set<ShaderProgram*> getShaders() const;
 
@@ -77,9 +78,10 @@ class RenderSystem final
     std::shared_ptr<Text> m_cameraText;
     std::set<std::shared_ptr<Text>> m_texts;
 
-    std::shared_ptr<ShaderProgram> m_normalsShader;
     std::shared_ptr<ShaderProgram> m_shadowShader;
+    std::shared_ptr<ShaderProgram> m_normalsShader;
     std::shared_ptr<ShaderProgram> m_aabbShader;
+    std::shared_ptr<ShaderProgram> m_frustumShader;
 
     glm::ivec3 m_shadowMapSize;
     std::unique_ptr<Framebuffer> m_shadowMapFB;

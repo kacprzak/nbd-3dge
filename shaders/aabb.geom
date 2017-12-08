@@ -6,8 +6,6 @@ layout(line_strip, max_vertices = 36) out;
 out GS_OUT { vec3 color; }
 gs_out;
 
-uniform float magnitude = 1.0;
-
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;

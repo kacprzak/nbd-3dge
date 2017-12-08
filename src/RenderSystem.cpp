@@ -35,9 +35,10 @@ RenderSystem::~RenderSystem() { glDeleteVertexArrays(1, &m_emptyVao); }
 
 void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 {
+    m_shadowShader  = resourcesMgr.getShaderProgram("shadow");
     m_normalsShader = resourcesMgr.getShaderProgram("normals");
     m_aabbShader    = resourcesMgr.getShaderProgram("aabb");
-    m_shadowShader  = resourcesMgr.getShaderProgram("shadow");
+    m_frustumShader = resourcesMgr.getShaderProgram("frustum");
 
     auto guiFont   = resourcesMgr.getFont("ubuntu");
     auto guiShader = resourcesMgr.getShaderProgram("font");
@@ -159,6 +160,7 @@ void RenderSystem::draw()
     if (m_drawNormals) {
         drawNormals(m_normalsShader.get(), m_camera.get(), lights);
         drawAabb(m_aabbShader.get(), m_camera.get());
+        drawFrustum(m_frustumShader.get(), m_camera.get());
     }
 }
 
@@ -249,6 +251,13 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
     for (const auto& node : m_nodes) {
         node.second->drawAabb(shaderProgram, camera);
     }
+}
+
+void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const
+{
+    glBindVertexArray(m_emptyVao);
+
+    m_camera->drawFrustum(shaderProgram, camera);
 
     for (const auto& light : m_lights) {
         // light.second->setPerspective(45, 1, 100);

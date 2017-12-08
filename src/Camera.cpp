@@ -45,11 +45,10 @@ void Camera::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera)
             ans = ortoArgsToFrustum(m_left, m_right, m_bottom, m_top, nearFar.x, nearFar.y);
         }
 
-        Aabb aabb{ans};
-        aabb.sort();
-
-        shaderProgram->setUniform("minimum", aabb.minimum);
-        shaderProgram->setUniform("maximum", aabb.maximum);
+        for (std::size_t i = 0; i < ans.size(); ++i) {
+            const auto uniformName = "corners[" + std::to_string(i) + "]";
+            shaderProgram->setUniform(uniformName.c_str(), ans[i]);
+        }
 
         glDrawArrays(GL_POINTS, 0, 1);
     }

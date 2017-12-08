@@ -27,6 +27,12 @@
     <fragmentShader>aabb.frag</fragmentShader>
   </shaderProgram>
   <shaderProgram>
+    <name>frustum</name>
+    <vertexShader>aabb.vert</vertexShader>
+    <geometryShader>frustum.geom</geometryShader>
+    <fragmentShader>aabb.frag</fragmentShader>
+  </shaderProgram>
+  <shaderProgram>
     <name>skybox</name>
     <vertexShader>skybox.vert</vertexShader>
     <fragmentShader>skybox.frag</fragmentShader>
