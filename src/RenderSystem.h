@@ -50,14 +50,16 @@ class RenderSystem final
     void remove(std::shared_ptr<Text> actor) { m_texts.erase(actor); }
 
     void draw(const Camera* camera, std::array<Light*, 8>& lights) const;
-    void draw(ShaderProgram* shaderProgram, const Camera* camera,
-              std::array<Light*, 8>& lights) const;
 
+    void drawNormals(ShaderProgram* shaderProgram, const Camera* camera,
+                     std::array<Light*, 8>& lights) const;
+    void drawShadows(ShaderProgram* shaderProgram, Camera* camera,
+                     std::array<Light*, 8>& lights) const;
     void drawAabb(ShaderProgram* shaderProgram, const Camera* camera) const;
 
     std::set<ShaderProgram*> getShaders() const;
 
-    Aabb calcDirectionalLightProjection(const Light& light, int cascadeIndex) const;
+    Aabb calcDirectionalLightProjection(const Camera& light, int cascadeIndex) const;
     void updateCameraText();
 
     GLenum m_polygonMode = GL_FILL;
