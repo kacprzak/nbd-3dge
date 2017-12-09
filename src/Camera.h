@@ -12,6 +12,9 @@ class Camera : public RenderNode
   public:
     Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, glm::ivec2 windowSize);
     Camera(glm::ivec2 windowSize);
+
+    Camera(Camera&& other) = default;
+
     ~Camera();
 
     float near() const { return m_near; }
@@ -47,6 +50,8 @@ class Camera : public RenderNode
     glm::vec2 cascadeIdx2NearFar(int cascadeIndex) const;
 
   protected:
+    void updateViewMatrix();
+
     Frustum perspectiveArgsToFrustum(float fov, float ratio, float near, float far) const;
     Frustum ortoArgsToFrustum(float left, float right, float bottom, float top, float near,
                               float far) const;

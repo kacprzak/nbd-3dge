@@ -19,17 +19,18 @@ GameClient::GameClient(const Settings& settings, const std::shared_ptr<Resources
     }
 
     m_freeCameraCtrl         = std::make_unique<FreeCameraController>();
-    m_freeCameraCtrl->camera = m_renderSystem.getCamera()->transformation();
+    m_freeCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Free)->transformation();
+    m_inputSystem.addActor(-1, &m_freeCameraCtrl->cameraActions);
 
     m_tppCameraCtrl         = std::make_unique<TppCameraController>();
-    m_tppCameraCtrl->camera = m_renderSystem.getCamera()->transformation();
+    m_tppCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Player)->transformation();
 
     m_cameraCtrl = m_tppCameraCtrl.get();
 }
 
 //------------------------------------------------------------------------------
 
-GameClient::~GameClient() {}
+GameClient::~GameClient() { m_inputSystem.removeActor(-1); }
 
 //------------------------------------------------------------------------------
 
@@ -145,11 +146,12 @@ void GameClient::keyReleased(const SDL_Event& event)
         debugCamera             = !debugCamera;
         if (debugCamera) {
             m_cameraCtrl = m_freeCameraCtrl.get();
-            m_inputSystem.setDebugCamera(&m_cameraCtrl->cameraActions);
+            m_renderSystem.setCamera(RenderSystem::Free);
         } else {
-            m_inputSystem.setDebugCamera(nullptr);
             m_cameraCtrl = m_tppCameraCtrl.get();
+            m_renderSystem.setCamera(RenderSystem::Player);
         }
+        m_inputSystem.setDebug(debugCamera);
     } break;
     case SDL_SCANCODE_L: {
         m_resourcesMgr->loadShaders(m_resourcesFile);

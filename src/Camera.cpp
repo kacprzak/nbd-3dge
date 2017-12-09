@@ -11,12 +11,16 @@ Camera::Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, gl
     , m_ratio{m_windowSize.x / float(m_windowSize.y)}
 {
     setPerspective();
+    updateViewMatrix();
 }
 
 Camera::Camera(glm::ivec2 windowSize)
     : Camera{-1, new TransformationComponent, nullptr, windowSize}
 {
     m_ownsTransformation = true;
+
+    setPerspective();
+    updateViewMatrix();
 }
 
 Camera::~Camera()
@@ -128,6 +132,13 @@ void Camera::update(float delta)
 {
     RenderNode::update(delta);
 
+    updateViewMatrix();
+}
+
+//------------------------------------------------------------------------------
+
+void Camera::updateViewMatrix()
+{
     glm::quat orien = transformation()->orientation;
 
     const auto T    = glm::translate(glm::mat4(1.f), -transformation()->position);

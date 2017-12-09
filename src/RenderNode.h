@@ -18,6 +18,12 @@ class RenderNode
 {
   public:
     RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd);
+
+    RenderNode(const RenderNode&) = delete;
+    RenderNode& operator=(const RenderNode&) = delete;
+
+    RenderNode(RenderNode&& other);
+
     virtual ~RenderNode() = default;
 
     void setMaterial(const std::shared_ptr<Material>& material);

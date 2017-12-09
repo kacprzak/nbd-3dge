@@ -6,19 +6,22 @@
 #include "FpsCounter.h"
 #include "ShaderProgram.h"
 
+#include "Camera.h"
+
 #include <map>
 #include <set>
 
 class ResourcesMgr;
 class RenderNode;
 class Light;
-class Camera;
 class Framebuffer;
 class Skybox;
 
 class RenderSystem final
 {
   public:
+    enum CameraType { Player, Free };
+
     RenderSystem(glm::ivec2 windowSize);
     ~RenderSystem();
     RenderSystem(const RenderSystem&) = delete;
@@ -37,14 +40,15 @@ class RenderSystem final
     void setDrawNormals(bool enable, float normalLength = 1.0f);
     bool isDrawNormals() const { return m_drawNormals; }
 
-    Camera* getCamera() { return m_camera.get(); }
+    Camera* getCamera() { return m_camera; }
+    Camera* getCamera(CameraType type) { return &m_cameras.at(type); }
+
+    void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
 
     void resizeWindow(glm::ivec2 size);
 
   private:
     void setSkybox(std::shared_ptr<Skybox> skybox) { m_skybox = skybox; }
-
-    void setCamera(std::shared_ptr<Camera> camera) { m_camera = camera; }
 
     void add(std::shared_ptr<Text> actor) { m_texts.insert(actor); }
     void remove(std::shared_ptr<Text> actor) { m_texts.erase(actor); }
@@ -72,9 +76,10 @@ class RenderSystem final
     std::map<int, std::shared_ptr<RenderNode>> m_nodes;
     std::map<int, std::shared_ptr<RenderNode>> m_transparentNodes;
     std::map<int, std::shared_ptr<Light>> m_lights;
+    std::vector<Camera> m_cameras;
+    Camera* m_camera; // current camera
 
     std::shared_ptr<Skybox> m_skybox;
-    std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Text> m_cameraText;
     std::set<std::shared_ptr<Text>> m_texts;
 

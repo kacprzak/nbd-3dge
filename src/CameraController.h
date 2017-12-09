@@ -35,7 +35,7 @@ class FreeCameraController : public CameraController
   public:
     float m_cameraSpeed = 50.0f;
 
-    void execute(float deltaTime, Actor* actor) override
+    void execute(float deltaTime, Actor* /*actor*/) override
     {
         float cameraSpeedMultiplyer = 0.5f;
 
@@ -88,7 +88,7 @@ class FreeCameraController : public CameraController
 class TppCameraController : public CameraController
 {
   public:
-    void execute(float /*deltaTime*/, Actor* actor) override
+    void execute(float /*deltaTime*/, Actor* /*actor*/) override
     {
         // Fixed position relative to player
         auto orien          = player->orientation;

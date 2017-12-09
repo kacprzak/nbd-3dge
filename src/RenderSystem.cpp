@@ -22,9 +22,15 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
 
     m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
-    m_camera                             = std::make_shared<Camera>(m_windowSize);
-    m_camera->transformation()->position = {-3.5f, 11.0f, 3.9f};
-    setCamera(m_camera);
+    // Add player camera
+    m_cameras.emplace_back(m_windowSize);
+    m_cameras[Player].transformation()->position = {-3.5f, 11.0f, 3.9f};
+
+    // Add free camera
+    m_cameras.emplace_back(m_windowSize);
+    m_cameras[Free].transformation()->position = {-3.5f, 11.0f, 3.9f};
+
+    m_camera = &m_cameras.at(Player);
 }
 
 //------------------------------------------------------------------------------
@@ -155,12 +161,12 @@ void RenderSystem::draw()
     lights[0] = sun;
 
     // draw(sun, lights);
-    draw(m_camera.get(), lights);
+    draw(m_camera, lights);
 
     if (m_drawNormals) {
-        drawNormals(m_normalsShader.get(), m_camera.get(), lights);
-        drawAabb(m_aabbShader.get(), m_camera.get());
-        drawFrustum(m_frustumShader.get(), m_camera.get());
+        drawNormals(m_normalsShader.get(), m_camera, lights);
+        drawAabb(m_aabbShader.get(), m_camera);
+        drawFrustum(m_frustumShader.get(), m_camera);
     }
 }
 

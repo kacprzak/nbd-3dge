@@ -17,6 +17,20 @@ RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent
 {
 }
 
+RenderNode::RenderNode(RenderNode&& other)
+    : m_actorId{other.m_actorId}
+    , m_tr{other.m_tr}
+    , m_rd{other.m_rd}
+    , m_material{other.m_material}
+    , m_modelMatrix(other.m_modelMatrix)
+    , m_mesh{other.m_mesh}
+    , m_shaderProgram{other.m_shaderProgram}
+    , m_castsShadows{other.m_castsShadows}
+{
+    other.m_tr = nullptr;
+    other.m_rd = nullptr;
+}
+
 //------------------------------------------------------------------------------
 
 void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }

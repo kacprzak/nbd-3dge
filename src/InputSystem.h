@@ -12,14 +12,13 @@ class InputSystem
     InputSystem()                   = default;
     InputSystem(const InputSystem&) = delete;
     InputSystem& operator=(const InputSystem&) = delete;
+    InputSystem(InputSystem&&)                 = delete;
+    InputSystem& operator=(InputSystem&&) = delete;
 
     void update(float delta);
 
     void addActor(int id, ControlComponent* ctrl) { m_nodes[id] = ctrl; }
     void removeActor(int id) { m_nodes.erase(id); }
-
-    //! If ctrl is not nullptr then all events will be passed to camera only.
-    void setDebugCamera(ControlComponent* ctrl) { m_debugCamera = ctrl; }
 
     void mouseMoved(const SDL_Event& event);
     void mouseButtonPressed(const SDL_Event& event);
@@ -30,10 +29,12 @@ class InputSystem
     void setMouseRelativeMode(bool enable);
     bool isMouseRelativeMode() const { return m_mouseRelativeMode; }
 
+    void setDebug(bool debug) { m_debug = debug; }
+
   private:
     std::map<int, ControlComponent*> m_nodes;
     ControlComponent m_comp; //< Holds all input events until update is called.
-    ControlComponent* m_debugCamera = nullptr;
+    bool m_debug = false;    //< Updates only objects used in debug
 
     bool m_mouseRelativeMode = false;
 };
