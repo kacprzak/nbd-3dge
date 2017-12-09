@@ -51,7 +51,6 @@ class GameClient : public SDLWindow
 
     std::unique_ptr<CameraController> m_freeCameraCtrl;
     std::unique_ptr<CameraController> m_tppCameraCtrl;
-    CameraController* m_cameraCtrl = nullptr;
 };
 
 #endif // GAMECLIENT_H

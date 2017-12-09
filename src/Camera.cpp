@@ -30,7 +30,7 @@ Camera::~Camera()
 
 //------------------------------------------------------------------------------
 
-void Camera::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera)
+void Camera::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const
 {
     shaderProgram->use();
 

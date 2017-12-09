@@ -24,8 +24,6 @@ GameClient::GameClient(const Settings& settings, const std::shared_ptr<Resources
 
     m_tppCameraCtrl         = std::make_unique<TppCameraController>();
     m_tppCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Player)->transformation();
-
-    m_cameraCtrl = m_tppCameraCtrl.get();
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +92,8 @@ void GameClient::draw()
 void GameClient::update(float delta)
 {
     m_inputSystem.update(delta);
-    m_cameraCtrl->execute(delta, nullptr);
+    m_tppCameraCtrl->execute(delta, nullptr);
+    m_freeCameraCtrl->execute(delta, nullptr);
     m_renderSystem.update(delta);
 }
 
@@ -145,10 +144,8 @@ void GameClient::keyReleased(const SDL_Event& event)
         static bool debugCamera = false;
         debugCamera             = !debugCamera;
         if (debugCamera) {
-            m_cameraCtrl = m_freeCameraCtrl.get();
             m_renderSystem.setCamera(RenderSystem::Free);
         } else {
-            m_cameraCtrl = m_tppCameraCtrl.get();
             m_renderSystem.setCamera(RenderSystem::Player);
         }
         m_inputSystem.setDebug(debugCamera);

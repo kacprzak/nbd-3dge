@@ -24,7 +24,6 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
 
     // Add player camera
     m_cameras.emplace_back(m_windowSize);
-    m_cameras[Player].transformation()->position = {-3.5f, 11.0f, 3.9f};
 
     // Add free camera
     m_cameras.emplace_back(m_windowSize);
@@ -131,8 +130,11 @@ void RenderSystem::update(float delta)
 {
     m_fpsCounter.update(delta);
 
+    for (auto& camera : m_cameras) {
+        camera.update(delta);
+    }
+
     if (m_camera) {
-        m_camera->update(delta);
         updateCameraText();
     }
 
@@ -263,7 +265,7 @@ void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camer
 {
     glBindVertexArray(m_emptyVao);
 
-    m_camera->drawFrustum(shaderProgram, camera);
+    m_cameras.at(Player).drawFrustum(shaderProgram, camera);
 
     for (const auto& light : m_lights) {
         // light.second->setPerspective(45, 1, 100);
@@ -315,7 +317,9 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Camera& light, int casca
 void RenderSystem::resizeWindow(glm::ivec2 size)
 {
     m_windowSize = size;
-    m_camera->setWindowSize(size);
+    for (auto& camera : m_cameras) {
+        camera.setWindowSize(size);
+    }
 }
 
 //------------------------------------------------------------------------------

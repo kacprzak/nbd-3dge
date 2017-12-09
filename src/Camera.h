@@ -25,7 +25,7 @@ class Camera : public RenderNode
     {
     }
 
-    void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera);
+    void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const;
 
     void update(float delta) override;
     void setPerspective();
