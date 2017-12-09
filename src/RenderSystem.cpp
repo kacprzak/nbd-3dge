@@ -158,7 +158,8 @@ void RenderSystem::draw()
     std::array<Light*, 8> lights = {};
     Light* sun = m_lights.begin()->second.get();
 
-    drawShadows(m_shadowShader.get(), sun, lights);
+    drawShadows(m_shadowShader.get(), m_camera, sun);
+    // drawShadows(m_shadowShader.get(), &m_cameras[Player], sun);
 
     lights[0] = sun;
 
@@ -166,7 +167,7 @@ void RenderSystem::draw()
     draw(m_camera, lights);
 
     if (m_drawNormals) {
-        drawNormals(m_normalsShader.get(), m_camera, lights);
+        drawNormals(m_normalsShader.get(), m_camera);
         drawAabb(m_aabbShader.get(), m_camera);
         drawFrustum(m_frustumShader.get(), m_camera);
     }
@@ -199,33 +200,35 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
     }
 }
 
-void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camera,
-                               std::array<Light*, 8>& lights) const
+void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camera) const
 {
+    std::array<Light*, 8> lights = {};
+
     for (const auto& node : m_nodes) {
         node.second->draw(shaderProgram, camera, lights, nullptr);
     }
 }
 
-void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera,
-                               std::array<Light*, 8>& lights) const
+void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Light* light) const
 {
+    std::array<Light*, 8> lights = {};
+
     if (m_shadowMapFB) {
         glViewport(0, 0, m_shadowMapSize.x, m_shadowMapSize.y);
         // glCullFace(GL_FRONT);
 
         glm::mat4 cascadeProj[Camera::s_shadowCascadesMax];
 
-        for (int cascadeIndex = 0; cascadeIndex < m_shadowCascadesSize; ++cascadeIndex) {
-            camera->setOrtho(calcDirectionalLightProjection(*camera, cascadeIndex));
-            cascadeProj[cascadeIndex] = camera->projectionMatrix();
+        for (int cascadeIndex = m_shadowCascadesSize - 1; cascadeIndex >= 0; --cascadeIndex) {
+            light->setOrtho(calcDirectionalLightProjection(*camera, *light, cascadeIndex));
+            cascadeProj[cascadeIndex] = light->projectionMatrix();
 
             m_shadowMapFB->bindForWriting(cascadeIndex);
             glClear(GL_DEPTH_BUFFER_BIT);
 
             for (const auto& node : m_nodes) {
                 if (node.second->castsShadows())
-                    node.second->draw(shaderProgram, camera, lights, nullptr);
+                    node.second->draw(shaderProgram, light, lights, nullptr);
             }
         }
 
@@ -240,13 +243,13 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera,
             shaderProgram->setUniform("shadowSampler", shadowTextureUnit);
 
             for (int cascadeIndex = 0; cascadeIndex < m_shadowCascadesSize; ++cascadeIndex) {
-                const auto far              = m_camera->cascadeIdx2NearFar(cascadeIndex).y;
+                const auto far              = camera->cascadeIdx2NearFar(cascadeIndex).y;
                 const auto& cascadeFarIndex = "cascadeFar[" + std::to_string(cascadeIndex) + "]";
                 shaderProgram->setUniform(cascadeFarIndex.c_str(), far);
 
                 const auto& cascadeVPIndex = "cascadeVP[" + std::to_string(cascadeIndex) + "]";
                 shaderProgram->setUniform(cascadeVPIndex.c_str(),
-                                          cascadeProj[cascadeIndex] * camera->viewMatrix());
+                                          cascadeProj[cascadeIndex] * light->viewMatrix());
             }
         }
     }
@@ -288,10 +291,11 @@ std::set<ShaderProgram*> RenderSystem::getShaders() const
 
 //------------------------------------------------------------------------------
 
-Aabb RenderSystem::calcDirectionalLightProjection(const Camera& light, int cascadeIndex) const
+Aabb RenderSystem::calcDirectionalLightProjection(const Camera& camera, const Camera& light,
+                                                  int cascadeIndex) const
 {
     auto lightViewMatrix = light.viewMatrix();
-    auto frustum         = m_camera->frustum(cascadeIndex);
+    auto frustum         = camera.frustum(cascadeIndex);
     for (auto& p : frustum)
         p = lightViewMatrix * p;
 

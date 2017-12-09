@@ -55,16 +55,15 @@ class RenderSystem final
 
     void draw(const Camera* camera, std::array<Light*, 8>& lights) const;
 
-    void drawNormals(ShaderProgram* shaderProgram, const Camera* camera,
-                     std::array<Light*, 8>& lights) const;
-    void drawShadows(ShaderProgram* shaderProgram, Camera* camera,
-                     std::array<Light*, 8>& lights) const;
+    void drawNormals(ShaderProgram* shaderProgram, const Camera* camera) const;
+    void drawShadows(ShaderProgram* shaderProgram, Camera* camera, Light* light) const;
     void drawAabb(ShaderProgram* shaderProgram, const Camera* camera) const;
     void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const;
 
     std::set<ShaderProgram*> getShaders() const;
 
-    Aabb calcDirectionalLightProjection(const Camera& light, int cascadeIndex) const;
+    Aabb calcDirectionalLightProjection(const Camera& camera, const Camera& light,
+                                        int cascadeIndex) const;
     void updateCameraText();
 
     GLenum m_polygonMode = GL_FILL;
