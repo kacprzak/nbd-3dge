@@ -1,11 +1,11 @@
 #include "GameClient.h"
 
+#include "Camera.h"
 #include "CameraController.h"
 #include "Shader.h"
 #include "Skybox.h"
 #include "Terrain.h"
 #include "Texture.h"
-#include "Camera.h"
 
 GameClient::GameClient(const Settings& settings, const std::shared_ptr<ResourcesMgr>& resourcesMgr)
     : SDLWindow{settings}
@@ -18,10 +18,10 @@ GameClient::GameClient(const Settings& settings, const std::shared_ptr<Resources
             std::make_shared<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     }
 
-    m_freeCameraCtrl         = std::make_unique<FreeCamera>();
+    m_freeCameraCtrl         = std::make_unique<FreeCameraController>();
     m_freeCameraCtrl->camera = m_renderSystem.getCamera()->transformation();
 
-    m_tppCameraCtrl         = std::make_unique<TppCamera>();
+    m_tppCameraCtrl         = std::make_unique<TppCameraController>();
     m_tppCameraCtrl->camera = m_renderSystem.getCamera()->transformation();
 
     m_cameraCtrl = m_tppCameraCtrl.get();
@@ -93,7 +93,7 @@ void GameClient::draw()
 void GameClient::update(float delta)
 {
     m_inputSystem.update(delta);
-    m_cameraCtrl->update(delta);
+    m_cameraCtrl->execute(delta, nullptr);
     m_renderSystem.update(delta);
 }
 

@@ -1,15 +1,14 @@
 #ifndef CAMERACONTROLLER_H
 #define CAMERACONTROLLER_H
 
+#include "Components.h"
+#include "Script.h"
+
 #include <glm/glm.hpp>
 
-class CameraController
+class CameraController : public Script
 {
   public:
-    virtual ~CameraController() = default;
-
-    virtual void update(float /*deltaTime*/) = 0;
-
     TransformationComponent* camera = nullptr;
     TransformationComponent* player = nullptr;
     ControlComponent cameraActions;
@@ -17,7 +16,7 @@ class CameraController
 
 //------------------------------------------------------------------------------
 
-class FreeCamera : public CameraController
+class FreeCameraController : public CameraController
 {
   private:
     void rotateCamera(float yaw, float pitch, float /*roll*/)
@@ -36,7 +35,7 @@ class FreeCamera : public CameraController
   public:
     float m_cameraSpeed = 50.0f;
 
-    void update(float deltaTime) override
+    void execute(float deltaTime, Actor* actor) override
     {
         float cameraSpeedMultiplyer = 0.5f;
 
@@ -86,13 +85,11 @@ class FreeCamera : public CameraController
 
 //------------------------------------------------------------------------------
 
-class TppCamera : public CameraController
+class TppCameraController : public CameraController
 {
   public:
-    void update(float /*deltaTime*/) override
+    void execute(float /*deltaTime*/, Actor* actor) override
     {
-        if (!player) return;
-
         // Fixed position relative to player
         auto orien          = player->orientation;
         const auto delta    = glm::rotate(orien, glm::vec4{0.f, 1.5f, -6.f, 0.f});

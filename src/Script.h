@@ -6,6 +6,8 @@
 class Script
 {
   public:
+    virtual ~Script() = default;
+
     virtual void execute(float deltaTime, Actor* actor) = 0;
 };
 
