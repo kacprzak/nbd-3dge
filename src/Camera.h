@@ -28,10 +28,11 @@ class Camera : public RenderNode
     void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const;
 
     void update(float delta) override;
-    void setPerspective();
-    void setPerspective(float fov, float near, float far);
-    void setOrtho();
-    void setOrtho(const Aabb& aabb);
+    void setPerspective(bool updateCascades = true);
+    void setPerspective(float fov, float near, float far, bool updateCascades = true);
+    void setOrtho(bool updateCascades = true);
+    void setOrtho(const Aabb& aabb, bool updateCascades = true);
+    void setOrtho(int cascadeIndex, const Aabb& aabb);
 
     void setWindowSize(glm::ivec2 size);
 
@@ -48,6 +49,7 @@ class Camera : public RenderNode
     static const int s_shadowCascadesMax = 4;
 
     glm::vec2 cascadeIdx2NearFar(int cascadeIndex) const;
+    void setCascade(int cascadeIndex);
 
   protected:
     void updateViewMatrix();
@@ -71,7 +73,8 @@ class Camera : public RenderNode
     glm::mat4 m_viewMatrixInv;
     glm::mat4 m_cascadeProjectionMatrix[s_shadowCascadesMax];
 
-    std::array<glm::vec4, 8> m_frustum;
+    Frustum m_frustum;
+    std::array<Frustum, s_shadowCascadesMax> m_cascadeFrustums;
     bool m_perspective        = true;
     bool m_ownsTransformation = false;
 };

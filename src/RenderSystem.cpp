@@ -159,10 +159,11 @@ void RenderSystem::draw()
     Light* sun = m_lights.begin()->second.get();
 
     drawShadows(m_shadowShader.get(), m_camera, sun);
-    // drawShadows(m_shadowShader.get(), &m_cameras[Player], sun);
+    //drawShadows(m_shadowShader.get(), &m_cameras[Player], sun);
 
     lights[0] = sun;
 
+    // sun->setCascade(0);
     // draw(sun, lights);
     draw(m_camera, lights);
 
@@ -219,11 +220,14 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
         glm::mat4 cascadeProj[Camera::s_shadowCascadesMax];
 
-        for (int cascadeIndex = m_shadowCascadesSize - 1; cascadeIndex >= 0; --cascadeIndex) {
-            light->setOrtho(calcDirectionalLightProjection(*camera, *light, cascadeIndex));
-            cascadeProj[cascadeIndex] = light->projectionMatrix();
+        for (int ci = 0; ci < m_shadowCascadesSize; ++ci) {
+            const auto& proj = calcDirectionalLightProjection(*camera, *light, ci);
+            // light->setOrtho(proj, false);
+            light->setOrtho(ci, proj);
+            light->setCascade(ci);
+            cascadeProj[ci] = light->projectionMatrix();
 
-            m_shadowMapFB->bindForWriting(cascadeIndex);
+            m_shadowMapFB->bindForWriting(ci);
             glClear(GL_DEPTH_BUFFER_BIT);
 
             for (const auto& node : m_nodes) {
@@ -242,14 +246,14 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
             shaderProgram->use();
             shaderProgram->setUniform("shadowSampler", shadowTextureUnit);
 
-            for (int cascadeIndex = 0; cascadeIndex < m_shadowCascadesSize; ++cascadeIndex) {
-                const auto far              = camera->cascadeIdx2NearFar(cascadeIndex).y;
-                const auto& cascadeFarIndex = "cascadeFar[" + std::to_string(cascadeIndex) + "]";
+            for (int ci = 0; ci < m_shadowCascadesSize; ++ci) {
+                const auto far              = camera->cascadeIdx2NearFar(ci).y;
+                const auto& cascadeFarIndex = "cascadeFar[" + std::to_string(ci) + "]";
                 shaderProgram->setUniform(cascadeFarIndex.c_str(), far);
 
-                const auto& cascadeVPIndex = "cascadeVP[" + std::to_string(cascadeIndex) + "]";
+                const auto& cascadeVPIndex = "cascadeVP[" + std::to_string(ci) + "]";
                 shaderProgram->setUniform(cascadeVPIndex.c_str(),
-                                          cascadeProj[cascadeIndex] * light->viewMatrix());
+                                          cascadeProj[ci] * light->viewMatrix());
             }
         }
     }
@@ -272,7 +276,7 @@ void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camer
 
     for (const auto& light : m_lights) {
         // light.second->setPerspective(45, 1, 100);
-        // light.second->setOrtho(Aabb{{-10, -10, 1}, {10, 10, 100}});
+        // light.second->setOrtho(Aabb{{-10, -10, -100}, {10, 10, -1}});
         light.second->drawFrustum(shaderProgram, camera);
         // light.second->setOrtho();
     }
