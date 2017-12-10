@@ -11,7 +11,6 @@ uniform mat4 cascadeVP[MAX_CASCADES];
 
 out VS_OUT
 {
-    float clipZ;
     vec3 position_shadowMap[MAX_CASCADES];
     vec2 texCoord;
     vec3 position_v;
@@ -64,5 +63,4 @@ void main()
     vs_out.texCoord   = in_texCoord;
     vs_out.position_v = position_eye.xyz;
     vs_out.position_w = position_world.xyz;
-    vs_out.clipZ      = gl_Position.z;
 }

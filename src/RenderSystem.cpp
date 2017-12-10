@@ -72,6 +72,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
                 if (boost::starts_with(rd->mesh, "heightfield:")) {
                     node = std::make_shared<Terrain>(id, tr, rd,
                                                      *resourcesMgr.getHeightfield(rd->mesh));
+                    node->setCastShadows(true);
                 } else {
                     node         = std::make_shared<RenderNode>(id, tr, rd);
                     auto meshPtr = resourcesMgr.getMesh(rd->mesh);
@@ -159,7 +160,7 @@ void RenderSystem::draw()
     Light* sun = m_lights.begin()->second.get();
 
     drawShadows(m_shadowShader.get(), m_camera, sun);
-    //drawShadows(m_shadowShader.get(), &m_cameras[Player], sun);
+    // drawShadows(m_shadowShader.get(), &m_cameras[Player], sun);
 
     lights[0] = sun;
 
@@ -216,13 +217,12 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
     if (m_shadowMapFB) {
         glViewport(0, 0, m_shadowMapSize.x, m_shadowMapSize.y);
-        // glCullFace(GL_FRONT);
+        //glCullFace(GL_FRONT);
 
         glm::mat4 cascadeProj[Camera::s_shadowCascadesMax];
 
         for (int ci = 0; ci < m_shadowCascadesSize; ++ci) {
             const auto& proj = calcDirectionalLightProjection(*camera, *light, ci);
-            // light->setOrtho(proj, false);
             light->setOrtho(ci, proj);
             light->setCascade(ci);
             cascadeProj[ci] = light->projectionMatrix();
@@ -236,7 +236,7 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
             }
         }
 
-        // glCullFace(GL_BACK);
+        //glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.x, m_windowSize.y);
 

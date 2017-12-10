@@ -58,7 +58,7 @@ float calcShadowRev(vec3 position_shadowMap, int cascadeIdx, float cosTheta)
     vec4 coord = vec4(position_shadowMap.x, position_shadowMap.y, cascadeIdx, position_shadowMap.z);
 
     float bias = 0.005 * tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
-    bias       = clamp(bias, 0, 0.01);
+    bias       = clamp(bias, 0, 0.001);
 
     coord.w -= bias;
 
@@ -109,5 +109,6 @@ void main()
     fragColor.rgb += material.specular * fs_in.specular * shadow;
     fragColor.a = 1.0;
 
-    // fragColor[cascadeIdx] = mix(fragColor[cascadeIdx], 1.0, 0.05); // return;
+    // Cascades debug colors
+    //fragColor[cascadeIdx] = mix(fragColor[cascadeIdx], 1.0, 0.05); // return;
 }

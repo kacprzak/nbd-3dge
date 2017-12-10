@@ -16,7 +16,6 @@ uniform mat4 cascadeVP[MAX_CASCADES];
 
 out VS_OUT
 {
-    float clipZ;
     vec3 position_shadowMap[MAX_CASCADES];
     vec3 position_w;
     vec3 position_v;
@@ -44,7 +43,6 @@ void main()
     vs_out.position_v = vec3(viewMatrix * vec4(vs_out.position_w, 1.0));
     vs_out.texCoord   = in_texCoord;
     gl_Position       = projectionMatrix * vec4(vs_out.position_v, 1.0);
-    vs_out.clipZ      = gl_Position.z;
 
     // normal = in_normal;
     // tangent = in_tangent;

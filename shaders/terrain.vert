@@ -83,5 +83,5 @@ void main()
     vs_out.texCoord   = in_texCoord;
     vs_out.position_w = position_world.xyz;
     vs_out.normal_w   = normal_world;
-    vs_out.clipZ      = gl_Position.z;
+    vs_out.clipZ      = -position_eye.z;
 }

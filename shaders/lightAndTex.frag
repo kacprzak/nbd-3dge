@@ -10,7 +10,6 @@ uniform float cascadeFar[MAX_CASCADES];
 
 in VS_OUT
 {
-    float clipZ;
     vec3 position_shadowMap[MAX_CASCADES];
     vec2 texCoord;
     vec3 position_v;
@@ -56,7 +55,7 @@ float calcShadowRev(vec3 position_shadowMap, int cascadeIdx, float cosTheta)
     vec4 coord = vec4(position_shadowMap.x, position_shadowMap.y, cascadeIdx, position_shadowMap.z);
 
     float bias = 0.005 * tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
-    bias       = clamp(bias, 0, 0.01);
+    bias       = clamp(bias, 0, 0.001);
 
     coord.w -= bias;
 
@@ -99,7 +98,7 @@ void main()
     float cosTheta = clamp(dot(fs_in.normal_w, surfaceToLight), 0.0, 1.0);
     // fragColor = vec4(cosTheta, 0, 0, 1); return;
 
-    int cascadeIdx = cascadeIndex(fs_in.clipZ);
+    int cascadeIdx = cascadeIndex(-fs_in.position_v.z);
     // fragColor = vec4(0); fragColor[cascadeIdx] = 1.0; return;
     float shadow = calcShadowRev(fs_in.position_shadowMap[cascadeIdx], cascadeIdx, cosTheta);
 
