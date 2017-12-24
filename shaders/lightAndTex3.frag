@@ -1,5 +1,6 @@
 #version 330
 
+const int MAX_LIGHTS   = 8;
 const int MAX_CASCADES = 4;
 
 uniform sampler2D sampler0;
@@ -11,7 +12,7 @@ uniform float cascadeFar[MAX_CASCADES];
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
-uniform mat4 lightMVP;
+uniform mat4 lightMVP[MAX_LIGHTS];
 
 in VS_OUT
 {
@@ -33,7 +34,7 @@ struct Light
     vec3 specular;
 };
 
-uniform Light lights[8];
+uniform Light lights[MAX_LIGHTS];
 
 struct Material
 {

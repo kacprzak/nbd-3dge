@@ -13,10 +13,12 @@
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/stream.hpp>
 
+#define SHADOW_MAP_SIZE 1024
+
 RenderSystem::RenderSystem(glm::ivec2 windowSize)
     : m_shadowCascadesSize{Camera::s_shadowCascadesMax}
     , m_windowSize{windowSize}
-    , m_shadowMapSize{2048, 2048, m_shadowCascadesSize}
+    , m_shadowMapSize{SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, m_shadowCascadesSize}
 {
     glGenVertexArrays(1, &m_emptyVao);
 
@@ -217,7 +219,8 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
     if (m_shadowMapFB) {
         glViewport(0, 0, m_shadowMapSize.x, m_shadowMapSize.y);
-        //glCullFace(GL_FRONT);
+        glDisable(GL_CULL_FACE);
+        // glCullFace(GL_FRONT);
 
         glm::mat4 cascadeProj[Camera::s_shadowCascadesMax];
 
@@ -236,7 +239,8 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
             }
         }
 
-        //glCullFace(GL_BACK);
+        // glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.x, m_windowSize.y);
 
