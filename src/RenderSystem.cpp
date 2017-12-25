@@ -74,7 +74,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
                 if (boost::starts_with(rd->mesh, "heightfield:")) {
                     node = std::make_shared<Terrain>(id, tr, rd,
                                                      *resourcesMgr.getHeightfield(rd->mesh));
-                    node->setCastShadows(true);
+                    //node->setCastShadows(true);
                 } else {
                     node         = std::make_shared<RenderNode>(id, tr, rd);
                     auto meshPtr = resourcesMgr.getMesh(rd->mesh);
@@ -219,7 +219,7 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
     if (m_shadowMapFB) {
         glViewport(0, 0, m_shadowMapSize.x, m_shadowMapSize.y);
-        glDisable(GL_CULL_FACE);
+        // glDisable(GL_CULL_FACE);
         // glCullFace(GL_FRONT);
 
         glm::mat4 cascadeProj[Camera::s_shadowCascadesMax];
@@ -240,7 +240,7 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
         }
 
         // glCullFace(GL_BACK);
-        glEnable(GL_CULL_FACE);
+        // glEnable(GL_CULL_FACE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, m_windowSize.x, m_windowSize.y);
 
@@ -320,6 +320,17 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Camera& camera, const Ca
             ans.maximum.z = std::max(ans.maximum.z, aabb.maximum.z);
         }
     }
+
+    // Shimmering edges
+    glm::vec2 worldUnitsPerTexel;
+    worldUnitsPerTexel.x = (ans.maximum.x - ans.minimum.x) / SHADOW_MAP_SIZE;
+    worldUnitsPerTexel.y = (ans.maximum.y - ans.minimum.y) / SHADOW_MAP_SIZE;
+
+    ans.minimum.x = std::floor(ans.minimum.x / worldUnitsPerTexel.x) * worldUnitsPerTexel.x;
+    ans.minimum.y = std::floor(ans.minimum.y / worldUnitsPerTexel.y) * worldUnitsPerTexel.y;
+
+    ans.maximum.x = std::ceil(ans.maximum.x / worldUnitsPerTexel.x) * worldUnitsPerTexel.x;
+    ans.maximum.y = std::ceil(ans.maximum.y / worldUnitsPerTexel.y) * worldUnitsPerTexel.y;
 
     return ans;
 }
