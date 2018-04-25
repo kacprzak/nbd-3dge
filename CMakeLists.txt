@@ -5,12 +5,14 @@ set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 if( WIN32 )
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  include( ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake )
+  string( REGEX REPLACE "/bullet$" "" CONAN_INCLUDE_DIRS_BULLET ${CONAN_INCLUDE_DIRS_BULLET} )
+  include_directories( ${CONAN_INCLUDE_DIRS_BULLET} )
+
   conan_basic_setup()
   
-  include_directories( ${CONAN_INCLUDE_DIRS_BULLET3}/bullet )
-  set( LINK_LIBS ${CONAN_LIBS} )
-  list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62 )
+  #set( LINK_LIBS ${CONAN_LIBS} )
+  #list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62 )
   set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
 endif()
 
