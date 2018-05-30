@@ -20,10 +20,11 @@ endif()
 
 if( UNIX )
   set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
+  set( GLM_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/external/glm" )
 
   find_package( OpenGL REQUIRED )
   find_package( GLEW REQUIRED )
-  find_package( GLM REQUIRED )
+  #find_package( GLM REQUIRED )
   find_package( SDL2 REQUIRED )
   find_package( SDL2_image REQUIRED )
   find_package( Bullet REQUIRED )
