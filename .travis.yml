@@ -2,6 +2,10 @@ language: cpp
 
 compiler:
   - clang
+  
+addons:
+  apt:
+    update: true
 
 git:
   lfs_skip_smudge: true
