@@ -3,6 +3,10 @@ language: cpp
 compiler:
   - gcc
 
+cache:
+  directories:
+  - $HOME/.conan
+
 python:
   - "3.4"
 
