@@ -3,9 +3,6 @@ language: cpp
 compiler:
   - gcc
 
-python:
-  - "3.6"
-  
 addons:
   apt:
     sources:
@@ -25,7 +22,7 @@ before_install:
   
 install:
   # Install conan
-  - pip install conan
+  - pip3 --user -r install conan
   # Automatic detection of your arch, compiler, etc.
   - conan user
   - sudo ./install-dependencies.sh
