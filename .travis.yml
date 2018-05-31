@@ -21,9 +21,14 @@ before_install:
   - eval "${MATRIX_EVAL}"
   
 install:
+  # Install conan
+  - pip install conan
+  # Automatic detection of your arch, compiler, etc.
+  - conan user
   - sudo ./install-dependencies.sh
 
 script:
   - mkdir build && cd build
+  - conan install .. --build=missing -s build_type=Release -s compiler.libcxx=libstdc++11
   - cmake -DCMAKE_BUILD_TYPE=Release ../
   - make

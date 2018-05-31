@@ -1,7 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#define BOOST_LOG_DYN_LINK
+//#define BOOST_LOG_DYN_LINK
 
 #include <boost/log/trivial.hpp>
 
