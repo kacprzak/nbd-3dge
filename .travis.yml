@@ -21,7 +21,7 @@ before_install:
   - eval "${MATRIX_EVAL}"
   
 install:
-  pip install --upgrade pip
+  - pip install --upgrade pip
   # Install conan
   - pip install conan
   # Automatic detection of your arch, compiler, etc.
