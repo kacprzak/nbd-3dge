@@ -10,12 +10,6 @@ bullet/2.87@bincrafters/stable
 cmake
 
 [options]
-sdl2:alsa=False
-sdl2:jack=False
-sdl2:pulse=False
-sdl2:nas=False
-sdl2:esd=False
-sdl2:arts=False
 
 [imports]
 bin, *.dll -> ./bin
