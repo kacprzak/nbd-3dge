@@ -34,7 +34,7 @@ class Texture final
     void create2D(const TextureData& texData);
     void createCube(const TextureData& texData);
 
-    void createTexture(const char* filename);
+    void createTexture(const char* filename, bool linearColor);
 
     Texture(GLenum target);
 

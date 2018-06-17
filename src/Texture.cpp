@@ -23,7 +23,7 @@ Texture::Texture(GLenum target)
 Texture::Texture(const TextureData& texData)
     : Texture{GL_TEXTURE_2D}
 {
-    createTexture(texData.filename.c_str());
+    createTexture(texData.filename.c_str(), texData.linearColor);
 
     if (m_levels > 1)
         glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -116,19 +116,45 @@ void Texture::setRepeat()
 
 //==============================================================================
 
+gli::gl::internal_format to_srgb(gli::gl::internal_format iformat)
+{
+    using namespace gli;
+
+    switch (iformat) {
+    case gl::INTERNAL_RGB_UNORM:
+    case gl::INTERNAL_RGB8_UNORM:
+        return gl::INTERNAL_SRGB8;
+    case gl::INTERNAL_RGBA_UNORM:
+    case gl::INTERNAL_RGBA8_UNORM:
+        return gl::INTERNAL_SRGB8_ALPHA8;
+    case gl::INTERNAL_RGB_DXT1:
+        return gl::INTERNAL_SRGB_DXT1;
+    case gl::INTERNAL_RGBA_DXT1:
+        return gl::INTERNAL_SRGB_ALPHA_DXT1;
+    case gl::INTERNAL_RGBA_DXT3:
+        return gl::INTERNAL_SRGB_ALPHA_DXT3;
+    case gl::INTERNAL_RGBA_DXT5:
+        return gl::INTERNAL_SRGB_ALPHA_DXT5;
+    default:
+        return iformat;
+    }
+}
+
 // Filename can be KTX or DDS files
-void Texture::createTexture(char const* Filename)
+void Texture::createTexture(char const* Filename, bool linearColor)
 {
 	gli::texture Texture = gli::load(Filename);
 	if(Texture.empty())
             throw std::runtime_error("Texture load error: " + std::string(Filename));
 
 	gli::gl GL(gli::gl::PROFILE_GL33);
-	gli::gl::format const Format = GL.translate(Texture.format(), Texture.swizzles());
+    gli::gl::format Format = GL.translate(Texture.format(), Texture.swizzles());
+
+    if (!linearColor)
+        Format.Internal = to_srgb(Format.Internal);
+
 	m_target = GL.translate(Texture.target());
 
-	//GLuint TextureName = 0;
-	//glGenTextures(1, &TextureName);
 	glBindTexture(m_target, m_textureId);
 	glTexParameteri(m_target, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(m_target, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(Texture.levels() - 1));
@@ -140,9 +166,9 @@ void Texture::createTexture(char const* Filename)
 	glm::tvec3<GLsizei> const Extent(Texture.extent());
 	GLsizei const FaceTotal = static_cast<GLsizei>(Texture.layers() * Texture.faces());
 
-    m_w = Extent.x;
-    m_h = Extent.y;
-    m_levels = Texture.levels();
+        m_w = Extent.x;
+        m_h = Extent.y;
+        m_levels = Texture.levels();
 
 	switch(Texture.target())
 	{
