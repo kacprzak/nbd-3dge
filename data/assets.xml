@@ -69,8 +69,8 @@
 
   <heightfield>
     <name>terrain-heightmap</name>
-    <file>terrain-heightmap-01.png</file>
-    <amplitude>15</amplitude>
+    <file>terrain-heightmap-01.ktx</file>
+    <amplitude>30</amplitude>
   </heightfield>
 
   <!--mesh>

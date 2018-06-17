@@ -17,8 +17,9 @@ class ObjLoader : public Loader
 
     struct OpenGlVertex
     {
-        glm::vec3 p, n;
-        glm::vec2 t;
+        glm::vec3 p{};
+        glm::vec3 n{};
+        glm::vec2 t{};
 
         bool operator==(const OpenGlVertex& other) const
         {

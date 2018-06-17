@@ -3,31 +3,35 @@
 #include "Logger.h"
 
 #include <SDL.h>
-#include <SDL_image.h>
 
 #include <glm/glm.hpp>
+#include <gli/gl.hpp>
+#include <gli/gli.hpp>
 
 #include <array>
-
-static GLenum textureFormat(SDL_Surface** surface);
-static int SDL_InvertSurface(SDL_Surface* image);
-
-//==============================================================================
 
 Texture::Texture(GLenum target)
     : m_target{target}
 {
     glGenTextures(1, &m_textureId);
     glGenSamplers(1, &m_samplerId);
+
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 Texture::Texture(const TextureData& texData)
     : Texture{GL_TEXTURE_2D}
 {
-    if (texData.filenames.size() == 1)
-        create2D(texData);
+    createTexture(texData.filename.c_str());
+
+    if (m_levels > 1)
+        glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    if (texData.clamp)
+        setClampToEdge();
     else
-        createCube(texData);
+        setRepeat();
 }
 
 Texture::Texture(Texture&& other)
@@ -110,222 +114,127 @@ void Texture::setRepeat()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
-void Texture::create2D(const TextureData& texData)
-{
-    m_target = GL_TEXTURE_2D;
-
-    SDL_Surface* surface = IMG_Load(texData.filenames.at(0).c_str());
-
-    if (!surface) {
-        throw std::runtime_error("SDL_Image load error: " + std::string(IMG_GetError()));
-    }
-
-    // Top down inversion
-    if (SDL_InvertSurface(surface) != 0) {
-        SDL_FreeSurface(surface);
-        throw std::runtime_error("SDL Error: " + std::string(SDL_GetError()));
-    }
-
-    m_w = surface->w;
-    m_h = surface->h;
-
-    glBindTexture(m_target, m_textureId);
-
-    GLenum format   = textureFormat(&surface);
-    GLint intFormat = formatToInternalFormat(format, texData.linearColor);
-
-    SDL_LockSurface(surface);
-    glTexImage2D(m_target, 0, intFormat, m_w, m_h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
-    SDL_UnlockSurface(surface);
-
-    SDL_FreeSurface(surface);
-
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    LOG_INFO << "Loaded Tex2D:   " << m_textureId << " | " << texData.name;
-    LOG_TRACE << "\t(" << m_w << "x" << m_h << ") " << formatToString(format) << "->"
-              << internalFormatToString(intFormat);
-
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    if (texData.clamp)
-        setClampToEdge();
-    else
-        setRepeat();
-}
-
-void Texture::createCube(const TextureData& texData)
-{
-    m_target = GL_TEXTURE_CUBE_MAP;
-    GLenum format;
-    GLint intFormat;
-
-    glBindTexture(m_target, m_textureId);
-
-    for (size_t i = 0; i < 6; ++i) {
-        SDL_Surface* surface = IMG_Load(texData.filenames.at(i).c_str());
-
-        if (!surface) {
-            throw std::runtime_error("SDL_Image load error: " + std::string(IMG_GetError()));
-        }
-
-        m_w = surface->w;
-        m_h = surface->h;
-
-        format    = textureFormat(&surface);
-        intFormat = formatToInternalFormat(format, texData.linearColor);
-
-        SDL_LockSurface(surface);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, intFormat, m_w, m_h, 0, format,
-                     GL_UNSIGNED_BYTE, surface->pixels);
-        SDL_UnlockSurface(surface);
-
-        SDL_FreeSurface(surface);
-    }
-
-    LOG_INFO << "Loaded TexCube: " << m_textureId << " | " << texData.name;
-    LOG_TRACE << "\t(" << m_w << "x" << m_h << ") " << formatToString(format) << "->"
-              << internalFormatToString(intFormat);
-
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    if (texData.clamp)
-        setClampToEdge();
-    else
-        setRepeat();
-}
-
-//------------------------------------------------------------------------------
-
-GLint Texture::formatToInternalFormat(GLenum format, bool linearColor)
-{
-    switch (format) {
-    case GL_RED: return GL_LUMINANCE8;
-    case GL_RG: return GL_RG8;
-    case GL_RGB:
-    case GL_BGR: return linearColor ? GL_RGB8 : GL_SRGB8;
-    case GL_RGBA:
-    case GL_BGRA: return linearColor ? GL_RGBA8 : GL_SRGB8_ALPHA8;
-    }
-    LOG_WARNING << "Unknown format: " << format;
-
-    return GL_RGBA8;
-}
-
-//------------------------------------------------------------------------------
-
-std::string Texture::formatToString(GLenum format)
-{
-    switch (format) {
-    case GL_RED: return "GL_RED";
-    case GL_RG: return "GL_RG";
-    case GL_RGB: return "GL_RGB";
-    case GL_BGR: return "GL_BGR";
-    case GL_RGBA: return "GL_RGBA";
-    case GL_BGRA: return "GL_BGRA";
-    default: return "Unknown format";
-    }
-}
-
-//------------------------------------------------------------------------------
-
-std::string Texture::internalFormatToString(GLint internalFormat)
-{
-    switch (internalFormat) {
-    case GL_LUMINANCE8: return "GL_LUMINANCE8";
-    case GL_RGB8: return "GL_RGB8";
-    case GL_RGBA8: return "GL_RGBA8";
-    case GL_SRGB8: return "GL_SRGB8";
-    case GL_SRGB8_ALPHA8: return "GL_SRGB8_ALPHA8";
-    default: return "Unknown internalFormat";
-    }
-}
-
 //==============================================================================
 
-static GLenum textureFormat(SDL_Surface** surface)
+// Filename can be KTX or DDS files
+void Texture::createTexture(char const* Filename)
 {
-    int format;
+	gli::texture Texture = gli::load(Filename);
+	if(Texture.empty())
+            throw std::runtime_error("Texture load error: " + std::string(Filename));
 
-    // work out what format to tell glTexImage2D to use...
-    if ((*surface)->format->BytesPerPixel == 3) { // RGB 24bit
-        format                                      = GL_RGB;
-        if ((*surface)->format->Bshift == 0) format = GL_BGR;
-    } else if ((*surface)->format->BytesPerPixel == 4) { // RGBA 32bit
-        format                                      = GL_RGBA;
-        if ((*surface)->format->Bshift == 0) format = GL_BGRA;
-    } else {
-        // Convert to 32 bits.
-        SDL_PixelFormat fmt;
-        memset(&fmt, 0, sizeof(fmt));
-        fmt.format        = SDL_PIXELFORMAT_RGBA8888;
-        fmt.BitsPerPixel  = 32;
-        fmt.BytesPerPixel = 4;
-        fmt.Rmask         = 0xff;
-        fmt.Gmask         = 0xff00;
-        fmt.Bmask         = 0xff0000;
-        fmt.Amask         = 0xff000000;
+	gli::gl GL(gli::gl::PROFILE_GL33);
+	gli::gl::format const Format = GL.translate(Texture.format(), Texture.swizzles());
+	m_target = GL.translate(Texture.target());
 
-        SDL_Surface* nimg = SDL_ConvertSurface(*surface, &fmt, 0);
+	//GLuint TextureName = 0;
+	//glGenTextures(1, &TextureName);
+	glBindTexture(m_target, m_textureId);
+	glTexParameteri(m_target, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(m_target, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(Texture.levels() - 1));
+	glTexParameteri(m_target, GL_TEXTURE_SWIZZLE_R, Format.Swizzles[0]);
+	glTexParameteri(m_target, GL_TEXTURE_SWIZZLE_G, Format.Swizzles[1]);
+	glTexParameteri(m_target, GL_TEXTURE_SWIZZLE_B, Format.Swizzles[2]);
+	glTexParameteri(m_target, GL_TEXTURE_SWIZZLE_A, Format.Swizzles[3]);
 
-        if (!nimg) {
-            LOG_WARNING << "SDL error: " << SDL_GetError();
-            return 0;
-        }
+	glm::tvec3<GLsizei> const Extent(Texture.extent());
+	GLsizei const FaceTotal = static_cast<GLsizei>(Texture.layers() * Texture.faces());
 
-        // Done converting.
-        SDL_FreeSurface(*surface);
-        *surface = nimg;
-        format   = GL_RGBA;
-    }
-    return format;
-}
+    m_w = Extent.x;
+    m_h = Extent.y;
+    m_levels = Texture.levels();
 
-//------------------------------------------------------------------------------
-// Code from
-// http://www.gribblegames.com/articles/game_programming/sdlgl/invert_sdl_surfaces.html
-//
-static int invert_image(int pitch, int height, void* image_pixels)
-{
-    int index;
-    void* temp_row;
-    int height_div_2;
+	switch(Texture.target())
+	{
+	case gli::TARGET_1D:
+		glTexStorage1D(
+			m_target, static_cast<GLint>(Texture.levels()), Format.Internal, Extent.x);
+		break;
+	case gli::TARGET_1D_ARRAY:
+	case gli::TARGET_2D:
+	case gli::TARGET_CUBE:
+		glTexStorage2D(
+			m_target, static_cast<GLint>(Texture.levels()), Format.Internal,
+            Extent.x, Texture.target() != gli::TARGET_1D_ARRAY ? Extent.y : FaceTotal);
+		break;
+	case gli::TARGET_2D_ARRAY:
+	case gli::TARGET_3D:
+	case gli::TARGET_CUBE_ARRAY:
+		glTexStorage3D(
+			m_target, static_cast<GLint>(Texture.levels()), Format.Internal,
+			Extent.x, Extent.y,
+			Texture.target() == gli::TARGET_3D ? Extent.z : FaceTotal);
+		break;
+	default:
+		assert(0);
+		break;
+	}
 
-    temp_row = (void*)malloc(pitch);
-    if (NULL == temp_row) {
-        SDL_SetError("Not enough memory for image inversion");
-        return -1;
-    }
-    // if height is odd, don't need to swap middle row
-    height_div_2 = (int)(height * .5);
-    for (index = 0; index < height_div_2; ++index) {
-        // uses string.h
-        memcpy((Uint8*)temp_row, (Uint8*)(image_pixels) + pitch * index, pitch);
+	for(std::size_t Layer = 0; Layer < Texture.layers(); ++Layer)
+	for(std::size_t Face = 0; Face < Texture.faces(); ++Face)
+	for(std::size_t Level = 0; Level < Texture.levels(); ++Level)
+	{
+		GLsizei const LayerGL = static_cast<GLsizei>(Layer);
+		glm::tvec3<GLsizei> Extent(Texture.extent(Level));
+        auto target = gli::is_target_cube(Texture.target())
+			? static_cast<GLenum>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + Face)
+			: m_target;
 
-        memcpy((Uint8*)(image_pixels) + pitch * index,
-               (Uint8*)(image_pixels) + pitch * (height - index - 1), pitch);
-
-        memcpy((Uint8*)(image_pixels) + pitch * (height - index - 1), temp_row, pitch);
-    }
-    free(temp_row);
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-
-// This is the function you want to call!
-static int SDL_InvertSurface(SDL_Surface* image)
-{
-    if (NULL == image) {
-        SDL_SetError("Surface is NULL");
-        return -1;
-    }
-    if (SDL_LockSurface(image) != 0) {
-        return -1;
-    }
-    int err = invert_image(image->pitch, image->h, image->pixels);
-    SDL_UnlockSurface(image);
-    return err;
+		switch(Texture.target())
+		{
+		case gli::TARGET_1D:
+			if(gli::is_compressed(Texture.format()))
+				glCompressedTexSubImage1D(
+                    target, static_cast<GLint>(Level), 0, Extent.x,
+					Format.Internal, static_cast<GLsizei>(Texture.size(Level)),
+					Texture.data(Layer, Face, Level));
+			else
+				glTexSubImage1D(
+                    target, static_cast<GLint>(Level), 0, Extent.x,
+					Format.External, Format.Type,
+					Texture.data(Layer, Face, Level));
+			break;
+		case gli::TARGET_1D_ARRAY:
+		case gli::TARGET_2D:
+		case gli::TARGET_CUBE:
+			if(gli::is_compressed(Texture.format()))
+				glCompressedTexSubImage2D(
+                    target, static_cast<GLint>(Level),
+					0, 0,
+					Extent.x,
+					Texture.target() == gli::TARGET_1D_ARRAY ? LayerGL : Extent.y,
+					Format.Internal, static_cast<GLsizei>(Texture.size(Level)),
+					Texture.data(Layer, Face, Level));
+			else
+				glTexSubImage2D(
+                    target, static_cast<GLint>(Level),
+					0, 0,
+					Extent.x,
+					Texture.target() == gli::TARGET_1D_ARRAY ? LayerGL : Extent.y,
+					Format.External, Format.Type,
+					Texture.data(Layer, Face, Level));
+			break;
+		case gli::TARGET_2D_ARRAY:
+		case gli::TARGET_3D:
+		case gli::TARGET_CUBE_ARRAY:
+			if(gli::is_compressed(Texture.format()))
+				glCompressedTexSubImage3D(
+                    target, static_cast<GLint>(Level),
+					0, 0, 0,
+					Extent.x, Extent.y,
+					Texture.target() == gli::TARGET_3D ? Extent.z : LayerGL,
+					Format.Internal, static_cast<GLsizei>(Texture.size(Level)),
+					Texture.data(Layer, Face, Level));
+			else
+				glTexSubImage3D(
+                    target, static_cast<GLint>(Level),
+					0, 0, 0,
+					Extent.x, Extent.y,
+					Texture.target() == gli::TARGET_3D ? Extent.z : LayerGL,
+					Format.External, Format.Type,
+					Texture.data(Layer, Face, Level));
+			break;
+		default: assert(0); break;
+		}
+	}
 }

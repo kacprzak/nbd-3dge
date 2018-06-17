@@ -15,8 +15,8 @@ struct Component
 
 struct TransformationComponent : public Component
 {
-    glm::quat orientation;
-    glm::vec3 position;
+    glm::quat orientation{1.f, 0.f, 0.f, 0.f};
+    glm::vec3 position{};
     float scale = 1.0f;
 };
 
@@ -46,9 +46,9 @@ struct PhysicsComponent : public Component
     std::string shape;
     float mass         = 0.0f;
     glm::vec3 maxForce = glm::vec3{5000, 5000, 5000};
-    glm::vec3 maxTorque;
-    glm::vec3 force;
-    glm::vec3 torque;
+    glm::vec3 maxTorque{};
+    glm::vec3 force{};
+    glm::vec3 torque{};
 };
 
 struct ControlComponent : public Component
@@ -67,7 +67,7 @@ struct ControlComponent : public Component
     };
 
     uint16_t actions = 0; //< Buttons
-    glm::vec4 axes;       //< Analog control
+    glm::vec4 axes{};       //< Analog control
 };
 
 struct ScriptComponent : public Component

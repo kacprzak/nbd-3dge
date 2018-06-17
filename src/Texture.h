@@ -34,12 +34,9 @@ class Texture final
     void create2D(const TextureData& texData);
     void createCube(const TextureData& texData);
 
+    void createTexture(const char* filename);
+
     Texture(GLenum target);
-
-    static GLint formatToInternalFormat(GLenum format, bool linearColor);
-
-    static std::string formatToString(GLenum format);
-    static std::string internalFormatToString(GLint internalFormat);
 
     GLenum m_target;
     GLuint m_textureId = 0;
@@ -47,6 +44,7 @@ class Texture final
 
     int m_w = -1;
     int m_h = -1;
+    int m_levels = 1;
 };
 
 #endif // TEXTURE_H

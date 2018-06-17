@@ -4,7 +4,8 @@
 #include "MtlLoader.h"
 
 #include <SDL.h>
-#include <SDL_image.h>
+#include <gli/gli.hpp>
+#include <gli/sampler2d.hpp>
 
 #include <array>
 #include <boost/property_tree/ptree.hpp>
@@ -134,7 +135,7 @@ void ResourcesMgr::addMaterial(const MaterialData& materialData)
     std::vector<std::shared_ptr<Texture>> textures;
 
     for (const auto& texData : materialData.textures) {
-        const auto& file = texData.filenames.at(0);
+        const auto& file = texData.filename;
         addTexture(texData);
         textures.push_back(getTexture(file));
     }
@@ -213,9 +214,7 @@ void ResourcesMgr::addTexture(const TextureData& texData)
 
     LOG_TRACE << "Adding Texture: " << tmp.name;
 
-    for (auto& filename : tmp.filenames)
-        filename = m_dataFolder + filename;
-
+    tmp.filename = m_dataFolder + tmp.filename;
     m_textures[tmp.name] = std::make_shared<Texture>(tmp);
 }
 
@@ -261,7 +260,7 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
     for (const auto& texFilename : font->getTexturesFilenames()) {
         TextureData texData;
         texData.name = texFilename;
-        texData.filenames.push_back(m_dataFolder + texFilename);
+        texData.filename = m_dataFolder + texFilename;
         textures.emplace_back(std::make_shared<Texture>(texData));
     }
     font->setTextures(textures);
@@ -302,33 +301,29 @@ void ResourcesMgr::addHeightfield(const std::string& name, const std::string& fi
     LOG_TRACE << "Adding Heightfield: " << name;
 
     const std::string filepath = m_dataFolder + filename;
-    SDL_Surface* surface       = IMG_Load(filepath.c_str());
+    gli::texture2d tex(gli::load(filepath));
 
-    if (!surface) {
-        throw std::runtime_error{"SDL_Image load error: " + std::string{IMG_GetError()}};
+    if (tex.empty()) {
+        throw std::runtime_error{"Texture load error: " + filepath};
     }
 
     auto heightfield = std::make_shared<Heightfield>();
 
-    heightfield->w         = surface->w;
-    heightfield->h         = surface->h;
+    heightfield->w         = tex.extent().x;
+    heightfield->h         = tex.extent().y;
     heightfield->amplitude = amplitude;
 
     heightfield->heights.resize(heightfield->w * heightfield->h);
 
-    SDL_LockSurface(surface);
-    Uint8* pixels = (Uint8*)surface->pixels;
-    auto bytespp  = surface->format->BytesPerPixel;
+    gli::sampler2d<float> sampler(tex, gli::WRAP_CLAMP_TO_EDGE);
 
     for (int y = 0; y < heightfield->h; ++y) {
         for (int x = 0; x < heightfield->w; ++x) {
             auto& val = heightfield->heights[y * heightfield->h + x];
-            val       = pixels[(y * surface->w + x) * bytespp] / 128.0 - 1.0;
+            val = sampler.texel_fetch(gli::texture2d::extent_type{x, y}, 0).r - (128.f / 255.f);
             val *= amplitude;
         }
     }
-    SDL_UnlockSurface(surface);
-    SDL_FreeSurface(surface);
 
     m_heightfields[name] = heightfield;
 }

@@ -127,8 +127,8 @@ struct Aabb final
         maximum.z = std::numeric_limits<float>::max();
     }
 
-    glm::vec3 minimum;
-    glm::vec3 maximum;
+    glm::vec3 minimum{};
+    glm::vec3 maximum{};
 };
 
 inline Aabb operator*(const glm::mat4& matrix, const Aabb& aabb)

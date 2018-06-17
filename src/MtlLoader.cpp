@@ -55,12 +55,12 @@ TextureData MtlLoader::toTextureData(const std::string& /*cmd*/,
         } else if (currOpt == "-cc") {
             texData.linearColor = args.at(i) != "on";
         } else {
-            texData.filenames.push_back(args.at(i));
+            texData.filename = args.at(i);
         }
 
         currOpt = "";
     }
 
-    texData.name = texData.filenames.at(0);
+    texData.name = texData.filename;
     return texData;
 }

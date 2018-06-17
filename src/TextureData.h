@@ -6,7 +6,7 @@
 
 struct TextureData
 {
-    std::vector<std::string> filenames;
+    std::string filename;
     bool linearColor = true;
     bool clamp       = false;
     std::string name;

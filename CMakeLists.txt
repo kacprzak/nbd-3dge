@@ -4,7 +4,7 @@ project( nbd-3dge VERSION 0.1 LANGUAGES CXX C )
 set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
-add_definitions( -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS -DGLM_FORCE_CTOR_INIT )
+add_definitions( -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS )
 
 include( ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake )
 string( REGEX REPLACE "/bullet$" "" CONAN_INCLUDE_DIRS_BULLET ${CONAN_INCLUDE_DIRS_BULLET} )
@@ -21,18 +21,14 @@ endif()
 if( UNIX )
   set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
 
-  find_package( SDL2_image REQUIRED )
-
-  add_library( SDL::image UNKNOWN IMPORTED )
-  set_property( TARGET SDL::image PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${SDL2_IMAGE_INCLUDE_DIR} )
-  set_property( TARGET SDL::image PROPERTY IMPORTED_LOCATION ${SDL2_IMAGE_LIBRARY} )
-
   # For irony-mode to work
   set( LIBCLANG_INCLUDES /usr/include/c++/6 )
   include_directories( ${LIBCLANG_INCLUDES} )
 
-  include_directories( ${SDL2_IMAGE_INCLUDE_DIR} )
-  set( LINK_LIBS ${LINK_LIBS} SDL::image sndio )
+  include_directories( ${CMAKE_SOURCE_DIR}/external/gli )
+  include_directories( ${CMAKE_SOURCE_DIR}/external/gli/external )
+
+  set( LINK_LIBS ${LINK_LIBS} sndio )
 endif()
 
 configure_file(
