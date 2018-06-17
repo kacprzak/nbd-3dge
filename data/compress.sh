@@ -2,19 +2,24 @@
 COMPRESSOR=~/Pobrane/Compressonator_Linux_x86_64_3.0.105/CompressonatorCLI
 CUBE_MAKER=~/code/github/ktx-cube-maker/build/ktx-cube-maker
 
-# for extension in jpeg jpg; do
-#     for filename in $(find . -name \*.$extension); do
-#         convert "$filename" -colorspace RGB "${filename%.$extension}.png"
-#     done
-# done
+for extension in jpeg jpg png tga; do
+    for filename in $(find . -name \*.$extension); do
+        convert "$filename" -colorspace RGB "${filename%.$extension}.bmp"
+    done
+done
 
-for extension in png tga; do
+for extension in bmp; do
     for filename in $(find . -name \*.$extension); do
         convert "$filename" -flip "$filename"
     done
 done
 
-for extension in png tga; do
+convert terrain-heightmap-01.bmp -flip terrain-heightmap-01.bmp
+for filename in $(find . -name stormydays_\*.bmp); do
+    convert "$filename" -flip "$filename"
+done
+
+for extension in bmp; do
     for filename in $(find . -name \*.$extension); do
         echo $filename
         #$COMPRESSOR -fd DXT1 "$filename" "${filename%.$extension}.ktx" > /dev/null
@@ -22,5 +27,12 @@ for extension in png tga; do
     done
 done
 
-$CUBE_MAKER ./envmap_stormydays/stormydays_*.ktx stormydays.ktx
+$CUBE_MAKER \
+    ./envmap_stormydays/stormydays_ft.ktx \
+    ./envmap_stormydays/stormydays_bk.ktx \
+    ./envmap_stormydays/stormydays_up.ktx \
+    ./envmap_stormydays/stormydays_dn.ktx \
+    ./envmap_stormydays/stormydays_rt.ktx \
+    ./envmap_stormydays/stormydays_lf.ktx \
+    stormydays.ktx
 

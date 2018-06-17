@@ -17,3 +17,6 @@ TAGS
 .kdev4/
 *.kdev4
 \#*#
+
+*.bmp
+*.ktx
