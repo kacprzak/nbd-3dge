@@ -20,8 +20,8 @@ Requirements
 Dependencies
 ------------
 
-* SDL2
-* SDL2_image
-* Boost
-* GLM (OpenGL Mathematics)
-* Bullet
+* [SDL2](https://www.libsdl.org/)
+* [Boost](https://www.boost.org/)
+* [GLM (OpenGL Mathematics)](https://glm.g-truc.net)
+* [GLI (OpenGL Image)](https://gli.g-truc.net)
+* [Bullet Physics](http://bulletphysics.org)
