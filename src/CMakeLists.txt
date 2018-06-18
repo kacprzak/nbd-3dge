@@ -1,5 +1,3 @@
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR} )
-
 set( nbd-3dge_SRCS
     main.cpp
     Actor.cpp
