@@ -28,7 +28,7 @@ if( UNIX )
   include_directories( ${CMAKE_SOURCE_DIR}/external/gli )
   include_directories( ${CMAKE_SOURCE_DIR}/external/gli/external )
 
-  set( LINK_LIBS ${LINK_LIBS} sndio )
+  #set( LINK_LIBS ${LINK_LIBS} sndio )
 endif()
 
 configure_file(
