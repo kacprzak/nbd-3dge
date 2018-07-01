@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#apt-get install -y libsndio-dev
 apt-get install -y unzip
 
 mkdir external
