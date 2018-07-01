@@ -4,7 +4,7 @@
 #include "Components.h"
 #include "ResourcesMgr.h"
 
-#include <bullet/LinearMath/btAlignedObjectArray.h>
+#include <LinearMath/btAlignedObjectArray.h>
 
 #include <boost/noncopyable.hpp>
 #include <memory>
