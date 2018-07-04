@@ -19,13 +19,11 @@ if( UNIX )
   set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
 
   # For irony-mode to work
-  set( LIBCLANG_INCLUDES /usr/include/c++/6 )
-  include_directories( ${LIBCLANG_INCLUDES} )
+  #set( LIBCLANG_INCLUDES /usr/include/c++/6 )
+  #include_directories( ${LIBCLANG_INCLUDES} )
 
   include_directories( ${CMAKE_SOURCE_DIR}/external/gli )
   include_directories( ${CMAKE_SOURCE_DIR}/external/gli/external )
-
-  #set( LINK_LIBS ${LINK_LIBS} sndio )
 endif()
 
 configure_file(

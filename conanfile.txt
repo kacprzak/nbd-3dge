@@ -1,6 +1,6 @@
 [requires]
-boost_log/1.65.1@bincrafters/stable
-boost_program_options/1.65.1@bincrafters/stable
+boost_log/1.66.0@bincrafters/stable
+boost_program_options/1.66.0@bincrafters/stable
 glew/2.1.0@bincrafters/stable
 #glm/0.9.8.5@g-truc/stable
 sdl2/2.0.8@bincrafters/stable
