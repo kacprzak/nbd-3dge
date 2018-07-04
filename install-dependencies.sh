@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-apt-get install -y libegl1-mesa-dev libxcursor-dev
+apt-get install -y libegl1-mesa-dev libxcursor-dev libxinerama-dev
 apt-get install -y unzip
 
 mkdir external
