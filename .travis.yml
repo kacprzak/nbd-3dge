@@ -19,6 +19,8 @@ addons:
     packages:
       #- g++-7
       - clang-5.0
+      - libc++-dev
+      - libc++abi-dev
     update: true
 
 env:
@@ -42,7 +44,7 @@ install:
 
 script:
   - mkdir build && cd build
-  - conan install .. --build=missing -s compiler.libcxx=libstdc++11
+  - conan install .. --build=missing -s compiler.libcxx=libstdc++11 -o sdl2:alsa=False -o sdl2:jack=False -o sdl2:pulse=False -o sdl2:nas=False -o sdl2:esd=False -o sdl2:arts=False
   - cmake -DCMAKE_BUILD_TYPE=Release ../
   - make
 

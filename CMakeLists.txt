@@ -2,6 +2,7 @@ cmake_minimum_required( VERSION 3.5 )
 project( nbd-3dge VERSION 0.1 LANGUAGES CXX C )
 
 set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 add_definitions( -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS )
@@ -16,6 +17,11 @@ if( WIN32 )
 endif()
 
 if( UNIX )
+  if( CMAKE_CXX_COMPILER EQUAL "clang++" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++" )
+    #set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi" )
+  endif()
+  
   set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
 
   # For irony-mode to work
