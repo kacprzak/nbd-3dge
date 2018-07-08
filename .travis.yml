@@ -1,7 +1,8 @@
 language: cpp
 
 compiler:
-  - gcc
+  #- gcc
+  - clang
 
 cache:
   directories:
@@ -13,13 +14,16 @@ python:
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+      #- ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty-5.0
     packages:
-      - g++-7
+      #- g++-7
+      - clang-5.0
     update: true
 
 env:
-  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+  #- MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
 
 git:
   lfs_skip_smudge: true
@@ -38,7 +42,7 @@ install:
 
 script:
   - mkdir build && cd build
-  - conan install .. --build=missing -s compiler.version=7 -s compiler.libcxx=libstdc++11 -o sdl2:alsa=False -o sdl2:jack=False -o sdl2:pulse=False -o sdl2:nas=False -o sdl2:esd=False -o sdl2:arts=False
+  - conan install .. --build=missing -s compiler.libcxx=libstdc++11 -o sdl2:alsa=False -o sdl2:jack=False -o sdl2:pulse=False -o sdl2:nas=False -o sdl2:esd=False -o sdl2:arts=False
   - cmake -DCMAKE_BUILD_TYPE=Release ../
   - make
 
