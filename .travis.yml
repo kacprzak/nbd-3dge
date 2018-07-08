@@ -14,7 +14,7 @@ python:
 addons:
   apt:
     sources:
-      #- ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-5.0
     packages:
       #- g++-7
