@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-apt-get install -y libegl1-mesa-dev libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libasound2-dev libjack-dev
+apt-get install -y libegl1-mesa-dev libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libasound2-dev libjack-dev libpulse-dev
 apt-get install -y unzip
 
 mkdir external
