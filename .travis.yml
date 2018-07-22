@@ -21,6 +21,7 @@ addons:
       - clang-6.0
       - libc++-dev
       - libc++abi-dev
+      - libpython3-dev
     update: true
 
 env:
