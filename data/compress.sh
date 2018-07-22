@@ -21,9 +21,12 @@ done
 
 for extension in bmp; do
     for filename in $(find . -name \*.$extension); do
+        OUT_FORMAT="DXT5 -mipsize 1"
+        if [ "$filename" == "./terrain-heightmap-01.bmp" ]; then
+            OUT_FORMAT="ARGB_8888 -nomipmap"
+        fi
         echo $filename
-        #$COMPRESSOR -fd DXT1 "$filename" "${filename%.$extension}.ktx" > /dev/null
-        $COMPRESSOR "$filename" -fs ARGB_8888 -fd ARGB_8888 -mipsize 1 "${filename%.$extension}.ktx"
+        $COMPRESSOR "$filename" -fs ARGB_8888 -fd $OUT_FORMAT "${filename%.$extension}.ktx" > /dev/null
     done
 done
 
