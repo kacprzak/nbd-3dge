@@ -46,7 +46,7 @@ install:
 script:
   - mkdir build && cd build
   - ls -larth `which python`*
-  - update-alternatives --install /usr/bin/python python /opt/pyenv/shims/python3
+  - update-alternatives --install /usr/bin/python python /opt/pyenv/shims/python3 2
   - update-alternatives --list python
   - python --version
   - conan install .. --build=missing -s compiler=clang -s compiler.version=5.0 -s compiler.libcxx=libc++
