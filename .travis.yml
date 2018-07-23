@@ -45,7 +45,7 @@ install:
 
 script:
   - mkdir build && cd build
-  - alias python=python3
+  - update-alternatives --list python
   - conan install .. --build=missing -s compiler=clang -s compiler.version=5.0 -s compiler.libcxx=libc++
   #-o sdl2:alsa=False -o sdl2:jack=False -o sdl2:pulse=False -o sdl2:nas=False -o sdl2:esd=False -o sdl2:arts=False -o sdl2:directfb=False -o sdl2:x11=False
   - cmake -DCMAKE_BUILD_TYPE=Release ../
