@@ -17,8 +17,8 @@ class Camera : public RenderNode
 
     ~Camera();
 
-    float near() const { return m_near; }
-    float far() const { return m_far; }
+    //float near() const { return m_near; }
+    //float far() const { return m_far; }
 
     void draw(const Camera* /*c*/, const std::array<Light*, 8>& /*lights*/,
               Texture* /*environment*/) const override
