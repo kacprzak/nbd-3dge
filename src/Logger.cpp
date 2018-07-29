@@ -17,7 +17,7 @@ void logGlError()
         default: error                               = "UNKNOWN";
         }
 
-        LOG_ERROR << "GL_" << error;
+        LOG_ERROR("GL_{}", error);
     }
 }
 

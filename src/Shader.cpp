@@ -16,7 +16,7 @@ Shader::Shader(GLenum type, const std::string& source)
 {
     m_shaderId = glCreateShader(m_type);
 
-    LOG_TRACE << "Compiling Shader: " << m_shaderId;
+    LOG_TRACE("Compiling Shader: ", m_shaderId);
 
     const GLchar* shaderSource[1];
     shaderSource[0] = source.c_str();
@@ -37,12 +37,12 @@ Shader::Shader(GLenum type, const std::string& source)
         const char* strShaderType = NULL;
 
         switch (type) {
-        case GL_VERTEX_SHADER: strShaderType   = "vertex"; break;
+        case GL_VERTEX_SHADER: strShaderType = "vertex"; break;
         case GL_GEOMETRY_SHADER: strShaderType = "geometry"; break;
         case GL_FRAGMENT_SHADER: strShaderType = "fragment"; break;
         }
 
-        LOG_ERROR << "Compile failure in " << strShaderType << " shader:\n" << strInfoLog;
+        LOG_ERROR("Compile failure in {} shader:\n{}", strShaderType, strInfoLog);
         delete[] strInfoLog;
     }
 }

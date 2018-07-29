@@ -142,11 +142,11 @@ void ResourcesMgr::addMaterial(const MaterialData& materialData)
 
     auto it = m_materials.find(materialData.name);
     if (it == m_materials.end()) {
-        LOG_TRACE << "Adding Material: " << materialData.name;
+        LOG_TRACE("Adding Material: {}", materialData.name);
 
         m_materials[materialData.name] = std::make_shared<Material>(materialData, textures);
     } else {
-        LOG_TRACE << "Reloading Material: " << materialData.name;
+        LOG_TRACE("Reloading Material: {}", materialData.name);
         *it->second = Material{materialData, textures};
     }
 }
@@ -185,13 +185,13 @@ void ResourcesMgr::addShaderProgram(const ShaderProgramData& spData)
 
     auto it = m_shaderPrograms.find(spData.name);
     if (it == std::end(m_shaderPrograms)) {
-        LOG_TRACE << "Adding ShaderProgram: " << spData.name;
+        LOG_TRACE("Adding ShaderProgram: {}", spData.name);
 
         auto sp = std::make_shared<ShaderProgram>();
         sp->link(shadersRaw);
         m_shaderPrograms[spData.name] = sp;
     } else {
-        LOG_TRACE << "Reloading ShaderProgram: " << spData.name;
+        LOG_TRACE("Reloading ShaderProgram: {}", spData.name);
 
         it->second->link(shadersRaw);
     }
@@ -212,7 +212,7 @@ void ResourcesMgr::addTexture(const TextureData& texData)
 {
     TextureData tmp = texData;
 
-    LOG_TRACE << "Adding Texture: " << tmp.name;
+    LOG_TRACE("Adding Texture: ", tmp.name);;
 
     tmp.filename = m_dataFolder + tmp.filename;
     m_textures[tmp.name] = std::make_shared<Texture>(tmp);
@@ -231,7 +231,7 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
 
 void ResourcesMgr::addMesh(const MeshData& meshData)
 {
-    LOG_TRACE << "Adding Mesh: " << meshData.name;
+    LOG_TRACE("Adding Mesh: {}", meshData.name);
 
     m_meshes[meshData.name] = std::make_shared<Mesh>(meshData);
 }
@@ -249,7 +249,7 @@ std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name) const
 
 void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
 {
-    LOG_TRACE << "Adding Font: " << name;
+    LOG_TRACE("Adding Font: {}", name);
 
     FontLoader loader;
     loader.load(m_dataFolder + filename);
@@ -298,7 +298,7 @@ std::shared_ptr<Script> ResourcesMgr::getScript(const std::string& name) const
 void ResourcesMgr::addHeightfield(const std::string& name, const std::string& filename,
                                   float amplitude)
 {
-    LOG_TRACE << "Adding Heightfield: " << name;
+    LOG_TRACE("Adding Heightfield: {}", name);
 
     const std::string filepath = m_dataFolder + filename;
     gli::texture2d tex(gli::load(filepath));

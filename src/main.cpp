@@ -4,7 +4,6 @@
 #include "Logger.h"
 #include "Settings.h"
 
-#include <boost/log/expressions.hpp>
 #include <boost/program_options.hpp>
 
 #ifdef _WIN32
@@ -22,15 +21,17 @@ void initLogger(const std::string& logLevel)
 {
     using namespace boost;
 
-    auto level = log::trivial::trace;
+    auto level = spdlog::level::trace;
 
-    if (logLevel == "debug") level   = log::trivial::debug;
-    if (logLevel == "info") level    = log::trivial::info;
-    if (logLevel == "warning") level = log::trivial::warning;
-    if (logLevel == "error") level   = log::trivial::error;
-    if (logLevel == "fatal") level   = log::trivial::fatal;
+    if (logLevel == "debug") level   = spdlog::level::debug;
+    if (logLevel == "info") level    = spdlog::level::info;
+    if (logLevel == "warning") level = spdlog::level::warn;
+    if (logLevel == "error") level   = spdlog::level::err;
+    if (logLevel == "fatal") level   = spdlog::level::critical;
 
-    log::core::get()->set_filter(log::trivial::severity >= level);
+    auto console = spdlog::stdout_color_mt("console");
+    console->set_level(level);
+    console->set_pattern("[%H:%M:%S.%e] [%^%l%$] %v");
 }
 
 //------------------------------------------------------------------------------
@@ -68,7 +69,7 @@ bool loadSettings(Settings& s, int ac, char** av)
         if ((buffer = getcwd(NULL, 0)) == NULL)
             perror("getcwd error");
         else {
-            LOG_WARNING << "No " << configFile << " in " << buffer;
+            LOG_WARNING("No {} in {}", configFile, buffer);
             free(buffer);
         }
     }
@@ -113,8 +114,10 @@ int main(int ac, char** av)
         game.attachView(std::make_shared<GameClient>(settings, resourcesMgr));
         engine.mainLoop(&game);
     } catch (const std::exception& e) {
-        LOG_FATAL << e.what();
+        LOG_FATAL(e.what());
     }
+
+    spdlog::drop_all();
 
     return 0;
 }

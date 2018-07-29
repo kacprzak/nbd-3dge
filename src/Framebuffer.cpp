@@ -9,7 +9,7 @@ Framebuffer::Framebuffer(glm::ivec3 size)
     : m_shadowMap{Texture::createShadowMap(size)}
 {
     glGenFramebuffers(1, &m_framebufferId);
-    LOG_TRACE << "Created Framebuffer: " << m_framebufferId;
+    LOG_TRACE("Created Framebuffer: {}", m_framebufferId);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
 
@@ -21,7 +21,7 @@ Framebuffer::Framebuffer(glm::ivec3 size)
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     if (status != GL_FRAMEBUFFER_COMPLETE) {
-        LOG_FATAL << "Framebuffer error, status: " << status;
+        LOG_FATAL("Framebuffer error, status: {}", status);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -30,7 +30,7 @@ Framebuffer::Framebuffer(glm::ivec3 size)
 Framebuffer::~Framebuffer()
 {
     glDeleteFramebuffers(1, &m_framebufferId);
-    LOG_TRACE << "Deleted Framebuffer: " << m_framebufferId;
+    LOG_TRACE("Deleted Framebuffer: {}", m_framebufferId);
 }
 
 void Framebuffer::bindForWriting(unsigned cascadeIndex)

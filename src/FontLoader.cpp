@@ -158,7 +158,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
             keyVal.clear();
             split(arg, '=', keyVal);
             removeQuotes(keyVal[1]);
-            if (keyVal[0] == "first") first   = to_int<uint32_t>(keyVal[1]);
+            if (keyVal[0] == "first") first = to_int<uint32_t>(keyVal[1]);
             if (keyVal[0] == "second") second = to_int<uint32_t>(keyVal[1]);
             if (keyVal[0] == "amount") amount = to_int<int16_t>(keyVal[1]);
         }
@@ -168,6 +168,6 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
 
 void FontLoader::fileLoaded()
 {
-    LOG_INFO << "Loaded: fontFace: " << m_font.m_info.face << ", chars: " << m_font.m_chars.size()
-             << ", kernings: " << m_font.m_kerning.size();
+    LOG_INFO("Loaded: fontFace: {}, chars: {}, kernings: {}", m_font.m_info.face,
+             m_font.m_chars.size(), m_font.m_kerning.size());
 }

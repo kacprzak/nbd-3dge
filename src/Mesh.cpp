@@ -23,14 +23,17 @@ Mesh::Mesh(const MeshData& md)
     glGenBuffers(NUM_BUFFERS, m_buffers);
 
     auto dims = m_aabb.dimensions();
-    LOG_INFO << "Loaded Mesh: " << m_vao << " | " << md.name;
-    LOG_TRACE << "  Positions: " << md.positions.size() << "\t id: " << m_buffers[POSITIONS] << '\n'
-              << "  Normals: " << md.normals.size() << "\t id: " << m_buffers[NORMALS] << '\n'
-              << "  Tangents: " << tangents.size() << "\t id: " << m_buffers[TANGENTS] << '\n'
-              << "  TexCoords: " << md.texcoords.size() << "\t id: " << m_buffers[TEXCOORDS] << '\n'
-              << "  Indices: " << md.indices.size() << "\t id: " << m_buffers[INDICES] << '\n'
-              << "  Primitive: " << md.primitive << '\n'
-              << "  Dimensions: (" << dims[0] << " x " << dims[1] << " x " << dims[2] << ")";
+    LOG_INFO("Loaded Mesh: {} | {}", m_vao, md.name);
+    LOG_TRACE("  Positions: {}\t id: {}\n"
+              "  Normals: {}\t id: {}\n"
+              "  Tangents: {}\t id: {}\n"
+              "  TexCoords: {}\t id: {}\n"
+              "  Indices: {}\t id: {}\n"
+              "  Primitive: {}\n"
+              "  Dimentions: ({}x{}x{})",
+              md.positions.size(), m_buffers[POSITIONS], md.normals.size(), m_buffers[NORMALS],
+              tangents.size(), m_buffers[TANGENTS], md.texcoords.size(), m_buffers[TEXCOORDS],
+              md.indices.size(), m_buffers[INDICES], md.primitive, dims[0], dims[1], dims[2]);
 
     glBindVertexArray(m_vao);
 
@@ -79,7 +82,7 @@ Mesh::~Mesh()
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(NUM_BUFFERS, m_buffers);
 
-    LOG_INFO << "Released Mesh: " << m_vao;
+    LOG_INFO("Released Mesh: {}", m_vao);
 }
 
 void Mesh::draw() const

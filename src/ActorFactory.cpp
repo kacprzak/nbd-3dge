@@ -187,7 +187,7 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
             if (sc) scProto = *sc;
 
         } else {
-            LOG_WARNING << "Unkonown actor prototype: " << prototypeName;
+            LOG_WARNING("Unkonown actor prototype: {}", prototypeName);
         }
     }
 

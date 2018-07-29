@@ -9,7 +9,7 @@
 ShaderProgram::ShaderProgram()
 {
     m_shaderProgramId = glCreateProgram();
-    LOG_TRACE << "Created Program: " << m_shaderProgramId;
+    LOG_TRACE("Created Program: {}", m_shaderProgramId);
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& other)
@@ -22,7 +22,7 @@ ShaderProgram::ShaderProgram(ShaderProgram&& other)
 ShaderProgram::~ShaderProgram()
 {
     glDeleteProgram(m_shaderProgramId);
-    LOG_TRACE << "Deleted Program: " << m_shaderProgramId;
+    LOG_TRACE("Deleted Program: {}", m_shaderProgramId);
 }
 
 void ShaderProgram::link(const std::vector<Shader*>& shaders)
@@ -40,7 +40,7 @@ void ShaderProgram::link(const std::vector<Shader*>& shaders)
     ss << "Linking Program: " << m_shaderProgramId << " ( ";
     for (const auto& s : shaders)
         ss << s->id() << " ";
-    LOG_TRACE << ss.str() << ")";
+    LOG_TRACE("{})", ss.str());
 
     GLint status;
     glGetProgramiv(m_shaderProgramId, GL_LINK_STATUS, &status);
@@ -51,7 +51,7 @@ void ShaderProgram::link(const std::vector<Shader*>& shaders)
 
         GLchar* strInfoLog = new GLchar[infoLogLength + 1];
         glGetProgramInfoLog(m_shaderProgramId, infoLogLength, 0, strInfoLog);
-        LOG_WARNING << "Linker failure: " << strInfoLog;
+        LOG_WARNING("Linker failure: {}", strInfoLog);
         delete[] strInfoLog;
     } else {
         m_linked = true;

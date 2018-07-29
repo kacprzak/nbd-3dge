@@ -109,7 +109,7 @@ void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsCompone
         colShapeUPtr->setLocalScaling({tr->scale, tr->scale, tr->scale});
         colShape               = colShapeUPtr.get();
         m_collisionShapes[key] = std::move(colShapeUPtr);
-        LOG_TRACE << "Created CollisionShape: " << key.first << ' ' << key.second;
+        LOG_TRACE("Created CollisionShape: {} {}", key.first, key.second);
     } else {
         colShape = colShapeIt->second.get();
     }

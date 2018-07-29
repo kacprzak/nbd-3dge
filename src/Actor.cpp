@@ -6,12 +6,12 @@ Actor::Actor(ActorId id)
     : m_id(id)
     , m_dead(false)
 {
-    LOG_TRACE << "new Actor: id = " << m_id;
+    LOG_TRACE("new Actor: id = {}", m_id);
 }
 
 //------------------------------------------------------------------------------
 
-Actor::~Actor() { LOG_TRACE << "delete Actor: id = " << m_id; }
+Actor::~Actor() { LOG_TRACE("delete Actor: id = {}", m_id); }
 
 //------------------------------------------------------------------------------
 

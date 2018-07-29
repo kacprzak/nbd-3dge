@@ -24,7 +24,7 @@ Engine::Engine(bool initVideo)
 
 Engine::~Engine()
 {
-    LOG_INFO << "Quitting SDL";
+    LOG_INFO("Quitting SDL");
     SDL_Quit();
 }
 
@@ -32,7 +32,7 @@ Engine::~Engine()
 
 void Engine::initializeSDL()
 {
-    LOG_INFO << "Initializing SDL";
+    LOG_INFO("Initializing SDL");
 
     logSDLInfo();
 
@@ -46,10 +46,10 @@ void Engine::initializeSDL()
     }
 
     if (m_initVideo) {
-        LOG_INFO << "Current video driver: " << SDL_GetCurrentVideoDriver();
+        LOG_INFO("Current video driver: {}", SDL_GetCurrentVideoDriver());
     }
 
-    LOG_INFO << "SDL initialized";
+    LOG_INFO("SDL initialized");
 }
 
 //------------------------------------------------------------------------------
@@ -62,10 +62,10 @@ void Engine::logSDLInfo()
     SDL_VERSION(&compiled);
     SDL_GetVersion(&linked);
 
-    LOG_INFO << "Compiled with SDL: " << (uint32_t)compiled.major << "." << (uint32_t)compiled.minor
-             << "." << (uint32_t)compiled.patch;
-    LOG_INFO << "Running with SDL: " << (uint32_t)linked.major << "." << (uint32_t)linked.minor
-             << "." << (uint32_t)linked.patch;
+    LOG_INFO("Compiled with SDL: {}.{}.{}", (uint32_t)compiled.major, (uint32_t)compiled.minor,
+             (uint32_t)compiled.patch);
+    LOG_INFO("Running with SDL: {}.{}.{}", (uint32_t)linked.major, (uint32_t)linked.minor,
+             (uint32_t)linked.patch);
 
     std::ostringstream ss;
     if (m_initVideo) {
@@ -74,7 +74,7 @@ void Engine::logSDLInfo()
             ss << SDL_GetVideoDriver(i) << ' ';
         }
     }
-    LOG_INFO << ss.str();
+    LOG_INFO(ss.str());
 }
 
 //------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ bool Engine::processEvents()
         case SDL_WINDOWEVENT: {
             switch (event.window.event) {
             case SDL_WINDOWEVENT_FOCUS_GAINED: m_inputFocus = true; break;
-            case SDL_WINDOWEVENT_FOCUS_LOST: m_inputFocus   = false; break;
+            case SDL_WINDOWEVENT_FOCUS_LOST: m_inputFocus = false; break;
             default: break;
             }
             break;

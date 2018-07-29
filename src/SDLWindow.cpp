@@ -17,10 +17,10 @@ static void APIENTRY openglCallbackFunction(GLenum /*source*/, GLenum /*type*/, 
 {
     if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) {
         if (severity == GL_DEBUG_SEVERITY_HIGH) {
-            LOG_ERROR << message;
+            LOG_ERROR(message);
             abort();
         } else {
-            LOG_WARNING << message;
+            LOG_WARNING(message);
         }
     }
 }
@@ -96,7 +96,7 @@ void SDLWindow::createSDLWindow()
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMajorVersion);
     int contexMinorVersion;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &contexMinorVersion);
-    LOG_INFO << "  GLContextVersion: " << contexMajorVersion << '.' << contexMinorVersion;
+    LOG_INFO("  GLContextVersion: {}.{}", contexMajorVersion, contexMinorVersion);
 
     int redSize;
     SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &redSize);
@@ -106,19 +106,17 @@ void SDLWindow::createSDLWindow()
     SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &blueSize);
     int alphaSize;
     SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, &alphaSize);
-    LOG_INFO << "  RGBA sizes: " << redSize << " " << greenSize << " " << blueSize << " "
-             << alphaSize;
+    LOG_INFO("  RGBA sizes: {} {} {} {}", redSize, greenSize, blueSize, alphaSize);
 
     int depthSize;
     SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &depthSize);
-    LOG_INFO << "  Depth size: " << depthSize;
+    LOG_INFO("  Depth size: {}", depthSize);
 
     int multisampleBuffers;
     SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &multisampleBuffers);
     int multisampleSamples;
     SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &multisampleSamples);
-    LOG_INFO << "  Multisample buffers: " << multisampleBuffers
-             << " samples: " << multisampleSamples;
+    LOG_INFO("  Multisample buffers: {}, samples: {}", multisampleBuffers, multisampleSamples);
 
     toggleVSync();
 
@@ -132,7 +130,7 @@ void SDLWindow::toggleVSync()
 
     SDL_GL_SetSwapInterval(m_swapInterval);
     m_swapInterval = SDL_GL_GetSwapInterval();
-    LOG_INFO << "SwapInterval: " << m_swapInterval;
+    LOG_INFO("SwapInterval: {}", m_swapInterval);
 }
 
 SDLWindow::~SDLWindow()
@@ -168,7 +166,7 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
     GLenum glewInitStatus = glewInit();
 
     if (GLEW_OK != glewInitStatus) {
-        LOG_FATAL << "glewInitStatus: " << glewGetErrorString(glewInitStatus);
+        LOG_FATAL("glewInitStatus: {}", glewGetErrorString(glewInitStatus));
         exit(1);
     }
 

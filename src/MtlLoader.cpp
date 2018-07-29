@@ -34,7 +34,7 @@ void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& 
         TextureData tex   = toTextureData(cmd, args);
         mtl.textures.push_back(tex);
     } else {
-        LOG_WARNING << "Unknown command: " << cmd;
+        LOG_WARNING("Unknown command: {}", cmd);
     }
 }
 

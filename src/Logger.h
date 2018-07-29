@@ -1,14 +1,15 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <boost/log/trivial.hpp>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
-#define LOG_TRACE BOOST_LOG_TRIVIAL(trace)
-#define LOG_DEBUG BOOST_LOG_TRIVIAL(debug)
-#define LOG_INFO BOOST_LOG_TRIVIAL(info)
-#define LOG_WARNING BOOST_LOG_TRIVIAL(warning)
-#define LOG_ERROR BOOST_LOG_TRIVIAL(error)
-#define LOG_FATAL BOOST_LOG_TRIVIAL(fatal)
+#define LOG_TRACE(...) spdlog::get("console")->log(spdlog::level::trace, __VA_ARGS__)
+#define LOG_DEBUG(...) spdlog::get("console")->log(spdlog::level::debug, __VA_ARGS__)
+#define LOG_INFO(...) spdlog::get("console")->log(spdlog::level::info, __VA_ARGS__)
+#define LOG_WARNING(...) spdlog::get("console")->log(spdlog::level::warn, __VA_ARGS__)
+#define LOG_ERROR(...) spdlog::get("console")->log(spdlog::level::err, __VA_ARGS__)
+#define LOG_FATAL(...) spdlog::get("console")->log(spdlog::level::critical, __VA_ARGS__)
 
 void logGlError();
 
