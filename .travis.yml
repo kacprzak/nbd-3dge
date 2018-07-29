@@ -21,7 +21,6 @@ addons:
       - clang-5.0
       - libc++-dev
       - libc++abi-dev
-      - python3-dev
       - python3-pip
     update: true
 
@@ -45,11 +44,8 @@ install:
 
 script:
   - mkdir build && cd build
-  - pyenv versions
-  - pyenv global 2.7
-  - python --version
-  - python3 --version
-  - conan install .. --build=missing -s compiler=clang -s compiler.version=5.0 -s compiler.libcxx=libc++ -o sdl2:alsa=False -o sdl2:jack=False -o sdl2:pulse=False -o sdl2:nas=False -o sdl2:esd=False -o sdl2:arts=False -o sdl2:directfb=False -o sdl2:x11=False
+  - conan install .. --build=missing -s compiler=clang -s compiler.version=5.0 -s compiler.libcxx=libc++
+  #-o sdl2:alsa=False -o sdl2:jack=False -o sdl2:pulse=False -o sdl2:nas=False -o sdl2:esd=False -o sdl2:arts=False -o sdl2:directfb=False -o sdl2:x11=False
   - cmake -DCMAKE_BUILD_TYPE=Release ../
   - make
 
