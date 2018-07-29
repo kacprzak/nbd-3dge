@@ -51,7 +51,7 @@ install:
   # Automatic detection of your arch, compiler, etc.
   - conan user
   - conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - sudo ./install-dependencies.sh
+  - ./install-dependencies.py
 
 script:
   - mkdir build && cd build
