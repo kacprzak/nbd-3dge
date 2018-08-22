@@ -5,27 +5,11 @@
 
 #include <algorithm>
 
-Camera::Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, glm::ivec2 windowSize)
-    : RenderNode{actorId, tr, rd}
-    , m_windowSize{windowSize}
+Camera::Camera(glm::ivec2 windowSize)
+    : m_windowSize{windowSize}
     , m_ratio{m_windowSize.x / float(m_windowSize.y)}
 {
     setPerspective();
-    updateViewMatrix();
-}
-
-Camera::Camera(glm::ivec2 windowSize)
-    : Camera{-1, new TransformationComponent, nullptr, windowSize}
-{
-    m_ownsTransformation = true;
-
-    setPerspective();
-    updateViewMatrix();
-}
-
-Camera::~Camera()
-{
-    if (m_ownsTransformation) delete transformation();
 }
 
 //------------------------------------------------------------------------------
@@ -147,23 +131,10 @@ const glm::mat4& Camera::projectionMatrix() const { return m_projectionMatrix; }
 
 //------------------------------------------------------------------------------
 
-void Camera::update(float delta)
+void Camera::update(const glm::mat4& parentModelMatrix, float /*delta*/)
 {
-    RenderNode::update(delta);
-
-    updateViewMatrix();
-}
-
-//------------------------------------------------------------------------------
-
-void Camera::updateViewMatrix()
-{
-    glm::quat orien = transformation()->orientation;
-
-    const auto T    = glm::translate(glm::mat4(1.f), -transformation()->position);
-    const auto R    = glm::toMat4(glm::inverse(orien));
-    m_viewMatrix    = R * T;
-    m_viewMatrixInv = glm::inverse(m_viewMatrix);
+    m_viewMatrixInv = parentModelMatrix;
+    m_viewMatrix    = glm::inverse(parentModelMatrix);
 }
 
 //------------------------------------------------------------------------------

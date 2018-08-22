@@ -30,7 +30,7 @@ Framebuffer::Framebuffer(glm::ivec3 size)
 Framebuffer::~Framebuffer()
 {
     glDeleteFramebuffers(1, &m_framebufferId);
-    LOG_TRACE("Deleted Framebuffer: {}", m_framebufferId);
+    LOG_TRACE("Released Framebuffer: {}", m_framebufferId);
 }
 
 void Framebuffer::bindForWriting(unsigned cascadeIndex)

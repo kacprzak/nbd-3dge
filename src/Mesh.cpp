@@ -10,71 +10,45 @@
 
 Mesh::Mesh(const MeshData& md)
     : m_primitive{md.primitive}
-    , m_aabb{md.positions}
+//, m_aabb{md.positions}
 {
-    std::fill(std::begin(m_bufferSizes), std::end(m_bufferSizes), 0);
-
-    m_numberOfVertices = md.positions.size();
-    m_numberOfElements = md.indices.size();
-
-    const auto& tangents = MeshData::calculateTangents(md);
-
     glGenVertexArrays(1, &m_vao);
-    glGenBuffers(NUM_BUFFERS, m_buffers);
-
-    auto dims = m_aabb.dimensions();
-    LOG_INFO("Loaded Mesh: {} | {}", m_vao, md.name);
-    LOG_TRACE("  Positions: {}\t id: {}\n"
-              "  Normals: {}\t id: {}\n"
-              "  Tangents: {}\t id: {}\n"
-              "  TexCoords: {}\t id: {}\n"
-              "  Indices: {}\t id: {}\n"
-              "  Primitive: {}\n"
-              "  Dimentions: ({}x{}x{})",
-              md.positions.size(), m_buffers[POSITIONS], md.normals.size(), m_buffers[NORMALS],
-              tangents.size(), m_buffers[TANGENTS], md.texcoords.size(), m_buffers[TEXCOORDS],
-              md.indices.size(), m_buffers[INDICES], md.primitive, dims[0], dims[1], dims[2]);
-
     glBindVertexArray(m_vao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffers[POSITIONS]);
-    m_bufferSizes[POSITIONS] = sizeof(md.positions[0]) * md.positions.size();
-    glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[POSITIONS], &md.positions[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-    if (md.normals.size() > 0) {
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffers[NORMALS]);
-        m_bufferSizes[NORMALS] = sizeof(md.normals[0]) * md.normals.size();
-        glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[NORMALS], &md.normals[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    if (md.iindices) {
+        m_typeOfElement = md.iindices->type;
+        m_numberOfElements = md.iindices->count;
+        md.iindices->buffer->bind();
     }
 
-    if (tangents.size() > 0) {
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TANGENTS]);
-        m_bufferSizes[TANGENTS] = sizeof(tangents[0]) * tangents.size();
-        glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[TANGENTS], &tangents[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    // const auto& tangents = MeshData::calculateTangents(md);
+    for (int i = 0; i < MeshData::Attributes::Size; ++i) {
+        const Accessor* acc = md.attributes[i];
+        if (acc) {
+            m_numberOfVertices = acc->count;
+            acc->buffer->bind();
+            glEnableVertexAttribArray(i);
+            glVertexAttribPointer(i, acc->size, acc->type, acc->normalized,
+                                  acc->buffer->m_byteStride, (const void*)acc->byteOffset);
+        }
     }
 
-    if (md.texcoords.size() > 0) {
-        glBindBuffer(GL_ARRAY_BUFFER, m_buffers[TEXCOORDS]);
-        m_bufferSizes[TEXCOORDS] = sizeof(md.texcoords[0]) * md.texcoords.size();
-        glBufferData(GL_ARRAY_BUFFER, m_bufferSizes[TEXCOORDS], &md.texcoords[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    }
-
-    if (md.indices.size() > 0) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[INDICES]);
-        m_bufferSizes[INDICES] = sizeof(GLushort) * md.indices.size();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_bufferSizes[INDICES], &md.indices[0],
-                     GL_STATIC_DRAW);
-    }
+    // auto dims = m_aabb.dimensions();
+    LOG_INFO("Loaded Mesh: {} | {}", m_vao, md.name);
 
     glBindVertexArray(0);
+}
+
+Mesh::Mesh(Mesh&& other)
+{
+    std::swap(m_buffers, other.m_buffers);
+    std::swap(m_vao, other.m_vao);
+    std::swap(m_bufferSizes, other.m_bufferSizes);
+    std::swap(m_primitive, other.m_primitive);
+    std::swap(m_typeOfElement, other.m_typeOfElement);
+    std::swap(m_numberOfElements, other.m_numberOfElements);
+    std::swap(m_numberOfVertices, other.m_numberOfVertices);
+    std::swap(m_aabb, other.m_aabb);
 }
 
 Mesh::~Mesh()
@@ -85,23 +59,34 @@ Mesh::~Mesh()
     LOG_INFO("Released Mesh: {}", m_vao);
 }
 
-void Mesh::draw() const
+void Mesh::draw(ShaderProgram* shaderProgram) const
 {
-    if (m_numberOfElements == 0) {
-        draw(0, m_numberOfVertices);
-    } else {
-        draw(0, m_numberOfElements);
-    }
-}
+    if (shaderProgram) {
+        shaderProgram->use();
 
-void Mesh::draw(int start, int count) const
-{
+        int textureUnit = 0;
+
+        auto material = getMaterial();
+        for (const auto& texture : material->textures) {
+            const std::string& name = "sampler" + std::to_string(textureUnit);
+            shaderProgram->setUniform(name.c_str(), textureUnit);
+
+            texture->bind(textureUnit++);
+        }
+
+        shaderProgram->setUniform("material.ambient", material->ambient());
+        shaderProgram->setUniform("material.diffuse", material->diffuse());
+        shaderProgram->setUniform("material.specular", material->specular());
+        shaderProgram->setUniform("material.emission", material->emission());
+        shaderProgram->setUniform("material.shininess", material->shininess());
+    }
+
     glBindVertexArray(m_vao);
 
     if (m_numberOfElements == 0) {
-        glDrawArrays(m_primitive, start, count);
+        glDrawArrays(m_primitive, 0, m_numberOfVertices);
     } else {
-        glDrawElements(m_primitive, count, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(m_primitive, m_numberOfElements, m_typeOfElement, 0);
     }
 
     glBindVertexArray(0);
@@ -110,6 +95,7 @@ void Mesh::draw(int start, int count) const
 std::vector<float> Mesh::positions() const
 {
     std::vector<float> retVal;
+    /*
     retVal.resize(m_bufferSizes[POSITIONS] / sizeof(float));
 
     glBindBuffer(GL_ARRAY_BUFFER, m_buffers[POSITIONS]);
@@ -119,6 +105,17 @@ std::vector<float> Mesh::positions() const
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+*/
     return retVal;
+}
+
+void Mesh::setMaterial(const std::shared_ptr<Material>& material) { m_material = material; }
+
+const Material* Mesh::getMaterial() const
+{
+    static Material defaultMaterial;
+    if (m_material)
+        return m_material.get();
+    else
+        return &defaultMaterial;
 }

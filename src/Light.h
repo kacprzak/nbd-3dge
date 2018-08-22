@@ -10,7 +10,7 @@ class Light : public Camera
   public:
     Light(int actorId, TransformationComponent* tr, RenderComponent* rd, LightComponent* lt,
           glm::ivec2 windowSize)
-        : Camera{actorId, tr, rd, windowSize}
+        : Camera{windowSize}
         , m_lt{lt}
     {
         if (lt->type == LightComponent::Type::Directional) setOrtho();
@@ -23,6 +23,7 @@ class Light : public Camera
 
   private:
     LightComponent* m_lt = nullptr;
+    Material m_material;
 };
 
 #endif /* LIGHT_H */

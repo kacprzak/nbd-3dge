@@ -16,4 +16,9 @@ zip_ref.close()
 
 os.rename('gli-master', 'gli')
 
+os.makedirs("fx", exist_ok=True)
+os.chdir('fx')
+urllib.request.urlretrieve("https://raw.githubusercontent.com/jessey-git/fx-gltf/master/include/fx/gltf.h", "gltf.h")
+os.chdir('..')
+
 os.chdir('..')

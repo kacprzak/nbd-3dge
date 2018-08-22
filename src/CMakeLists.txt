@@ -2,6 +2,7 @@ set( nbd-3dge_SRCS
     main.cpp
     Actor.cpp
     ActorFactory.cpp
+    Buffer.cpp
     Camera.cpp
     Engine.cpp
     Font.cpp
@@ -23,6 +24,7 @@ set( nbd-3dge_SRCS
     RenderNode.cpp
     RenderSystem.cpp
     ResourcesMgr.cpp
+    Scene.cpp
     SDLWindow.cpp
     Script.cpp
     Shader.cpp

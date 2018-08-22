@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "CameraController.h"
+#include "Scene.h"
 #include "Shader.h"
 #include "Skybox.h"
 #include "Terrain.h"
@@ -18,12 +19,12 @@ GameClient::GameClient(const Settings& settings, const std::shared_ptr<Resources
             std::make_shared<ResourcesMgr>(m_settings.dataFolder, m_settings.shadersFolder);
     }
 
-    m_freeCameraCtrl         = std::make_unique<FreeCameraController>();
-    m_freeCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Free)->transformation();
+    m_freeCameraCtrl = std::make_unique<FreeCameraController>();
+    // m_freeCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Free)->worldTranslation();
     m_inputSystem.addActor(-1, &m_freeCameraCtrl->cameraActions);
 
-    m_tppCameraCtrl         = std::make_unique<TppCameraController>();
-    m_tppCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Player)->transformation();
+    m_tppCameraCtrl = std::make_unique<TppCameraController>();
+    // m_tppCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Player)->worldTranslation();
 }
 
 //------------------------------------------------------------------------------
@@ -43,12 +44,25 @@ void GameClient::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void GameClient::loadResources(const std::string& xmlFile)
+void GameClient::loadResources(const std::string& file)
 {
-    m_resourcesMgr->load(xmlFile);
+    m_resourcesMgr->load(file);
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
+    // Scene scene;
+    m_scene = std::make_shared<Scene>();
+    m_scene->load(m_settings.dataFolder + "untitled.gltf");
 
-    m_resourcesFile = xmlFile;
+    m_renderSystem.setScene(m_scene);
+
+    m_resourcesFile = file;
+
+    auto* cam = m_renderSystem.findNode("Camera");
+    static TransformationComponent tr;
+    tr.translation = cam->getTranslation();
+    tr.rotation    = cam->getRotation();
+
+    m_freeCameraCtrl->camera = &tr;
+    // m_tppCameraCtrl->camera = &tr;
 }
 
 //------------------------------------------------------------------------------
@@ -92,8 +106,14 @@ void GameClient::draw()
 void GameClient::update(float delta)
 {
     m_inputSystem.update(delta);
-    m_tppCameraCtrl->execute(delta, nullptr);
-    m_freeCameraCtrl->execute(delta, nullptr);
+    // m_tppCameraCtrl->execute(delta, nullptr);
+    if (m_inputSystem.isMouseRelativeMode()) {
+        m_freeCameraCtrl->execute(delta, nullptr);
+
+        auto* cam = m_renderSystem.findNode("Camera");
+        cam->setTranslation(m_freeCameraCtrl->camera->translation);
+        cam->setRotation(m_freeCameraCtrl->camera->rotation);
+    }
     m_renderSystem.update(delta);
 }
 

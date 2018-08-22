@@ -15,9 +15,9 @@ struct Component
 
 struct TransformationComponent : public Component
 {
-    glm::quat orientation{1.f, 0.f, 0.f, 0.f};
-    glm::vec3 position{};
-    float scale = 1.0f;
+    glm::quat rotation{1.f, 0.f, 0.f, 0.f};
+    glm::vec3 translation{};
+    glm::vec3 scale{1.0f, 1.0f, 1.0f};
 };
 
 enum class Role { Skybox, Dynamic };
@@ -67,7 +67,7 @@ struct ControlComponent : public Component
     };
 
     uint16_t actions = 0; //< Buttons
-    glm::vec4 axes{};       //< Analog control
+    glm::vec4 axes{};     //< Analog control
 };
 
 struct ScriptComponent : public Component

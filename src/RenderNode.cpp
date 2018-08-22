@@ -13,29 +13,12 @@ RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent
     : m_actorId{actorId}
     , m_tr{tr}
     , m_rd{rd}
-    , m_modelMatrix(glm::mat4(1.0f))
 {
-}
-
-RenderNode::RenderNode(RenderNode&& other)
-    : m_actorId{other.m_actorId}
-    , m_tr{other.m_tr}
-    , m_rd{other.m_rd}
-    , m_material{other.m_material}
-    , m_modelMatrix(other.m_modelMatrix)
-    , m_mesh{other.m_mesh}
-    , m_shaderProgram{other.m_shaderProgram}
-    , m_castsShadows{other.m_castsShadows}
-{
-    other.m_tr = nullptr;
-    other.m_rd = nullptr;
 }
 
 //------------------------------------------------------------------------------
 
 void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
-
-void RenderNode::setMaterial(const std::shared_ptr<Material>& material) { m_material = material; }
 
 void RenderNode::setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram)
 {
@@ -46,38 +29,35 @@ void RenderNode::setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderPr
 
 void RenderNode::rebuildModelMatrix()
 {
-    const auto T = glm::translate(glm::mat4(1.f), m_tr->position);
-    const auto R = glm::toMat4(m_tr->orientation);
-    const auto S = glm::scale(glm::mat4(1.f), glm::vec3{m_tr->scale, m_tr->scale, m_tr->scale});
+    if (m_tr) {
+        m_rotation    = m_tr->rotation;
+        m_translation = m_tr->translation;
+        m_scale       = m_tr->scale;
+    }
+
+    const auto T = glm::translate(glm::mat4(1.f), m_translation);
+    const auto R = glm::toMat4(m_rotation);
+    const auto S = glm::scale(glm::mat4(1.f), m_scale);
 
     m_modelMatrix = T * R * S;
 }
 
 //------------------------------------------------------------------------------
 
-void RenderNode::draw(const Camera* camera, const std::array<Light*, 8>& lights,
-                      Texture* environment) const
-{
-    draw(m_shaderProgram.get(), camera, lights, environment);
-}
-
-void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
+void RenderNode::draw(const glm::mat4& parentModelMatrix, const Camera* camera,
                       const std::array<Light*, 8>& lights, Texture* environment) const
 {
-    if (!m_mesh) return;
+    draw(parentModelMatrix, m_shaderProgram.get(), camera, lights, environment);
+}
 
-    if (shaderProgram) {
+void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+                      const Camera* camera, const std::array<Light*, 8>& lights,
+                      Texture* environment) const
+{
+    const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
+
+    if (m_mesh) {
         shaderProgram->use();
-
-        int textureUnit = 0;
-        if (m_material) {
-            for (const auto& texture : m_material->textures) {
-                const std::string& name = "sampler" + std::to_string(textureUnit);
-                shaderProgram->setUniform(name.c_str(), textureUnit);
-
-                texture->bind(textureUnit++);
-            }
-        }
 
         for (size_t i = 0; i < lights.size(); ++i) {
             if (lights[i]) {
@@ -89,56 +69,60 @@ void RenderNode::draw(ShaderProgram* shaderProgram, const Camera* camera,
                 shaderProgram->setUniform((lightIdx + ".specular").c_str(), light.specular());
 
                 const auto& lightMVPIndex = "lightMVP[" + std::to_string(i) + "]";
-                shaderProgram->setUniform(lightMVPIndex.c_str(),
-                                          light.projectionMatrix() * light.viewMatrix() *
-                                              m_modelMatrix);
+                shaderProgram->setUniform(lightMVPIndex.c_str(), light.projectionMatrix() *
+                                                                     light.viewMatrix() *
+                                                                     m_modelMatrix);
             }
-        }
-
-        if (m_material) {
-            const auto& material = *m_material;
-            shaderProgram->setUniform("material.ambient", material.ambient());
-            shaderProgram->setUniform("material.diffuse", material.diffuse());
-            shaderProgram->setUniform("material.specular", material.specular());
-            shaderProgram->setUniform("material.emission", material.emission());
-            shaderProgram->setUniform("material.shininess", material.shininess());
         }
 
         shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
-        shaderProgram->setUniform("modelMatrix", m_modelMatrix);
+        shaderProgram->setUniform("modelMatrix", modelMatrix);
 
         if (environment) {
-            shaderProgram->setUniform("cameraPosition", camera->transformation()->position);
-            shaderProgram->setUniform("environmentCube", textureUnit);
+            shaderProgram->setUniform("cameraPosition", camera->worldTranslation());
+            shaderProgram->setUniform("environmentCube", 7);
 
-            environment->bind(textureUnit++);
+            environment->bind(7);
         }
 
-    } else {
-        glUseProgram(0);
+        //if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);
+
+        m_mesh->draw(shaderProgram);
+
+        //if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
     }
 
-    if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);
-
-    m_mesh->draw();
-
-    if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
+    for (auto child : m_children) {
+        child->draw(modelMatrix, shaderProgram, camera, lights, environment);
+    }
 }
 
 //------------------------------------------------------------------------------
 
-void RenderNode::update(float /*deltaTime*/) { rebuildModelMatrix(); }
+void RenderNode::update(const glm::mat4& parentModelMatrix, float deltaTime)
+{
+    rebuildModelMatrix();
+
+    const auto& worldMatrix =  parentModelMatrix * m_modelMatrix;
+
+    if (m_camera) m_camera->update(worldMatrix, deltaTime);
+
+    for (auto child : m_children) {
+        child->update(worldMatrix, deltaTime);
+    }
+}
 
 //------------------------------------------------------------------------------
 
-void RenderNode::drawAabb(ShaderProgram* shaderProgram, const Camera* camera)
+void RenderNode::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+                          const Camera* camera)
 {
     shaderProgram->use();
 
     shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
     shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
-    shaderProgram->setUniform("modelMatrix", m_modelMatrix);
+    shaderProgram->setUniform("modelMatrix", parentModelMatrix * m_modelMatrix);
 
     shaderProgram->setUniform("minimum", m_mesh->aabb().minimum);
     shaderProgram->setUniform("maximum", m_mesh->aabb().maximum);

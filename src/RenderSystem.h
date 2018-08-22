@@ -5,6 +5,7 @@
 #include "Components.h"
 #include "FpsCounter.h"
 #include "ShaderProgram.h"
+#include "Scene.h"
 
 #include "Camera.h"
 
@@ -43,7 +44,11 @@ class RenderSystem final
     Camera* getCamera() { return m_camera; }
     Camera* getCamera(CameraType type) { return &m_cameras.at(type); }
 
+    RenderNode* findNode(const std::string& node) { return m_scene->findNode(node); }
+
     void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
+    void setScene(std::shared_ptr<Scene> scene) { m_scene = scene;
+                                                m_camera = scene->currentCamera() ;}
 
     void resizeWindow(glm::ivec2 size);
 
@@ -78,10 +83,12 @@ class RenderSystem final
     std::vector<Camera> m_cameras;
     Camera* m_camera; // current camera
 
+    std::shared_ptr<Scene> m_scene;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Text> m_cameraText;
     std::set<std::shared_ptr<Text>> m_texts;
 
+    std::shared_ptr<ShaderProgram> m_defaultShader;
     std::shared_ptr<ShaderProgram> m_shadowShader;
     std::shared_ptr<ShaderProgram> m_normalsShader;
     std::shared_ptr<ShaderProgram> m_aabbShader;

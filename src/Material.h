@@ -15,6 +15,8 @@ class Material
     {
     }
 
+    Material() = default;
+    
     glm::vec3 ambient() const { return md.ambient; }
     glm::vec3 diffuse() const { return md.diffuse; }
     glm::vec3 specular() const { return md.specular; }

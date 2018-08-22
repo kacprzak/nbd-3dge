@@ -8,6 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Skybox::Skybox()
+    : m_indicesBuffer{GL_ELEMENT_ARRAY_BUFFER}, m_positionsBuffer{GL_ARRAY_BUFFER}
 {
     const float x = 1.0f;
 
@@ -25,7 +26,7 @@ Skybox::Skybox()
     md.primitive = GL_TRIANGLES;
 
     // clang-format off
-    md.positions = {
+    std::vector<glm::vec3> positions = {
         { x, -x,  x},
         {-x, -x,  x},
         {-x,  x,  x},
@@ -36,7 +37,7 @@ Skybox::Skybox()
         { x,  x, -x}
     };
 
-    md.indices = {
+    std::vector<uint8_t> indices = {
         // front
         0, 1, 3,
         1, 2, 3,
@@ -58,6 +59,23 @@ Skybox::Skybox()
     };
     // clang-format on
 
+    m_indicesBuffer.loadData(indices.data(), sizeof(indices[0]) * indices.size());
+    m_positionsBuffer.loadData(positions.data(), sizeof(positions[0]) * positions.size());
+
+    Accessor indicesAcc;
+    indicesAcc.buffer = &m_indicesBuffer;
+    indicesAcc.type = GL_UNSIGNED_BYTE;
+    indicesAcc.count = indices.size();
+    indicesAcc.size = 1;
+    md.iindices = &indicesAcc;
+
+    Accessor posAcc;
+    posAcc.buffer = &m_positionsBuffer;
+    posAcc.type = GL_FLOAT;
+    posAcc.count = positions.size();
+    posAcc.size = 3;
+    md.attributes[MeshData::Attributes::Position] = &posAcc;
+
     md.name = "SKYBOX";
     m_mesh  = std::make_shared<Mesh>(md);
 }
@@ -68,7 +86,7 @@ void Skybox::draw(const Camera* camera) const
         m_shaderProgram->use();
 
         // Move skybox with the camera
-        glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), camera->transformation()->position);
+        glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), camera->worldTranslation());
 
         m_shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         m_shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
@@ -81,7 +99,7 @@ void Skybox::draw(const Camera* camera) const
 
     if (m_material) {
         m_material->textures.at(0)->bind(0);
-        m_mesh->draw();
+        m_mesh->draw(m_shaderProgram.get());
     }
 
     glDepthMask(GL_TRUE);

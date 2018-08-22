@@ -7,17 +7,70 @@
 #include <gli/gl.hpp>
 #include <gli/gli.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <array>
+
+Sampler::Sampler()
+{
+    glGenSamplers(1, &m_samplerId);
+
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    setClampToEdge();
+
+    LOG_INFO("Created Sampler: {}", m_samplerId);
+}
+
+Sampler::~Sampler()
+{
+    glDeleteSamplers(1, &m_samplerId);
+
+    if (m_samplerId) LOG_INFO("Released Sampler: {}", m_samplerId);
+}
+
+void Sampler::bind(int textureUnit) { glBindSampler(textureUnit, m_samplerId); }
+
+void Sampler::setClampToEdge()
+{
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+}
+
+void Sampler::setClampToBorder()
+{
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+}
+
+void Sampler::setRepeat()
+{
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
+}
+
+void Sampler::setBorderColor(glm::vec4 color)
+{
+    glSamplerParameterfv(m_samplerId, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(color));
+}
+
+void Sampler::setParameter(GLenum param, GLint value)
+{
+    glSamplerParameteri(m_samplerId, param, value);
+}
+
+//------------------------------------------------------------------------------
 
 Texture::Texture(GLenum target)
     : m_target{target}
 {
     glGenTextures(1, &m_textureId);
-    glGenSamplers(1, &m_samplerId);
 
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    LOG_INFO("Created Texture: {}", m_textureId);
 }
 
 Texture::Texture(const TextureData& texData)
@@ -25,30 +78,23 @@ Texture::Texture(const TextureData& texData)
 {
     createTexture(texData.filename.c_str(), texData.linearColor);
 
-    if (m_levels > 1)
-        glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-    if (texData.clamp)
-        setClampToEdge();
-    else
-        setRepeat();
+    name = texData.name;
 }
 
 Texture::Texture(Texture&& other)
 {
     std::swap(m_target, other.m_target);
     std::swap(m_textureId, other.m_textureId);
-    std::swap(m_samplerId, other.m_samplerId);
     std::swap(m_w, other.m_w);
     std::swap(m_h, other.m_h);
+    std::swap(m_sampler, other.m_sampler);
 }
 
 Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureId);
-    glDeleteSamplers(1, &m_samplerId);
 
-    if (m_textureId || m_samplerId) LOG_INFO("Released Texture: {}", m_textureId);
+    if (m_textureId) LOG_INFO("Released Texture: {}", m_textureId);
 }
 
 Texture Texture::createShadowMap(glm::ivec2 size)
@@ -59,15 +105,13 @@ Texture Texture::createShadowMap(glm::ivec2 size)
     glTexImage2D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.x, size.y, 0, GL_DEPTH_COMPONENT,
                  GL_FLOAT, NULL);
 
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    auto sampler = std::make_shared<Sampler>();
 
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glSamplerParameterfv(tex.m_samplerId, GL_TEXTURE_BORDER_COLOR, borderColor);
+    sampler->setClampToBorder();
+    sampler->setBorderColor({1.0f, 1.0f, 1.0f, 1.0f});
+    sampler->setParameter(GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    tex.setSampler(sampler);
 
     return tex;
 }
@@ -80,38 +124,26 @@ Texture Texture::createShadowMap(glm::ivec3 size)
     glTexImage3D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.x, size.y, size.z, 0,
                  GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    auto sampler = std::make_shared<Sampler>();
 
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glSamplerParameterfv(tex.m_samplerId, GL_TEXTURE_BORDER_COLOR, borderColor);
+    sampler->setClampToBorder();
+    sampler->setBorderColor({1.0f, 1.0f, 1.0f, 1.0f});
+    sampler->setParameter(GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 
-    glSamplerParameteri(tex.m_samplerId, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    tex.setSampler(sampler);
 
     return tex;
 }
 
 void Texture::bind(int textureUnit)
 {
+    if (m_sampler)
+        m_sampler->bind(textureUnit);
+    else
+        m_sampler = std::make_shared<Sampler>();
+
     glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(m_target, m_textureId);
-    glBindSampler(textureUnit, m_samplerId);
-}
-
-void Texture::setClampToEdge()
-{
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-}
-
-void Texture::setRepeat()
-{
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glSamplerParameteri(m_samplerId, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
 //==============================================================================

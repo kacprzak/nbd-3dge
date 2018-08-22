@@ -1,6 +1,8 @@
 #ifndef MESHDATA_H
 #define MESHDATA_H
 
+#include "Buffer.h"
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -15,6 +17,11 @@ struct MeshData final
     std::vector<glm::vec2> texcoords;
     std::vector<unsigned short> indices;
     std::string name;
+
+    enum Attributes { Position, Normal, Tangent, TexCoord_0, TexCoord_1, TexCoord_2, TexCoord_3, Size };
+
+    Accessor* iindices = nullptr;
+    std::array<const Accessor*, Attributes::Size> attributes{};
 
     static MeshData fromWavefrontObj(const std::string& objfileName);
     static MeshData fromHeightmap(const std::vector<float>& heights, int w, int h,

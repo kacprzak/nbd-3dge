@@ -11,7 +11,7 @@ class RotationScript : public Script
     {
         auto trWeak = a->getComponent<TransformationComponent>(ComponentId::Transformation);
         if (auto tr = trWeak.lock()) {
-            tr->orientation = glm::rotate(tr->orientation, elapsedTime * 0.55f, {0.f, 1.f, 0.f});
+            tr->rotation = glm::rotate(tr->rotation, elapsedTime * 0.55f, {0.f, 1.f, 0.f});
         }
     }
 };
@@ -85,7 +85,7 @@ void GameLogic::attachView(std::shared_ptr<GameView> gameView, unsigned actorId)
 void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 {
     // Load scene
-    using boost::property_tree::ptree;
+       using boost::property_tree::ptree;
     ptree pt;
 
     read_xml(m_settings.dataFolder + "scene.xml", pt);
@@ -95,6 +95,7 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
         gv->loadResources(assetsXml);
     }
 
+    /*
     ActorFactory factory;
     for (ptree::value_type& v : pt.get_child("scene")) {
         if (boost::algorithm::ends_with(v.first, "Prototype")) {
@@ -122,6 +123,7 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 
         if (tr && ph) m_physicsSystem->addActor(a->id(), tr.get(), ph.get(), *m_resourcesMgr);
     }
+    */
 }
 
 void GameLogic::onAfterMainLoop(Engine* /*e*/)

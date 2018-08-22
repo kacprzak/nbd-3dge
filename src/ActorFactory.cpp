@@ -11,7 +11,7 @@ using namespace boost::property_tree;
 
 static glm::vec4 stringToVector(std::string str)
 {
-    glm::vec4 retval;
+    glm::vec4 retval{1.0f};
 
     if (!str.empty()) {
         boost::trim(str);
@@ -57,24 +57,29 @@ static std::shared_ptr<LightComponent> getLightComponent(ptree& actorTree, Light
 static std::shared_ptr<TransformationComponent>
 getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
 {
-    auto tr                 = std::make_shared<TransformationComponent>();
-    std::string orientation = actorTree.get("orientation", "");
-    if (!orientation.empty()) {
+    auto tr              = std::make_shared<TransformationComponent>();
+    std::string rotation = actorTree.get("orientation", "");
+    if (!rotation.empty()) {
         // Conversion form euler to quaternion
-        auto degs       = glm::vec3{stringToVector(orientation)};
-        tr->orientation = glm::quat{glm::radians(degs)};
+        auto degs    = glm::vec3{stringToVector(rotation)};
+        tr->rotation = glm::quat{glm::radians(degs)};
     } else {
-        tr->orientation = prototype.orientation;
+        tr->rotation = prototype.rotation;
     }
 
-    std::string position = actorTree.get("position", "");
-    if (!position.empty()) {
-        tr->position = glm::vec3{stringToVector(position)};
+    std::string translation = actorTree.get("position", "");
+    if (!translation.empty()) {
+        tr->translation = glm::vec3{stringToVector(translation)};
     } else {
-        tr->position = prototype.position;
+        tr->translation = prototype.translation;
     }
 
-    tr->scale = actorTree.get("scale", prototype.scale);
+    std::string scale = actorTree.get("scale", "");
+    if (!scale.empty()) {
+        tr->scale = glm::vec3{stringToVector(scale)};
+    } else {
+        tr->scale = prototype.scale;
+    }
 
     return tr;
 }
@@ -174,16 +179,16 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
                 p.second->getComponent<TransformationComponent>(ComponentId::Transformation).lock();
             if (tr) trProto = *tr;
 
-            auto rd         = p.second->getComponent<RenderComponent>(ComponentId::Render).lock();
+            auto rd = p.second->getComponent<RenderComponent>(ComponentId::Render).lock();
             if (rd) rdProto = *rd;
 
-            auto lt         = p.second->getComponent<LightComponent>(ComponentId::Light).lock();
+            auto lt = p.second->getComponent<LightComponent>(ComponentId::Light).lock();
             if (lt) ltProto = *lt;
 
-            auto ph         = p.second->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
+            auto ph = p.second->getComponent<PhysicsComponent>(ComponentId::Physics).lock();
             if (ph) phProto = *ph;
 
-            auto sc         = p.second->getComponent<ScriptComponent>(ComponentId::Script).lock();
+            auto sc = p.second->getComponent<ScriptComponent>(ComponentId::Script).lock();
             if (sc) scProto = *sc;
 
         } else {
@@ -221,7 +226,7 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     }
 
     if (actorType == "skybox") {
-        auto rd          = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
         if (rd) rd->role = Role::Skybox;
     }
 

@@ -2,11 +2,13 @@
 
 #include "Framebuffer.h"
 #include "Light.h"
+#include "Logger.h"
 #include "ResourcesMgr.h"
 #include "Skybox.h"
 #include "Terrain.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include <array>
 #include <boost/algorithm/string/predicate.hpp>
@@ -22,14 +24,13 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
 {
     glGenVertexArrays(1, &m_emptyVao);
 
-    m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
+    //m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
     // Add player camera
     m_cameras.emplace_back(m_windowSize);
 
     // Add free camera
     m_cameras.emplace_back(m_windowSize);
-    m_cameras[Free].transformation()->position = {-3.5f, 11.0f, 3.9f};
 
     m_camera = &m_cameras.at(Player);
 }
@@ -42,6 +43,7 @@ RenderSystem::~RenderSystem() { glDeleteVertexArrays(1, &m_emptyVao); }
 
 void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 {
+    m_defaultShader  = resourcesMgr.getShaderProgram("default");
     m_shadowShader  = resourcesMgr.getShaderProgram("shadow");
     m_normalsShader = resourcesMgr.getShaderProgram("normals");
     m_aabbShader    = resourcesMgr.getShaderProgram("aabb");
@@ -59,6 +61,12 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
     m_cameraText->setShaderProgram(guiShader);
     m_cameraText->setPosition({0.5f, 0.f, 0.0f});
     add(m_cameraText);
+
+    auto skybox = std::make_shared<Skybox>();
+    skybox->setMaterial(resourcesMgr.getMaterial("skybox_mtl"));
+    skybox->setShaderProgram(resourcesMgr.getShaderProgram("skybox"));
+
+    setSkybox(skybox);
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +82,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
                 if (boost::starts_with(rd->mesh, "heightfield:")) {
                     node = std::make_shared<Terrain>(id, tr, rd,
                                                      *resourcesMgr.getHeightfield(rd->mesh));
-                    //node->setCastShadows(true);
+                    // node->setCastShadows(true);
                 } else {
                     node         = std::make_shared<RenderNode>(id, tr, rd);
                     auto meshPtr = resourcesMgr.getMesh(rd->mesh);
@@ -83,10 +91,10 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
                 }
             }
 
-            if (!rd->material.empty()) {
-                auto materialPtr = resourcesMgr.getMaterial(rd->material);
-                node->setMaterial(materialPtr);
-            }
+            // if (!rd->material.empty()) {
+            //     auto materialPtr = resourcesMgr.getMaterial(rd->material);
+            //     node->setMaterial(materialPtr);
+            // }
 
             node->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
 
@@ -111,10 +119,10 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
     if (lt) {
         auto light = std::make_shared<Light>(id, tr, rd, lt, m_windowSize);
 
-        if (!lt->material.empty()) {
-            auto materialPtr = resourcesMgr.getMaterial(lt->material);
-            light->setMaterial(materialPtr);
-        }
+        // if (!lt->material.empty()) {
+        //     auto materialPtr = resourcesMgr.getMaterial(lt->material);
+        //     light->setMaterial(materialPtr);
+        // }
 
         m_lights[id] = light;
     }
@@ -131,26 +139,30 @@ void RenderSystem::removeActor(int id)
 
 void RenderSystem::update(float delta)
 {
+    const glm::mat4 identity{1.0f};
+
     m_fpsCounter.update(delta);
 
-    for (auto& camera : m_cameras) {
-        camera.update(delta);
-    }
+//    for (auto& camera : m_cameras) {
+//        camera.update(identity, delta);
+//    }
 
-    if (m_camera) {
+    if (m_camera && m_cameraText) {
         updateCameraText();
     }
 
+    m_scene->update(delta);
+
     for (const auto& node : m_nodes) {
-        node.second->update(delta);
+        node.second->update(identity, delta);
     }
 
     for (const auto& node : m_transparentNodes) {
-        node.second->update(delta);
+        node.second->update(identity, delta);
     }
 
     for (const auto& node : m_lights) {
-        node.second->update(delta);
+        node.second->update(identity, delta);
     }
 }
 
@@ -159,12 +171,12 @@ void RenderSystem::update(float delta)
 void RenderSystem::draw()
 {
     std::array<Light*, 8> lights = {};
-    Light* sun = m_lights.begin()->second.get();
+    Light* sun                   = m_lights.begin()->second.get();
 
     drawShadows(m_shadowShader.get(), m_camera, sun);
     // drawShadows(m_shadowShader.get(), &m_cameras[Player], sun);
 
-    lights[0] = sun;
+    // lights[0] = sun;
 
     // sun->setCascade(0);
     // draw(sun, lights);
@@ -179,20 +191,24 @@ void RenderSystem::draw()
 
 void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) const
 {
-    if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
-    if (m_camera) m_camera->draw(camera, lights, nullptr);
+    const glm::mat4 identity{1.0f};
 
-    auto envirnoment = m_skybox->material()->textures.at(0).get();
+    if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
+
+    Texture* environment = nullptr;
+    if (m_skybox) environment = m_skybox->material()->textures.at(0).get();
+
+    m_scene->draw(m_defaultShader.get(), camera, lights);
 
     for (const auto& node : m_nodes) {
-        node.second->draw(camera, lights, envirnoment);
+        node.second->draw(identity, camera, lights, environment);
     }
 
     if (m_polygonMode == GL_FILL && m_skybox) m_skybox->draw(camera);
 
     glDepthMask(GL_FALSE);
     for (const auto& node : m_transparentNodes) {
-        node.second->draw(camera, lights, envirnoment);
+        node.second->draw(identity, camera, lights, environment);
     }
     glDepthMask(GL_TRUE);
 
@@ -206,10 +222,11 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
 
 void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camera) const
 {
+    const glm::mat4 identity{1.0f};
     std::array<Light*, 8> lights = {};
 
     for (const auto& node : m_nodes) {
-        node.second->draw(shaderProgram, camera, lights, nullptr);
+        node.second->draw(identity, shaderProgram, camera, lights, nullptr);
     }
 }
 
@@ -235,7 +252,7 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
             for (const auto& node : m_nodes) {
                 if (node.second->castsShadows())
-                    node.second->draw(shaderProgram, light, lights, nullptr);
+                    node.second->draw(glm::mat4{}, shaderProgram, light, lights, nullptr);
             }
         }
 
@@ -268,7 +285,7 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
     glBindVertexArray(m_emptyVao);
 
     for (const auto& node : m_nodes) {
-        node.second->drawAabb(shaderProgram, camera);
+        node.second->drawAabb(glm::mat4{}, shaderProgram, camera);
     }
 }
 
@@ -349,10 +366,14 @@ void RenderSystem::resizeWindow(glm::ivec2 size)
 
 void RenderSystem::setDrawNormals(bool enable, float normalLength)
 {
-    m_normalsShader->use();
-    m_normalsShader->setUniform("magnitude", normalLength);
-    m_drawNormals = enable;
-    glUseProgram(0);
+    if (m_normalsShader) {
+        m_normalsShader->use();
+        m_normalsShader->setUniform("magnitude", normalLength);
+        m_drawNormals = enable;
+        glUseProgram(0);
+    } else {
+        LOG_INFO("Shader for drawing normal vectors is not loaded");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -371,8 +392,17 @@ void RenderSystem::updateCameraText()
 {
     using namespace boost;
 
-    auto p = m_camera->transformation()->position;
-    auto r = glm::eulerAngles(m_camera->transformation()->orientation) * 180.f / 3.14f;
+    auto m_worldMatrix = glm::inverse(m_camera->viewMatrix());
+
+    glm::vec3 scale;
+    glm::quat rotation;
+    glm::vec3 translation;
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    glm::decompose(m_worldMatrix, scale, rotation, translation, skew, perspective);
+
+    auto p = translation;
+    auto r = glm::eulerAngles(glm::conjugate(rotation)) * 180.f / 3.14f;
 
     std::array<char, 64> buffer;
     std::fill(std::begin(buffer), std::end(buffer), '\0');

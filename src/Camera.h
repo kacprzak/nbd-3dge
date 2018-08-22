@@ -4,30 +4,22 @@
 #include "RenderNode.h"
 #include <glm/glm.hpp>
 
-class Camera : public RenderNode
+class Camera
 {
   protected:
     using Frustum = std::array<glm::vec4, 8>;
 
   public:
-    Camera(int actorId, TransformationComponent* tr, RenderComponent* rd, glm::ivec2 windowSize);
     Camera(glm::ivec2 windowSize);
 
     Camera(Camera&& other) = default;
 
-    ~Camera();
-
-    //float near() const { return m_near; }
-    //float far() const { return m_far; }
-
-    void draw(const Camera* /*c*/, const std::array<Light*, 8>& /*lights*/,
-              Texture* /*environment*/) const override
-    {
-    }
+    // float near() const { return m_near; }
+    // float far() const { return m_far; }
 
     void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const;
 
-    void update(float delta) override;
+    void update(const glm::mat4& parentModelMatrix, float delta);
     void setPerspective(bool updateCascades = true);
     void setPerspective(float fov, float near, float far, bool updateCascades = true);
     void setOrtho(bool updateCascades = true);
@@ -39,6 +31,8 @@ class Camera : public RenderNode
     const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
     const glm::mat4& projectionMatrix(int cascadeIndex) const;
+
+    glm::vec3 worldTranslation() const { return glm::inverse(viewMatrix())[3]; }
 
     bool isVisible(const Aabb& aabb) const;
 
@@ -75,8 +69,7 @@ class Camera : public RenderNode
 
     Frustum m_frustum;
     std::array<Frustum, s_shadowCascadesMax> m_cascadeFrustums;
-    bool m_perspective        = true;
-    bool m_ownsTransformation = false;
+    bool m_perspective = true;
 };
 
 #endif // CAMERA_H

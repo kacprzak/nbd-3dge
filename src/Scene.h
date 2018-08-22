@@ -1,0 +1,30 @@
+#ifndef SCENE_H
+#define SCENE_H
+
+#include "Buffer.h"
+#include "Mesh.h"
+#include "RenderNode.h"
+#include "Camera.h"
+
+class Scene
+{
+  public:
+    void load(const std::string& file);
+
+    void update(float delta);
+    void draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights);
+
+    Camera* currentCamera() { return &m_cameras.at(0); }
+
+    RenderNode* findNode(const std::string& node);
+
+  private:
+    std::vector<Buffer> m_buffers;
+    std::vector<Accessor> m_accessors;
+    std::vector<std::shared_ptr<Mesh>> m_meshes;
+    std::vector<Camera> m_cameras;
+    std::vector<RenderNode> m_nodes;
+    std::vector<RenderNode*> m_scene;
+};
+
+#endif /* SCENE_H */

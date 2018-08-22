@@ -4,8 +4,13 @@
 #include "MtlLoader.h"
 
 #include <SDL.h>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wignored-qualifiers"
 #include <gli/gli.hpp>
 #include <gli/sampler2d.hpp>
+#pragma clang diagnostic pop
 
 #include <array>
 #include <boost/property_tree/ptree.hpp>

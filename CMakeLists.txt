@@ -9,7 +9,7 @@ add_definitions( -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS )
 
 include( ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake )
 conan_basic_setup( TARGETS )
-set( LINK_LIBS CONAN_PKG::sdl2 CONAN_PKG::bullet CONAN_PKG::glew CONAN_PKG::spdlog CONAN_PKG::boost_program_options CONAN_PKG::boost_property_tree )
+set( LINK_LIBS CONAN_PKG::sdl2 CONAN_PKG::bullet CONAN_PKG::glew CONAN_PKG::spdlog CONAN_PKG::boost_program_options CONAN_PKG::boost_property_tree CONAN_PKG::jsonformoderncpp )
 
 if( WIN32 )
   list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62 )
@@ -27,6 +27,7 @@ if( UNIX )
   #include_directories( ${LIBCLANG_INCLUDES} )
 endif()
 
+include_directories( ${CMAKE_SOURCE_DIR}/external )
 include_directories( ${CMAKE_SOURCE_DIR}/external/gli )
 include_directories( ${CMAKE_SOURCE_DIR}/external/gli/external )
 

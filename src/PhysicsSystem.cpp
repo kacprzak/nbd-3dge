@@ -19,22 +19,22 @@ class MotionState : public btMotionState
 
     void getWorldTransform(btTransform& worldTrans) const override
     {
-        const auto& p = m_tr->position;
+        const auto& p = m_tr->translation;
         worldTrans.setOrigin({p.x, p.y, p.z});
-        const auto& o = m_tr->orientation;
+        const auto& o = m_tr->rotation;
         worldTrans.setRotation({o.x, o.y, o.z, o.w});
     }
 
     void setWorldTransform(const btTransform& worldTrans) override
     {
-        m_tr->position.x = worldTrans.getOrigin().x();
-        m_tr->position.y = worldTrans.getOrigin().y();
-        m_tr->position.z = worldTrans.getOrigin().z();
+        m_tr->translation.x = worldTrans.getOrigin().x();
+        m_tr->translation.y = worldTrans.getOrigin().y();
+        m_tr->translation.z = worldTrans.getOrigin().z();
 
-        m_tr->orientation.x = worldTrans.getRotation().x();
-        m_tr->orientation.y = worldTrans.getRotation().y();
-        m_tr->orientation.z = worldTrans.getRotation().z();
-        m_tr->orientation.w = worldTrans.getRotation().w();
+        m_tr->rotation.x = worldTrans.getRotation().x();
+        m_tr->rotation.y = worldTrans.getRotation().y();
+        m_tr->rotation.z = worldTrans.getRotation().z();
+        m_tr->rotation.w = worldTrans.getRotation().w();
     }
 
   private:
@@ -83,12 +83,12 @@ void PhysicsSystem::update(float elapsedTime)
     for (auto& n : m_nodes) {
         if (glm::length(n.ph->force) > 0.f) {
             n.body->activate();
-            auto force = glm::rotate(n.tr->orientation, n.ph->force);
+            auto force = glm::rotate(n.tr->rotation, n.ph->force);
             n.body->applyCentralForce(btVector3{force.x, force.y, force.z});
         }
         if (glm::length(n.ph->torque) > 0.f) {
             n.body->activate();
-            auto torque = glm::rotate(n.tr->orientation, n.ph->torque);
+            auto torque = glm::rotate(n.tr->rotation, n.ph->torque);
             n.body->applyTorque(btVector3{torque.x, torque.y, torque.z});
         }
     }
@@ -102,11 +102,11 @@ void PhysicsSystem::addActor(int id, TransformationComponent* tr, PhysicsCompone
 {
     btCollisionShape* colShape = nullptr;
 
-    auto key        = std::make_pair(ph->shape, tr->scale);
+    auto key        = std::make_pair(ph->shape, tr->scale[0]);
     auto colShapeIt = m_collisionShapes.find(key);
     if (colShapeIt == std::end(m_collisionShapes)) {
         auto colShapeUPtr = createCollisionShape(*ph, resourcesMgr);
-        colShapeUPtr->setLocalScaling({tr->scale, tr->scale, tr->scale});
+        colShapeUPtr->setLocalScaling({tr->scale[0], tr->scale[1], tr->scale[2]});
         colShape               = colShapeUPtr.get();
         m_collisionShapes[key] = std::move(colShapeUPtr);
         LOG_TRACE("Created CollisionShape: {} {}", key.first, key.second);
@@ -198,7 +198,8 @@ PhysicsSystem::createCollisionShape(const PhysicsComponent& ph, const ResourcesM
 
         } else if (splitted[0] == "box") {
             auto colShape = std::make_unique<btBoxShape>(btVector3{
-                boost::lexical_cast<float>(splitted[1]), boost::lexical_cast<float>(splitted[2]),
+                boost::lexical_cast<float>(splitted[1]),
+                boost::lexical_cast<float>(splitted[2]),
                 boost::lexical_cast<float>(splitted[3]),
             });
             return colShape;
