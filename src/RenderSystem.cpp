@@ -268,9 +268,9 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
             shaderProgram->setUniform("shadowSampler", shadowTextureUnit);
 
             for (int ci = 0; ci < m_shadowCascadesSize; ++ci) {
-                const auto far              = camera->cascadeIdx2NearFar(ci).y;
+                const auto zFar              = camera->cascadeIdx2NearFar(ci).y;
                 const auto& cascadeFarIndex = "cascadeFar[" + std::to_string(ci) + "]";
-                shaderProgram->setUniform(cascadeFarIndex.c_str(), far);
+                shaderProgram->setUniform(cascadeFarIndex.c_str(), zFar);
 
                 const auto& cascadeVPIndex = "cascadeVP[" + std::to_string(ci) + "]";
                 shaderProgram->setUniform(cascadeVPIndex.c_str(),

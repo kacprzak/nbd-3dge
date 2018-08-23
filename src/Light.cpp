@@ -15,6 +15,7 @@ glm::vec4 Light::position() const
         return glm::vec4(transformation()->translation, 1.0f);
     }
     */
+    return {};
 }
 
 glm::vec3 Light::ambient() const { return m_material.ambient(); }
