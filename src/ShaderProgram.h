@@ -25,6 +25,8 @@ class ShaderProgram final
     void setUniform(const char* name, float value);
     void setUniform(const char* name, int value);
 
+    std::string name;
+
   private:
     GLint getUniformLocation(const char* name);
 

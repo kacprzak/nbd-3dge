@@ -61,12 +61,8 @@ void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderP
 
         for (size_t i = 0; i < lights.size(); ++i) {
             if (lights[i]) {
-                const auto& light    = *lights[i];
-                const auto& lightIdx = "lights[" + std::to_string(i) + "]";
-                shaderProgram->setUniform((lightIdx + ".position").c_str(), light.position());
-                shaderProgram->setUniform((lightIdx + ".ambient").c_str(), light.ambient());
-                shaderProgram->setUniform((lightIdx + ".diffuse").c_str(), light.diffuse());
-                shaderProgram->setUniform((lightIdx + ".specular").c_str(), light.specular());
+                const auto& light = *lights[i];
+                light.applyTo(shaderProgram, i);
 
                 const auto& lightMVPIndex = "lightMVP[" + std::to_string(i) + "]";
                 shaderProgram->setUniform(lightMVPIndex.c_str(), light.projectionMatrix() *
@@ -86,11 +82,11 @@ void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderP
             environment->bind(7);
         }
 
-        //if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);
+        // if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);
 
         m_mesh->draw(shaderProgram);
 
-        //if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
+        // if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
     }
 
     for (auto child : m_children) {
@@ -104,7 +100,7 @@ void RenderNode::update(const glm::mat4& parentModelMatrix, float deltaTime)
 {
     rebuildModelMatrix();
 
-    const auto& worldMatrix =  parentModelMatrix * m_modelMatrix;
+    const auto& worldMatrix = parentModelMatrix * m_modelMatrix;
 
     if (m_camera) m_camera->update(worldMatrix, deltaTime);
 

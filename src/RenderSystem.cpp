@@ -26,11 +26,12 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
 
     // m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
+    float ratio = m_windowSize.x / float(m_windowSize.y);
     // Add player camera
-    m_cameras.emplace_back(m_windowSize);
+    m_cameras.emplace_back();
 
     // Add free camera
-    m_cameras.emplace_back(m_windowSize);
+    m_cameras.emplace_back();
 
     m_camera = &m_cameras.at(Player);
 }
@@ -117,7 +118,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
 
     // Light component
     if (lt) {
-        auto light = std::make_shared<Light>(id, tr, rd, lt, m_windowSize);
+        auto light = std::make_shared<Light>(id, tr, rd, lt);
 
         // if (!lt->material.empty()) {
         //     auto materialPtr = resourcesMgr.getMaterial(lt->material);
@@ -358,7 +359,7 @@ void RenderSystem::resizeWindow(glm::ivec2 size)
 {
     m_windowSize = size;
     for (auto& camera : m_cameras) {
-        camera.setWindowSize(size);
+        camera.setAspectRatio(size.x / float(size.y));
     }
 }
 
@@ -408,11 +409,37 @@ void RenderSystem::updateCameraText()
     std::fill(std::begin(buffer), std::end(buffer), '\0');
     iostreams::array_sink sink{buffer.data(), buffer.size()};
     iostreams::stream<iostreams::array_sink> oss{sink};
-    oss.precision(1);
+    oss.precision(2);
     oss.setf(std::ios::fixed, std::ios::floatfield);
     oss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
     oss.precision(0);
     oss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
     buffer[buffer.size() - 1] = '\0';
     m_cameraText->setText(buffer.data());
+}
+
+void RenderSystem::setScene(std::shared_ptr<Scene> scene)
+{
+    m_scene = scene;
+
+    auto cam = m_scene->findNode("Camera");
+    if (!cam) {
+        auto aabb     = m_scene->aabb();
+        auto rn       = std::make_shared<RenderNode>(-1);
+
+        glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
+        rn->setModelMatrix(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})));
+        rn->name = "Camera";
+        rn->setCamera(m_camera);
+
+        m_nodes[-1] = rn;
+    }
+}
+
+RenderNode* RenderSystem::findNode(const std::string& node)
+{
+    for (auto& n : m_nodes) {
+        if (n.second->name == node) return n.second.get();
+    }
+    return m_scene->findNode(node);
 }

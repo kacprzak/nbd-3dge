@@ -58,9 +58,9 @@ Skybox::Skybox()
     };
     // clang-format on
 
-    auto indicesBuffer = std::make_shared<Buffer>(GL_ELEMENT_ARRAY_BUFFER);
+    auto indicesBuffer = std::make_shared<Buffer>();
     indicesBuffer->loadData(indices.data(), sizeof(indices[0]) * indices.size());
-    auto positionsBuffer = std::make_shared<Buffer>(GL_ARRAY_BUFFER);
+    auto positionsBuffer = std::make_shared<Buffer>();
     positionsBuffer->loadData(positions.data(), sizeof(positions[0]) * positions.size());
 
     Accessor indicesAcc;

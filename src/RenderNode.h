@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include <memory>
 
@@ -39,6 +40,15 @@ class RenderNode final
     void setScale(glm::vec3 scale) { m_scale = scale; }
     glm::vec3 getScale() const { return m_scale; }
 
+    void setModelMatrix(glm::mat4 mtx)
+    {
+        m_modelMatrix = mtx;
+
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(mtx, m_scale, m_rotation, m_translation, skew, perspective);
+    }
+
     ShaderProgram* getShaderProgram() { return m_shaderProgram.get(); }
 
     void draw(const glm::mat4& parentModelMatrix, const Camera* camera,
@@ -60,10 +70,14 @@ class RenderNode final
 
     Aabb aabb() const
     {
-        if (m_mesh)
-            return m_modelMatrix * m_mesh->aabb();
-        else
-            return Aabb{};
+        Aabb aabb;
+
+        if (m_mesh) aabb = aabb.mbr(m_modelMatrix * m_mesh->aabb());
+
+        for (auto& n : m_children)
+            aabb = aabb.mbr(m_modelMatrix * n->aabb());
+
+        return aabb;
     }
 
     void setCastShadows(bool castsShadows) { m_castsShadows = castsShadows; }

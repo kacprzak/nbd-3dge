@@ -5,12 +5,7 @@
 
 #include <algorithm>
 
-Camera::Camera(glm::ivec2 windowSize)
-    : m_windowSize{windowSize}
-    , m_ratio{m_windowSize.x / float(m_windowSize.y)}
-{
-    setPerspective();
-}
+Camera::Camera() { setPerspective(); }
 
 //------------------------------------------------------------------------------
 
@@ -112,10 +107,9 @@ void Camera::setOrtho(int cascadeIndex, const Aabb& aabb)
     m_cascadeProjectionMatrix[cascadeIndex] = glm::ortho(left, right, bottom, top, -far, -near);
 }
 
-void Camera::setWindowSize(glm::ivec2 size)
+void Camera::setAspectRatio(float ratio)
 {
-    m_windowSize = size;
-    m_ratio      = m_windowSize.x / float(m_windowSize.y);
+    m_ratio = ratio;
 
     if (m_perspective)
         setPerspective();

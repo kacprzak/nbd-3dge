@@ -92,6 +92,7 @@ struct Aabb final
         if (minimum.z > maximum.z) std::swap(minimum.z, maximum.z);
     }
 
+    // Minimum bounding box
     Aabb mbr(const Aabb& other) const
     {
         if (isEmpty()) return other;

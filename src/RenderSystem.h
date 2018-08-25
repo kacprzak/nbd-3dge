@@ -44,11 +44,10 @@ class RenderSystem final
     Camera* getCamera() { return m_camera; }
     Camera* getCamera(CameraType type) { return &m_cameras.at(type); }
 
-    RenderNode* findNode(const std::string& node) { return m_scene->findNode(node); }
+    RenderNode* findNode(const std::string& node);
 
     void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
-    void setScene(std::shared_ptr<Scene> scene) { m_scene = scene;
-                                                m_camera = scene->currentCamera() ;}
+    void setScene(std::shared_ptr<Scene> scene);
 
     void resizeWindow(glm::ivec2 size);
 

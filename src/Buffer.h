@@ -7,13 +7,13 @@
 class Buffer final
 {
   public:
-    Buffer(GLenum target);
+    Buffer();
     Buffer(const Buffer&) = delete;
     Buffer& operator=(const Buffer&) = delete;
     Buffer(Buffer&& other);
     ~Buffer();
 
-    void bind();
+    void bind(GLenum target);
 
     void loadData(const void* data, size_t size, GLenum usage = GL_STATIC_DRAW);
     void getData(void* data, size_t size) const;
@@ -21,7 +21,6 @@ class Buffer final
     unsigned m_byteStride = 0;
 
   private:
-    GLenum m_target;
     GLuint m_bufferId = 0;
     size_t m_size     = 0;
 };

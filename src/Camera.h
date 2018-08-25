@@ -10,12 +10,11 @@ class Camera
     using Frustum = std::array<glm::vec4, 8>;
 
   public:
-    Camera(glm::ivec2 windowSize);
-
+    Camera();
     Camera(Camera&& other) = default;
 
-    // float near() const { return m_near; }
-    // float far() const { return m_far; }
+    float zNear() const { return m_near; }
+    float zFar() const { return m_far; }
 
     void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const;
 
@@ -26,7 +25,7 @@ class Camera
     void setOrtho(const Aabb& aabb, bool updateCascades = true);
     void setOrtho(int cascadeIndex, const Aabb& aabb);
 
-    void setWindowSize(glm::ivec2 size);
+    void setAspectRatio(float ratio);
 
     const glm::mat4& viewMatrix() const;
     const glm::mat4& projectionMatrix() const;
@@ -52,8 +51,7 @@ class Camera
     Frustum ortoArgsToFrustum(float left, float right, float bottom, float top, float near,
                               float far) const;
 
-    glm::ivec2 m_windowSize;
-    float m_near   = 1.f;
+    float m_near   = 0.01f;
     float m_far    = 1000.f;
     float m_fov    = 45.f;
     float m_ratio  = 1.f;

@@ -2,6 +2,7 @@
 #define MATERIAL_H
 
 #include "MaterialData.h"
+#include "ShaderProgram.h"
 #include "Texture.h"
 
 #include <vector>
@@ -16,12 +17,8 @@ class Material
     }
 
     Material() = default;
-    
-    glm::vec3 ambient() const { return md.ambient; }
-    glm::vec3 diffuse() const { return md.diffuse; }
-    glm::vec3 specular() const { return md.specular; }
-    glm::vec3 emission() const { return md.emission; }
-    float shininess() const { return md.shininess; }
+
+    void applyTo(ShaderProgram* shaderProgram) const;
 
     // private:
     MaterialData md;

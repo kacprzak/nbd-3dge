@@ -14,7 +14,15 @@ class Scene
     void update(float delta);
     void draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights);
 
-    Camera* currentCamera() { return &m_cameras.at(0); }
+    Camera* currentCamera()
+    {
+        if (m_cameras.empty())
+            return nullptr;
+        else
+            return &m_cameras.at(0);
+    }
+
+    Aabb aabb() const;
 
     RenderNode* findNode(const std::string& node);
 

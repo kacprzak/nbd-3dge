@@ -33,7 +33,7 @@ class FreeCameraController : public CameraController
     }
 
   public:
-    float m_cameraSpeed = 50.0f;
+    float m_cameraSpeed = 5.0f;
 
     void execute(float deltaTime, Actor* /*actor*/) override
     {

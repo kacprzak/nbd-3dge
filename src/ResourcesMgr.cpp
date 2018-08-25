@@ -194,6 +194,7 @@ void ResourcesMgr::addShaderProgram(const ShaderProgramData& spData)
 
         auto sp = std::make_shared<ShaderProgram>();
         sp->link(shadersRaw);
+        sp->name = spData.name;
         m_shaderPrograms[spData.name] = sp;
     } else {
         LOG_TRACE("Reloading ShaderProgram: {}", spData.name);

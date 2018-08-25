@@ -26,14 +26,14 @@ Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor 
     if (indices.count > 0) {
         m_typeOfElement    = indices.type;
         m_numberOfElements = indices.count;
-        indices.buffer->bind();
+        indices.buffer->bind(GL_ELEMENT_ARRAY_BUFFER);
     }
 
     for (int i = 0; i < Accessor::Attribute::Size; ++i) {
         const Accessor& acc = attributes[i];
         if (acc.count > 0) {
             m_numberOfVertices = acc.count;
-            acc.buffer->bind();
+            acc.buffer->bind(GL_ARRAY_BUFFER);
             glEnableVertexAttribArray(i);
             glVertexAttribPointer(i, acc.size, acc.type, acc.normalized, acc.buffer->m_byteStride,
                                   (const void*)acc.byteOffset);
@@ -70,22 +70,7 @@ void Mesh::draw(ShaderProgram* shaderProgram) const
 {
     if (shaderProgram) {
         shaderProgram->use();
-
-        int textureUnit = 0;
-
-        auto material = getMaterial();
-        for (const auto& texture : material->textures) {
-            const std::string& name = "sampler" + std::to_string(textureUnit);
-            shaderProgram->setUniform(name.c_str(), textureUnit);
-
-            texture->bind(textureUnit++);
-        }
-
-        shaderProgram->setUniform("material.ambient", material->ambient());
-        shaderProgram->setUniform("material.diffuse", material->diffuse());
-        shaderProgram->setUniform("material.specular", material->specular());
-        shaderProgram->setUniform("material.emission", material->emission());
-        shaderProgram->setUniform("material.shininess", material->shininess());
+        getMaterial()->applyTo(shaderProgram);
     }
 
     glBindVertexArray(m_vao);

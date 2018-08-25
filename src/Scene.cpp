@@ -4,12 +4,26 @@
 
 #include <fx/gltf.h>
 
+int typeToSize(fx::gltf::Accessor::Type type)
+{
+    switch (type) {
+    case fx::gltf::Accessor::Type::None: return -1;
+    case fx::gltf::Accessor::Type::Scalar: return 1;
+    case fx::gltf::Accessor::Type::Vec2: return 2;
+    case fx::gltf::Accessor::Type::Vec3: return 3;
+    case fx::gltf::Accessor::Type::Vec4: return 4;
+    case fx::gltf::Accessor::Type::Mat2: return 4;
+    case fx::gltf::Accessor::Type::Mat3: return 9;
+    case fx::gltf::Accessor::Type::Mat4: return 16;
+    }
+}
+
 void Scene::load(const std::string& file)
 {
     fx::gltf::Document doc = fx::gltf::LoadFromText(file);
 
     for (auto& bv : doc.bufferViews) {
-        auto gpuBuffer = std::make_shared<Buffer>(static_cast<GLenum>(bv.target));
+        auto gpuBuffer = std::make_shared<Buffer>();
 
         gpuBuffer->loadData(reinterpret_cast<uint8_t*>(doc.buffers[bv.buffer].data.data()) +
                                 bv.byteOffset,
@@ -25,13 +39,16 @@ void Scene::load(const std::string& file)
         accessor.buffer     = m_buffers[acc.bufferView];
         accessor.byteOffset = acc.byteOffset;
         accessor.count      = acc.count;
-        accessor.size       = acc.min.size();
+        accessor.size       = typeToSize(acc.type);
         accessor.type       = static_cast<GLenum>(acc.componentType);
         accessor.normalized = acc.normalized;
         std::copy(std::begin(acc.min), std::end(acc.min), std::begin(accessor.min));
         std::copy(std::begin(acc.max), std::end(acc.max), std::begin(accessor.max));
 
         m_accessors.push_back(accessor);
+    }
+
+    for (auto& mtl : doc.materials) {
     }
 
     for (auto& mesh : doc.meshes) {
@@ -63,7 +80,8 @@ void Scene::load(const std::string& file)
     }
 
     for (auto& cam : doc.cameras) {
-        Camera camera{{200, 200}};
+        Camera camera;
+        camera.setAspectRatio(cam.perspective.aspectRatio);
         camera.setPerspective(cam.perspective.yfov, cam.perspective.znear, cam.perspective.zfar);
 
         m_cameras.push_back(std::move(camera));
@@ -104,7 +122,7 @@ void Scene::draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<
     glm::mat4 identity{1.0f};
 
     for (auto n : m_scene)
-        n->draw(identity, shaderProgram, &m_cameras[0], lights, nullptr);
+        n->draw(identity, shaderProgram, camera, lights, nullptr);
 }
 
 void Scene::update(float delta)
@@ -121,4 +139,12 @@ RenderNode* Scene::findNode(const std::string& node)
         if (n.name == node) return &n;
     }
     return nullptr;
+}
+
+Aabb Scene::aabb() const {
+    Aabb aabb;
+    for (const auto& n : m_nodes) {
+        aabb = aabb.mbr(n.aabb());
+    }
+    return aabb;
 }

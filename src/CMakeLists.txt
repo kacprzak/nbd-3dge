@@ -15,6 +15,7 @@ set( nbd-3dge_SRCS
     Light.cpp
     Loader.cpp
     Logger.cpp
+    Material.cpp
     Mesh.cpp
     MeshData.cpp
     MtlLoader.cpp
