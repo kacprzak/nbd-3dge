@@ -236,9 +236,9 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
 
 void ResourcesMgr::addMesh(const MeshData& meshData)
 {
-    LOG_TRACE("Adding Mesh: {}", meshData.name);
+    //LOG_TRACE("Adding Mesh: {}", meshData.name);
 
-    m_meshes[meshData.name] = std::make_shared<Mesh>(meshData);
+    //m_meshes[meshData.name] = std::make_shared<Mesh>(meshData);
 }
 
 std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name) const

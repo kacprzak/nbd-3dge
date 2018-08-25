@@ -1,5 +1,5 @@
 #include "Terrain.h"
-
+/*
 Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd,
                  const Heightfield& heightfield)
     : RenderNode{actorId, tr, rd}
@@ -8,3 +8,4 @@ Terrain::Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd,
                                                                heightfield.h, m_textureStrech));
     setMesh(mesh);
 }
+*/

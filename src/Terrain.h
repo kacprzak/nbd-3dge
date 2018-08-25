@@ -3,7 +3,7 @@
 
 #include "Heightfield.h"
 #include "RenderNode.h"
-
+/*
 class Terrain : public RenderNode
 {
   public:
@@ -13,5 +13,5 @@ class Terrain : public RenderNode
   private:
     float m_textureStrech = 1.0;
 };
-
+*/
 #endif // TERRAIN_H

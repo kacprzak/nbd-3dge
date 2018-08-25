@@ -24,7 +24,7 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
 {
     glGenVertexArrays(1, &m_emptyVao);
 
-    //m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
+    // m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
     // Add player camera
     m_cameras.emplace_back(m_windowSize);
@@ -43,7 +43,7 @@ RenderSystem::~RenderSystem() { glDeleteVertexArrays(1, &m_emptyVao); }
 
 void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 {
-    m_defaultShader  = resourcesMgr.getShaderProgram("default");
+    m_defaultShader = resourcesMgr.getShaderProgram("default");
     m_shadowShader  = resourcesMgr.getShaderProgram("shadow");
     m_normalsShader = resourcesMgr.getShaderProgram("normals");
     m_aabbShader    = resourcesMgr.getShaderProgram("aabb");
@@ -79,16 +79,16 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
         if (rd->role == Role::Dynamic) {
             std::shared_ptr<RenderNode> node;
             if (!rd->mesh.empty()) {
-                if (boost::starts_with(rd->mesh, "heightfield:")) {
-                    node = std::make_shared<Terrain>(id, tr, rd,
-                                                     *resourcesMgr.getHeightfield(rd->mesh));
-                    // node->setCastShadows(true);
-                } else {
-                    node         = std::make_shared<RenderNode>(id, tr, rd);
-                    auto meshPtr = resourcesMgr.getMesh(rd->mesh);
-                    node->setMesh(meshPtr);
-                    if (!lt) node->setCastShadows(true);
-                }
+                // if (boost::starts_with(rd->mesh, "heightfield:")) {
+                //     node = std::make_shared<Terrain>(id, tr, rd,
+                //                                      *resourcesMgr.getHeightfield(rd->mesh));
+                //     // node->setCastShadows(true);
+                // } else {
+                node         = std::make_shared<RenderNode>(id, tr, rd);
+                auto meshPtr = resourcesMgr.getMesh(rd->mesh);
+                node->setMesh(meshPtr);
+                if (!lt) node->setCastShadows(true);
+                //}
             }
 
             // if (!rd->material.empty()) {
@@ -143,9 +143,9 @@ void RenderSystem::update(float delta)
 
     m_fpsCounter.update(delta);
 
-//    for (auto& camera : m_cameras) {
-//        camera.update(identity, delta);
-//    }
+    //    for (auto& camera : m_cameras) {
+    //        camera.update(identity, delta);
+    //    }
 
     if (m_camera && m_cameraText) {
         updateCameraText();
@@ -268,7 +268,7 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
             shaderProgram->setUniform("shadowSampler", shadowTextureUnit);
 
             for (int ci = 0; ci < m_shadowCascadesSize; ++ci) {
-                const auto zFar              = camera->cascadeIdx2NearFar(ci).y;
+                const auto zFar             = camera->cascadeIdx2NearFar(ci).y;
                 const auto& cascadeFarIndex = "cascadeFar[" + std::to_string(ci) + "]";
                 shaderProgram->setUniform(cascadeFarIndex.c_str(), zFar);
 

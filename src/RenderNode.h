@@ -14,17 +14,18 @@ class Light;
 class Material;
 class Texture;
 
-class RenderNode
+class RenderNode final
 {
   public:
-    explicit RenderNode(int actorId, TransformationComponent* tr = nullptr, RenderComponent* rd = nullptr);
+    explicit RenderNode(int actorId, TransformationComponent* tr = nullptr,
+                        RenderComponent* rd = nullptr);
 
     RenderNode(const RenderNode&) = delete;
     RenderNode& operator=(const RenderNode&) = delete;
 
     RenderNode(RenderNode&& other) = default;
 
-    virtual ~RenderNode() = default;
+    ~RenderNode() = default;
 
     void setMesh(const std::shared_ptr<Mesh>& mesh);
     void setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram);
@@ -33,23 +34,23 @@ class RenderNode
     glm::vec3 getTranslation() const { return m_translation; }
 
     void setRotation(glm::quat rotation) { m_rotation = rotation; }
-    glm::quat getRotation() const  { return m_rotation; }
+    glm::quat getRotation() const { return m_rotation; }
 
     void setScale(glm::vec3 scale) { m_scale = scale; }
     glm::vec3 getScale() const { return m_scale; }
 
     ShaderProgram* getShaderProgram() { return m_shaderProgram.get(); }
 
-    virtual void draw(const glm::mat4& parentModelMatrix, const Camera* camera,
-                      const std::array<Light*, 8>& lights, Texture* environment) const;
-    virtual void draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-                      const Camera* camera, const std::array<Light*, 8>& lights,
-                      Texture* environment) const;
+    void draw(const glm::mat4& parentModelMatrix, const Camera* camera,
+              const std::array<Light*, 8>& lights, Texture* environment) const;
+    void draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+              const Camera* camera, const std::array<Light*, 8>& lights,
+              Texture* environment) const;
 
-    virtual void drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-                          const Camera* camera);
+    void drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+                  const Camera* camera);
 
-    virtual void update(const glm::mat4& parentModelMatrix, float delta);
+    void update(const glm::mat4& parentModelMatrix, float delta);
 
     TransformationComponent* transformation() { return m_tr; }
     const TransformationComponent* transformation() const { return m_tr; }
@@ -79,7 +80,8 @@ class RenderNode
     void removeCamera() { m_camera = nullptr; }
 
     std::string name;
-  protected:
+
+  private:
     const glm::mat4& modelMatrix() const { return m_modelMatrix; }
 
     const int m_actorId;
@@ -87,7 +89,6 @@ class RenderNode
     TransformationComponent* m_tr = nullptr;
     RenderComponent* m_rd         = nullptr;
 
-  private:
     void rebuildModelMatrix();
 
     glm::quat m_rotation{1.f, 0.f, 0.f, 0.f};

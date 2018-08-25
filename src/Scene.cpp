@@ -36,28 +36,30 @@ void Scene::load(const std::string& file)
 
     for (auto& mesh : doc.meshes) {
         for (auto& subMesh : mesh.primitives) {
-            MeshData md;
-            md.primitive = static_cast<GLenum>(subMesh.mode);
 
-            md.iindices = &m_accessors[subMesh.indices];
+            std::array<const Accessor*, Accessor::Attribute::Size> attributes{};
+            Accessor* indices = nullptr;
+            auto primitive    = static_cast<GLenum>(subMesh.mode);
+
+            indices = &m_accessors[subMesh.indices];
 
             auto attr = subMesh.attributes.find("POSITION");
             if (attr != std::end(subMesh.attributes))
-                md.attributes[MeshData::Attributes::Position] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::Position] = &m_accessors[attr->second];
 
             attr = subMesh.attributes.find("NORMAL");
             if (attr != std::end(subMesh.attributes))
-                md.attributes[MeshData::Attributes::Normal] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::Normal] = &m_accessors[attr->second];
 
             attr = subMesh.attributes.find("TANGENT");
             if (attr != std::end(subMesh.attributes))
-                md.attributes[MeshData::Attributes::Tangent] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::Tangent] = &m_accessors[attr->second];
 
             attr = subMesh.attributes.find("TEXCOORD_0");
             if (attr != std::end(subMesh.attributes))
-                md.attributes[MeshData::Attributes::TexCoord_0] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::TexCoord_0] = &m_accessors[attr->second];
 
-            m_meshes.push_back(std::make_shared<Mesh>(md));
+            m_meshes.push_back(std::make_shared<Mesh>(attributes, indices, primitive));
         }
     }
 

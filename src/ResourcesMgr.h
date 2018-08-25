@@ -6,6 +6,7 @@
 #include "Heightfield.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "MeshData.h"
 #include "Script.h"
 #include "ShaderProgram.h"
 #include "Texture.h"

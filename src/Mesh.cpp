@@ -8,22 +8,28 @@
 #include <cstring>
 #include <limits>
 
-Mesh::Mesh(const MeshData& md)
-    : m_primitive{md.primitive}
-//, m_aabb{md.positions}
+Mesh::Mesh(std::array<const Accessor*, Accessor::Attribute::Size> attributes,
+           const Accessor* indices, GLenum primitive)
+    : m_primitive{primitive}
 {
+    if (!attributes[Accessor::Attribute::Position]) {
+        auto msg = "Mesh must have positions buffer";
+        LOG_ERROR(msg);
+        throw std::runtime_error{msg};
+    }
+
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
 
-    if (md.iindices) {
-        m_typeOfElement = md.iindices->type;
-        m_numberOfElements = md.iindices->count;
-        md.iindices->buffer->bind();
+    if (indices) {
+        m_typeOfElement    = indices->type;
+        m_numberOfElements = indices->count;
+        indices->buffer->bind();
     }
 
     // const auto& tangents = MeshData::calculateTangents(md);
-    for (int i = 0; i < MeshData::Attributes::Size; ++i) {
-        const Accessor* acc = md.attributes[i];
+    for (int i = 0; i < Accessor::Attribute::Size; ++i) {
+        const Accessor* acc = attributes[i];
         if (acc) {
             m_numberOfVertices = acc->count;
             acc->buffer->bind();
@@ -33,17 +39,18 @@ Mesh::Mesh(const MeshData& md)
         }
     }
 
-    // auto dims = m_aabb.dimensions();
-    LOG_INFO("Loaded Mesh: {} | {}", m_vao, md.name);
+    auto minPos = attributes[Accessor::Attribute::Position]->min;
+    auto maxPos = attributes[Accessor::Attribute::Position]->max;
+    m_aabb      = Aabb{{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[3]}};
+
+    LOG_INFO("Loaded Mesh: {}", m_vao);
 
     glBindVertexArray(0);
 }
 
 Mesh::Mesh(Mesh&& other)
 {
-    std::swap(m_buffers, other.m_buffers);
     std::swap(m_vao, other.m_vao);
-    std::swap(m_bufferSizes, other.m_bufferSizes);
     std::swap(m_primitive, other.m_primitive);
     std::swap(m_typeOfElement, other.m_typeOfElement);
     std::swap(m_numberOfElements, other.m_numberOfElements);
@@ -54,7 +61,6 @@ Mesh::Mesh(Mesh&& other)
 Mesh::~Mesh()
 {
     glDeleteVertexArrays(1, &m_vao);
-    glDeleteBuffers(NUM_BUFFERS, m_buffers);
 
     LOG_INFO("Released Mesh: {}", m_vao);
 }
