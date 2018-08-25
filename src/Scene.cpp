@@ -9,20 +9,20 @@ void Scene::load(const std::string& file)
     fx::gltf::Document doc = fx::gltf::LoadFromText(file);
 
     for (auto& bv : doc.bufferViews) {
-        Buffer gpuBuffer{static_cast<GLenum>(bv.target)};
+        auto gpuBuffer = std::make_shared<Buffer>(static_cast<GLenum>(bv.target));
 
-        gpuBuffer.loadData(reinterpret_cast<uint8_t*>(doc.buffers[bv.buffer].data.data()) +
-                               bv.byteOffset,
-                           bv.byteLength);
-        gpuBuffer.m_byteStride = bv.byteStride;
+        gpuBuffer->loadData(reinterpret_cast<uint8_t*>(doc.buffers[bv.buffer].data.data()) +
+                                bv.byteOffset,
+                            bv.byteLength);
+        gpuBuffer->m_byteStride = bv.byteStride;
 
-        m_buffers.emplace_back(std::move(gpuBuffer));
+        m_buffers.push_back(gpuBuffer);
     }
 
     for (auto& acc : doc.accessors) {
         Accessor accessor;
 
-        accessor.buffer     = &m_buffers[acc.bufferView];
+        accessor.buffer     = m_buffers[acc.bufferView];
         accessor.byteOffset = acc.byteOffset;
         accessor.count      = acc.count;
         accessor.size       = acc.min.size();
@@ -37,27 +37,26 @@ void Scene::load(const std::string& file)
     for (auto& mesh : doc.meshes) {
         for (auto& subMesh : mesh.primitives) {
 
-            std::array<const Accessor*, Accessor::Attribute::Size> attributes{};
-            Accessor* indices = nullptr;
-            auto primitive    = static_cast<GLenum>(subMesh.mode);
+            std::array<Accessor, Accessor::Attribute::Size> attributes{};
+            auto primitive = static_cast<GLenum>(subMesh.mode);
 
-            indices = &m_accessors[subMesh.indices];
+            Accessor& indices = m_accessors[subMesh.indices];
 
             auto attr = subMesh.attributes.find("POSITION");
             if (attr != std::end(subMesh.attributes))
-                attributes[Accessor::Attribute::Position] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::Position] = m_accessors[attr->second];
 
             attr = subMesh.attributes.find("NORMAL");
             if (attr != std::end(subMesh.attributes))
-                attributes[Accessor::Attribute::Normal] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::Normal] = m_accessors[attr->second];
 
             attr = subMesh.attributes.find("TANGENT");
             if (attr != std::end(subMesh.attributes))
-                attributes[Accessor::Attribute::Tangent] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::Tangent] = m_accessors[attr->second];
 
             attr = subMesh.attributes.find("TEXCOORD_0");
             if (attr != std::end(subMesh.attributes))
-                attributes[Accessor::Attribute::TexCoord_0] = &m_accessors[attr->second];
+                attributes[Accessor::Attribute::TexCoord_0] = m_accessors[attr->second];
 
             m_meshes.push_back(std::make_shared<Mesh>(attributes, indices, primitive));
         }

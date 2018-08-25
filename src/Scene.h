@@ -2,9 +2,9 @@
 #define SCENE_H
 
 #include "Buffer.h"
+#include "Camera.h"
 #include "Mesh.h"
 #include "RenderNode.h"
-#include "Camera.h"
 
 class Scene
 {
@@ -19,7 +19,7 @@ class Scene
     RenderNode* findNode(const std::string& node);
 
   private:
-    std::vector<Buffer> m_buffers;
+    std::vector<std::shared_ptr<Buffer>> m_buffers;
     std::vector<Accessor> m_accessors;
     std::vector<std::shared_ptr<Mesh>> m_meshes;
     std::vector<Camera> m_cameras;

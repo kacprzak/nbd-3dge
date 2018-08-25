@@ -8,8 +8,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Skybox::Skybox()
-    : m_indicesBuffer{GL_ELEMENT_ARRAY_BUFFER}
-    , m_positionsBuffer{GL_ARRAY_BUFFER}
 {
     const float x = 1.0f;
 
@@ -23,7 +21,7 @@ Skybox::Skybox()
      *
      */
 
-    std::array<const Accessor*, Accessor::Attribute::Size> attributes{};
+    std::array<Accessor, Accessor::Attribute::Size> attributes{};
     auto primitive = GL_TRIANGLES;
 
     // clang-format off
@@ -60,23 +58,25 @@ Skybox::Skybox()
     };
     // clang-format on
 
-    m_indicesBuffer.loadData(indices.data(), sizeof(indices[0]) * indices.size());
-    m_positionsBuffer.loadData(positions.data(), sizeof(positions[0]) * positions.size());
+    auto indicesBuffer = std::make_shared<Buffer>(GL_ELEMENT_ARRAY_BUFFER);
+    indicesBuffer->loadData(indices.data(), sizeof(indices[0]) * indices.size());
+    auto positionsBuffer = std::make_shared<Buffer>(GL_ARRAY_BUFFER);
+    positionsBuffer->loadData(positions.data(), sizeof(positions[0]) * positions.size());
 
     Accessor indicesAcc;
-    indicesAcc.buffer = &m_indicesBuffer;
+    indicesAcc.buffer = indicesBuffer;
     indicesAcc.type   = GL_UNSIGNED_BYTE;
     indicesAcc.count  = indices.size();
     indicesAcc.size   = 1;
 
     Accessor posAcc;
-    posAcc.buffer                             = &m_positionsBuffer;
+    posAcc.buffer                             = positionsBuffer;
     posAcc.type                               = GL_FLOAT;
     posAcc.count                              = positions.size();
     posAcc.size                               = 3;
-    attributes[Accessor::Attribute::Position] = &posAcc;
+    attributes[Accessor::Attribute::Position] = posAcc;
 
-    m_mesh       = std::make_shared<Mesh>(attributes, &indicesAcc, primitive);
+    m_mesh       = std::make_shared<Mesh>(attributes, indicesAcc, primitive);
     m_mesh->name = "SKYBOX";
 }
 

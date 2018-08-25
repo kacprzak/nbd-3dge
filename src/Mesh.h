@@ -11,7 +11,7 @@
 class Mesh final
 {
   public:
-    Mesh(std::array<const Accessor*, Accessor::Attribute::Size> attributes, const Accessor* indices,
+    Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor indices,
          GLenum primitive);
 
     Mesh(Mesh&& other);
@@ -40,6 +40,7 @@ class Mesh final
 
     Aabb m_aabb;
 
+    Accessor m_positionsAcc;
     std::shared_ptr<Material> m_material;
 
   public:

@@ -8,11 +8,13 @@
 #include <cstring>
 #include <limits>
 
-Mesh::Mesh(std::array<const Accessor*, Accessor::Attribute::Size> attributes,
-           const Accessor* indices, GLenum primitive)
+Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor indices,
+           GLenum primitive)
     : m_primitive{primitive}
 {
-    if (!attributes[Accessor::Attribute::Position]) {
+    m_positionsAcc = attributes[Accessor::Attribute::Position];
+
+    if (m_positionsAcc.count == 0) {
         auto msg = "Mesh must have positions buffer";
         LOG_ERROR(msg);
         throw std::runtime_error{msg};
@@ -21,26 +23,25 @@ Mesh::Mesh(std::array<const Accessor*, Accessor::Attribute::Size> attributes,
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
 
-    if (indices) {
-        m_typeOfElement    = indices->type;
-        m_numberOfElements = indices->count;
-        indices->buffer->bind();
+    if (indices.count > 0) {
+        m_typeOfElement    = indices.type;
+        m_numberOfElements = indices.count;
+        indices.buffer->bind();
     }
 
-    // const auto& tangents = MeshData::calculateTangents(md);
     for (int i = 0; i < Accessor::Attribute::Size; ++i) {
-        const Accessor* acc = attributes[i];
-        if (acc) {
-            m_numberOfVertices = acc->count;
-            acc->buffer->bind();
+        const Accessor& acc = attributes[i];
+        if (acc.count > 0) {
+            m_numberOfVertices = acc.count;
+            acc.buffer->bind();
             glEnableVertexAttribArray(i);
-            glVertexAttribPointer(i, acc->size, acc->type, acc->normalized,
-                                  acc->buffer->m_byteStride, (const void*)acc->byteOffset);
+            glVertexAttribPointer(i, acc.size, acc.type, acc.normalized, acc.buffer->m_byteStride,
+                                  (const void*)acc.byteOffset);
         }
     }
 
-    auto minPos = attributes[Accessor::Attribute::Position]->min;
-    auto maxPos = attributes[Accessor::Attribute::Position]->max;
+    auto minPos = m_positionsAcc.min;
+    auto maxPos = m_positionsAcc.max;
     m_aabb      = Aabb{{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[3]}};
 
     LOG_INFO("Loaded Mesh: {}", m_vao);
@@ -112,6 +113,8 @@ std::vector<float> Mesh::positions() const
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 */
+    // return m_positionsAcc.buffer->getData();
+
     return retVal;
 }
 

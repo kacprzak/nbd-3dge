@@ -39,7 +39,7 @@ struct Accessor final
         Size
     };
 
-    Buffer* buffer      = nullptr;
+    std::shared_ptr<Buffer> buffer;
     unsigned byteOffset = 0;
     unsigned count      = 0;
     unsigned size       = 4;

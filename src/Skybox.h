@@ -4,7 +4,6 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
-#include "Buffer.h"
 
 #include <glm/glm.hpp>
 
@@ -26,9 +25,6 @@ class Skybox final
     void draw(const Camera* camera) const;
 
   private:
-    Buffer m_indicesBuffer;
-    Buffer m_positionsBuffer;
-
     std::shared_ptr<ShaderProgram> m_shaderProgram;
     std::shared_ptr<Material> m_material;
     std::shared_ptr<Mesh> m_mesh;
