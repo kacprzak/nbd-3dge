@@ -176,7 +176,7 @@ void GameClient::keyReleased(const SDL_Event& event)
     } break;
     case SDL_SCANCODE_L: {
         m_resourcesMgr->loadShaders(m_resourcesFile);
-        m_resourcesMgr->loadMaterials(m_resourcesFile);
+        //m_resourcesMgr->loadMaterials(m_resourcesFile);
     } break;
     default: break;
     }

@@ -1,8 +1,8 @@
 <assets>
   <shaderProgram>
     <name>default</name>
-    <vertexShader>default.vert</vertexShader>
-    <fragmentShader>default.frag</fragmentShader>
+    <vertexShader>pbr.vert</vertexShader>
+    <fragmentShader>pbr.frag</fragmentShader>
   </shaderProgram>
   <shaderProgram>
     <name>shadow</name>

@@ -22,6 +22,8 @@ class Skybox final
     void setMaterial(const std::shared_ptr<Material>& material) { m_material = material; }
     Material* material() { return m_material.get(); }
 
+    Texture* environmentTexture() { return m_material->baseColorTexture.get(); };
+
     void draw(const Camera* camera) const;
 
   private:

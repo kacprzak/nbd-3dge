@@ -2,6 +2,7 @@
 
 void Material::applyTo(ShaderProgram* shaderProgram) const
 {
+    /*
     int textureUnit = 0;
 
     for (const auto& texture : textures) {
@@ -16,4 +17,17 @@ void Material::applyTo(ShaderProgram* shaderProgram) const
     shaderProgram->setUniform("material.specular", md.specular);
     shaderProgram->setUniform("material.emission", md.emission);
     shaderProgram->setUniform("material.shininess", md.shininess);
+    */
+
+    shaderProgram->setUniform("material.baseColorFactor", baseColorFactor);
+    if (baseColorTexture) {
+        shaderProgram->setUniform("baseColorSampler", Unit::BaseColor);
+        baseColorTexture->bind(Unit::BaseColor);
+    }
+
+    shaderProgram->setUniform("material.normalScale", normalScale);
+    if (normalTexture) {
+        shaderProgram->setUniform("normalSampler", Unit::Normal);
+        normalTexture->bind(Unit::BaseColor);
+    }
 }

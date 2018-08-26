@@ -197,7 +197,7 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
 
     Texture* environment = nullptr;
-    if (m_skybox) environment = m_skybox->material()->textures.at(0).get();
+    if (m_skybox) environment = m_skybox->environmentTexture();
 
     m_scene->draw(m_defaultShader.get(), camera, lights);
 

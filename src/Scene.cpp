@@ -1,6 +1,7 @@
 #include "Scene.h"
 
 #include "MeshData.h"
+#include "Util.h"
 
 #include <fx/gltf.h>
 
@@ -48,7 +49,39 @@ void Scene::load(const std::string& file)
         m_accessors.push_back(accessor);
     }
 
+    for (auto& smpl : doc.samplers) {
+        auto sampler = std::make_shared<Sampler>();
+
+        m_samplers.push_back(sampler);
+    }
+
+    for (auto& txr : doc.textures) {
+        TextureData td;
+        td.filename = extractDirectory(file) + changeExtension(doc.images[txr.source].uri, ".ktx");
+
+        auto texture  = std::make_shared<Texture>(td);
+        texture->name = txr.name;
+
+        if (txr.sampler != -1) {
+            texture->setSampler(m_samplers[txr.sampler]);
+        }
+
+        m_textures.push_back(std::make_shared<Texture>(td));
+    }
+
     for (auto& mtl : doc.materials) {
+        Material material;
+
+        for (int i = 0; i < 4; ++i)
+            material.baseColorFactor[i] = mtl.pbrMetallicRoughness.baseColorFactor[i];
+
+        if (!mtl.pbrMetallicRoughness.baseColorTexture.empty())
+            material.baseColorTexture =
+                m_textures.at(mtl.pbrMetallicRoughness.baseColorTexture.index);
+
+        material.name = mtl.name;
+
+        m_materials.push_back(material);
     }
 
     for (auto& mesh : doc.meshes) {
@@ -75,7 +108,13 @@ void Scene::load(const std::string& file)
             if (attr != std::end(subMesh.attributes))
                 attributes[Accessor::Attribute::TexCoord_0] = m_accessors[attr->second];
 
-            m_meshes.push_back(std::make_shared<Mesh>(attributes, indices, primitive));
+            auto m = std::make_shared<Mesh>(attributes, indices, primitive);
+
+            if (subMesh.material != -1) {
+                m->setMaterial(m_materials.at(subMesh.material));
+            }
+
+            m_meshes.push_back(m);
         }
     }
 
@@ -141,7 +180,8 @@ RenderNode* Scene::findNode(const std::string& node)
     return nullptr;
 }
 
-Aabb Scene::aabb() const {
+Aabb Scene::aabb() const
+{
     Aabb aabb;
     for (const auto& n : m_nodes) {
         aabb = aabb.mbr(n.aabb());

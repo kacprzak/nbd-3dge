@@ -70,7 +70,7 @@ void Mesh::draw(ShaderProgram* shaderProgram) const
 {
     if (shaderProgram) {
         shaderProgram->use();
-        getMaterial()->applyTo(shaderProgram);
+        m_material.applyTo(shaderProgram);
     }
 
     glBindVertexArray(m_vao);
@@ -103,13 +103,4 @@ std::vector<float> Mesh::positions() const
     return retVal;
 }
 
-void Mesh::setMaterial(const std::shared_ptr<Material>& material) { m_material = material; }
-
-const Material* Mesh::getMaterial() const
-{
-    static Material defaultMaterial;
-    if (m_material)
-        return m_material.get();
-    else
-        return &defaultMaterial;
-}
+void Mesh::setMaterial(const Material& material) { m_material = material; }

@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "RenderNode.h"
+#include "Texture.h"
 
 class Scene
 {
@@ -29,6 +30,9 @@ class Scene
   private:
     std::vector<std::shared_ptr<Buffer>> m_buffers;
     std::vector<Accessor> m_accessors;
+    std::vector<std::shared_ptr<Sampler>> m_samplers;
+    std::vector<std::shared_ptr<Texture>> m_textures;
+    std::vector<Material> m_materials;
     std::vector<std::shared_ptr<Mesh>> m_meshes;
     std::vector<Camera> m_cameras;
     std::vector<RenderNode> m_nodes;

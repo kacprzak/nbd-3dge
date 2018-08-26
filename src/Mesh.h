@@ -25,10 +25,7 @@ class Mesh final
     std::vector<float> positions() const;
     Aabb aabb() const { return m_aabb; }
 
-    void setMaterial(const std::shared_ptr<Material>& material);
-
-  protected:
-    const Material* getMaterial() const;
+    void setMaterial(const Material& material);
 
   private:
     GLuint m_vao;
@@ -41,7 +38,7 @@ class Mesh final
     Aabb m_aabb;
 
     Accessor m_positionsAcc;
-    std::shared_ptr<Material> m_material;
+    Material m_material;
 
   public:
     std::string name;
