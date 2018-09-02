@@ -54,12 +54,17 @@ class Texture final
     int height() const { return m_h; }
 
     void setSampler(std::shared_ptr<Sampler> sampler) { m_sampler = sampler; }
-    std::shared_ptr<Sampler> sampler() { return m_sampler; }
+    std::shared_ptr<Sampler> sampler()
+    {
+        if (!m_sampler) createSampler();
+        return m_sampler;
+    }
 
     std::string name;
 
   private:
     void createTexture(const char* filename, bool linearColor);
+    void createSampler();
 
     Texture(GLenum target);
 

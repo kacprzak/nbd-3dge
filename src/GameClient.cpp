@@ -51,9 +51,10 @@ void GameClient::loadResources(const std::string& file)
     // Scene scene;
     m_scene = std::make_shared<Scene>();
     // m_scene->load(m_settings.dataFolder + "untitled.gltf");
+    m_scene->load(m_settings.dataFolder +
+                  "glTF-Sample-Models-master/2.0/BoomBox/glTF/BoomBox.gltf");
     // m_scene->load(m_settings.dataFolder +
-    //              "glTF-Sample-Models-master/2.0/BoomBox/glTF/BoomBox.gltf");
-    m_scene->load(m_settings.dataFolder + "glTF-Sample-Models-master/2.0/Corset/glTF/Corset.gltf");
+    // "glTF-Sample-Models-master/2.0/Corset/glTF/Corset.gltf");
 
     m_renderSystem.setScene(m_scene);
 

@@ -19,7 +19,11 @@ class Skybox final
         m_shaderProgram = shaderProgram;
     }
 
-    void setMaterial(const std::shared_ptr<Material>& material) { m_material = material; }
+    void setMaterial(const std::shared_ptr<Material>& material)
+    {
+        m_material = material;
+        m_material->baseColorTexture->sampler()->setClampToEdge();
+    }
     Material* material() { return m_material.get(); }
 
     Texture* environmentTexture() { return m_material->baseColorTexture.get(); };

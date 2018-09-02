@@ -51,7 +51,7 @@ class Camera
     Frustum ortoArgsToFrustum(float left, float right, float bottom, float top, float near,
                               float far) const;
 
-    float m_near   = 0.01f;
+    float m_near   = 0.005f;
     float m_far    = 1000.f;
     float m_fov    = 45.f;
     float m_ratio  = 1.f;

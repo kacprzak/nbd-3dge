@@ -46,7 +46,7 @@ void main()
     vec3 N = texture(normalSampler, texCoord_0).rgb;
     N      = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
     N      = normalize(TBN * N);
-    //fragColor = vec4(N, 1.0); return;
+    //fragColor = vec4(cameraPosition * 150.f, 1.0); return;
 
     vec3 V = normalize(cameraPosition - position.xyz);
 

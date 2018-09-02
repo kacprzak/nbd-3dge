@@ -75,10 +75,10 @@ void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderP
         shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
         shaderProgram->setUniform("modelMatrix", modelMatrix);
 
-        if (environment) {
-            shaderProgram->setUniform("cameraPosition", camera->worldTranslation());
-            shaderProgram->setUniform("environmentCube", 7);
+        shaderProgram->setUniform("cameraPosition", camera->worldTranslation());
 
+        if (environment) {
+            shaderProgram->setUniform("environmentCube", 7);
             environment->bind(7);
         }
 

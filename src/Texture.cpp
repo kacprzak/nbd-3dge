@@ -18,7 +18,7 @@ Sampler::Sampler()
     glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    setClampToEdge();
+    setRepeat();
 
     LOG_INFO("Created Sampler: {}", m_samplerId);
 }
@@ -137,11 +137,9 @@ Texture Texture::createShadowMap(glm::ivec3 size)
 
 void Texture::bind(int textureUnit)
 {
-    if (m_sampler)
-        m_sampler->bind(textureUnit);
-    else
-        m_sampler = std::make_shared<Sampler>();
+    if (!m_sampler) createSampler();
 
+    m_sampler->bind(textureUnit);
     glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(m_target, m_textureId);
 }
@@ -174,7 +172,7 @@ void Texture::createTexture(char const* Filename, bool linearColor)
     gli::gl GL(gli::gl::PROFILE_GL33);
     gli::gl::format Format = GL.translate(Texture.format(), Texture.swizzles());
 
-    //if (!linearColor) Format.Internal = to_srgb(Format.Internal);
+    // if (!linearColor) Format.Internal = to_srgb(Format.Internal);
 
     m_target = GL.translate(Texture.target());
 
@@ -267,5 +265,13 @@ void Texture::createTexture(char const* Filename, bool linearColor)
                 }
             }
         }
+    }
+}
+
+void Texture::createSampler()
+{
+    m_sampler = std::make_shared<Sampler>();
+    if (m_levels > 1) {
+        m_sampler->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     }
 }
