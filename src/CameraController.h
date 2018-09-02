@@ -37,7 +37,7 @@ class FreeCameraController : public CameraController
 
     void execute(float deltaTime, Actor* /*actor*/) override
     {
-        float cameraSpeedMultiplyer = 0.5f;
+        float cameraSpeedMultiplyer = 0.01f;
 
         if (cameraActions.actions & ControlComponent::Fire) cameraSpeedMultiplyer = 5.0f;
 

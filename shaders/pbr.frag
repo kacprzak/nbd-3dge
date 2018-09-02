@@ -21,43 +21,53 @@ uniform sampler2D occlusionSampler;
 uniform sampler2D emissiveSampler;
 
 in vec4 position;
-in vec3 normal;
 in vec2 texCoord_0;
+in mat3 TBN;
 
-const float PI = 3.14159265359;
+const float PI    = 3.14159265359;
+const float GAMMA = 2.2;
 
-vec3 lightColor = vec3(1.0);
-vec3 lightPos   = vec3(0.5, 0.5, -0.5);
-int numLights   = 1;
+const int numLights = 2;
+vec3 lightColor[2];
+vec3 lightPos[2];
 
 float distributionGGX(vec3 N, vec3 H, float roughness);
 float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 fresnelSchlick(float cosTheta, vec3 F0);
+vec4 srgb2linear(vec4 srgb);
 
 void main()
 {
-    vec3 N = normalize(normal);
+    lightColor[0] = vec3(100.0);
+    lightColor[1] = vec3(100.0);
+    lightPos[0]   = vec3(3.0, 3.0, 3.0);
+    lightPos[1]   = vec3(3.0, -3.0, -3.0);
+
+    vec3 N = texture(normalSampler, texCoord_0).rgb;
+    N      = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
+    N      = normalize(TBN * N);
+    //fragColor = vec4(N, 1.0); return;
+
     vec3 V = normalize(cameraPosition - position.xyz);
 
-    vec3 albedo = material.baseColorFactor.rgb * texture2D(baseColorSampler, texCoord_0).rgb;
-    // fragColor = vec4(albedo, 1.0); return;
-    float occlusion = texture2D(occlusionSampler, texCoord_0).r;
-    float roughness = material.roughnessFactor * texture2D(metallicRoughnessSampler, texCoord_0).g;
-    float metallic  = material.metallicFactor * texture2D(metallicRoughnessSampler, texCoord_0).b;
-    vec3 emissive   = material.emissiveFactor * texture2D(emissiveSampler, texCoord_0).rgb;
+    vec4 albedo     = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
+    float occlusion = texture(occlusionSampler, texCoord_0).r;
+    float roughness = material.roughnessFactor * texture(metallicRoughnessSampler, texCoord_0).g;
+    float metallic  = material.metallicFactor * texture(metallicRoughnessSampler, texCoord_0).b;
+    vec3 emissive   = material.emissiveFactor * texture(emissiveSampler, texCoord_0).rgb;
 
     vec3 F0 = vec3(0.04);
-    F0      = mix(F0, albedo, metallic);
+    F0      = mix(F0, albedo.rgb, metallic);
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
     for (int i = 0; i < numLights; ++i) {
-        vec3 L = normalize(lightPos - position.xyz);
+        vec3 L = normalize(lightPos[i] - position.xyz);
         vec3 H = normalize(V + L);
 
-        float distance    = length(lightPos - position.xyz);
+        float distance    = length(lightPos[i] - position.xyz);
         float attenuation = 1.0 / (distance * distance);
-        vec3 radiance     = lightColor * attenuation;
+        vec3 radiance     = lightColor[i] * attenuation;
 
         // cook-torrance brdf
         float NDF = distributionGGX(N, H, roughness);
@@ -74,18 +84,18 @@ void main()
 
         // add to outgoing radiance Lo
         float NdotL = max(dot(N, L), 0.0);
-        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
     }
 
-    vec3 ambient = vec3(0.03) * albedo * occlusion;
+    vec3 ambient = vec3(0.03) * albedo.rgb * occlusion;
     vec3 color   = ambient + Lo;
 
     // HDR tonemapping
     // color = color / (color + vec3(1.0));
     // Gamma
-    // color = pow(color, vec3(1.0 / 2.2));
+    color = pow(color, vec3(1.0 / GAMMA));
 
-    fragColor = vec4(color + emissive, 1.0f);
+    fragColor = vec4(color + emissive, albedo.a);
 }
 
 float distributionGGX(vec3 N, vec3 H, float roughness)
@@ -124,3 +134,5 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 }
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) { return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); }
+
+vec4 srgb2linear(vec4 srgb) { return vec4(pow(srgb.xyz, vec3(GAMMA)), srgb.a); }

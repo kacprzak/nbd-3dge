@@ -50,21 +50,22 @@ void GameClient::loadResources(const std::string& file)
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
     // Scene scene;
     m_scene = std::make_shared<Scene>();
-    //m_scene->load(m_settings.dataFolder + "untitled.gltf");
-    m_scene->load(m_settings.dataFolder + "glTF-Sample-Models-master/2.0/BoomBox/glTF/BoomBox.gltf");
+    // m_scene->load(m_settings.dataFolder + "untitled.gltf");
+    // m_scene->load(m_settings.dataFolder +
+    //              "glTF-Sample-Models-master/2.0/BoomBox/glTF/BoomBox.gltf");
+    m_scene->load(m_settings.dataFolder + "glTF-Sample-Models-master/2.0/Corset/glTF/Corset.gltf");
 
     m_renderSystem.setScene(m_scene);
 
     m_resourcesFile = file;
 
     auto* cam = m_renderSystem.findNode("Camera");
-    if (cam)
-    {
-    static TransformationComponent tr;
-    tr.translation = cam->getTranslation();
-    tr.rotation    = cam->getRotation();
+    if (cam) {
+        static TransformationComponent tr;
+        tr.translation = cam->getTranslation();
+        tr.rotation    = cam->getRotation();
 
-    m_freeCameraCtrl->camera = &tr;
+        m_freeCameraCtrl->camera = &tr;
     }
     // m_tppCameraCtrl->camera = &tr;
 }
@@ -176,7 +177,7 @@ void GameClient::keyReleased(const SDL_Event& event)
     } break;
     case SDL_SCANCODE_L: {
         m_resourcesMgr->loadShaders(m_resourcesFile);
-        //m_resourcesMgr->loadMaterials(m_resourcesFile);
+        // m_resourcesMgr->loadMaterials(m_resourcesFile);
     } break;
     default: break;
     }

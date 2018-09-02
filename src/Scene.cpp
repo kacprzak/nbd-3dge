@@ -52,6 +52,11 @@ void Scene::load(const std::string& file)
     for (auto& smpl : doc.samplers) {
         auto sampler = std::make_shared<Sampler>();
 
+        sampler->setParameter(GL_TEXTURE_WRAP_S, static_cast<GLint>(smpl.wrapS));
+        sampler->setParameter(GL_TEXTURE_WRAP_T, static_cast<GLint>(smpl.wrapT));
+        sampler->setParameter(GL_TEXTURE_MAG_FILTER, static_cast<GLint>(smpl.magFilter));
+        sampler->setParameter(GL_TEXTURE_MIN_FILTER, static_cast<GLint>(smpl.minFilter));
+
         m_samplers.push_back(sampler);
     }
 

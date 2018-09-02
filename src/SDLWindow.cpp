@@ -76,7 +76,7 @@ void SDLWindow::createSDLWindow()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
+    //SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
 
     m_glContext = SDL_GL_CreateContext(m_window);
 
@@ -190,7 +190,7 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
     LOG_GL_ERROR;
 
     /* Gamma correction */
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    //glEnable(GL_FRAMEBUFFER_SRGB);
     LOG_GL_ERROR;
 
 #ifndef NDEBUG

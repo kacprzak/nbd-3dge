@@ -174,7 +174,7 @@ void Texture::createTexture(char const* Filename, bool linearColor)
     gli::gl GL(gli::gl::PROFILE_GL33);
     gli::gl::format Format = GL.translate(Texture.format(), Texture.swizzles());
 
-    if (!linearColor) Format.Internal = to_srgb(Format.Internal);
+    //if (!linearColor) Format.Internal = to_srgb(Format.Internal);
 
     m_target = GL.translate(Texture.target());
 
