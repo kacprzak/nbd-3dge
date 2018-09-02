@@ -72,12 +72,39 @@ void Scene::load(const std::string& file)
     for (auto& mtl : doc.materials) {
         Material material;
 
+        // BaseColor
         for (int i = 0; i < 4; ++i)
             material.baseColorFactor[i] = mtl.pbrMetallicRoughness.baseColorFactor[i];
 
         if (!mtl.pbrMetallicRoughness.baseColorTexture.empty())
             material.baseColorTexture =
                 m_textures.at(mtl.pbrMetallicRoughness.baseColorTexture.index);
+
+        // Normal
+        if (!mtl.normalTexture.empty()) {
+            material.normalScale   = mtl.normalTexture.scale;
+            material.normalTexture = m_textures.at(mtl.normalTexture.index);
+        }
+
+        // MetallicRoughness
+        material.metallicFactor  = mtl.pbrMetallicRoughness.metallicFactor;
+        material.roughnessFactor = mtl.pbrMetallicRoughness.roughnessFactor;
+        if (!mtl.pbrMetallicRoughness.metallicRoughnessTexture.empty()) {
+            material.metallicRoughnessTexture =
+                m_textures.at(mtl.pbrMetallicRoughness.metallicRoughnessTexture.index);
+        }
+
+        // Ambient Occlusion
+        if (!mtl.occlusionTexture.empty()) {
+            material.occlusionTexture = m_textures.at(mtl.occlusionTexture.index);
+        }
+
+        // Emissive
+        for (int i = 0; i < 3; ++i)
+            material.emissiveFactor[i] = mtl.emissiveFactor[i];
+        if (!mtl.emissiveTexture.empty()) {
+            material.emissiveTexture = m_textures.at(mtl.emissiveTexture.index);
+        }
 
         material.name = mtl.name;
 
