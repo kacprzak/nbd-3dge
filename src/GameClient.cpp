@@ -149,14 +149,14 @@ void GameClient::keyReleased(const SDL_Event& event)
         m_inputSystem.setMouseRelativeMode(!m_inputSystem.isMouseRelativeMode());
         break;
     case SDL_SCANCODE_N: {
-        static int magnitude = 2;
+        static float magnitude = 0.05f;
 
         if (event.key.keysym.mod & KMOD_SHIFT) {
-            ++magnitude;
+            magnitude += 0.1f;
             magnitude = std::abs(magnitude);
             m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
         } else if (event.key.keysym.mod & KMOD_CTRL) {
-            --magnitude;
+            magnitude -= 0.1;;
             magnitude = std::abs(magnitude);
 
             if (magnitude == 0) magnitude = 1;

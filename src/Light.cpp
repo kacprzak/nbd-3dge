@@ -19,7 +19,5 @@ void Light::applyTo(ShaderProgram* shaderProgram, int idx) const
 {
     const auto& lightIdx = "lights[" + std::to_string(idx) + "]";
     shaderProgram->setUniform((lightIdx + ".position").c_str(), worldTranslation());
-    shaderProgram->setUniform((lightIdx + ".ambient").c_str(), m_md.ambient);
-    shaderProgram->setUniform((lightIdx + ".diffuse").c_str(), m_md.diffuse);
-    shaderProgram->setUniform((lightIdx + ".specular").c_str(), m_md.specular);
+    shaderProgram->setUniform((lightIdx + ".color").c_str(), m_color);
 }

@@ -31,7 +31,7 @@ class Camera
     const glm::mat4& projectionMatrix() const;
     const glm::mat4& projectionMatrix(int cascadeIndex) const;
 
-    glm::vec3 worldTranslation() const { return glm::inverse(viewMatrix())[3]; }
+    glm::vec4 worldTranslation() const { return glm::inverse(viewMatrix())[3]; }
 
     bool isVisible(const Aabb& aabb) const;
 

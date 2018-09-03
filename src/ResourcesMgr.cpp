@@ -221,7 +221,7 @@ void ResourcesMgr::addTexture(const TextureData& texData)
     LOG_TRACE("Adding Texture: ", tmp.name);;
 
     tmp.filename = m_dataFolder + tmp.filename;
-    m_textures[tmp.name] = std::make_shared<Texture>(tmp);
+    m_textures[tmp.name] = std::make_shared<Texture>(tmp.filename.c_str());
 }
 
 std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
@@ -267,7 +267,7 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
         TextureData texData;
         texData.name = texFilename;
         texData.filename = m_dataFolder + texFilename;
-        textures.emplace_back(std::make_shared<Texture>(texData));
+        textures.emplace_back(std::make_shared<Texture>(texData.filename.c_str()));
     }
     font->setTextures(textures);
 

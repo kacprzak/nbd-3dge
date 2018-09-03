@@ -61,17 +61,16 @@ void Scene::load(const std::string& file)
     }
 
     for (auto& txr : doc.textures) {
-        TextureData td;
-        td.filename = extractDirectory(file) + changeExtension(doc.images[txr.source].uri, ".ktx");
+        const auto filename =
+            extractDirectory(file) + changeExtension(doc.images[txr.source].uri, ".ktx");
 
-        auto texture  = std::make_shared<Texture>(td);
-        texture->name = txr.name;
+        auto texture = std::make_shared<Texture>(filename.c_str(), txr.name);
 
         if (txr.sampler != -1) {
             texture->setSampler(m_samplers[txr.sampler]);
         }
 
-        m_textures.push_back(std::make_shared<Texture>(td));
+        m_textures.push_back(texture);
     }
 
     for (auto& mtl : doc.materials) {
@@ -188,12 +187,21 @@ void Scene::load(const std::string& file)
     }
 }
 
-void Scene::draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights)
+void Scene::draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights,
+                 Texture* environment)
 {
     glm::mat4 identity{1.0f};
 
     for (auto n : m_scene)
-        n->draw(identity, shaderProgram, camera, lights, nullptr);
+        n->draw(identity, shaderProgram, camera, lights, environment);
+}
+
+void Scene::drawAabb(ShaderProgram* shaderProgram, const Camera* camera)
+{
+    glm::mat4 identity{1.0f};
+
+    for (auto n : m_scene)
+        n->drawAabb(identity, shaderProgram, camera);
 }
 
 void Scene::update(float delta)

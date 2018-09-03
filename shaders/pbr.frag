@@ -2,7 +2,7 @@
 
 out vec4 fragColor;
 
-uniform vec3 cameraPosition;
+uniform vec4 cameraPosition;
 
 struct Material
 {
@@ -27,9 +27,15 @@ in mat3 TBN;
 const float PI    = 3.14159265359;
 const float GAMMA = 2.2;
 
-const int numLights = 2;
-vec3 lightColor[2];
-vec3 lightPos[2];
+struct Light
+{
+    vec4 position;
+    vec3 color;
+};
+
+#define MAX_LIGHTS 2
+
+uniform Light lights[MAX_LIGHTS];
 
 float distributionGGX(vec3 N, vec3 H, float roughness);
 float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
@@ -38,17 +44,12 @@ vec4 srgb2linear(vec4 srgb);
 
 void main()
 {
-    lightColor[0] = vec3(100.0);
-    lightColor[1] = vec3(100.0);
-    lightPos[0]   = vec3(3.0, 3.0, 3.0);
-    lightPos[1]   = vec3(3.0, -3.0, -3.0);
-
     vec3 N = texture(normalSampler, texCoord_0).rgb;
     N      = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
     N      = normalize(TBN * N);
-    //fragColor = vec4(cameraPosition * 150.f, 1.0); return;
+    // fragColor = vec4(lights[0].position); return;
 
-    vec3 V = normalize(cameraPosition - position.xyz);
+    vec3 V = normalize(cameraPosition.xyz - position.xyz);
 
     vec4 albedo     = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
     float occlusion = texture(occlusionSampler, texCoord_0).r;
@@ -61,13 +62,13 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for (int i = 0; i < numLights; ++i) {
-        vec3 L = normalize(lightPos[i] - position.xyz);
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
+        vec3 L = normalize(lights[i].position - position).xyz;
         vec3 H = normalize(V + L);
 
-        float distance    = length(lightPos[i] - position.xyz);
+        float distance    = length(lights[i].position - position);
         float attenuation = 1.0 / (distance * distance);
-        vec3 radiance     = lightColor[i] * attenuation;
+        vec3 radiance     = lights[i].color * attenuation;
 
         // cook-torrance brdf
         float NDF = distributionGGX(N, H, roughness);
@@ -91,7 +92,7 @@ void main()
     vec3 color   = ambient + Lo;
 
     // HDR tonemapping
-    // color = color / (color + vec3(1.0));
+    color = color / (color + vec3(1.0));
     // Gamma
     color = pow(color, vec3(1.0 / GAMMA));
 

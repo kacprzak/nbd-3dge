@@ -12,8 +12,6 @@
 
 class Camera;
 class Light;
-class Material;
-class Texture;
 
 class RenderNode final
 {
@@ -93,6 +91,9 @@ class RenderNode final
     void setCamera(Camera* camera) { m_camera = camera; }
     void removeCamera() { m_camera = nullptr; }
 
+    void setLight(Light* light) { m_light = light; }
+    void removeLight() { m_light = nullptr; }
+
     std::string name;
 
   private:
@@ -113,6 +114,7 @@ class RenderNode final
 
     std::vector<RenderNode*> m_children;
     Camera* m_camera = nullptr;
+    Light* m_light   = nullptr;
 
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<ShaderProgram> m_shaderProgram;

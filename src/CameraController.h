@@ -39,7 +39,7 @@ class FreeCameraController : public CameraController
     {
         float cameraSpeedMultiplyer = 0.01f;
 
-        if (cameraActions.actions & ControlComponent::Fire) cameraSpeedMultiplyer = 5.0f;
+        if (cameraActions.actions & ControlComponent::Fire) cameraSpeedMultiplyer = 1.0f;
 
         auto distance = deltaTime * m_cameraSpeed * cameraSpeedMultiplyer;
 

@@ -103,6 +103,7 @@ void RenderNode::update(const glm::mat4& parentModelMatrix, float deltaTime)
     const auto& worldMatrix = parentModelMatrix * m_modelMatrix;
 
     if (m_camera) m_camera->update(worldMatrix, deltaTime);
+    if (m_light) m_light->update(worldMatrix, deltaTime);
 
     for (auto child : m_children) {
         child->update(worldMatrix, deltaTime);
@@ -114,14 +115,22 @@ void RenderNode::update(const glm::mat4& parentModelMatrix, float deltaTime)
 void RenderNode::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
                           const Camera* camera)
 {
-    shaderProgram->use();
+    const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
 
-    shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
-    shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
-    shaderProgram->setUniform("modelMatrix", parentModelMatrix * m_modelMatrix);
+    if (m_mesh) {
+        shaderProgram->use();
 
-    shaderProgram->setUniform("minimum", m_mesh->aabb().minimum);
-    shaderProgram->setUniform("maximum", m_mesh->aabb().maximum);
+        shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
+        shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
+        shaderProgram->setUniform("modelMatrix", modelMatrix);
 
-    glDrawArrays(GL_POINTS, 0, 1);
+        shaderProgram->setUniform("minimum", m_mesh->aabb().minimum);
+        shaderProgram->setUniform("maximum", m_mesh->aabb().maximum);
+
+        glDrawArrays(GL_POINTS, 0, 1);
+    }
+
+    for (auto child : m_children) {
+        child->drawAabb(modelMatrix, shaderProgram, camera);
+    }
 }

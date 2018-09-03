@@ -1,8 +1,6 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "TextureData.h"
-
 #include <GL/glew.h>
 #include <glm/fwd.hpp>
 
@@ -39,7 +37,7 @@ class Texture final
     friend class Framebuffer;
 
   public:
-    Texture(const TextureData& texData);
+    Texture(const char* filename, const std::string& name = "");
     Texture(const Texture&) = delete;
     Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;
@@ -63,7 +61,7 @@ class Texture final
     std::string name;
 
   private:
-    void createTexture(const char* filename, bool linearColor);
+    void createTexture(const char* filename);
     void createSampler();
 
     Texture(GLenum target);

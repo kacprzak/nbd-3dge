@@ -42,7 +42,7 @@ Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor 
 
     auto minPos = m_positionsAcc.min;
     auto maxPos = m_positionsAcc.max;
-    m_aabb      = Aabb{{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[3]}};
+    m_aabb      = Aabb{{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[2]}};
 
     LOG_INFO("Loaded Mesh: {}", m_vao);
 

@@ -8,7 +8,7 @@
 class Light : public Camera
 {
   public:
-    Light(int actorId, TransformationComponent* tr, RenderComponent* rd, LightComponent* lt)
+    Light(int actorId, LightComponent* lt)
         : Camera{}
         , m_lt{lt}
     {
@@ -19,7 +19,7 @@ class Light : public Camera
 
   private:
     LightComponent* m_lt = nullptr;
-    MaterialData m_md;
+    glm::vec3 m_color{10.0f};
 };
 
 #endif /* LIGHT_H */
