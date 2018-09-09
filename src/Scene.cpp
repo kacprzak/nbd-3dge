@@ -100,7 +100,8 @@ void Scene::load(const std::string& file)
 
         // Ambient Occlusion
         if (!mtl.occlusionTexture.empty()) {
-            material.occlusionTexture = m_textures.at(mtl.occlusionTexture.index);
+            material.occlusionStrength = mtl.occlusionTexture.strength;
+            material.occlusionTexture  = m_textures.at(mtl.occlusionTexture.index);
         }
 
         // Emissive

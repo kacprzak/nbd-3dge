@@ -22,6 +22,7 @@ void Material::applyTo(ShaderProgram* shaderProgram) const
     }
 
     if (occlusionTexture) {
+        shaderProgram->setUniform("occlusionStrength", occlusionStrength);
         shaderProgram->setUniform("occlusionSampler", Unit::Occlusion);
         occlusionTexture->bind(Unit::Occlusion);
     }

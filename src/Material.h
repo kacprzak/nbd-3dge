@@ -43,9 +43,10 @@ class Material
     float roughnessFactor = 0.5f;
     std::shared_ptr<Texture> metallicRoughnessTexture;
 
-    float normalScale = 1.0;
+    float normalScale = 1.0f;
     std::shared_ptr<Texture> normalTexture;
 
+    float occlusionStrength = 1.0f;
     std::shared_ptr<Texture> occlusionTexture;
 
     glm::vec3 emissiveFactor{0.0f, 0.0f, 0.0f};

@@ -1,5 +1,9 @@
 #version 330
 
+#define HAS_OCCLUSIONMAP
+#define HAS_EMISSIVE
+#define USE_IBL
+
 out vec4 fragColor;
 
 uniform vec4 cameraPosition;
@@ -10,6 +14,7 @@ struct Material
     float normalScale;
     float metallicFactor;
     float roughnessFactor;
+    float occlusionStrength;
     vec3 emissiveFactor;
 };
 
@@ -17,8 +22,13 @@ uniform Material material;
 uniform sampler2D baseColorSampler;
 uniform sampler2D normalSampler;
 uniform sampler2D metallicRoughnessSampler;
+#ifdef HAS_OCCLUSIONMAP
 uniform sampler2D occlusionSampler;
+#endif
+#ifdef HAS_EMISSIVE
 uniform sampler2D emissiveSampler;
+#endif
+uniform samplerCube environmentCube;
 
 in vec4 position;
 in vec2 texCoord_0;
@@ -33,7 +43,7 @@ struct Light
     vec3 color;
 };
 
-#define MAX_LIGHTS 2
+#define MAX_LIGHTS 1
 
 uniform Light lights[MAX_LIGHTS];
 
@@ -47,18 +57,21 @@ void main()
     vec3 N = texture(normalSampler, texCoord_0).rgb;
     N      = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
     N      = normalize(TBN * N);
-    // fragColor = vec4(lights[0].position); return;
+    // fragColor = texture(environmentCube, N); return;
 
     vec3 V = normalize(cameraPosition.xyz - position.xyz);
+    vec3 R = reflect(-V, N);
 
-    vec4 albedo     = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
-    float occlusion = texture(occlusionSampler, texCoord_0).r;
-    float roughness = material.roughnessFactor * texture(metallicRoughnessSampler, texCoord_0).g;
-    float metallic  = material.metallicFactor * texture(metallicRoughnessSampler, texCoord_0).b;
-    vec3 emissive   = material.emissiveFactor * texture(emissiveSampler, texCoord_0).rgb;
+    vec4 baseColor = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
+    vec3 occRghMet; // occlusion, roughness, metallic
+    occRghMet.gb = vec2(material.roughnessFactor, material.metallicFactor) *
+                   texture(metallicRoughnessSampler, texCoord_0).gb;
+
+    float roughness = occRghMet.g;
+    float metallic  = occRghMet.b;
 
     vec3 F0 = vec3(0.04);
-    F0      = mix(F0, albedo.rgb, metallic);
+    F0      = mix(F0, baseColor.rgb, metallic);
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
@@ -75,28 +88,56 @@ void main()
         float G   = geometrySmith(N, V, L, roughness);
         vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
-        vec3 kS = F;
-        vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - metallic;
-
         vec3 numerator    = NDF * G * F;
         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
         vec3 specular     = numerator / max(denominator, 0.001);
 
-        // add to outgoing radiance Lo
+        // kS is equal to Fresnel
+        vec3 kS = F;
+        // for energy conservation, the diffuse and specular light can't
+        // be above 1.0 (unless the surface emits light); to preserve this
+        // relationship the diffuse component (kD) should equal 1.0 - kS.
+        vec3 kD = vec3(1.0) - kS;
+        // multiply kD by the inverse metalness such that only non-metals
+        // have diffuse lighting, or a linear blend if partly metal (pure metals
+        // have no diffuse light).
+        kD *= 1.0 - metallic;
+
+        // scale light by NdotL
         float NdotL = max(dot(N, L), 0.0);
-        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
+        // add to outgoing radiance Lo
+        Lo += (kD * baseColor.rgb / PI + specular) * radiance * NdotL;
     }
 
-    vec3 ambient = vec3(0.03) * albedo.rgb * occlusion;
-    vec3 color   = ambient + Lo;
+#ifdef USE_IBL
+    vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - metallic;
+    vec3 irradiance = texture(environmentCube, N).rgb;
+    vec3 diffuse    = irradiance * baseColor.rgb;
+    vec3 ambient    = kD * diffuse;
+#else
+    vec3 ambient = vec3(0.003);
+#endif
+    // gl_FragColor = vec4(ambient, 1.0); return;
+    vec3 color = ambient + Lo;
+
+#ifdef HAS_OCCLUSIONMAP
+    float ao = texture(occlusionSampler, texCoord_0).r;
+    color = mix(color, color * ao, material.occlusionStrength);
+#endif
+
+#ifdef HAS_EMISSIVE
+    vec3 emissive = material.emissiveFactor * srgb2linear(texture(emissiveSampler, texCoord_0)).rgb;
+    color.rgb += emissive;
+#endif
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));
     // Gamma
     color = pow(color, vec3(1.0 / GAMMA));
 
-    fragColor = vec4(color + emissive, albedo.a);
+    fragColor = vec4(color + emissive, baseColor.a);
 }
 
 float distributionGGX(vec3 N, vec3 H, float roughness)
