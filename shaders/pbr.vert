@@ -20,7 +20,8 @@ void main()
     vec3 B   = cross(N, T);
     TBN = mat3(T, B, N);
 
-    texCoord_0 = vec2(in_texCoord_0.s, 1.0 - in_texCoord_0.t);
+    texCoord_0 = in_texCoord_0;
+    //texCoord_0 = vec2(in_texCoord_0.s, 1.0 - in_texCoord_0.t);
 
     position    = modelMatrix * vec4(in_position, 1.0);
     gl_Position = projectionMatrix * viewMatrix * position;

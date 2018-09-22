@@ -12,4 +12,5 @@ void main()
 {
     gl_Position = modelMatrix * vec4(position, 0.0, 1.0);
     texCoord = in_texCoord;
+    texCoord.t = 1.0 - texCoord.t;
 }
