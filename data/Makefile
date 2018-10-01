@@ -1,4 +1,5 @@
 COMPRESSOR = ~/Pobrane/Compressonator_Linux_x86_64_3.0.105/CompressonatorCLI
+CMFT=~/code/github/cmft/_build/linux64_gcc/bin/cmftRelease
 #CUBE_MAKER = ~/code/github/ktx-cube-maker/build/ktx-cube-maker
 TO_KTX = ~/toktx
 
@@ -42,10 +43,13 @@ envmap_stormydays/stormydays_lf.ppm
 stormydays.ktx: $(CUBEMAP_INPUT)
 	$(TO_KTX) --cubemap $@ $^
 
+stormydays_rad.ktx: stormydays.ktx
+	$(CMFT) --input $< --filter radiance --lightingModel phongbrdf --numCpuProcessingThreads 6 --mipCount 1 --output0 stormydays_rad --output0params ktx,rgb16f,cubemap
+
 terrain-heightmap-01.ktx: terrain-heightmap-01.png
 	$(COMPRESSOR) $< -fs ARGB_8888 -fd RGB_888 -nomipmap $@ > /dev/null
 
-all: $(KTX_FILES) stormydays.ktx
+all: $(KTX_FILES) stormydays.ktx stormydays_rad.ktx
 
 clean:
 	rm $(KTX_FILES) $(TMP_BMP_FILES)

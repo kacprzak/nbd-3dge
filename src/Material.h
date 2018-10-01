@@ -5,52 +5,39 @@
 #include "ShaderProgram.h"
 #include "Texture.h"
 
-#include <vector>
+#include <array>
 
-class Material
+class Material final
 {
   public:
-    Material(const MaterialData& md, std::vector<std::shared_ptr<Texture>> textures)
-    //       : md{md}
-    //    , textures{textures}
-    {
-        if (textures.size() > 0) {
-            baseColorTexture = textures.at(0);
-        }
-    }
-
-    Material() = default;
-
     void applyTo(ShaderProgram* shaderProgram) const;
 
-    // private:
-    // MaterialData md;
-    // std::vector<std::shared_ptr<Texture>> textures;
     std::string name;
 
     enum AlphaMode { Opaque, Mask, Blend };
-    enum Unit { BaseColor, Normal, Occlusion, Emissive, MetallicRoughness, Environment = 7 };
+    enum Unit {
+        BaseColor,
+        Normal,
+        Occlusion,
+        Emissive,
+        MetallicRoughness,
+        Radiance,
+        Irradiance,
+        Environment = 7,
+        Size
+    };
 
     AlphaMode alphaMode = Opaque;
     float alphaCutoff   = 0.5f;
-
-    bool doubleSided = false;
-
+    bool doubleSided    = false;
     glm::vec4 baseColorFactor{0.5f, 0.5f, 0.5f, 1.0f};
-    std::shared_ptr<Texture> baseColorTexture;
-
-    float metallicFactor  = 0.0f;
-    float roughnessFactor = 0.5f;
-    std::shared_ptr<Texture> metallicRoughnessTexture;
-
-    float normalScale = 1.0f;
-    std::shared_ptr<Texture> normalTexture;
-
+    float metallicFactor    = 0.0f;
+    float roughnessFactor   = 0.5f;
+    float normalScale       = 1.0f;
     float occlusionStrength = 1.0f;
-    std::shared_ptr<Texture> occlusionTexture;
-
     glm::vec3 emissiveFactor{0.0f, 0.0f, 0.0f};
-    std::shared_ptr<Texture> emissiveTexture;
+
+    std::array<std::shared_ptr<Texture>, Unit::Size> textures{};
 };
 
 #endif /* MATERIAL_H */

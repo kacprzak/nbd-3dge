@@ -3,33 +3,33 @@
 void Material::applyTo(ShaderProgram* shaderProgram) const
 {
     shaderProgram->setUniform("material.baseColorFactor", baseColorFactor);
-    if (baseColorTexture) {
+    if (textures[Unit::BaseColor]) {
         shaderProgram->setUniform("baseColorSampler", Unit::BaseColor);
-        baseColorTexture->bind(Unit::BaseColor);
+        textures[Unit::BaseColor]->bind(Unit::BaseColor);
     }
 
     shaderProgram->setUniform("material.normalScale", normalScale);
-    if (normalTexture) {
+    if (textures[Unit::Normal]) {
         shaderProgram->setUniform("normalSampler", Unit::Normal);
-        normalTexture->bind(Unit::Normal);
+        textures[Unit::Normal]->bind(Unit::Normal);
     }
 
     shaderProgram->setUniform("material.metallicFactor", metallicFactor);
     shaderProgram->setUniform("material.roughnessFactor", roughnessFactor);
-    if (metallicRoughnessTexture) {
+    if (textures[Unit::MetallicRoughness]) {
         shaderProgram->setUniform("metallicRoughnessSampler", Unit::MetallicRoughness);
-        metallicRoughnessTexture->bind(Unit::MetallicRoughness);
+        textures[Unit::MetallicRoughness]->bind(Unit::MetallicRoughness);
     }
 
-    if (occlusionTexture) {
+    if (textures[Unit::Occlusion]) {
         shaderProgram->setUniform("occlusionStrength", occlusionStrength);
         shaderProgram->setUniform("occlusionSampler", Unit::Occlusion);
-        occlusionTexture->bind(Unit::Occlusion);
+        textures[Unit::Occlusion]->bind(Unit::Occlusion);
     }
 
     shaderProgram->setUniform("material.emissiveFactor", emissiveFactor);
-    if (emissiveTexture) {
+    if (textures[Unit::Emissive]) {
         shaderProgram->setUniform("emissiveSampler", Unit::Emissive);
-        emissiveTexture->bind(Unit::Emissive);
+        textures[Unit::Emissive]->bind(Unit::Emissive);
     }
 }

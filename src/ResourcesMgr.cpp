@@ -149,10 +149,12 @@ void ResourcesMgr::addMaterial(const MaterialData& materialData)
     if (it == m_materials.end()) {
         LOG_TRACE("Adding Material: {}", materialData.name);
 
-        m_materials[materialData.name] = std::make_shared<Material>(materialData, textures);
+        m_materials[materialData.name] = std::make_shared<Material>();
+        std::copy(std::cbegin(textures), std::cend(textures),
+                  std::begin(m_materials[materialData.name]->textures));
     } else {
         LOG_TRACE("Reloading Material: {}", materialData.name);
-        *it->second = Material{materialData, textures};
+        std::copy(std::cbegin(textures), std::cend(textures), std::begin(it->second->textures));
     }
 }
 
@@ -194,7 +196,7 @@ void ResourcesMgr::addShaderProgram(const ShaderProgramData& spData)
 
         auto sp = std::make_shared<ShaderProgram>();
         sp->link(shadersRaw);
-        sp->name = spData.name;
+        sp->name                      = spData.name;
         m_shaderPrograms[spData.name] = sp;
     } else {
         LOG_TRACE("Reloading ShaderProgram: {}", spData.name);
@@ -218,9 +220,9 @@ void ResourcesMgr::addTexture(const TextureData& texData)
 {
     TextureData tmp = texData;
 
-    LOG_TRACE("Adding Texture: ", tmp.name);;
+    LOG_TRACE("Adding Texture: ", tmp.name);
 
-    tmp.filename = m_dataFolder + tmp.filename;
+    tmp.filename         = m_dataFolder + tmp.filename;
     m_textures[tmp.name] = std::make_shared<Texture>(tmp.filename.c_str());
 }
 
@@ -237,9 +239,9 @@ std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
 
 void ResourcesMgr::addMesh(const MeshData& meshData)
 {
-    //LOG_TRACE("Adding Mesh: {}", meshData.name);
+    // LOG_TRACE("Adding Mesh: {}", meshData.name);
 
-    //m_meshes[meshData.name] = std::make_shared<Mesh>(meshData);
+    // m_meshes[meshData.name] = std::make_shared<Mesh>(meshData);
 }
 
 std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name) const
@@ -265,7 +267,7 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
     std::vector<std::shared_ptr<Texture>> textures;
     for (const auto& texFilename : font->getTexturesFilenames()) {
         TextureData texData;
-        texData.name = texFilename;
+        texData.name     = texFilename;
         texData.filename = m_dataFolder + texFilename;
         textures.emplace_back(std::make_shared<Texture>(texData.filename.c_str()));
     }

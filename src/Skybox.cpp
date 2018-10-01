@@ -86,7 +86,8 @@ void Skybox::draw(const Camera* camera) const
         m_shaderProgram->use();
 
         // Move skybox with the camera
-        glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3{camera->worldTranslation()});
+        glm::mat4 modelMatrix =
+            glm::translate(glm::mat4(1.0f), glm::vec3{camera->worldTranslation()});
 
         m_shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
         m_shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
@@ -98,7 +99,7 @@ void Skybox::draw(const Camera* camera) const
     glDepthMask(GL_FALSE);
 
     if (m_material) {
-        m_material->baseColorTexture->bind(0);
+        m_material->textures[Material::Unit::BaseColor]->bind(Material::Unit::BaseColor);
         m_mesh->draw(m_shaderProgram.get());
     }
 
