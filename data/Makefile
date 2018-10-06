@@ -40,16 +40,19 @@ envmap_stormydays/stormydays_lf.ppm
 %.bmp: %.jpeg
 	convert $< -set colorspace RGBA $@
 
+all: $(KTX_FILES) stormydays.ktx stormydays_rad.ktx stormydays_irr.ktx
+
 stormydays.ktx: $(CUBEMAP_INPUT)
 	$(TO_KTX) --cubemap $@ $^
 
 stormydays_rad.ktx: stormydays.ktx
-	$(CMFT) --input $< --filter radiance --lightingModel phongbrdf --numCpuProcessingThreads 6 --mipCount 1 --output0 stormydays_rad --output0params ktx,rgb16f,cubemap
+	$(CMFT) --input $< --filter radiance --lightingModel phongbrdf --numCpuProcessingThreads 6 --mipCount 9 --output0 stormydays_rad --output0params ktx,rgb16f,cubemap
+
+stormydays_irr.ktx: stormydays.ktx
+	$(CMFT) --input $< --filter irradiance --numCpuProcessingThreads 6 --mipCount 1 --output0 stormydays_irr --output0params ktx,rgb16f,cubemap
 
 terrain-heightmap-01.ktx: terrain-heightmap-01.png
 	$(COMPRESSOR) $< -fs ARGB_8888 -fd RGB_888 -nomipmap $@ > /dev/null
-
-all: $(KTX_FILES) stormydays.ktx stormydays_rad.ktx
 
 clean:
 	rm $(KTX_FILES) $(TMP_BMP_FILES)

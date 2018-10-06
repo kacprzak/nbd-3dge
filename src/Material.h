@@ -5,8 +5,6 @@
 #include "ShaderProgram.h"
 #include "Texture.h"
 
-#include <array>
-
 class Material final
 {
   public:
@@ -15,17 +13,6 @@ class Material final
     std::string name;
 
     enum AlphaMode { Opaque, Mask, Blend };
-    enum Unit {
-        BaseColor,
-        Normal,
-        Occlusion,
-        Emissive,
-        MetallicRoughness,
-        Radiance,
-        Irradiance,
-        Environment = 7,
-        Size
-    };
 
     AlphaMode alphaMode = Opaque;
     float alphaCutoff   = 0.5f;
@@ -37,7 +24,7 @@ class Material final
     float occlusionStrength = 1.0f;
     glm::vec3 emissiveFactor{0.0f, 0.0f, 0.0f};
 
-    std::array<std::shared_ptr<Texture>, Unit::Size> textures{};
+    TexturePack textures{};
 };
 
 #endif /* MATERIAL_H */

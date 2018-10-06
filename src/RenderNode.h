@@ -50,10 +50,10 @@ class RenderNode final
     ShaderProgram* getShaderProgram() { return m_shaderProgram.get(); }
 
     void draw(const glm::mat4& parentModelMatrix, const Camera* camera,
-              const std::array<Light*, 8>& lights, Texture* environment) const;
+              const std::array<Light*, 8>& lights, const TexturePack& environment) const;
     void draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
               const Camera* camera, const std::array<Light*, 8>& lights,
-              Texture* environment) const;
+              const TexturePack& environment) const;
 
     void drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
                   const Camera* camera);

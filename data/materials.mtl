@@ -1,30 +1,32 @@
 newmtl skybox_mtl
 cube_Kd -clamp on -cc on stormydays.ktx
+cube_Kd -clamp on -cc on stormydays_irr.ktx
+cube_Kd -clamp on -cc on stormydays_rad.ktx
 
-newmtl palm_tree_mtl
-map_Kd -cc on palm_tree_v2/diffus.ktx
-map_Kn palm_tree_v2/normal.ktx
-map_Ks palm_tree_v2/specular.ktx
-Ns 100
+# newmtl palm_tree_mtl
+# map_Kd -cc on palm_tree_v2/diffus.ktx
+# map_Kn palm_tree_v2/normal.ktx
+# map_Ks palm_tree_v2/specular.ktx
+# Ns 100
 
-newmtl wall_mtl
-map_Kd -cc on Stone_Wall_004/color.ktx
-map_Kn Stone_Wall_004/normal.ktx
-map_Ks Stone_Wall_004/specular.ktx
-Ns 100
+# newmtl wall_mtl
+# map_Kd -cc on Stone_Wall_004/color.ktx
+# map_Kn Stone_Wall_004/normal.ktx
+# map_Ks Stone_Wall_004/specular.ktx
+# Ns 100
 
-newmtl cube_mtl
-map_Kd -cc on texture_I.ktx
+# newmtl cube_mtl
+# map_Kd -cc on texture_I.ktx
 
-newmtl terrain_mtl
-map_Kd -cc on terrain/grass_green_d.ktx
-map_Kd -cc on terrain/snow_grass_d.ktx
-map_Kd -cc on terrain/grass_rocky_d.ktx
+# newmtl terrain_mtl
+# map_Kd -cc on terrain/grass_green_d.ktx
+# map_Kd -cc on terrain/snow_grass_d.ktx
+# map_Kd -cc on terrain/grass_rocky_d.ktx
 
-newmtl ship_mtl
-Ks 0.5 0.5 0.5
-Ns 32
-map_Kd -cc on ship.ktx
+# newmtl ship_mtl
+# Ks 0.5 0.5 0.5
+# Ns 32
+# map_Kd -cc on ship.ktx
 
 newmtl sun_light
 Ka 0.2 0.1772 0.1616

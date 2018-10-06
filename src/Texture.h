@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <glm/fwd.hpp>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -75,5 +76,23 @@ class Texture final
 
     std::shared_ptr<Sampler> m_sampler;
 };
+
+//------------------------------------------------------------------------------
+
+enum TextureUnit {
+    BaseColor,
+    Normal,
+    Occlusion,
+    Emissive,
+    MetallicRoughness,
+    Radiance,
+    Irradiance,
+    Environment = 7,
+    Size
+};
+
+//------------------------------------------------------------------------------
+
+using TexturePack = std::array<std::shared_ptr<Texture>, TextureUnit::Size>;
 
 #endif // TEXTURE_H

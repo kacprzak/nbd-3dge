@@ -115,7 +115,7 @@ int main(int ac, char** av)
         engine.mainLoop(&game);
     } catch (const std::exception& e) {
         LOG_FATAL(e.what());
-        throw e;
+        throw;
     }
 
     spdlog::drop_all();

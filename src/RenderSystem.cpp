@@ -63,8 +63,15 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
     m_cameraText->setPosition({0.5f, 0.f, 0.0f});
     add(m_cameraText);
 
-    auto skybox = std::make_shared<Skybox>();
-    skybox->setMaterial(resourcesMgr.getMaterial("skybox_mtl"));
+    auto skybox    = std::make_shared<Skybox>();
+    auto skyboxMtl = resourcesMgr.getMaterial("skybox_mtl");
+
+    std::array<std::shared_ptr<Texture>, TextureUnit::Size> textures;
+    textures[TextureUnit::Environment] = skyboxMtl->textures[0];
+    textures[TextureUnit::Irradiance]  = skyboxMtl->textures[1];
+    textures[TextureUnit::Radiance]    = skyboxMtl->textures[2];
+
+    skybox->setTextures(textures);
     skybox->setShaderProgram(resourcesMgr.getShaderProgram("skybox"));
 
     setSkybox(skybox);
@@ -118,7 +125,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
 
             if (!rd->material.empty()) {
                 auto materialPtr = resourcesMgr.getMaterial(rd->material);
-                skybox->setMaterial(materialPtr);
+                // skybox->setMaterial(materialPtr);
             }
             skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
             setSkybox(skybox);
@@ -197,8 +204,8 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
 
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
 
-    Texture* environment = nullptr;
-    if (m_skybox) environment = m_skybox->environmentTexture();
+    TexturePack environment;
+    if (m_skybox) environment = m_skybox->textures();
 
     m_scene->draw(m_defaultShader.get(), camera, lights, environment);
 
@@ -228,10 +235,10 @@ void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camer
     std::array<Light*, 8> lights = {};
 
     for (const auto& node : m_nodes) {
-        node.second->draw(identity, shaderProgram, camera, lights, nullptr);
+        node.second->draw(identity, shaderProgram, camera, lights, {});
     }
 
-    m_scene->draw(shaderProgram, camera, lights, nullptr);
+    m_scene->draw(shaderProgram, camera, lights, {});
 }
 
 void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Light* light) const
@@ -256,7 +263,7 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
             for (const auto& node : m_nodes) {
                 if (node.second->castsShadows())
-                    node.second->draw(glm::mat4{}, shaderProgram, light, lights, nullptr);
+                    node.second->draw(glm::mat4{}, shaderProgram, light, lights, {});
             }
         }
 
@@ -438,6 +445,8 @@ void RenderSystem::setScene(std::shared_ptr<Scene> scene)
         rn->setCamera(m_camera);
 
         m_nodes[-1] = rn;
+    } else {
+        cam->setCamera(m_camera);
     }
 }
 

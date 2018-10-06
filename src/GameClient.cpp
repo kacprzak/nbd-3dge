@@ -53,6 +53,8 @@ void GameClient::loadResources(const std::string& file)
     // m_scene->load(m_settings.dataFolder + "untitled.gltf");
     m_scene->load(m_settings.dataFolder +
                   "glTF-Sample-Models-master/2.0/BoomBox/glTF/BoomBox.gltf");
+    //m_scene->load(m_settings.dataFolder +
+    //              "glTF-Sample-Models-master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf");
     // m_scene->load(m_settings.dataFolder +
     // "glTF-Sample-Models-master/2.0/Corset/glTF/Corset.gltf");
 

@@ -14,7 +14,7 @@ class Scene
 
     void update(float delta);
     void draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights,
-              Texture* environment);
+              const TexturePack& environment);
     void drawAabb(ShaderProgram* shaderProgram, const Camera* camera);
 
     Camera* currentCamera()

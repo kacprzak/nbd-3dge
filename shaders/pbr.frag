@@ -28,7 +28,11 @@ uniform sampler2D occlusionSampler;
 #ifdef HAS_EMISSIVE
 uniform sampler2D emissiveSampler;
 #endif
-uniform samplerCube environmentCube;
+#ifdef USE_IBL
+// uniform samplerCube environmentCube;
+uniform samplerCube irradianceCube;
+uniform samplerCube radianceCube;
+#endif
 
 in vec4 position;
 in vec2 texCoord_0;
@@ -113,7 +117,7 @@ void main()
     vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;
-    vec3 irradiance = texture(environmentCube, N).rgb;
+    vec3 irradiance = texture(irradianceCube, N).rgb;
     vec3 diffuse    = irradiance * baseColor.rgb;
     vec3 ambient    = kD * diffuse;
 #else
@@ -124,7 +128,7 @@ void main()
 
 #ifdef HAS_OCCLUSIONMAP
     float ao = texture(occlusionSampler, texCoord_0).r;
-    color = mix(color, color * ao, material.occlusionStrength);
+    color    = mix(color, color * ao, material.occlusionStrength);
 #endif
 
 #ifdef HAS_EMISSIVE

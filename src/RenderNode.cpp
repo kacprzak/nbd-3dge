@@ -45,14 +45,14 @@ void RenderNode::rebuildModelMatrix()
 //------------------------------------------------------------------------------
 
 void RenderNode::draw(const glm::mat4& parentModelMatrix, const Camera* camera,
-                      const std::array<Light*, 8>& lights, Texture* environment) const
+                      const std::array<Light*, 8>& lights, const TexturePack& environment) const
 {
     draw(parentModelMatrix, m_shaderProgram.get(), camera, lights, environment);
 }
 
 void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
                       const Camera* camera, const std::array<Light*, 8>& lights,
-                      Texture* environment) const
+                      const TexturePack& environment) const
 {
     const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
 
@@ -77,9 +77,17 @@ void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderP
 
         shaderProgram->setUniform("cameraPosition", camera->worldTranslation());
 
-        if (environment) {
-            shaderProgram->setUniform("environmentCube", 7);
-            environment->bind(7);
+        if (environment[TextureUnit::Environment]) {
+            shaderProgram->setUniform("environmentCube", TextureUnit::Environment);
+            environment[TextureUnit::Environment]->bind(TextureUnit::Environment);
+        }
+        if (environment[TextureUnit::Irradiance]) {
+            shaderProgram->setUniform("irradianceCube", TextureUnit::Irradiance);
+            environment[TextureUnit::Irradiance]->bind(TextureUnit::Irradiance);
+        }
+        if (environment[TextureUnit::Radiance]) {
+            shaderProgram->setUniform("radianceCube", TextureUnit::Radiance);
+            environment[TextureUnit::Radiance]->bind(TextureUnit::Radiance);
         }
 
         // if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);

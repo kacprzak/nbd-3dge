@@ -1,9 +1,9 @@
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
-#include "Material.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
+#include "Texture.h"
 
 #include <glm/glm.hpp>
 
@@ -19,21 +19,21 @@ class Skybox final
         m_shaderProgram = shaderProgram;
     }
 
-    void setMaterial(const std::shared_ptr<Material>& material)
+    void setTextures(const TexturePack& textures)
     {
-        m_material = material;
-        m_material->textures[Material::Unit::BaseColor]->sampler()->setClampToEdge();
+        m_textures = textures;
+        for (auto& tex : m_textures)
+            if (tex) tex->sampler()->setClampToEdge();
     }
-    Material* material() { return m_material.get(); }
 
-    Texture* environmentTexture() { return m_material->textures[Material::Unit::BaseColor].get(); };
+    TexturePack textures() { return m_textures; };
 
     void draw(const Camera* camera) const;
 
   private:
     std::shared_ptr<ShaderProgram> m_shaderProgram;
-    std::shared_ptr<Material> m_material;
     std::shared_ptr<Mesh> m_mesh;
+    TexturePack m_textures{};
 };
 
 #endif // SKYBOX_H
