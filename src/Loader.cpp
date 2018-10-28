@@ -2,23 +2,24 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
+
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
 #include "Util.h"
 
-void Loader::load(const std::string& filename)
+void Loader::load(const std::filesystem::path& file)
 {
     using namespace std;
-    m_folder = extractDirectory(filename);
 
-    ifstream f(filename.c_str());
+    ifstream f(file);
 
     if (f.is_open() == true) {
         load(f);
         f.close();
     } else {
-        cerr << "Error: unable to open " << filename << endl;
+        cerr << "Error: unable to open " << file.string() << endl;
     }
 
     fileLoaded();

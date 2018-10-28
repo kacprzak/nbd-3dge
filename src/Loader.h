@@ -4,6 +4,7 @@
 #include <istream>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 /**
  * @brief Base class for Loaders
@@ -16,18 +17,13 @@ class Loader
     Loader() = default;
     virtual ~Loader() = default;
 
-    void load(const std::string& filename);
+    void load(const std::filesystem::path& file);
     void load(std::istream& stream);
 
   protected:
     virtual void command(const std::string& cmd, const std::vector<std::string>& args) = 0;
     virtual void fileLoaded();
     virtual void parseLine(const std::string& line);
-
-    std::string currentFolder() { return m_folder; }
-
-  private:
-    std::string m_folder;
 };
 
 #endif // LOADER_H

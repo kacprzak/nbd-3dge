@@ -19,9 +19,9 @@ int typeToSize(fx::gltf::Accessor::Type type)
     }
 }
 
-void Scene::load(const std::string& file)
+void Scene::load(const std::filesystem::path& file)
 {
-    fx::gltf::Document doc = fx::gltf::LoadFromText(file);
+    fx::gltf::Document doc = fx::gltf::LoadFromText(file.string());
 
     for (auto& bv : doc.bufferViews) {
         auto gpuBuffer = std::make_shared<Buffer>();
@@ -64,9 +64,9 @@ void Scene::load(const std::string& file)
 
     for (auto& txr : doc.textures) {
         const auto filename =
-            extractDirectory(file) + changeExtension(doc.images[txr.source].uri, ".ktx");
+            file.parent_path() / std::filesystem::path(doc.images[txr.source].uri).replace_extension(".ktx");
 
-        auto texture = std::make_shared<Texture>(filename.c_str(), txr.name);
+        auto texture = std::make_shared<Texture>(filename, txr.name);
 
         if (txr.sampler != -1) {
             texture->setSampler(m_samplers[txr.sampler]);

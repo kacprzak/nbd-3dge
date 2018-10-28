@@ -7,10 +7,12 @@
 #include "RenderNode.h"
 #include "Texture.h"
 
+#include <filesystem>
+
 class Scene
 {
   public:
-    void load(const std::string& file);
+    void load(const std::filesystem::path& file);
 
     void update(float delta);
     void draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights,

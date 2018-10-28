@@ -5,6 +5,7 @@
 #include <glm/fwd.hpp>
 
 #include <array>
+#include <filesystem>
 #include <memory>
 #include <string>
 
@@ -38,7 +39,7 @@ class Texture final
     friend class Framebuffer;
 
   public:
-    Texture(const char* filename, const std::string& name = "");
+    Texture(const std::filesystem::path& file, const std::string& name = "");
     Texture(const Texture&) = delete;
     Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;

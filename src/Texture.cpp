@@ -23,6 +23,8 @@ Sampler::Sampler()
     LOG_INFO("Created Sampler: {}", m_samplerId);
 }
 
+Sampler::Sampler(Sampler&& other) { std::swap(m_samplerId, other.m_samplerId); }
+
 Sampler::~Sampler()
 {
     glDeleteSamplers(1, &m_samplerId);
@@ -71,12 +73,12 @@ Texture::Texture(GLenum target)
     glGenTextures(1, &m_textureId);
 }
 
-Texture::Texture(const char* filename, const std::string& _name)
+Texture::Texture(const std::filesystem::path& file, const std::string& _name)
     : Texture{GL_TEXTURE_2D}
 {
-    createTexture(filename);
+    createTexture(file.string().c_str());
 
-    name = _name.empty() ? filename : _name;
+    name = _name.empty() ? file.filename().string() : _name;
     LOG_INFO("Created Texture: {} | {}", m_textureId, name);
 }
 

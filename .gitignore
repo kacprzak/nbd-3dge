@@ -1,5 +1,6 @@
 build/
 external/
+.vs/
 
 CMakeCache.txt
 CMakeFiles
