@@ -50,13 +50,12 @@ void GameClient::loadResources(const std::string& file)
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
     // Scene scene;
     m_scene = std::make_shared<Scene>();
-    // m_scene->load(m_settings.dataFolder + "untitled.gltf");
-    m_scene->load(m_settings.dataFolder +
-                  "glTF-Sample-Models-master/2.0/BoomBox/glTF/BoomBox.gltf");
-    //m_scene->load(m_settings.dataFolder +
-    //              "glTF-Sample-Models-master/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf");
-    // m_scene->load(m_settings.dataFolder +
-    // "glTF-Sample-Models-master/2.0/Corset/glTF/Corset.gltf");
+    //m_scene->load(m_settings.dataFolder + "untitled.gltf");
+    m_scene->load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
+    //m_scene->load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
+    //m_scene->load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
+    //m_scene->load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
+    //m_scene->load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
 
     m_renderSystem.setScene(m_scene);
 
@@ -158,7 +157,8 @@ void GameClient::keyReleased(const SDL_Event& event)
             magnitude = std::abs(magnitude);
             m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
         } else if (event.key.keysym.mod & KMOD_CTRL) {
-            magnitude -= 0.1;;
+            magnitude -= 0.1;
+            ;
             magnitude = std::abs(magnitude);
 
             if (magnitude == 0) magnitude = 1;

@@ -34,6 +34,9 @@ envmap_stormydays/stormydays_lf.ppm
 %.ppm: %.tga
 	convert $< $@
 
+envmap_stormydays/stormydays_%.ppm: envmap_stormydays/stormydays_%.tga
+	convert -resize 50% $< $@
+
 %.bmp: %.jpg
 	convert $< -set colorspace RGBA $@
 
@@ -57,5 +60,11 @@ terrain-heightmap-01.ktx: terrain-heightmap-01.png
 clean:
 	rm $(KTX_FILES) $(TMP_BMP_FILES)
 
-.PHONY: clean all
+zip:
+	zip -r9 data.zip brdfLUT.ktx BoomBox SciFiHelmet ubuntu.fnt ubuntu.ktx stormydays*.ktx assets.xml scene.xml -x **/*.png
+
+data.zip:
+	wget http://gdurl.com/3JGL7/download/14ad53a3385ae8a331c52621fb15e226 -O data.zip
+
+.PHONY: clean all zip
 
