@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <array>
+#include <memory>
 
 class Buffer final
 {
@@ -15,14 +16,14 @@ class Buffer final
 
     void bind(GLenum target);
 
-    void loadData(const void* data, size_t size, GLenum usage = GL_STATIC_DRAW);
-    void getData(void* data, size_t size) const;
+    void loadData(const void* data, std::size_t size, GLenum usage = GL_STATIC_DRAW);
+    void getData(void* data, std::size_t size) const;
 
     unsigned m_byteStride = 0;
 
   private:
-    GLuint m_bufferId = 0;
-    size_t m_size     = 0;
+    GLuint m_bufferId  = 0;
+    std::size_t m_size = 0;
 };
 
 struct Accessor final

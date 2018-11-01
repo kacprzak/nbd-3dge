@@ -9,6 +9,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include <memory>
+#include <algorithm>
 
 class Camera;
 class Light;
