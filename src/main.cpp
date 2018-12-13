@@ -29,8 +29,12 @@ void initLogger(const std::string& logLevel)
     if (logLevel == "error") level   = spdlog::level::err;
     if (logLevel == "fatal") level   = spdlog::level::critical;
 
+#ifdef _MSC_VER
+    auto console = spdlog::create("console", std::make_shared<spdlog::sinks::msvc_sink_mt>());
+#else
     auto console = spdlog::stdout_color_mt("console");
-    console->set_level(level);
+#endif
+	console->set_level(level);
     console->set_pattern("[%H:%M:%S.%e] [%^%l%$] %v");
 }
 
