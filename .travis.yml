@@ -14,11 +14,11 @@ python:
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty-5.0
+      #- ubuntu-toolchain-r-test
+      #- llvm-toolchain-trusty-5.0
     packages:
       #- g++-7
-      - clang-5.0
+      - clang-7.0
       - libc++-dev
       - libc++abi-dev
       - python3-pip
@@ -37,7 +37,7 @@ addons:
 
 env:
   #- MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+  - MATRIX_EVAL="CC=clang-7.0 && CXX=clang++-7.0"
 
 git:
   lfs_skip_smudge: true
@@ -56,7 +56,7 @@ install:
 
 script:
   - mkdir build && cd build
-  - conan install .. --build=missing -s compiler=clang -s compiler.version=5.0 -s compiler.libcxx=libc++
+  - conan install .. --build=missing -s compiler=clang -s compiler.version=7.0 -s compiler.libcxx=libc++
   #-o sdl2:alsa=False -o sdl2:jack=False -o sdl2:pulse=False -o sdl2:nas=False -o sdl2:esd=False -o sdl2:arts=False -o sdl2:directfb=False -o sdl2:x11=False
   - cmake -DCMAKE_BUILD_TYPE=Release ../
   - make
