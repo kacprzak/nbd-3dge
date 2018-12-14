@@ -39,7 +39,7 @@ addons:
 
 env:
   #- MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-  - MATRIX_EVAL="CC=clang-7.0 && CXX=clang++-7.0"
+  - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
 
 git:
   lfs_skip_smudge: true
