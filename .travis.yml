@@ -15,12 +15,12 @@ python:
 
 addons:
   apt:
-    sources:
+    #sources:
       #- ubuntu-toolchain-r-test
       #- llvm-toolchain-trusty-5.0
     packages:
       #- g++-7
-      - clang-7.0
+      #- clang-7.0
       - libc++-dev
       - libc++abi-dev
       - python3-pip
