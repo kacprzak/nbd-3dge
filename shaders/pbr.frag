@@ -64,7 +64,7 @@ void main()
     // fragColor = texture(environmentCube, N); return;
 
     vec3 V = normalize(cameraPosition.xyz - position.xyz);
-    vec3 R = reflect(-V, N);
+    //vec3 R = reflect(-V, N);
 
     vec4 baseColor = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
     vec3 occRghMet; // occlusion, roughness, metallic
@@ -141,7 +141,7 @@ void main()
     // Gamma
     color = pow(color, vec3(1.0 / GAMMA));
 
-    fragColor = vec4(color + emissive, baseColor.a);
+    fragColor = vec4(color, baseColor.a);
 }
 
 float distributionGGX(vec3 N, vec3 H, float roughness)
