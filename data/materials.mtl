@@ -2,6 +2,7 @@ newmtl skybox_mtl
 cube_Kd -clamp on -cc on stormydays.ktx
 cube_Kd -clamp on -cc on stormydays_irr.ktx
 cube_Kd -clamp on -cc on stormydays_rad.ktx
+map_Kd -clamp on -cc on brdfLUT.ktx
 
 # newmtl palm_tree_mtl
 # map_Kd -cc on palm_tree_v2/diffus.ktx

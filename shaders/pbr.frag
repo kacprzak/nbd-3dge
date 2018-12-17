@@ -29,7 +29,7 @@ uniform sampler2D occlusionSampler;
 uniform sampler2D emissiveSampler;
 #endif
 #ifdef USE_IBL
-// uniform samplerCube environmentCube;
+uniform sampler2D brdfLUT;
 uniform samplerCube irradianceCube;
 uniform samplerCube radianceCube;
 #endif
@@ -54,6 +54,7 @@ uniform Light lights[MAX_LIGHTS];
 float distributionGGX(vec3 N, vec3 H, float roughness);
 float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 fresnelSchlick(float cosTheta, vec3 F0);
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 vec4 srgb2linear(vec4 srgb);
 
 void main()
@@ -61,10 +62,10 @@ void main()
     vec3 N = texture(normalSampler, texCoord_0).rgb;
     N      = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
     N      = normalize(TBN * N);
-    // fragColor = texture(environmentCube, N); return;
 
     vec3 V = normalize(cameraPosition.xyz - position.xyz);
-    //vec3 R = reflect(-V, N);
+    float NdotV = max(dot(N, V), 0.0);
+    vec3 R = reflect(-V, N);
 
     vec4 baseColor = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
     vec3 occRghMet; // occlusion, roughness, metallic
@@ -83,6 +84,9 @@ void main()
         vec3 L = normalize(lights[i].position - position).xyz;
         vec3 H = normalize(V + L);
 
+        // Lambertian
+        float NdotL = max(dot(N, L), 0.0);
+
         float distance    = length(lights[i].position - position);
         float attenuation = 1.0 / (distance * distance);
         vec3 radiance     = lights[i].color * attenuation;
@@ -93,7 +97,7 @@ void main()
         vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
         vec3 numerator    = NDF * G * F;
-        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+        float denominator = 4.0 * NdotV * NdotL;
         vec3 specular     = numerator / max(denominator, 0.001);
 
         // kS is equal to Fresnel
@@ -107,19 +111,25 @@ void main()
         // have no diffuse light).
         kD *= 1.0 - metallic;
 
-        // scale light by NdotL
-        float NdotL = max(dot(N, L), 0.0);
         // add to outgoing radiance Lo
         Lo += (kD * baseColor.rgb / PI + specular) * radiance * NdotL;
     }
 
 #ifdef USE_IBL
-    vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
+    vec3 F = fresnelSchlickRoughness(NdotV, F0, roughness);
+
+    vec3 kS = F;
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;
-    vec3 irradiance = texture(irradianceCube, N).rgb;
+    vec3 irradiance = srgb2linear(texture(irradianceCube, N)).rgb;
     vec3 diffuse    = irradiance * baseColor.rgb;
-    vec3 ambient    = kD * diffuse;
+
+    const float MAX_REFLECTION_LOD = 9.0;
+    vec3 radianceColor = srgb2linear(textureLod(radianceCube, R,  roughness * MAX_REFLECTION_LOD)).rgb;   
+    vec2 envBRDF       = texture(brdfLUT, vec2(NdotV, roughness)).rg;
+    vec3 specular      = radianceColor * (F * envBRDF.x + envBRDF.y);
+
+    vec3 ambient = kD * diffuse + specular;
 #else
     vec3 ambient = vec3(0.003);
 #endif
@@ -179,6 +189,14 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0) { return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); }
+vec3 fresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+}  
 
 vec4 srgb2linear(vec4 srgb) { return vec4(pow(srgb.xyz, vec3(GAMMA)), srgb.a); }

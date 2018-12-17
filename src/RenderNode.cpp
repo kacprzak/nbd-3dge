@@ -77,9 +77,9 @@ void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderP
 
         shaderProgram->setUniform("cameraPosition", camera->worldTranslation());
 
-        if (environment[TextureUnit::Environment]) {
-            shaderProgram->setUniform("environmentCube", TextureUnit::Environment);
-            environment[TextureUnit::Environment]->bind(TextureUnit::Environment);
+        if (environment[TextureUnit::BrdfLUT]) {
+            shaderProgram->setUniform("brdfLUT", TextureUnit::BrdfLUT);
+            environment[TextureUnit::BrdfLUT]->bind(TextureUnit::BrdfLUT);
         }
         if (environment[TextureUnit::Irradiance]) {
             shaderProgram->setUniform("irradianceCube", TextureUnit::Irradiance);

@@ -98,8 +98,8 @@ void Skybox::draw(const Camera* camera) const
 
     glDepthMask(GL_FALSE);
 
-    if (m_textures[TextureUnit::Environment]) {
-        m_textures[TextureUnit::Environment]->bind(TextureUnit::BaseColor);
+    if (m_textures[TextureUnit::BaseColor]) {
+        m_textures[TextureUnit::BaseColor]->bind(TextureUnit::BaseColor);
         m_mesh->draw(m_shaderProgram.get());
     }
 

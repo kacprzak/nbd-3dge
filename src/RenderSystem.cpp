@@ -67,9 +67,10 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
     auto skyboxMtl = resourcesMgr.getMaterial("skybox_mtl");
 
     std::array<std::shared_ptr<Texture>, TextureUnit::Size> textures;
-    textures[TextureUnit::Environment] = skyboxMtl->textures[0];
+    textures[TextureUnit::BaseColor]   = skyboxMtl->textures[0];
     textures[TextureUnit::Irradiance]  = skyboxMtl->textures[1];
     textures[TextureUnit::Radiance]    = skyboxMtl->textures[2];
+    textures[TextureUnit::BrdfLUT]     = skyboxMtl->textures[3];
 
     skybox->setTextures(textures);
     skybox->setShaderProgram(resourcesMgr.getShaderProgram("skybox"));

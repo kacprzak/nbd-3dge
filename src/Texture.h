@@ -88,7 +88,7 @@ enum TextureUnit {
     MetallicRoughness,
     Radiance,
     Irradiance,
-    Environment = 7,
+    BrdfLUT = 7,
     Size
 };
 
