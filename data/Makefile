@@ -1,4 +1,4 @@
-COMPRESSOR = ~/Pobrane/Compressonator_Linux_x86_64_3.0.105/CompressonatorCLI
+COMPRESSOR = C:/Program Files/Compressonator/CompressonatorCLI.exe
 CMFT=~/code/github/cmft/_build/linux64_gcc/bin/cmftRelease
 #CUBE_MAKER = ~/code/github/ktx-cube-maker/build/ktx-cube-maker
 TO_KTX = ~/toktx

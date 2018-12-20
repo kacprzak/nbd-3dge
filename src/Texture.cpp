@@ -147,22 +147,11 @@ void Texture::bind(int textureUnit)
     glBindTexture(m_target, m_textureId);
 }
 
-//==============================================================================
-
-gli::gl::internal_format to_srgb(gli::gl::internal_format iformat)
+void Texture::createSampler()
 {
-    using namespace gli;
-
-    switch (iformat) {
-    case gl::INTERNAL_RGB_UNORM:
-    case gl::INTERNAL_RGB8_UNORM: return gl::INTERNAL_SRGB8;
-    case gl::INTERNAL_RGBA_UNORM:
-    case gl::INTERNAL_RGBA8_UNORM: return gl::INTERNAL_SRGB8_ALPHA8;
-    case gl::INTERNAL_RGB_DXT1: return gl::INTERNAL_SRGB_DXT1;
-    case gl::INTERNAL_RGBA_DXT1: return gl::INTERNAL_SRGB_ALPHA_DXT1;
-    case gl::INTERNAL_RGBA_DXT3: return gl::INTERNAL_SRGB_ALPHA_DXT3;
-    case gl::INTERNAL_RGBA_DXT5: return gl::INTERNAL_SRGB_ALPHA_DXT5;
-    default: return iformat;
+    m_sampler = std::make_shared<Sampler>();
+    if (m_levels > 1) {
+        m_sampler->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     }
 }
 
@@ -265,10 +254,3 @@ void Texture::createTexture(const char* filename)
     }
 }
 
-void Texture::createSampler()
-{
-    m_sampler = std::make_shared<Sampler>();
-    if (m_levels > 1) {
-        m_sampler->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    }
-}

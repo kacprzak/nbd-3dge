@@ -62,12 +62,15 @@ void main()
     vec3 N = texture(normalSampler, texCoord_0).rgb;
     N      = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
     N      = normalize(TBN * N);
+    //fragColor = vec4(N, 1.0); return;
 
     vec3 V = normalize(cameraPosition.xyz - position.xyz);
     float NdotV = max(dot(N, V), 0.0);
     vec3 R = reflect(-V, N);
 
     vec4 baseColor = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
+    //fragColor = baseColor; return;
+    
     vec3 occRghMet; // occlusion, roughness, metallic
     occRghMet.gb = vec2(material.roughnessFactor, material.metallicFactor) *
                    texture(metallicRoughnessSampler, texCoord_0).gb;
@@ -123,11 +126,14 @@ void main()
     kD *= 1.0 - metallic;
     vec3 irradiance = srgb2linear(texture(irradianceCube, N)).rgb;
     vec3 diffuse    = irradiance * baseColor.rgb;
+    //fragColor = vec4(irradiance, 1.0); return;
 
+    //roughness = 0.0;
     const float MAX_REFLECTION_LOD = 9.0;
-    vec3 radianceColor = srgb2linear(textureLod(radianceCube, R,  roughness * MAX_REFLECTION_LOD)).rgb;   
+    vec3 radianceColor = srgb2linear(textureLod(radianceCube, R, roughness * MAX_REFLECTION_LOD)).rgb;   
     vec2 envBRDF       = texture(brdfLUT, vec2(NdotV, roughness)).rg;
     vec3 specular      = radianceColor * (F * envBRDF.x + envBRDF.y);
+    //fragColor = vec4(specular, 1.0); return;
 
     vec3 ambient = kD * diffuse + specular;
 #else
