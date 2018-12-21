@@ -19,7 +19,7 @@ addons:
       - libc++-dev
       - libc++abi-dev
       - python3-pip
-      - libegl1-mesa-dev
+      - libgl1-mesa-dev
       - libxcursor-dev
       - libxinerama-dev
       - libxi-dev
