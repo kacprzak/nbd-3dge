@@ -2,7 +2,11 @@
 #include "ActorFactory.h"
 #include "PhysicsSystem.h"
 
-#include <boost/algorithm/string/predicate.hpp>
+#include <nlohmann/json.hpp>
+
+#include <fstream>
+
+//#include <boost/algorithm/string/predicate.hpp>
 
 class RotationScript : public Script
 {
@@ -85,14 +89,21 @@ void GameLogic::attachView(std::shared_ptr<GameView> gameView, unsigned actorId)
 void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 {
     // Load scene
-       using boost::property_tree::ptree;
-    ptree pt;
+    //   using boost::property_tree::ptree;
+    // ptree pt;
 
-    read_xml(m_settings.dataFolder + "scene.xml", pt);
-    const auto& assetsXml = pt.get<std::string>("scene.assets");
+    nlohmann::json json;
+
+    {
+        std::ifstream f(m_settings.dataFolder + "scene.json");
+        f >> json;
+    }
+
+    // read_xml(m_settings.dataFolder + "scene.xml", pt);
+    // const auto& assetsXml = pt.get<std::string>("scene.assets");
 
     for (auto& gv : m_gameViews) {
-        gv->loadResources(assetsXml);
+        gv->loadResources(json["assets"]);
     }
 
     /*

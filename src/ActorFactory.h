@@ -3,8 +3,10 @@
 
 #include "Actor.h"
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+//#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/xml_parser.hpp>
 
 #include <memory>
 
@@ -13,8 +15,8 @@ class GameLogic;
 class ActorFactory
 {
   public:
-    void registerPrototype(boost::property_tree::ptree::value_type& v);
-    std::unique_ptr<Actor> create(boost::property_tree::ptree::value_type& v);
+    void registerPrototype(const nlohmann::json& node);
+    std::unique_ptr<Actor> create(const nlohmann::json& mode);
 
   private:
     unsigned int getNextId();

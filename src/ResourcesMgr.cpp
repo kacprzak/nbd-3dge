@@ -4,6 +4,7 @@
 #include "MtlLoader.h"
 
 #include <SDL.h>
+#include <nlohmann/json.hpp>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -13,8 +14,7 @@
 #pragma clang diagnostic pop
 
 #include <array>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
+#include <fstream>
 
 ResourcesMgr::ResourcesMgr(const std::string& dataFolder, const std::string& shadersFolder)
     : m_dataFolder{dataFolder}
@@ -28,31 +28,15 @@ void ResourcesMgr::load(const std::string& xmlFile)
 {
     loadShaders(xmlFile);
 
-    using boost::property_tree::ptree;
-    ptree pt;
+    nlohmann::json json;
 
-    read_xml(m_dataFolder + xmlFile, pt);
+    {
+        std::ifstream f(m_dataFolder + xmlFile);
+        f >> json;
+    }
 
-    for (ptree::value_type& v : pt.get_child("assets")) {
-        const std::string& assetType = v.first;
-        ptree& assetTree             = v.second;
-
-        if (assetType == "font") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& file = assetTree.get<std::string>("file");
-            addFont(name, file);
-        } else if (assetType == "mesh") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& file = assetTree.get<std::string>("file");
-            MeshData meshData       = MeshData::fromWavefrontObj(m_dataFolder + file);
-            meshData.name           = name;
-            addMesh(meshData);
-        } else if (assetType == "heightfield") {
-            const std::string& name = assetTree.get<std::string>("name");
-            const std::string& file = assetTree.get<std::string>("file");
-            float amplitude         = assetTree.get("amplitude", 1.0f);
-            addHeightfield(name, file, amplitude);
-        }
+    for (const auto& j : json["fonts"]) {
+        addFont(j["name"], j["file"]);
     }
 
     loadMaterials(xmlFile);
@@ -62,49 +46,46 @@ void ResourcesMgr::load(const std::string& xmlFile)
 
 void ResourcesMgr::loadShaders(const std::string& xmlFile)
 {
-    using boost::property_tree::ptree;
-    ptree pt;
+    nlohmann::json json;
 
-    read_xml(m_dataFolder + xmlFile, pt);
+    {
+        std::ifstream f(m_dataFolder + xmlFile);
+        f >> json;
+    }
 
-    for (ptree::value_type& v : pt.get_child("assets")) {
-        const std::string& assetType = v.first;
-        ptree& assetTree             = v.second;
+    for (const auto& j : json["shaders"]) {
+        const std::string& name               = j.value("name", "");
+        const std::string& vertexShaderFile   = j.value("vertex", "");
+        const std::string& geometryShaderFile = j.value("geometry", "");
+        const std::string& fragmentShaderFile = j.value("fragment", "");
 
-        if (assetType == "shaderProgram") {
-            const std::string& name               = assetTree.get<std::string>("name");
-            const std::string& vertexShaderFile   = assetTree.get("vertexShader", "");
-            const std::string& geometryShaderFile = assetTree.get("geometryShader", "");
-            const std::string& fragmentShaderFile = assetTree.get("fragmentShader", "");
+        ShaderProgramData spData;
+        spData.name = name;
 
-            ShaderProgramData spData;
-            spData.name = name;
+        const auto extractSource = [](const std::string& filename) -> std::string {
+            std::string source;
+            std::ifstream f(filename.c_str());
 
-            const auto extractSource = [](const std::string& filename) -> std::string {
-                std::string source;
-                std::ifstream f(filename.c_str());
+            if (f.is_open() == true) {
+                source.assign((std::istreambuf_iterator<char>(f)),
+                              (std::istreambuf_iterator<char>()));
+                f.close();
+            } else {
+                throw std::runtime_error{"File not found: " + filename};
+            }
+            return source;
+        };
 
-                if (f.is_open() == true) {
-                    source.assign((std::istreambuf_iterator<char>(f)),
-                                  (std::istreambuf_iterator<char>()));
-                    f.close();
-                } else {
-                    throw std::runtime_error{"File not found: " + filename};
-                }
-                return source;
-            };
+        if (!vertexShaderFile.empty())
+            spData.vertexSrc = extractSource(m_shadersFolder + vertexShaderFile);
 
-            if (!vertexShaderFile.empty())
-                spData.vertexSrc = extractSource(m_shadersFolder + vertexShaderFile);
+        if (!geometryShaderFile.empty())
+            spData.geometrySrc = extractSource(m_shadersFolder + geometryShaderFile);
 
-            if (!geometryShaderFile.empty())
-                spData.geometrySrc = extractSource(m_shadersFolder + geometryShaderFile);
+        if (!fragmentShaderFile.empty())
+            spData.fragmentSrc = extractSource(m_shadersFolder + fragmentShaderFile);
 
-            if (!fragmentShaderFile.empty())
-                spData.fragmentSrc = extractSource(m_shadersFolder + fragmentShaderFile);
-
-            addShaderProgram(spData);
-        }
+        addShaderProgram(spData);
     }
 }
 
@@ -112,23 +93,21 @@ void ResourcesMgr::loadShaders(const std::string& xmlFile)
 
 void ResourcesMgr::loadMaterials(const std::string& xmlFile)
 {
-    using boost::property_tree::ptree;
-    ptree pt;
+    nlohmann::json json;
 
-    read_xml(m_dataFolder + xmlFile, pt);
+    {
+        std::ifstream f(m_dataFolder + xmlFile);
+        f >> json;
+    }
 
-    for (ptree::value_type& v : pt.get_child("assets")) {
-        const std::string& assetType = v.first;
-        ptree& assetTree             = v.second;
+    for (const auto& j : json["materials"]) {
 
-        if (assetType == "materials") {
-            const std::string& file = assetTree.get<std::string>("file");
-            MtlLoader mtlLoader;
-            mtlLoader.load(m_dataFolder + file);
+        const std::string& file = j;
+        MtlLoader mtlLoader;
+        mtlLoader.load(m_dataFolder + file);
 
-            for (const auto& mtl : mtlLoader.materials()) {
-                addMaterial(mtl);
-            }
+        for (const auto& mtl : mtlLoader.materials()) {
+            addMaterial(mtl);
         }
     }
 }

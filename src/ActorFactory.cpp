@@ -2,12 +2,14 @@
 
 #include "Logger.h"
 
+#include <nlohmann/json.hpp>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
 
-using namespace boost::property_tree;
+//using namespace boost::property_tree;
 
 static glm::vec4 stringToVector(std::string str)
 {
@@ -26,28 +28,29 @@ static glm::vec4 stringToVector(std::string str)
 
 //------------------------------------------------------------------------------
 
-static std::shared_ptr<RenderComponent> getRenderComponent(ptree& actorTree,
+static std::shared_ptr<RenderComponent> getRenderComponent(const nlohmann::json& node,
                                                            RenderComponent prototype)
 {
     auto rd = std::make_shared<RenderComponent>();
 
-    rd->mesh            = actorTree.get("mesh", prototype.mesh);
-    rd->material        = actorTree.get("material", prototype.material);
-    rd->shaderProgram   = actorTree.get("shaderProgram", prototype.shaderProgram);
-    rd->transparent     = actorTree.get("transparent", prototype.transparent);
-    rd->backfaceCulling = actorTree.get("backfaceCulling", prototype.backfaceCulling);
+    rd->mesh            = node.value("mesh", prototype.mesh);
+    rd->material        = node.value("material", prototype.material);
+    rd->shaderProgram   = node.value("shaderProgram", prototype.shaderProgram);
+    rd->transparent     = node.value("transparent", prototype.transparent);
+    rd->backfaceCulling = node.value("backfaceCulling", prototype.backfaceCulling);
 
     return rd;
 }
 
 //------------------------------------------------------------------------------
 
-static std::shared_ptr<LightComponent> getLightComponent(ptree& actorTree, LightComponent prototype)
+static std::shared_ptr<LightComponent> getLightComponent(const nlohmann::json& node,
+                                                         LightComponent prototype)
 {
     auto lt = std::make_shared<LightComponent>();
 
-    lt->castsShadows = actorTree.get("castsShadows", prototype.castsShadows);
-    lt->material     = actorTree.get("material", prototype.material);
+    lt->castsShadows = node.value("castsShadows", prototype.castsShadows);
+    lt->material     = node.value("material", prototype.material);
 
     return lt;
 }
@@ -55,10 +58,10 @@ static std::shared_ptr<LightComponent> getLightComponent(ptree& actorTree, Light
 //------------------------------------------------------------------------------
 
 static std::shared_ptr<TransformationComponent>
-getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
+getTransformationComponent(const nlohmann::json& node, TransformationComponent prototype)
 {
     auto tr              = std::make_shared<TransformationComponent>();
-    std::string rotation = actorTree.get("orientation", "");
+    std::string rotation = node.value("orientation", "");
     if (!rotation.empty()) {
         // Conversion form euler to quaternion
         auto degs    = glm::vec3{stringToVector(rotation)};
@@ -67,14 +70,14 @@ getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
         tr->rotation = prototype.rotation;
     }
 
-    std::string translation = actorTree.get("position", "");
+    std::string translation = node.value("position", "");
     if (!translation.empty()) {
         tr->translation = glm::vec3{stringToVector(translation)};
     } else {
         tr->translation = prototype.translation;
     }
 
-    std::string scale = actorTree.get("scale", "");
+    std::string scale = node.value("scale", "");
     if (!scale.empty()) {
         tr->scale = glm::vec3{stringToVector(scale)};
     } else {
@@ -86,40 +89,40 @@ getTransformationComponent(ptree& actorTree, TransformationComponent prototype)
 
 //------------------------------------------------------------------------------
 
-static std::shared_ptr<PhysicsComponent> getPhysicsComponent(ptree& actorTree,
+static std::shared_ptr<PhysicsComponent> getPhysicsComponent(const nlohmann::json& node,
                                                              PhysicsComponent prototype)
 {
     auto ph = std::make_shared<PhysicsComponent>();
 
-    ph->shape = actorTree.get("shape", prototype.shape);
-    ph->mass  = actorTree.get("mass", prototype.mass);
+    ph->shape = node.value("shape", prototype.shape);
+    ph->mass  = node.value("mass", prototype.mass);
 
     return ph;
 }
 
 //------------------------------------------------------------------------------
 
-static std::shared_ptr<ScriptComponent> getScriptComponent(ptree& actorTree,
+static std::shared_ptr<ScriptComponent> getScriptComponent(const nlohmann::json& node,
                                                            ScriptComponent prototype)
 {
     auto sc = std::make_shared<ScriptComponent>();
 
-    sc->name = actorTree.get_value<std::string>(prototype.name);
+    sc->name = node.at(prototype.name).get<std::string>();
 
     return sc;
 }
 
 //------------------------------------------------------------------------------
 
-void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
+void ActorFactory::registerPrototype(const nlohmann::json& node)
 {
-    const std::string& actorType = v.first;
-    ptree& actorTree             = v.second;
+    //const std::string& actorType = v.first;
+    //ptree& actorTree             = v.second;
 
-    assert(actorType == "actorPrototype");
+    //assert(actorType == "actorPrototype");
     auto a = std::make_unique<Actor>(0);
 
-    const auto& prototypeName = actorTree.get<std::string>("name");
+    const auto& prototypeName = node.at("name").get<std::string>();
 
     TransformationComponent trProto;
     RenderComponent rdProto;
@@ -127,28 +130,34 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
     PhysicsComponent phProto;
     ScriptComponent scProto;
 
-    if (auto trNode = actorTree.get_child_optional("transformation")) {
-        auto tr = getTransformationComponent(trNode.get(), trProto);
+	auto trNode = node.find("transformation");
+    if (trNode != node.cend()) {
+        auto tr = getTransformationComponent(*trNode, trProto);
         a->addComponent(ComponentId::Transformation, tr);
     }
 
-    if (auto rdNode = actorTree.get_child_optional("render")) {
-        auto rd = getRenderComponent(rdNode.get(), rdProto);
+	auto rdNode = node.find("render");
+	if (rdNode != node.cend())
+    {
+        auto rd = getRenderComponent(*rdNode, rdProto);
         a->addComponent(ComponentId::Render, rd);
     }
 
-    if (auto ltNode = actorTree.get_child_optional("light")) {
-        auto lt = getLightComponent(ltNode.get(), ltProto);
+	auto ltNode = node.find("light");
+    if (ltNode != node.cend()) {
+        auto lt = getLightComponent(*ltNode, ltProto);
         a->addComponent(ComponentId::Light, lt);
     }
 
-    if (auto phNode = actorTree.get_child_optional("physics")) {
-        auto ph = getPhysicsComponent(phNode.get(), phProto);
+	auto phNode = node.find("physics");
+    if (phNode != node.cend()) {
+        auto ph = getPhysicsComponent(*phNode, phProto);
         a->addComponent(ComponentId::Physics, ph);
     }
 
-    if (auto scNode = actorTree.get_child_optional("script")) {
-        auto sc = getScriptComponent(scNode.get(), scProto);
+	auto scNode = node.find("script");
+    if (scNode != node.cend()) {
+        auto sc = getScriptComponent(*scNode, scProto);
         a->addComponent(ComponentId::Script, sc);
     }
 
@@ -157,12 +166,12 @@ void ActorFactory::registerPrototype(boost::property_tree::ptree::value_type& v)
 
 //------------------------------------------------------------------------------
 
-std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_type& v)
+std::unique_ptr<Actor> ActorFactory::create(const nlohmann::json& node)
 {
     auto a = std::make_unique<Actor>(getNextId());
 
-    const std::string& actorType = v.first;
-    ptree& actorTree             = v.second;
+    //const std::string& actorType = v.first;
+    //ptree& actorTree             = v.second;
 
     TransformationComponent trProto;
     RenderComponent rdProto;
@@ -170,8 +179,9 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
     PhysicsComponent phProto;
     ScriptComponent scProto;
 
-    if (auto prototypeNode = actorTree.get_child_optional("prototype")) {
-        auto prototypeName = actorTree.get<std::string>("prototype");
+	auto prototypeNode = node.find("prototype");
+	if (prototypeNode != node.cend()) {
+        std::string prototypeName = *prototypeNode;
         auto it            = m_prototypes.find(prototypeName);
         if (it != std::end(m_prototypes)) {
             const auto& p = *it;
@@ -196,39 +206,45 @@ std::unique_ptr<Actor> ActorFactory::create(boost::property_tree::ptree::value_t
         }
     }
 
-    if (auto trNode = actorTree.get_child_optional("transformation")) {
-        auto tr = getTransformationComponent(trNode.get(), trProto);
+	auto trNode = node.find("transformation");
+    if (trNode != node.cend()) {
+        auto tr = getTransformationComponent(*trNode, trProto);
         a->addComponent(ComponentId::Transformation, tr);
     }
 
-    if (auto rdNode = actorTree.get_child_optional("render")) {
-        auto rd = getRenderComponent(rdNode.get(), rdProto);
+    auto rdNode = node.find("render");
+    if (rdNode != node.cend()) {
+        auto rd = getRenderComponent(*rdNode, rdProto);
         a->addComponent(ComponentId::Render, rd);
     }
 
-    if (auto ltNode = actorTree.get_child_optional("light")) {
-        auto lt = getLightComponent(ltNode.get(), ltProto);
+    auto ltNode = node.find("light");
+    if (ltNode != node.cend()) {
+        auto lt = getLightComponent(*ltNode, ltProto);
         a->addComponent(ComponentId::Light, lt);
     }
 
-    if (auto phNode = actorTree.get_child_optional("physics")) {
-        auto ph = getPhysicsComponent(phNode.get(), phProto);
+    auto phNode = node.find("physics");
+    if (phNode != node.cend()) {
+        auto ph = getPhysicsComponent(*phNode, phProto);
         a->addComponent(ComponentId::Physics, ph);
     }
 
-    if (auto scNode = actorTree.get_child_optional("script")) {
-        auto sc = getScriptComponent(scNode.get(), scProto);
+    auto scNode = node.find("script");
+    if (scNode != node.cend()) {
+        auto sc = getScriptComponent(*scNode, scProto);
         a->addComponent(ComponentId::Script, sc);
     }
 
-    if (auto ctrlNode = actorTree.get_child_optional("control")) {
+	auto ctrlNode = node.find("control");
+    if (ctrlNode != node.cend()) {
         a->addComponent(ComponentId::Control, std::make_shared<ControlComponent>());
     }
 
-    if (actorType == "skybox") {
-        auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-        if (rd) rd->role = Role::Skybox;
-    }
+    //if (actorType == "skybox") {
+    //    auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
+    //    if (rd) rd->role = Role::Skybox;
+    //}
 
     return a;
 }
