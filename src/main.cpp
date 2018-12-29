@@ -23,18 +23,18 @@ void initLogger(const std::string& logLevel)
 
     auto level = spdlog::level::trace;
 
-    if (logLevel == "debug") level   = spdlog::level::debug;
-    if (logLevel == "info") level    = spdlog::level::info;
+    if (logLevel == "debug") level = spdlog::level::debug;
+    if (logLevel == "info") level = spdlog::level::info;
     if (logLevel == "warning") level = spdlog::level::warn;
-    if (logLevel == "error") level   = spdlog::level::err;
-    if (logLevel == "fatal") level   = spdlog::level::critical;
+    if (logLevel == "error") level = spdlog::level::err;
+    if (logLevel == "fatal") level = spdlog::level::critical;
 
 #ifdef _MSC_VER
     auto console = spdlog::create("console", std::make_shared<spdlog::sinks::msvc_sink_mt>());
 #else
     auto console = spdlog::stdout_color_mt("console");
 #endif
-	console->set_level(level);
+    console->set_level(level);
     console->set_pattern("[%H:%M:%S.%e] [%^%l%$] %v");
 }
 
@@ -119,6 +119,7 @@ int main(int ac, char** av)
         engine.mainLoop(&game);
     } catch (const std::exception& e) {
         LOG_FATAL(e.what());
+        spdlog::drop_all();
         throw;
     }
 

@@ -1,6 +1,6 @@
 [requires]
 zlib/1.2.11@conan/stable
-spdlog/0.17.0@bincrafters/stable
+spdlog/1.2.1@bincrafters/stable
 boost_program_options/1.66.0@bincrafters/stable
 boost_algorithm/1.66.0@bincrafters/stable
 glew/2.1.0@bincrafters/stable

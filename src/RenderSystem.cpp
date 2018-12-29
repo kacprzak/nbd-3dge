@@ -7,13 +7,13 @@
 #include "Skybox.h"
 #include "Terrain.h"
 
+#include <fmt/format.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include <array>
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/iostreams/device/array.hpp>
-#include <boost/iostreams/stream.hpp>
 
 #define SHADOW_MAP_SIZE 1024
 
@@ -67,10 +67,10 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
     auto skyboxMtl = resourcesMgr.getMaterial("skybox_mtl");
 
     std::array<std::shared_ptr<Texture>, TextureUnit::Size> textures;
-    textures[TextureUnit::BaseColor]   = skyboxMtl->textures[0];
-    textures[TextureUnit::Irradiance]  = skyboxMtl->textures[1];
-    textures[TextureUnit::Radiance]    = skyboxMtl->textures[2];
-    textures[TextureUnit::BrdfLUT]     = skyboxMtl->textures[3];
+    textures[TextureUnit::BaseColor]  = skyboxMtl->textures[0];
+    textures[TextureUnit::Irradiance] = skyboxMtl->textures[1];
+    textures[TextureUnit::Radiance]   = skyboxMtl->textures[2];
+    textures[TextureUnit::BrdfLUT]    = skyboxMtl->textures[3];
 
     skybox->setTextures(textures);
     skybox->setShaderProgram(resourcesMgr.getShaderProgram("skybox"));
@@ -419,14 +419,9 @@ void RenderSystem::updateCameraText()
     auto r = glm::eulerAngles(glm::conjugate(rotation)) * 180.f / 3.14f;
 
     std::array<char, 64> buffer;
-    std::fill(std::begin(buffer), std::end(buffer), '\0');
-    iostreams::array_sink sink{buffer.data(), buffer.size()};
-    iostreams::stream<iostreams::array_sink> oss{sink};
-    oss.precision(2);
-    oss.setf(std::ios::fixed, std::ios::floatfield);
-    oss << "Cam pos: " << p.x << ' ' << p.y << ' ' << p.z;
-    oss.precision(0);
-    oss << "    Cam rot: " << r.x << ' ' << r.y << ' ' << r.z;
+    fmt::format_to_n(std::begin(buffer), buffer.size(),
+                     "Cam pos: {:.2f} {:.2f} {:.2f}    Cam rot: {:.0f} {:.0f} {:.0f}", p.x, p.y, p.z, r.x,
+                     r.y, r.z);
     buffer[buffer.size() - 1] = '\0';
     m_cameraText->setText(buffer.data());
 }

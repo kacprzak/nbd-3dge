@@ -6,6 +6,7 @@
 #include <spdlog/sinks/msvc_sink.h>
 #else
 #include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
 #define LOG_TRACE(...) spdlog::get("console")->log(spdlog::level::trace, __VA_ARGS__)
