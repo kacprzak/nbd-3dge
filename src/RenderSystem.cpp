@@ -418,11 +418,10 @@ void RenderSystem::updateCameraText()
     auto p = translation;
     auto r = glm::eulerAngles(glm::conjugate(rotation)) * 180.f / 3.14f;
 
-    std::array<char, 64> buffer;
-    fmt::format_to_n(std::begin(buffer), buffer.size(),
+    std::array<char, 64> buffer{};
+    fmt::format_to_n(std::begin(buffer), buffer.size() - 1,
                      "Cam pos: {:.2f} {:.2f} {:.2f}    Cam rot: {:.0f} {:.0f} {:.0f}", p.x, p.y, p.z, r.x,
                      r.y, r.z);
-    buffer[buffer.size() - 1] = '\0';
     m_cameraText->setText(buffer.data());
 }
 
