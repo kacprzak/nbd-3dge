@@ -1,8 +1,9 @@
 [requires]
 zlib/1.2.11@conan/stable
 spdlog/1.2.1@bincrafters/stable
-boost_program_options/1.66.0@bincrafters/stable
-boost_algorithm/1.66.0@bincrafters/stable
+boost_program_options/1.69.0@bincrafters/stable
+boost_algorithm/1.69.0@bincrafters/stable
+boost_tokenizer/1.69.0@bincrafters/stable
 glew/2.1.0@bincrafters/stable
 #glm/0.9.8.5@g-truc/stable
 sdl2/2.0.8@bincrafters/stable
