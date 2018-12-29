@@ -30,7 +30,7 @@ void initLogger(const std::string& logLevel)
     if (logLevel == "fatal") level = spdlog::level::critical;
 
 #ifdef _MSC_VER
-    auto console = spdlog::create("console", std::make_shared<spdlog::sinks::msvc_sink_mt>());
+    auto console = spdlog::create<spdlog::sinks::msvc_sink_mt>("console");
 #else
     auto console = spdlog::stdout_color_mt("console");
 #endif
