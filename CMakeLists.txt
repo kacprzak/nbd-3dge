@@ -5,11 +5,11 @@ set( CMAKE_CXX_STANDARD 17 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
-add_definitions( -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS -DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE )
+add_definitions( -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS -DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DIMGUI_IMPL_OPENGL_LOADER_GLEW )
 
 include( ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake )
 conan_basic_setup( TARGETS )
-set( LINK_LIBS CONAN_PKG::sdl2 CONAN_PKG::bullet CONAN_PKG::glew CONAN_PKG::spdlog CONAN_PKG::boost_program_options CONAN_PKG::boost_tokenizer CONAN_PKG::boost_algorithm CONAN_PKG::jsonformoderncpp )
+set( LINK_LIBS CONAN_PKG::sdl2 CONAN_PKG::bullet CONAN_PKG::glew CONAN_PKG::spdlog CONAN_PKG::boost_program_options CONAN_PKG::boost_tokenizer CONAN_PKG::boost_algorithm CONAN_PKG::jsonformoderncpp CONAN_PKG::imgui )
 
 if( WIN32 )
   list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62 )
@@ -34,6 +34,11 @@ endif()
 include_directories( ${CMAKE_SOURCE_DIR}/external )
 include_directories( ${CMAKE_SOURCE_DIR}/external/gli )
 include_directories( ${CMAKE_SOURCE_DIR}/external/gli/external )
+
+set( imgui_impl_SRC
+	${CMAKE_SOURCE_DIR}/external/imgui/imgui_impl_sdl.cpp
+	${CMAKE_SOURCE_DIR}/external/imgui/imgui_impl_opengl3.cpp
+	)
 
 configure_file(
   ${PROJECT_SOURCE_DIR}/config.h.in

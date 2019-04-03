@@ -41,7 +41,7 @@ file( GLOB_RECURSE nbd-3dge_HDRS "*.h" )
 
 source_group( "Headers" FILES ${nbd-3dge_HDRS} )
 
-add_executable( nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} )
+add_executable( nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} ${imgui_impl_SRC} )
 target_compile_definitions( nbd-3dge PRIVATE GLM_FORCE_RADIANS )
 if( MSVC )
   target_compile_options( nbd-3dge PRIVATE /W3 )

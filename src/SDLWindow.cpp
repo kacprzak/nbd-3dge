@@ -1,5 +1,9 @@
 #include "SDLWindow.h"
 
+#include <imgui.h>
+#include <imgui/imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_sdl.h>
+
 #include "Engine.h"
 #include "FpsCounter.h"
 #include "Logger.h"
@@ -76,7 +80,7 @@ void SDLWindow::createSDLWindow()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    //SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
+    // SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
 
     m_glContext = SDL_GL_CreateContext(m_window);
 
@@ -122,6 +126,7 @@ void SDLWindow::createSDLWindow()
 
     // No SDL related stuff
     initializeOpenGL(contexMajorVersion, contexMinorVersion);
+    initializeGui();
 }
 
 void SDLWindow::toggleVSync()
@@ -135,12 +140,18 @@ void SDLWindow::toggleVSync()
 
 SDLWindow::~SDLWindow()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     SDL_GL_DeleteContext(m_glContext);
     SDL_DestroyWindow(m_window);
 }
 
 bool SDLWindow::processInput(const SDL_Event& event)
 {
+    ImGui_ImplSDL2_ProcessEvent(const_cast<SDL_Event*>(&event));
+
     switch (event.type) {
     case SDL_KEYUP: keyReleased(event); break;
     case SDL_KEYDOWN: keyPressed(event); break;
@@ -190,7 +201,7 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
     LOG_GL_ERROR;
 
     /* Gamma correction */
-    //glEnable(GL_FRAMEBUFFER_SRGB);
+    // glEnable(GL_FRAMEBUFFER_SRGB);
     LOG_GL_ERROR;
 
 #ifndef NDEBUG
@@ -205,6 +216,26 @@ void SDLWindow::initializeOpenGL(int contextMajorVersion, int contextMinorVersio
 
 //------------------------------------------------------------------------------
 
+void SDLWindow::initializeGui()
+{
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    // ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer bindings
+    ImGui_ImplSDL2_InitForOpenGL(m_window, m_glContext);
+    ImGui_ImplOpenGL3_Init("#version 330");
+}
+
+//------------------------------------------------------------------------------
+
 void SDLWindow::resizeWindow(int width, int height)
 {
     /* Setup our viewport. */
@@ -213,10 +244,23 @@ void SDLWindow::resizeWindow(int width, int height)
 
 //------------------------------------------------------------------------------
 
-void SDLWindow::preDraw() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+void SDLWindow::preDraw()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_window);
+    ImGui::NewFrame();
+}
 
 //------------------------------------------------------------------------------
 
-void SDLWindow::postDraw() { SDL_GL_SwapWindow(m_window); }
+void SDLWindow::postDraw()
+{
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    SDL_GL_SwapWindow(m_window);
+}
 
 //------------------------------------------------------------------------------

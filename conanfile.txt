@@ -9,6 +9,7 @@ glew/2.1.0@bincrafters/stable
 sdl2/2.0.8@bincrafters/stable
 bullet/2.87@bincrafters/stable
 jsonformoderncpp/3.1.2@vthiery/stable
+imgui/1.66@bincrafters/stable
 
 [generators]
 cmake

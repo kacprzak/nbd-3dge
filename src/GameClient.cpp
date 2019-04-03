@@ -8,6 +8,8 @@
 #include "Terrain.h"
 #include "Texture.h"
 
+#include <imgui.h>
+
 GameClient::GameClient(const Settings& settings, const std::shared_ptr<ResourcesMgr>& resourcesMgr)
     : SDLWindow{settings}
     , m_resourcesMgr{resourcesMgr}
@@ -105,6 +107,9 @@ void GameClient::draw()
 
     m_renderSystem.draw();
     m_debugDraw.draw(m_renderSystem.getCamera());
+
+	bool show_demo_window = true;
+    ImGui::ShowDemoWindow(&show_demo_window);
 
     postDraw();
 }
