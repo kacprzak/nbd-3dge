@@ -5,7 +5,6 @@
 #include <imgui/imgui_impl_sdl.h>
 
 #include "Engine.h"
-#include "FpsCounter.h"
 #include "Logger.h"
 
 #ifdef _WIN32

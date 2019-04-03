@@ -52,13 +52,13 @@ void GameClient::loadResources(const std::string& file)
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
     // Scene scene;
     m_scene = std::make_shared<Scene>();
-    //m_scene->load(m_settings.dataFolder + "untitled.gltf");
-    //m_scene->load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
+    // m_scene->load(m_settings.dataFolder + "untitled.gltf");
+    // m_scene->load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
     m_scene->load(m_settings.dataFolder + "DamagedHelmet/glTF/DamagedHelmet.gltf");
-    //m_scene->load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
-    //m_scene->load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
-    //m_scene->load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
-    //m_scene->load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
+    // m_scene->load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
+    // m_scene->load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
+    // m_scene->load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
+    // m_scene->load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
 
     m_renderSystem.setScene(m_scene);
 
@@ -108,8 +108,27 @@ void GameClient::draw()
     m_renderSystem.draw();
     m_debugDraw.draw(m_renderSystem.getCamera());
 
-	bool show_demo_window = true;
-    ImGui::ShowDemoWindow(&show_demo_window);
+    static bool showNormals   = false;
+    static float normalLength = 1.00;
+    static bool vsync         = true;
+
+    ImGui::Begin("Debug");
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
+                ImGui::GetIO().Framerate);
+
+    if (ImGui::Checkbox("VSync", &vsync)) {
+        toggleVSync();
+    }
+    if (ImGui::Button("Polygon Mode")) {
+        m_renderSystem.setNextPolygonMode();
+    }
+    if (ImGui::Checkbox("Normal visible", &showNormals)) {
+        m_renderSystem.setDrawNormals(!m_renderSystem.isDrawNormals(), normalLength);
+    }
+    if (ImGui::SliderFloat("Normal length", &normalLength, 0.0f, 10.0f)) {
+        m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), normalLength);
+    }
+    ImGui::End();
 
     postDraw();
 }
@@ -127,6 +146,7 @@ void GameClient::update(float delta)
         cam->setTranslation(m_freeCameraCtrl->camera->translation);
         cam->setRotation(m_freeCameraCtrl->camera->rotation);
     }
+
     m_renderSystem.update(delta);
 }
 
@@ -151,28 +171,9 @@ void GameClient::keyPressed(const SDL_Event& event) { m_inputSystem.keyPressed(e
 void GameClient::keyReleased(const SDL_Event& event)
 {
     switch (event.key.keysym.scancode) {
-    case SDL_SCANCODE_Z: m_renderSystem.setNextPolygonMode(); break;
     case SDL_SCANCODE_R:
         m_inputSystem.setMouseRelativeMode(!m_inputSystem.isMouseRelativeMode());
         break;
-    case SDL_SCANCODE_N: {
-        static float magnitude = 0.05f;
-
-        if (event.key.keysym.mod & KMOD_SHIFT) {
-            magnitude += 0.1f;
-            magnitude = std::abs(magnitude);
-            m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
-        } else if (event.key.keysym.mod & KMOD_CTRL) {
-            magnitude -= 0.1f;
-            magnitude = std::abs(magnitude);
-
-            if (magnitude == 0) magnitude = 1;
-            m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), magnitude);
-        } else {
-            m_renderSystem.setDrawNormals(!m_renderSystem.isDrawNormals(), magnitude);
-        }
-    } break;
-    case SDL_SCANCODE_V: toggleVSync(); break;
     case SDL_SCANCODE_TAB: {
         static bool debugCamera = false;
         debugCamera             = !debugCamera;

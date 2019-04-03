@@ -53,11 +53,6 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
     auto guiFont   = resourcesMgr.getFont("ubuntu");
     auto guiShader = resourcesMgr.getShaderProgram("font");
 
-    auto text = std::make_shared<Text>(guiFont);
-    text->setShaderProgram(guiShader);
-    add(text);
-    m_fpsCounter.setText(text);
-
     m_cameraText = std::make_shared<Text>(guiFont);
     m_cameraText->setShaderProgram(guiShader);
     m_cameraText->setPosition({0.5f, 0.f, 0.0f});
@@ -158,8 +153,6 @@ void RenderSystem::removeActor(int id)
 void RenderSystem::update(float delta)
 {
     const glm::mat4 identity{1.0f};
-
-    m_fpsCounter.update(delta);
 
     if (m_camera && m_cameraText) {
         updateCameraText();

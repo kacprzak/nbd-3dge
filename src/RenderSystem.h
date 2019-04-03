@@ -3,10 +3,9 @@
 
 #include "Aabb.h"
 #include "Components.h"
-#include "FpsCounter.h"
 #include "Scene.h"
 #include "ShaderProgram.h"
-
+#include "Text.h"
 #include "Camera.h"
 
 #include <map>
@@ -97,7 +96,6 @@ class RenderSystem final
     std::unique_ptr<Framebuffer> m_shadowMapFB;
 
     bool m_drawNormals = false;
-    FpsCounter m_fpsCounter;
 };
 
 #endif // RENDERSYSTEM_H

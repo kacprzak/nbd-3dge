@@ -7,7 +7,6 @@ set( nbd-3dge_SRCS
     Engine.cpp
     Font.cpp
     FontLoader.cpp
-    FpsCounter.cpp
     Framebuffer.cpp
     GameClient.cpp
     GameLogic.cpp
