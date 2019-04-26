@@ -1,11 +1,12 @@
 #include "RenderSystem.h"
 
-#include "Framebuffer.h"
-#include "Light.h"
 #include "Logger.h"
 #include "ResourcesMgr.h"
-#include "Skybox.h"
 #include "Terrain.h"
+#include "gfx/Framebuffer.h"
+#include "gfx/Light.h"
+#include "gfx/Skybox.h"
+#include "gfx/Text.h"
 
 #include <fmt/format.h>
 
@@ -14,6 +15,8 @@
 
 #include <array>
 #include <boost/algorithm/string/predicate.hpp>
+
+namespace gfx {
 
 #define SHADOW_MAP_SIZE 1024
 
@@ -75,7 +78,7 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
     static LightComponent lt;
     addActor(0, nullptr, nullptr, &lt, resourcesMgr);
 
-    auto node = std::make_shared<RenderNode>(99);
+    auto node = std::make_shared<gfx::Node>(99);
     node->setTranslation(glm::vec3{1.0f});
     node->setLight(m_lights.begin()->second.get());
 
@@ -90,14 +93,14 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
     // Render component
     if (rd) {
         if (rd->role == Role::Dynamic) {
-            std::shared_ptr<RenderNode> node;
+            std::shared_ptr<gfx::Node> node;
             if (!rd->mesh.empty()) {
                 // if (boost::starts_with(rd->mesh, "heightfield:")) {
                 //     node = std::make_shared<Terrain>(id, tr, rd,
                 //                                      *resourcesMgr.getHeightfield(rd->mesh));
                 //     // node->setCastShadows(true);
                 // } else {
-                node         = std::make_shared<RenderNode>(id, tr, rd);
+                node         = std::make_shared<gfx::Node>(id, tr, rd);
                 auto meshPtr = resourcesMgr.getMesh(rd->mesh);
                 node->setMesh(meshPtr);
                 if (!lt) node->setCastShadows(true);
@@ -109,7 +112,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
             //     node->setMaterial(materialPtr);
             // }
 
-            node->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
+            // node->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
 
             if (!node->render()->transparent)
                 m_nodes[id] = node;
@@ -203,17 +206,21 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
 
     m_scene->draw(m_defaultShader.get(), camera, lights, environment);
 
-    for (const auto& node : m_nodes) {
-        node.second->draw(identity, camera, lights, environment);
-    }
+    /*
+for (const auto& node : m_nodes) {
+    node.second->draw(identity, camera, lights, environment);
+}
+    */
 
     if (m_polygonMode == GL_FILL && m_skybox) m_skybox->draw(camera);
 
-    glDepthMask(GL_FALSE);
-    for (const auto& node : m_transparentNodes) {
-        node.second->draw(identity, camera, lights, environment);
-    }
-    glDepthMask(GL_TRUE);
+    /*
+glDepthMask(GL_FALSE);
+for (const auto& node : m_transparentNodes) {
+    node.second->draw(identity, camera, lights, environment);
+}
+glDepthMask(GL_TRUE);
+    */
 
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -315,9 +322,9 @@ void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camer
 std::set<ShaderProgram*> RenderSystem::getShaders() const
 {
     std::set<ShaderProgram*> shaders;
-    for (const auto& node : m_nodes) {
-        shaders.insert(node.second->getShaderProgram());
-    }
+    // for (const auto& node : m_nodes) {
+    //    shaders.insert(node.second->getShaderProgram());
+    //}
     return shaders;
 }
 
@@ -413,19 +420,19 @@ void RenderSystem::updateCameraText()
 
     std::array<char, 64> buffer{};
     fmt::format_to_n(std::begin(buffer), buffer.size() - 1,
-                     "Cam pos: {:.2f} {:.2f} {:.2f}    Cam rot: {:.0f} {:.0f} {:.0f}", p.x, p.y, p.z, r.x,
-                     r.y, r.z);
+                     "Cam pos: {:.2f} {:.2f} {:.2f}    Cam rot: {:.0f} {:.0f} {:.0f}", p.x, p.y,
+                     p.z, r.x, r.y, r.z);
     m_cameraText->setText(buffer.data());
 }
 
-void RenderSystem::setScene(std::shared_ptr<Scene> scene)
+void RenderSystem::setScene(std::shared_ptr<Model> scene)
 {
     m_scene = scene;
 
     auto cam = m_scene->findNode("Camera");
     if (!cam) {
         auto aabb = m_scene->aabb();
-        auto rn   = std::make_shared<RenderNode>(-1);
+        auto rn   = std::make_shared<gfx::Node>(-1);
 
         glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
         rn->setModelMatrix(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})));
@@ -438,10 +445,12 @@ void RenderSystem::setScene(std::shared_ptr<Scene> scene)
     }
 }
 
-RenderNode* RenderSystem::findNode(const std::string& node)
+gfx::Node* RenderSystem::findNode(const std::string& node)
 {
     for (auto& n : m_nodes) {
         if (n.second->name == node) return n.second.get();
     }
     return m_scene->findNode(node);
 }
+
+} // namespace gfx

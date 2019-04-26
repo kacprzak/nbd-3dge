@@ -2,9 +2,9 @@
 #define TERRAIN_H
 
 #include "Heightfield.h"
-#include "RenderNode.h"
+//#include "Node.h"
 /*
-class Terrain : public RenderNode
+class Terrain : public gfx::Node
 {
   public:
     Terrain(int actorId, TransformationComponent* tr, RenderComponent* rd,

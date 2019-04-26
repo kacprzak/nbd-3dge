@@ -1,8 +1,8 @@
 #include "Texture.h"
 
-#include "Logger.h"
+#include "../Logger.h"
 
-#include <SDL.h>
+//#include <SDL.h>
 
 #include <gli/gl.hpp>
 #include <gli/gli.hpp>
@@ -10,6 +10,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <array>
+
+namespace gfx {
 
 Sampler::Sampler()
 {
@@ -254,3 +256,4 @@ void Texture::createTexture(const char* filename)
     }
 }
 
+} // namespace gfx

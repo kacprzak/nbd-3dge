@@ -1,34 +1,35 @@
-#ifndef RENDERNODE_H
-#define RENDERNODE_H
+#ifndef GFX_NODE_H
+#define GFX_NODE_H
 
-#include "Components.h"
+#include "../Components.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-#include <memory>
 #include <algorithm>
+#include <memory>
+
+namespace gfx {
 
 class Camera;
 class Light;
 
-class RenderNode final
+class Node final
 {
   public:
-    explicit RenderNode(int actorId, TransformationComponent* tr = nullptr,
-                        RenderComponent* rd = nullptr);
+    explicit Node(int actorId, TransformationComponent* tr = nullptr,
+                  RenderComponent* rd = nullptr);
 
-    RenderNode(const RenderNode&) = delete;
-    RenderNode& operator=(const RenderNode&) = delete;
+    Node(const Node&) = delete;
+    Node& operator=(const Node&) = delete;
 
-    RenderNode(RenderNode&& other) = default;
+    Node(Node&& other) = default;
 
-    ~RenderNode() = default;
+    ~Node() = default;
 
     void setMesh(const std::shared_ptr<Mesh>& mesh);
-    void setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram);
 
     void setTranslation(glm::vec3 translation) { m_translation = translation; }
     glm::vec3 getTranslation() const { return m_translation; }
@@ -48,10 +49,6 @@ class RenderNode final
         glm::decompose(mtx, m_scale, m_rotation, m_translation, skew, perspective);
     }
 
-    ShaderProgram* getShaderProgram() { return m_shaderProgram.get(); }
-
-    void draw(const glm::mat4& parentModelMatrix, const Camera* camera,
-              const std::array<Light*, 8>& lights, const TexturePack& environment) const;
     void draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
               const Camera* camera, const std::array<Light*, 8>& lights,
               const TexturePack& environment) const;
@@ -82,9 +79,9 @@ class RenderNode final
     void setCastShadows(bool castsShadows) { m_castsShadows = castsShadows; }
     bool castsShadows() const { return m_castsShadows; }
 
-    void addChild(RenderNode* node) { m_children.push_back(node); }
+    void addChild(Node* node) { m_children.push_back(node); }
 
-    void removeChild(RenderNode* node)
+    void removeChild(Node* node)
     {
         m_children.erase(std::remove(m_children.begin(), m_children.end(), node), m_children.end());
     }
@@ -113,14 +110,15 @@ class RenderNode final
 
     glm::mat4 m_modelMatrix{1.0f};
 
-    std::vector<RenderNode*> m_children;
+    std::vector<Node*> m_children;
     Camera* m_camera = nullptr;
     Light* m_light   = nullptr;
 
     std::shared_ptr<Mesh> m_mesh;
-    std::shared_ptr<ShaderProgram> m_shaderProgram;
 
     bool m_castsShadows = false;
 };
 
-#endif // RENDERNODE_H
+} // namespace gfx
+
+#endif // GFX_NODE_H

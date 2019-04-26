@@ -1,8 +1,12 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "RenderNode.h"
+#include "../Aabb.h"
+#include "ShaderProgram.h"
+
 #include <glm/glm.hpp>
+
+namespace gfx {
 
 class Camera
 {
@@ -19,6 +23,7 @@ class Camera
     void drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const;
 
     void update(const glm::mat4& parentModelMatrix, float delta);
+
     void setPerspective(bool updateCascades = true);
     void setPerspective(float fov, float near, float far, bool updateCascades = true);
     void setOrtho(bool updateCascades = true);
@@ -45,8 +50,6 @@ class Camera
     void setCascade(int cascadeIndex);
 
   protected:
-    void updateViewMatrix();
-
     Frustum perspectiveArgsToFrustum(float fov, float ratio, float near, float far) const;
     Frustum ortoArgsToFrustum(float left, float right, float bottom, float top, float near,
                               float far) const;
@@ -69,5 +72,7 @@ class Camera
     std::array<Frustum, s_shadowCascadesMax> m_cascadeFrustums;
     bool m_perspective = true;
 };
+
+} // namespace gfx
 
 #endif // CAMERA_H

@@ -1,12 +1,12 @@
 #include "Mesh.h"
 
-#include "Logger.h"
-#include "ObjLoader.h"
-#include "Util.h"
+#include "../Logger.h"
 
 #include <array>
 #include <cstring>
 #include <limits>
+
+namespace gfx {
 
 Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor indices,
            GLenum primitive)
@@ -104,3 +104,5 @@ std::vector<float> Mesh::positions() const
 }
 
 void Mesh::setMaterial(const Material& material) { m_material = material; }
+
+} // namespace gfx

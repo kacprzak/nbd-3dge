@@ -5,6 +5,8 @@
 
 #include <algorithm>
 
+namespace gfx {
+
 Camera::Camera() { setPerspective(); }
 
 //------------------------------------------------------------------------------
@@ -244,7 +246,11 @@ Camera::Frustum Camera::frustum(int cascadeIndex) const
     return ans;
 }
 
+//------------------------------------------------------------------------------
+
 const glm::mat4& Camera::projectionMatrix(int cascadeIndex) const
 {
     return m_cascadeProjectionMatrix[cascadeIndex];
 }
+
+} // namespace gfx

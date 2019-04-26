@@ -1,9 +1,12 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
+#include "../Components.h"
 #include "Camera.h"
 
 #include <glm/fwd.hpp>
+
+namespace gfx {
 
 class Light : public Camera
 {
@@ -21,5 +24,7 @@ class Light : public Camera
     LightComponent* m_lt = nullptr;
     glm::vec3 m_color{10.0f};
 };
+
+} // namespace gfx
 
 #endif /* LIGHT_H */

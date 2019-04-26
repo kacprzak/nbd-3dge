@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+namespace gfx {
+
 // glm::vec4 Light::position() const
 // {
 //     if (m_lt->type == LightComponent::Type::Directional) {
@@ -21,3 +23,5 @@ void Light::applyTo(ShaderProgram* shaderProgram, int idx) const
     shaderProgram->setUniform((lightIdx + ".position").c_str(), worldTranslation());
     shaderProgram->setUniform((lightIdx + ".color").c_str(), m_color);
 }
+
+} // namespace gfx

@@ -7,6 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+namespace gfx {
+
 Skybox::Skybox()
 {
     const float x = 1.0f;
@@ -105,3 +107,5 @@ void Skybox::draw(const Camera* camera) const
 
     glDepthMask(GL_TRUE);
 }
+
+} // namespace gfx

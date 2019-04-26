@@ -1,15 +1,18 @@
 #ifndef RESOURCESMGR_H
 #define RESOURCESMGR_H
 
-#include "Font.h"
 #include "FontLoader.h"
 #include "Heightfield.h"
-#include "Material.h"
-#include "Mesh.h"
 #include "MeshData.h"
 #include "Script.h"
-#include "ShaderProgram.h"
-#include "Texture.h"
+#include "TextureData.h"
+#include "MaterialData.h"
+
+#include "gfx/Font.h"
+#include "gfx/Material.h"
+#include "gfx/Mesh.h"
+#include "gfx/ShaderProgram.h"
+#include "gfx/Texture.h"
 
 #include <map>
 #include <string>
@@ -32,19 +35,19 @@ class ResourcesMgr
     void loadMaterials(const std::string& xmlFile);
 
     void addShaderProgram(const ShaderProgramData& spData);
-    std::shared_ptr<ShaderProgram> getShaderProgram(const std::string& name) const;
+    std::shared_ptr<gfx::ShaderProgram> getShaderProgram(const std::string& name) const;
 
     void addTexture(const TextureData& texData);
-    std::shared_ptr<Texture> getTexture(const std::string& name) const;
+    std::shared_ptr<gfx::Texture> getTexture(const std::string& name) const;
 
     void addMaterial(const MaterialData& materialData);
-    std::shared_ptr<Material> getMaterial(const std::string& name) const;
+    std::shared_ptr<gfx::Material> getMaterial(const std::string& name) const;
 
     void addMesh(const MeshData& meshData);
-    std::shared_ptr<Mesh> getMesh(const std::string& name) const;
+    std::shared_ptr<gfx::Mesh> getMesh(const std::string& name) const;
 
     void addFont(const std::string& name, const std::string& filename);
-    std::shared_ptr<Font> getFont(const std::string& name) const;
+    std::shared_ptr<gfx::Font> getFont(const std::string& name) const;
 
     void addScript(const std::string& name, std::shared_ptr<Script> script);
     std::shared_ptr<Script> getScript(const std::string& name) const;
@@ -55,11 +58,11 @@ class ResourcesMgr
   private:
     const std::string m_dataFolder, m_shadersFolder;
 
-    std::map<std::string, std::shared_ptr<Mesh>> m_meshes;
-    std::map<std::string, std::shared_ptr<Texture>> m_textures;
-    std::map<std::string, std::shared_ptr<Font>> m_fonts;
-    std::map<std::string, std::shared_ptr<ShaderProgram>> m_shaderPrograms;
-    std::map<std::string, std::shared_ptr<Material>> m_materials;
+    std::map<std::string, std::shared_ptr<gfx::Mesh>> m_meshes;
+    std::map<std::string, std::shared_ptr<gfx::Texture>> m_textures;
+    std::map<std::string, std::shared_ptr<gfx::Font>> m_fonts;
+    std::map<std::string, std::shared_ptr<gfx::ShaderProgram>> m_shaderPrograms;
+    std::map<std::string, std::shared_ptr<gfx::Material>> m_materials;
     std::map<std::string, std::shared_ptr<Script>> m_scripts;
     std::map<std::string, std::shared_ptr<Heightfield>> m_heightfields;
 };

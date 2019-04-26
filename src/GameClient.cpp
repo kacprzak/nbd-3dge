@@ -1,12 +1,12 @@
 #include "GameClient.h"
 
-#include "Camera.h"
 #include "CameraController.h"
-#include "Scene.h"
-#include "Shader.h"
-#include "Skybox.h"
 #include "Terrain.h"
-#include "Texture.h"
+#include "gfx/Camera.h"
+#include "gfx/Model.h"
+#include "gfx/Shader.h"
+#include "gfx/Skybox.h"
+#include "gfx/Texture.h"
 
 #include <imgui.h>
 
@@ -51,11 +51,11 @@ void GameClient::loadResources(const std::string& file)
     m_resourcesMgr->load(file);
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
     // Scene scene;
-    m_scene = std::make_shared<Scene>();
+    m_scene = std::make_shared<gfx::Model>();
     // m_scene->load(m_settings.dataFolder + "untitled.gltf");
     // m_scene->load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
-    m_scene->load(m_settings.dataFolder + "DamagedHelmet/glTF/DamagedHelmet.gltf");
-    // m_scene->load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
+    // m_scene->load(m_settings.dataFolder + "DamagedHelmet/glTF/DamagedHelmet.gltf");
+    m_scene->load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
     // m_scene->load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
     // m_scene->load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
     // m_scene->load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
@@ -178,9 +178,9 @@ void GameClient::keyReleased(const SDL_Event& event)
         static bool debugCamera = false;
         debugCamera             = !debugCamera;
         if (debugCamera) {
-            m_renderSystem.setCamera(RenderSystem::Free);
+            m_renderSystem.setCamera(gfx::RenderSystem::Free);
         } else {
-            m_renderSystem.setCamera(RenderSystem::Player);
+            m_renderSystem.setCamera(gfx::RenderSystem::Player);
         }
         m_inputSystem.setDebug(debugCamera);
     } break;

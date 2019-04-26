@@ -1,4 +1,4 @@
-#include "RenderNode.h"
+#include "Node.h"
 
 #include "Camera.h"
 #include "Light.h"
@@ -9,7 +9,9 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent* rd)
+namespace gfx {
+
+Node::Node(int actorId, TransformationComponent* tr, RenderComponent* rd)
     : m_actorId{actorId}
     , m_tr{tr}
     , m_rd{rd}
@@ -18,16 +20,11 @@ RenderNode::RenderNode(int actorId, TransformationComponent* tr, RenderComponent
 
 //------------------------------------------------------------------------------
 
-void RenderNode::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
-
-void RenderNode::setShaderProgram(const std::shared_ptr<ShaderProgram>& shaderProgram)
-{
-    m_shaderProgram = shaderProgram;
-}
+void Node::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
 
 //------------------------------------------------------------------------------
 
-void RenderNode::rebuildModelMatrix()
+void Node::rebuildModelMatrix()
 {
     if (m_tr) {
         m_rotation    = m_tr->rotation;
@@ -44,15 +41,9 @@ void RenderNode::rebuildModelMatrix()
 
 //------------------------------------------------------------------------------
 
-void RenderNode::draw(const glm::mat4& parentModelMatrix, const Camera* camera,
-                      const std::array<Light*, 8>& lights, const TexturePack& environment) const
-{
-    draw(parentModelMatrix, m_shaderProgram.get(), camera, lights, environment);
-}
-
-void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-                      const Camera* camera, const std::array<Light*, 8>& lights,
-                      const TexturePack& environment) const
+void Node::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+                const Camera* camera, const std::array<Light*, 8>& lights,
+                const TexturePack& environment) const
 {
     const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
 
@@ -104,7 +95,7 @@ void RenderNode::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderP
 
 //------------------------------------------------------------------------------
 
-void RenderNode::update(const glm::mat4& parentModelMatrix, float deltaTime)
+void Node::update(const glm::mat4& parentModelMatrix, float deltaTime)
 {
     rebuildModelMatrix();
 
@@ -120,8 +111,8 @@ void RenderNode::update(const glm::mat4& parentModelMatrix, float deltaTime)
 
 //------------------------------------------------------------------------------
 
-void RenderNode::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-                          const Camera* camera)
+void Node::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+                    const Camera* camera)
 {
     const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
 
@@ -142,3 +133,5 @@ void RenderNode::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* sha
         child->drawAabb(modelMatrix, shaderProgram, camera);
     }
 }
+
+} // namespace gfx

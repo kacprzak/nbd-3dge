@@ -1,10 +1,12 @@
 #include "ShaderProgram.h"
 
-#include "Logger.h"
+#include "../Logger.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <iterator>
 #include <sstream>
+
+namespace gfx {
 
 ShaderProgram::ShaderProgram()
 {
@@ -105,3 +107,5 @@ GLint ShaderProgram::getUniformLocation(const char* name)
         return loc;
     }
 }
+
+} // namespace gfx

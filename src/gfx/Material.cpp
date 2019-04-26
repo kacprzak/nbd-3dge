@@ -1,5 +1,7 @@
 #include "Material.h"
 
+namespace gfx {
+
 void Material::applyTo(ShaderProgram* shaderProgram) const
 {
     shaderProgram->setUniform("material.baseColorFactor", baseColorFactor);
@@ -33,3 +35,5 @@ void Material::applyTo(ShaderProgram* shaderProgram) const
         textures[TextureUnit::Emissive]->bind(TextureUnit::Emissive);
     }
 }
+
+} // namespace gfx

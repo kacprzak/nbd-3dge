@@ -31,7 +31,7 @@ int8_t to_int<int8_t>(const std::string& s)
     return boost::numeric_cast<int8_t>(boost::lexical_cast<int>(s));
 }
 
-Font FontLoader::getFont() { return m_font; }
+gfx::Font FontLoader::getFont() { return m_font; }
 
 void FontLoader::command(const std::string& cmd, const std::vector<std::string>& args)
 {
@@ -39,7 +39,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
 
     if (cmd == "info") {
         for (const auto& arg : args) {
-            Font::Info& info = m_font.m_info;
+            gfx::Font::Info& info = m_font.m_info;
             keyVal.clear();
             split(arg, '=', keyVal);
             removeQuotes(keyVal[1]);
@@ -82,7 +82,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
         }
     } else if (cmd == "common") {
         for (const auto& arg : args) {
-            Font::Common& common = m_font.m_common;
+            gfx::Font::Common& common = m_font.m_common;
             keyVal.clear();
             split(arg, '=', keyVal);
             removeQuotes(keyVal[1]);
@@ -121,7 +121,7 @@ void FontLoader::command(const std::string& cmd, const std::vector<std::string>&
           m_font.m_chars.reserve(to_int<size_t>(keyVal[1]));
         */
     } else if (cmd == "char") {
-        Font::Char c;
+        gfx::Font::Char c;
         for (const auto& arg : args) {
             keyVal.clear();
             split(arg, '=', keyVal);

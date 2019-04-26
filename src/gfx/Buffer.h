@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+namespace gfx {
+
 class Buffer final
 {
   public:
@@ -73,5 +75,7 @@ struct Accessor final
     std::array<float, 4> min{};
     std::array<float, 4> max{};
 };
+
+} // namespace gfx
 
 #endif // BUFFER_H

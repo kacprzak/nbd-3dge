@@ -8,7 +8,6 @@
 #include "ResourcesMgr.h"
 #include "SDLWindow.h"
 #include "Settings.h"
-#include "Scene.h"
 
 class CameraController;
 
@@ -43,12 +42,12 @@ class GameClient : public SDLWindow
 
   private:
     PhysicsDebugDrawer m_debugDraw;
-    std::shared_ptr<Scene> m_scene;
+    std::shared_ptr<gfx::Model> m_scene;
     std::shared_ptr<ResourcesMgr> m_resourcesMgr;
     std::string m_resourcesFile;
 
     const Settings m_settings;
-    RenderSystem m_renderSystem;
+    gfx::RenderSystem m_renderSystem;
     InputSystem m_inputSystem;
 
     std::unique_ptr<CameraController> m_freeCameraCtrl;

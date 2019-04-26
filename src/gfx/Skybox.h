@@ -7,6 +7,8 @@
 
 #include <glm/glm.hpp>
 
+namespace gfx {
+
 class Camera;
 
 class Skybox final
@@ -35,5 +37,7 @@ class Skybox final
     std::shared_ptr<Mesh> m_mesh;
     TexturePack m_textures{};
 };
+
+} // namespace gfx
 
 #endif // SKYBOX_H

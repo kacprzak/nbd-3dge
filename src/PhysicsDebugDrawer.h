@@ -8,8 +8,10 @@
 #include <memory>
 #include <vector>
 
+namespace gfx {
 class ShaderProgram;
 class Camera;
+} // namespace gfx
 
 class PhysicsDebugDrawer final : public btIDebugDraw
 {
@@ -25,7 +27,7 @@ class PhysicsDebugDrawer final : public btIDebugDraw
     void setDebugMode(int debugMode) override;
     int getDebugMode() const override;
 
-    void draw(Camera* camera);
+    void draw(gfx::Camera* camera);
 
   private:
     void updateBuffer();
@@ -47,7 +49,7 @@ class PhysicsDebugDrawer final : public btIDebugDraw
     GLuint m_buffer                  = 0;
     std::size_t m_bufferReservedSize = 0;
 
-    std::unique_ptr<ShaderProgram> m_shaderProgram;
+    std::unique_ptr<gfx::ShaderProgram> m_shaderProgram;
 };
 
 #endif // PHYSICSDEBUGDRAWER_H

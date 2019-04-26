@@ -1,11 +1,11 @@
-#include "Scene.h"
-
-#include "MeshData.h"
-#include "Util.h"
+#include "Model.h"
 
 #include <fx/gltf.h>
 
-Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes, const Accessor& indicesAcc)
+namespace gfx {
+
+Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes,
+                           const Accessor& indicesAcc)
 {
     auto indices   = indicesAcc.getData<uint16_t>();
     auto positions = attributes[Accessor::Attribute::Normal].getData<glm::vec3>();
@@ -53,10 +53,10 @@ Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>
         tangents[index2] = tangent;
     }
 
-	auto tangentsBuffer = std::make_shared<Buffer>();
+    auto tangentsBuffer = std::make_shared<Buffer>();
     tangentsBuffer->loadData(tangents.data(), tangents.size() * sizeof(tangents[0]));
-    
-	Accessor tangentsAccesor;
+
+    Accessor tangentsAccesor;
     tangentsAccesor.buffer = tangentsBuffer;
     tangentsAccesor.count  = tangents.size();
     tangentsAccesor.type   = GL_FLOAT;
@@ -76,10 +76,11 @@ int typeToSize(fx::gltf::Accessor::Type type)
     case fx::gltf::Accessor::Type::Mat2: return 4;
     case fx::gltf::Accessor::Type::Mat3: return 9;
     case fx::gltf::Accessor::Type::Mat4: return 16;
+    default: throw std::invalid_argument("Unknown type");
     }
 }
 
-void Scene::load(const std::filesystem::path& file)
+void Model::load(const std::filesystem::path& file)
 {
     fx::gltf::Document doc = fx::gltf::LoadFromText(file.string());
 
@@ -198,14 +199,14 @@ void Scene::load(const std::filesystem::path& file)
             attr = subMesh.attributes.find("TANGENT");
             if (attr != std::end(subMesh.attributes)) {
                 attributes[Accessor::Attribute::Tangent] = m_accessors[attr->second];
-            } 
+            }
 
             attr = subMesh.attributes.find("TEXCOORD_0");
             if (attr != std::end(subMesh.attributes))
                 attributes[Accessor::Attribute::TexCoord_0] = m_accessors[attr->second];
 
-			// Missing tangent vectors!
-			if (!attributes[Accessor::Attribute::Tangent].buffer)
+            // Missing tangent vectors!
+            if (!attributes[Accessor::Attribute::Tangent].buffer)
                 attributes[Accessor::Attribute::Tangent] = calculateTangents(attributes, indices);
 
             auto m = std::make_shared<Mesh>(attributes, indices, primitive);
@@ -228,7 +229,7 @@ void Scene::load(const std::filesystem::path& file)
 
     for (auto& n : doc.nodes) {
         static int actorId = 0;
-        RenderNode node{actorId++};
+        gfx::Node node{actorId++};
 
         node.setTranslation({n.translation[0], n.translation[1], n.translation[2]});
         node.setScale({n.scale[0], n.scale[1], n.scale[2]});
@@ -256,7 +257,7 @@ void Scene::load(const std::filesystem::path& file)
     }
 }
 
-void Scene::draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights,
+void Model::draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<Light*, 8>& lights,
                  const TexturePack& environment)
 {
     glm::mat4 identity{1.0f};
@@ -265,7 +266,7 @@ void Scene::draw(ShaderProgram* shaderProgram, const Camera* camera, std::array<
         n->draw(identity, shaderProgram, camera, lights, environment);
 }
 
-void Scene::drawAabb(ShaderProgram* shaderProgram, const Camera* camera)
+void Model::drawAabb(ShaderProgram* shaderProgram, const Camera* camera)
 {
     glm::mat4 identity{1.0f};
 
@@ -273,7 +274,7 @@ void Scene::drawAabb(ShaderProgram* shaderProgram, const Camera* camera)
         n->drawAabb(identity, shaderProgram, camera);
 }
 
-void Scene::update(float delta)
+void Model::update(float delta)
 {
     glm::mat4 identity{1.0f};
 
@@ -281,7 +282,7 @@ void Scene::update(float delta)
         n->update(identity, delta);
 }
 
-RenderNode* Scene::findNode(const std::string& node)
+gfx::Node* Model::findNode(const std::string& node)
 {
     for (auto& n : m_nodes) {
         if (n.name == node) return &n;
@@ -289,7 +290,7 @@ RenderNode* Scene::findNode(const std::string& node)
     return nullptr;
 }
 
-Aabb Scene::aabb() const
+Aabb Model::aabb() const
 {
     Aabb aabb;
     for (const auto& n : m_nodes) {
@@ -297,3 +298,5 @@ Aabb Scene::aabb() const
     }
     return aabb;
 }
+
+} // namespace gfx

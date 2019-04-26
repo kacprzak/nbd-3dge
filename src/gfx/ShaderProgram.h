@@ -4,9 +4,14 @@
 #include "Shader.h"
 
 #include <GL/glew.h>
-#include <boost/container/flat_map.hpp>
 #include <glm/glm.hpp>
+
+#include <boost/container/flat_map.hpp>
+
+#include <string>
 #include <vector>
+
+namespace gfx {
 
 class ShaderProgram final
 {
@@ -34,5 +39,7 @@ class ShaderProgram final
     boost::container::flat_map<std::string, GLint> m_uniformLocs;
     bool m_linked = false;
 };
+
+} // namespace gfx
 
 #endif // SHADERPROGRAM_H

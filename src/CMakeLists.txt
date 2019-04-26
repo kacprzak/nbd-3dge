@@ -1,44 +1,46 @@
 set( nbd-3dge_SRCS
-    main.cpp
+    gfx/Buffer.cpp
+    gfx/Camera.cpp
+    gfx/Font.cpp
+    gfx/Framebuffer.cpp
+    gfx/Light.cpp
+    gfx/Material.cpp
+    gfx/Mesh.cpp
+    gfx/Node.cpp
+    gfx/Model.cpp
+    gfx/Shader.cpp
+    gfx/ShaderProgram.cpp
+    gfx/Skybox.cpp
+    gfx/Texture.cpp
+    gfx/Text.cpp
     Actor.cpp
     ActorFactory.cpp
-    Buffer.cpp
-    Camera.cpp
     Engine.cpp
-    Font.cpp
     FontLoader.cpp
-    Framebuffer.cpp
     GameClient.cpp
     GameLogic.cpp
     InputSystem.cpp
-    Light.cpp
     Loader.cpp
     Logger.cpp
-    Material.cpp
-    Mesh.cpp
     MeshData.cpp
     MtlLoader.cpp
     ObjLoader.cpp
     PhysicsDebugDrawer.cpp
     PhysicsSystem.cpp
-    RenderNode.cpp
     RenderSystem.cpp
     ResourcesMgr.cpp
-    Scene.cpp
     SDLWindow.cpp
     Script.cpp
-    Shader.cpp
-    ShaderProgram.cpp
-    Skybox.cpp
     Terrain.cpp
-    Text.cpp
-    Texture.cpp
     Util.cpp
+    main.cpp
 )
+
+source_group( TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Sources" FILES ${nbd-3dge_SRCS} )
 
 file( GLOB_RECURSE nbd-3dge_HDRS "*.h" )
 
-source_group( "Headers" FILES ${nbd-3dge_HDRS} )
+source_group( TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Headers" FILES ${nbd-3dge_HDRS} )
 
 add_executable( nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} ${imgui_impl_SRC} )
 target_compile_definitions( nbd-3dge PRIVATE GLM_FORCE_RADIANS )

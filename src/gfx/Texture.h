@@ -9,6 +9,8 @@
 #include <memory>
 #include <string>
 
+namespace gfx {
+
 class Sampler final
 {
   public:
@@ -54,6 +56,7 @@ class Texture final
     int height() const { return m_h; }
 
     void setSampler(std::shared_ptr<Sampler> sampler) { m_sampler = sampler; }
+
     std::shared_ptr<Sampler> sampler()
     {
         if (!m_sampler) createSampler();
@@ -95,5 +98,7 @@ enum TextureUnit {
 //------------------------------------------------------------------------------
 
 using TexturePack = std::array<std::shared_ptr<Texture>, TextureUnit::Size>;
+
+} // namespace gfx
 
 #endif // TEXTURE_H

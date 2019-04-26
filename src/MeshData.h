@@ -1,8 +1,6 @@
 #ifndef MESHDATA_H
 #define MESHDATA_H
 
-#include "Buffer.h"
-
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 

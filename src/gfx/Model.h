@@ -4,12 +4,14 @@
 #include "Buffer.h"
 #include "Camera.h"
 #include "Mesh.h"
-#include "RenderNode.h"
+#include "Node.h"
 #include "Texture.h"
 
 #include <filesystem>
 
-class Scene
+namespace gfx {
+
+class Model
 {
   public:
     void load(const std::filesystem::path& file);
@@ -29,18 +31,21 @@ class Scene
 
     Aabb aabb() const;
 
-    RenderNode* findNode(const std::string& node);
+    gfx::Node* findNode(const std::string& node);
 
   private:
     std::vector<std::shared_ptr<Buffer>> m_buffers;
-    std::vector<Accessor> m_accessors;
     std::vector<std::shared_ptr<Sampler>> m_samplers;
     std::vector<std::shared_ptr<Texture>> m_textures;
-    std::vector<Material> m_materials;
     std::vector<std::shared_ptr<Mesh>> m_meshes;
+
+    std::vector<Accessor> m_accessors;
+    std::vector<Material> m_materials;
     std::vector<Camera> m_cameras;
-    std::vector<RenderNode> m_nodes;
-    std::vector<RenderNode*> m_scene;
+    std::vector<gfx::Node> m_nodes;
+    std::vector<gfx::Node*> m_scene;
 };
+
+} // namespace gfx
 
 #endif /* SCENE_H */

@@ -1,12 +1,14 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Aabb.h"
+#include "../Aabb.h"
 #include "Buffer.h"
 #include "Material.h"
 #include "ShaderProgram.h"
 
 #include <GL/glew.h>
+
+namespace gfx {
 
 class Mesh final
 {
@@ -43,5 +45,7 @@ class Mesh final
   public:
     std::string name;
 };
+
+} // namespace gfx
 
 #endif // MESH_H

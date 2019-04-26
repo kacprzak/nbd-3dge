@@ -116,6 +116,8 @@ void ResourcesMgr::loadMaterials(const std::string& xmlFile)
 
 void ResourcesMgr::addMaterial(const MaterialData& materialData)
 {
+    using namespace gfx;
+
     std::vector<std::shared_ptr<Texture>> textures;
 
     for (const auto& texData : materialData.textures) {
@@ -137,7 +139,7 @@ void ResourcesMgr::addMaterial(const MaterialData& materialData)
     }
 }
 
-std::shared_ptr<Material> ResourcesMgr::getMaterial(const std::string& name) const
+std::shared_ptr<gfx::Material> ResourcesMgr::getMaterial(const std::string& name) const
 {
     auto it = m_materials.find(name);
     if (it == std::end(m_materials))
@@ -150,6 +152,8 @@ std::shared_ptr<Material> ResourcesMgr::getMaterial(const std::string& name) con
 
 void ResourcesMgr::addShaderProgram(const ShaderProgramData& spData)
 {
+    using namespace gfx;
+
     std::vector<std::unique_ptr<Shader>> shaders;
 
     if (!spData.vertexSrc.empty()) {
@@ -184,7 +188,7 @@ void ResourcesMgr::addShaderProgram(const ShaderProgramData& spData)
     }
 }
 
-std::shared_ptr<ShaderProgram> ResourcesMgr::getShaderProgram(const std::string& name) const
+std::shared_ptr<gfx::ShaderProgram> ResourcesMgr::getShaderProgram(const std::string& name) const
 {
     auto it = m_shaderPrograms.find(name);
     if (it == std::end(m_shaderPrograms))
@@ -202,10 +206,10 @@ void ResourcesMgr::addTexture(const TextureData& texData)
     LOG_TRACE("Adding Texture: ", tmp.name);
 
     tmp.filename         = m_dataFolder + tmp.filename;
-    m_textures[tmp.name] = std::make_shared<Texture>(tmp.filename.c_str());
+    m_textures[tmp.name] = std::make_shared<gfx::Texture>(tmp.filename.c_str());
 }
 
-std::shared_ptr<Texture> ResourcesMgr::getTexture(const std::string& name) const
+std::shared_ptr<gfx::Texture> ResourcesMgr::getTexture(const std::string& name) const
 {
     auto it = m_textures.find(name);
     if (it == std::end(m_textures))
@@ -223,7 +227,7 @@ void ResourcesMgr::addMesh(const MeshData& meshData)
     // m_meshes[meshData.name] = std::make_shared<Mesh>(meshData);
 }
 
-std::shared_ptr<Mesh> ResourcesMgr::getMesh(const std::string& name) const
+std::shared_ptr<gfx::Mesh> ResourcesMgr::getMesh(const std::string& name) const
 {
     auto it = m_meshes.find(name);
     if (it == std::end(m_meshes))
@@ -241,21 +245,21 @@ void ResourcesMgr::addFont(const std::string& name, const std::string& filename)
     FontLoader loader;
     loader.load(m_dataFolder + filename);
 
-    auto font = std::make_shared<Font>(loader.getFont());
+    auto font = std::make_shared<gfx::Font>(loader.getFont());
 
-    std::vector<std::shared_ptr<Texture>> textures;
+    std::vector<std::shared_ptr<gfx::Texture>> textures;
     for (const auto& texFilename : font->getTexturesFilenames()) {
         TextureData texData;
         texData.name     = texFilename;
         texData.filename = m_dataFolder + texFilename;
-        textures.emplace_back(std::make_shared<Texture>(texData.filename.c_str()));
+        textures.emplace_back(std::make_shared<gfx::Texture>(texData.filename.c_str()));
     }
     font->setTextures(textures);
 
     m_fonts[name] = font;
 }
 
-std::shared_ptr<Font> ResourcesMgr::getFont(const std::string& name) const
+std::shared_ptr<gfx::Font> ResourcesMgr::getFont(const std::string& name) const
 {
     auto it = m_fonts.find(name);
     if (it == std::end(m_fonts))

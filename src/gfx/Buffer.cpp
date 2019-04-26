@@ -1,6 +1,8 @@
 #include "Buffer.h"
 
-#include "Logger.h"
+#include "../Logger.h"
+
+namespace gfx {
 
 Buffer::Buffer()
 {
@@ -41,3 +43,5 @@ void Buffer::getData(void* data, size_t size, std::ptrdiff_t byteOffset) const
 
     glUnmapBuffer(GL_COPY_READ_BUFFER);
 }
+
+} // namespace gfx

@@ -1,8 +1,8 @@
 #include "PhysicsDebugDrawer.h"
 
-#include "Camera.h"
 #include "Logger.h"
-#include "ShaderProgram.h"
+#include "gfx/Camera.h"
+#include "gfx/ShaderProgram.h"
 
 static std::string vertexSource = R"==(
 #version 330
@@ -38,9 +38,9 @@ PhysicsDebugDrawer::PhysicsDebugDrawer()
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_buffer);
 
-    m_shaderProgram = std::make_unique<ShaderProgram>();
-    Shader vertex{GL_VERTEX_SHADER, vertexSource.c_str()};
-    Shader fragment{GL_FRAGMENT_SHADER, fragmentSource.c_str()};
+    m_shaderProgram = std::make_unique<gfx::ShaderProgram>();
+    gfx::Shader vertex{GL_VERTEX_SHADER, vertexSource.c_str()};
+    gfx::Shader fragment{GL_FRAGMENT_SHADER, fragmentSource.c_str()};
 
     m_shaderProgram->link({&vertex, &fragment});
 }
@@ -78,13 +78,15 @@ void PhysicsDebugDrawer::reportErrorWarning(const char* /*warningString*/) {}
 
 void PhysicsDebugDrawer::draw3dText(const btVector3& /*location*/, const char* /*textString*/) {}
 
+//------------------------------------------------------------------------------
+
 void PhysicsDebugDrawer::setDebugMode(int debugMode) { m_debugMode = debugMode; }
 
 int PhysicsDebugDrawer::getDebugMode() const { return m_debugMode; }
 
 //------------------------------------------------------------------------------
 
-void PhysicsDebugDrawer::draw(Camera* camera)
+void PhysicsDebugDrawer::draw(gfx::Camera* camera)
 {
     if (m_currLinesDataIdx != 0) {
         const auto mvp = camera->projectionMatrix() * camera->viewMatrix();
@@ -101,6 +103,8 @@ void PhysicsDebugDrawer::draw(Camera* camera)
     m_requestedLinesDataSize = 0;
     m_currLinesDataIdx       = 0;
 }
+
+//------------------------------------------------------------------------------
 
 void PhysicsDebugDrawer::updateBuffer()
 {

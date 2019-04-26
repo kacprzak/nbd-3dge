@@ -1,15 +1,8 @@
 #include "Shader.h"
 
-#include "Logger.h"
-#include "Util.h"
+#include "../Logger.h"
 
-#include <boost/algorithm/string.hpp>
-#include <fstream>
-#include <iostream>
-#include <vector>
-
-using namespace std;
-using namespace boost::algorithm;
+namespace gfx {
 
 Shader::Shader(GLenum type, const std::string& source)
     : m_type{type}
@@ -54,3 +47,5 @@ Shader::Shader(Shader&& other)
 }
 
 Shader::~Shader() { glDeleteShader(m_shaderId); }
+
+} // namespace gfx

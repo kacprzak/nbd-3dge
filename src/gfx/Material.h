@@ -1,9 +1,10 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "MaterialData.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
+
+namespace gfx {
 
 class Material final
 {
@@ -26,5 +27,7 @@ class Material final
 
     TexturePack textures{};
 };
+
+} // namespace gfx
 
 #endif /* MATERIAL_H */

@@ -3,15 +3,18 @@
 
 #include "Aabb.h"
 #include "Components.h"
-#include "Scene.h"
-#include "ShaderProgram.h"
-#include "Text.h"
-#include "Camera.h"
+#include "gfx/Camera.h"
+#include "gfx/Model.h"
+#include "gfx/ShaderProgram.h"
+#include "gfx/Text.h"
 
 #include <map>
 #include <set>
 
 class ResourcesMgr;
+
+namespace gfx {
+
 class RenderNode;
 class Light;
 class Framebuffer;
@@ -43,10 +46,10 @@ class RenderSystem final
     Camera* getCamera() { return m_camera; }
     Camera* getCamera(CameraType type) { return &m_cameras.at(type); }
 
-    RenderNode* findNode(const std::string& node);
+    gfx::Node* findNode(const std::string& node);
 
     void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
-    void setScene(std::shared_ptr<Scene> scene);
+    void setScene(std::shared_ptr<Model> scene);
 
     void resizeWindow(glm::ivec2 size);
 
@@ -75,13 +78,13 @@ class RenderSystem final
     int m_shadowCascadesSize;
     glm::ivec2 m_windowSize;
 
-    std::map<int, std::shared_ptr<RenderNode>> m_nodes;
-    std::map<int, std::shared_ptr<RenderNode>> m_transparentNodes;
+    std::map<int, std::shared_ptr<gfx::Node>> m_nodes;
+    std::map<int, std::shared_ptr<gfx::Node>> m_transparentNodes;
     std::map<int, std::shared_ptr<Light>> m_lights;
     std::vector<Camera> m_cameras;
     Camera* m_camera; // current camera
 
-    std::shared_ptr<Scene> m_scene;
+    std::shared_ptr<Model> m_scene;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Text> m_cameraText;
     std::set<std::shared_ptr<Text>> m_texts;
@@ -97,5 +100,7 @@ class RenderSystem final
 
     bool m_drawNormals = false;
 };
+
+} // namespace gfx
 
 #endif // RENDERSYSTEM_H

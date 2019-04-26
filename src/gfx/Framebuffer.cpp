@@ -2,8 +2,10 @@
 
 #include <glm/glm.hpp>
 
-#include "Logger.h"
+#include "../Logger.h"
 #include "Texture.h"
+
+namespace gfx {
 
 Framebuffer::Framebuffer(glm::ivec3 size)
     : m_shadowMap{Texture::createShadowMap(size)}
@@ -41,3 +43,5 @@ void Framebuffer::bindForWriting(unsigned cascadeIndex)
 }
 
 void Framebuffer::bindDepthComponent(int textureUnit) { m_shadowMap.bind(textureUnit); }
+
+} // namespace gfx
