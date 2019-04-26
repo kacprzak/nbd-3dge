@@ -13,7 +13,7 @@ namespace gfx {
 
 class Font final
 {
-    friend class FontLoader;
+    friend class ::FontLoader;
 
   public:
     Font();

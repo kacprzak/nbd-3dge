@@ -68,17 +68,17 @@ void Node::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram
 
         shaderProgram->setUniform("cameraPosition", camera->worldTranslation());
 
-        if (environment[TextureUnit::BrdfLUT]) {
+        if (auto& t = environment[TextureUnit::BrdfLUT]) {
             shaderProgram->setUniform("brdfLUT", TextureUnit::BrdfLUT);
-            environment[TextureUnit::BrdfLUT]->bind(TextureUnit::BrdfLUT);
+            t->bind(TextureUnit::BrdfLUT);
         }
-        if (environment[TextureUnit::Irradiance]) {
+        if (auto& t = environment[TextureUnit::Irradiance]) {
             shaderProgram->setUniform("irradianceCube", TextureUnit::Irradiance);
-            environment[TextureUnit::Irradiance]->bind(TextureUnit::Irradiance);
+            t->bind(TextureUnit::Irradiance);
         }
-        if (environment[TextureUnit::Radiance]) {
+        if (auto& t = environment[TextureUnit::Radiance]) {
             shaderProgram->setUniform("radianceCube", TextureUnit::Radiance);
-            environment[TextureUnit::Radiance]->bind(TextureUnit::Radiance);
+            t->bind(TextureUnit::Radiance);
         }
 
         // if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);

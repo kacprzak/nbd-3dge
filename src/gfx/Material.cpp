@@ -5,34 +5,34 @@ namespace gfx {
 void Material::applyTo(ShaderProgram* shaderProgram) const
 {
     shaderProgram->setUniform("material.baseColorFactor", baseColorFactor);
-    if (textures[TextureUnit::BaseColor]) {
+    if (auto& t = textures[TextureUnit::BaseColor]) {
         shaderProgram->setUniform("baseColorSampler", TextureUnit::BaseColor);
-        textures[TextureUnit::BaseColor]->bind(TextureUnit::BaseColor);
+        t->bind(TextureUnit::BaseColor);
     }
 
     shaderProgram->setUniform("material.normalScale", normalScale);
-    if (textures[TextureUnit::Normal]) {
+    if (auto& t = textures[TextureUnit::Normal]) {
         shaderProgram->setUniform("normalSampler", TextureUnit::Normal);
-        textures[TextureUnit::Normal]->bind(TextureUnit::Normal);
+        t->bind(TextureUnit::Normal);
     }
 
     shaderProgram->setUniform("material.metallicFactor", metallicFactor);
     shaderProgram->setUniform("material.roughnessFactor", roughnessFactor);
-    if (textures[TextureUnit::MetallicRoughness]) {
+    if (auto& t = textures[TextureUnit::MetallicRoughness]) {
         shaderProgram->setUniform("metallicRoughnessSampler", TextureUnit::MetallicRoughness);
-        textures[TextureUnit::MetallicRoughness]->bind(TextureUnit::MetallicRoughness);
+        t->bind(TextureUnit::MetallicRoughness);
     }
 
-    if (textures[TextureUnit::Occlusion]) {
+    if (auto& t = textures[TextureUnit::Occlusion]) {
         shaderProgram->setUniform("occlusionStrength", occlusionStrength);
         shaderProgram->setUniform("occlusionSampler", TextureUnit::Occlusion);
-        textures[TextureUnit::Occlusion]->bind(TextureUnit::Occlusion);
+        t->bind(TextureUnit::Occlusion);
     }
 
     shaderProgram->setUniform("material.emissiveFactor", emissiveFactor);
-    if (textures[TextureUnit::Emissive]) {
+    if (auto& t = textures[TextureUnit::Emissive]) {
         shaderProgram->setUniform("emissiveSampler", TextureUnit::Emissive);
-        textures[TextureUnit::Emissive]->bind(TextureUnit::Emissive);
+        t->bind(TextureUnit::Emissive);
     }
 }
 

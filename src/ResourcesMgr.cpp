@@ -6,12 +6,16 @@
 #include <SDL.h>
 #include <nlohmann/json.hpp>
 
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wignored-qualifiers"
+#endif
 #include <gli/gli.hpp>
 #include <gli/sampler2d.hpp>
+#if defined(__clang__)
 #pragma clang diagnostic pop
+#endif
 
 #include <array>
 #include <fstream>
