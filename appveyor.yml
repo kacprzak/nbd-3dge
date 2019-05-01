@@ -16,7 +16,6 @@ install:
   - cmd: conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 build_script:
-  - cmd: C:\Python36-x64\python.exe install-dependencies.py
   - cmd: mkdir build
   - cmd: cd build
   - cmd: conan install .. --build=missing

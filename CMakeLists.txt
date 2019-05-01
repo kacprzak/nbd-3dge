@@ -1,11 +1,13 @@
-cmake_minimum_required( VERSION 3.5 )
+cmake_minimum_required( VERSION 3.12...3.14 )
 project( nbd-3dge VERSION 0.1 LANGUAGES CXX C )
 
 set( CMAKE_CXX_STANDARD 17 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
-add_definitions( -DGLM_ENABLE_EXPERIMENTAL -DGLM_FORCE_RADIANS -DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DIMGUI_IMPL_OPENGL_LOADER_GLEW )
+add_definitions( -DGLM_FORCE_RADIANS -DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DIMGUI_IMPL_OPENGL_LOADER_GLEW )
+
+include(FetchContent)
 
 include( ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake )
 conan_basic_setup( TARGETS )
@@ -31,13 +33,35 @@ if( UNIX )
   #include_directories( ${LIBCLANG_INCLUDES} )
 endif()
 
-include_directories( ${CMAKE_SOURCE_DIR}/external )
-include_directories( ${CMAKE_SOURCE_DIR}/external/gli )
-include_directories( ${CMAKE_SOURCE_DIR}/external/gli/external )
+FetchContent_Declare(
+  gli
+  GIT_REPOSITORY https://github.com/g-truc/gli.git
+  GIT_SHALLOW    ON
+  )
+
+FetchContent_GetProperties(gli)
+if(NOT gli_POPULATED)
+  FetchContent_Populate(gli)
+  #add_subdirectory(${gli_SOURCE_DIR} ${gli_BINARY_DIR})
+endif()
+
+set(EXTERNALS_DIR ${CMAKE_BINARY_DIR}/external)
+
+file(DOWNLOAD "https://raw.githubusercontent.com/jessey-git/fx-gltf/master/include/fx/gltf.h" "${EXTERNALS_DIR}/fx/gltf.h")
+
+set(IMGUI_EXAMPLES_URL "https://raw.githubusercontent.com/ocornut/imgui/v1.66/examples")
+file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.h" "${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.h")
+file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.cpp" "${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.cpp")
+file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.h" "${EXTERNALS_DIR}/imgui/imgui_impl_sdl.h")
+file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.cpp" "${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp")
+
+include_directories(${gli_SOURCE_DIR})
+include_directories(${gli_SOURCE_DIR}/external)
+include_directories(${EXTERNALS_DIR})
 
 set( imgui_impl_SRC
-	${CMAKE_SOURCE_DIR}/external/imgui/imgui_impl_sdl.cpp
-	${CMAKE_SOURCE_DIR}/external/imgui/imgui_impl_opengl3.cpp
+	${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp
+	${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.cpp
 	)
 
 configure_file(
