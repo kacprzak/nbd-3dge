@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_definitions(-DGLM_FORCE_RADIANS -DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DIMGUI_IMPL_OPENGL_LOADER_GLEW)
+add_definitions(-DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 
 include(FetchContent)
 
@@ -53,6 +53,7 @@ if(NOT gli_POPULATED)
 endif()
 
 add_library(glm INTERFACE)
+target_compile_definitions(glm INTERFACE GLM_FORCE_RADIANS)
 target_include_directories(glm INTERFACE ${gli_SOURCE_DIR}/external)
 set(LINK_LIBS ${LINK_LIBS} glm)
 
@@ -63,6 +64,7 @@ set(LINK_LIBS ${LINK_LIBS} gli)
 set(EXTERNALS_DIR ${CMAKE_BINARY_DIR}/external)
 
 file(DOWNLOAD "https://raw.githubusercontent.com/jessey-git/fx-gltf/master/include/fx/gltf.h" "${EXTERNALS_DIR}/fx/gltf.h")
+
 add_library(fx-gltf INTERFACE)
 target_include_directories(fx-gltf INTERFACE ${EXTERNALS_DIR})
 set(LINK_LIBS ${LINK_LIBS} fx-gltf)
@@ -73,10 +75,14 @@ file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.cpp" "${EXTERNALS_DIR}/i
 file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.h" "${EXTERNALS_DIR}/imgui/imgui_impl_sdl.h")
 file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.cpp" "${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp")
 
-set(imgui_impl_SRC
+add_library(imgui_impl INTERFACE)
+target_compile_definitions(imgui_impl INTERFACE IMGUI_IMPL_OPENGL_LOADER_GLEW)
+target_include_directories(imgui_impl INTERFACE ${EXTERNALS_DIR})
+target_sources(imgui_impl INTERFACE
   ${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp
   ${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.cpp
   )
+set(LINK_LIBS ${LINK_LIBS} imgui_impl)
 
 configure_file(
   ${PROJECT_SOURCE_DIR}/config.h.in

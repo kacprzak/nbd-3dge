@@ -1,4 +1,4 @@
-set( nbd-3dge_SRCS
+set(nbd-3dge_SRCS
     gfx/Buffer.cpp
     gfx/Camera.cpp
     gfx/Font.cpp
@@ -35,19 +35,17 @@ set( nbd-3dge_SRCS
     Util.cpp
     main.cpp
 )
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Sources" FILES ${nbd-3dge_SRCS})
 
-source_group( TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Sources" FILES ${nbd-3dge_SRCS} )
+file(GLOB_RECURSE nbd-3dge_HDRS "*.h")
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Headers" FILES ${nbd-3dge_HDRS})
 
-file( GLOB_RECURSE nbd-3dge_HDRS "*.h" )
+add_executable(nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS})
 
-source_group( TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Headers" FILES ${nbd-3dge_HDRS} )
-
-add_executable( nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS} ${imgui_impl_SRC} )
-target_compile_definitions( nbd-3dge PRIVATE GLM_FORCE_RADIANS )
 if( MSVC )
-  target_compile_options( nbd-3dge PRIVATE /W3 )
+  target_compile_options(nbd-3dge PRIVATE /W3)
 else()
-  target_compile_options( nbd-3dge PRIVATE -Wall -Wextra )
+  target_compile_options(nbd-3dge PRIVATE -Wall -Wextra)
 endif()
-target_include_directories( nbd-3dge PRIVATE ${PROJECT_BINARY_DIR} )
-target_link_libraries( nbd-3dge PRIVATE ${LINK_LIBS} )
+target_include_directories(nbd-3dge PRIVATE ${PROJECT_BINARY_DIR})
+target_link_libraries(nbd-3dge PRIVATE ${LINK_LIBS})
