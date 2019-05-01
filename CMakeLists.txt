@@ -1,36 +1,43 @@
-cmake_minimum_required( VERSION 3.12...3.14 )
-project( nbd-3dge VERSION 0.1 LANGUAGES CXX C )
+cmake_minimum_required(VERSION 3.12...3.14)
+project(nbd-3dge VERSION 0.1 LANGUAGES CXX C)
 
-set( CMAKE_CXX_STANDARD 17 )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
-set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_definitions( -DGLM_FORCE_RADIANS -DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DIMGUI_IMPL_OPENGL_LOADER_GLEW )
+add_definitions(-DGLM_FORCE_RADIANS -DGLEW_NO_GLU -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DIMGUI_IMPL_OPENGL_LOADER_GLEW)
 
 include(FetchContent)
 
-include( ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake )
-conan_basic_setup( TARGETS )
-set( LINK_LIBS CONAN_PKG::sdl2 CONAN_PKG::bullet CONAN_PKG::glew CONAN_PKG::spdlog CONAN_PKG::boost_program_options CONAN_PKG::boost_tokenizer CONAN_PKG::boost_algorithm CONAN_PKG::jsonformoderncpp CONAN_PKG::imgui )
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+set(LINK_LIBS
+  CONAN_PKG::sdl2
+  CONAN_PKG::bullet
+  CONAN_PKG::glew
+  CONAN_PKG::spdlog
+  CONAN_PKG::boost_program_options
+  CONAN_PKG::boost_tokenizer
+  CONAN_PKG::boost_algorithm
+  CONAN_PKG::jsonformoderncpp
+  CONAN_PKG::imgui)
 
-if( WIN32 )
-  list( REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62 )
-  set( LINK_LIBS ${LINK_LIBS} wsock32 ws2_32 )
+if(WIN32)
+  list(REMOVE_ITEM LINK_LIBS libboost_test_exec_monitor-vc140-mt-1_62 libboost_unit_test_framework-vc140-mt-1_62)
+  set(LINK_LIBS ${LINK_LIBS} wsock32 ws2_32)
 endif()
 
-if( UNIX )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++" )
-
-  set( LINK_LIBS ${LINK_LIBS} c++abi c++fs )
-  #set( LINK_LIBS ${LINK_LIBS} stdc++fs )
-
-  set( LINK_LIBS ${LINK_LIBS} sndio )
+if(UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  set(LINK_LIBS ${LINK_LIBS} c++abi c++fs)
+  #set(LINK_LIBS ${LINK_LIBS} stdc++fs)
+  set(LINK_LIBS ${LINK_LIBS} sndio)
   
-  set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH} )
+  set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 
   # For Emacs irony-mode to work
-  #set( LIBCLANG_INCLUDES /usr/include/c++/6 )
-  #include_directories( ${LIBCLANG_INCLUDES} )
+  #set(LIBCLANG_INCLUDES /usr/include/c++/8)
+  #include_directories(${LIBCLANG_INCLUDES})
 endif()
 
 FetchContent_Declare(
@@ -59,10 +66,10 @@ include_directories(${gli_SOURCE_DIR})
 include_directories(${gli_SOURCE_DIR}/external)
 include_directories(${EXTERNALS_DIR})
 
-set( imgui_impl_SRC
-	${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp
-	${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.cpp
-	)
+set(imgui_impl_SRC
+  ${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp
+  ${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.cpp
+  )
 
 configure_file(
   ${PROJECT_SOURCE_DIR}/config.h.in
@@ -74,10 +81,10 @@ configure_file(
   ${PROJECT_BINARY_DIR}/bin/config.ini
   )
 
-add_subdirectory( src )
+add_subdirectory(src)
 
-if( Boost_UNIT_TEST_FRAMEWORK_FOUND )
+if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   enable_testing()
-  add_subdirectory( tests )
+  add_subdirectory(tests)
 endif()
 
