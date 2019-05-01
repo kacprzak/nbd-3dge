@@ -52,19 +52,26 @@ if(NOT gli_POPULATED)
   #add_subdirectory(${gli_SOURCE_DIR} ${gli_BINARY_DIR})
 endif()
 
+add_library(glm INTERFACE)
+target_include_directories(glm INTERFACE ${gli_SOURCE_DIR}/external)
+set(LINK_LIBS ${LINK_LIBS} glm)
+
+add_library(gli INTERFACE)
+target_include_directories(gli INTERFACE ${gli_SOURCE_DIR})
+set(LINK_LIBS ${LINK_LIBS} gli)
+
 set(EXTERNALS_DIR ${CMAKE_BINARY_DIR}/external)
 
 file(DOWNLOAD "https://raw.githubusercontent.com/jessey-git/fx-gltf/master/include/fx/gltf.h" "${EXTERNALS_DIR}/fx/gltf.h")
+add_library(fx-gltf INTERFACE)
+target_include_directories(fx-gltf INTERFACE ${EXTERNALS_DIR})
+set(LINK_LIBS ${LINK_LIBS} fx-gltf)
 
 set(IMGUI_EXAMPLES_URL "https://raw.githubusercontent.com/ocornut/imgui/v1.66/examples")
 file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.h" "${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.h")
 file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.cpp" "${EXTERNALS_DIR}/imgui/imgui_impl_opengl3.cpp")
 file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.h" "${EXTERNALS_DIR}/imgui/imgui_impl_sdl.h")
 file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.cpp" "${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp")
-
-include_directories(${gli_SOURCE_DIR})
-include_directories(${gli_SOURCE_DIR}/external)
-include_directories(${EXTERNALS_DIR})
 
 set(imgui_impl_SRC
   ${EXTERNALS_DIR}/imgui/imgui_impl_sdl.cpp
