@@ -22,30 +22,32 @@ if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 else()
   find_package(SDL2 REQUIRED CONFIG)
   
-  add_library(sdl2 SHARED IMPORTED)
+  add_library(sdl2 INTERFACE)
   target_include_directories(sdl2 INTERFACE ${SDL2_INCLUDE_DIRS})
   target_link_libraries(sdl2 INTERFACE ${SDL2_LIBRARIES})
-  set_target_properties(sdl2 PROPERTIES IMPORTED_LOCATION ${libdir})
   
   find_package(spdlog REQUIRED)
   #find_package(nlohmann_json REQUIRED)
   find_package(Bullet REQUIRED CONFIG)
 
-  add_library(Bullet SHARED IMPORTED)
+  add_library(Bullet INTERFACE)
   target_include_directories(Bullet INTERFACE ${BULLET_ROOT_DIR}/${BULLET_INCLUDE_DIRS})
+  list(REMOVE_ITEM BULLET_LIBRARIES BulletInverseDynamics)
   target_link_libraries(Bullet INTERFACE ${BULLET_LIBRARIES})
-  set_target_properties(Bullet PROPERTIES IMPORTED_LOCATION ${BULLET_ROOT_DIR}/${BULLET_LIBRARY_DIRS})
 
-  find_package(Boost)
+  find_package(Boost COMPONENTS program_options)
+  find_package(OpenGL)
   find_package(GLEW)
-  #find_package(imgui)
+  find_package(fmt)
   
   set(nbd-3dge_DEPS
     sdl2
     Bullet
     spdlog::spdlog
-    Boost
-    GLEW
+    fmt::fmt
+    Boost::program_options
+    OpenGL::GL
+    GLEW::GLEW
     )
 endif()
 

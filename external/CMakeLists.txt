@@ -30,17 +30,44 @@ add_library(fx-gltf INTERFACE)
 target_include_directories(fx-gltf INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
 add_library(external::fx-gltf ALIAS fx-gltf)
 
-set(IMGUI_EXAMPLES_URL "https://raw.githubusercontent.com/ocornut/imgui/v1.66/examples")
-file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.h" "${CMAKE_CURRENT_BINARY_DIR}/imgui/imgui_impl_opengl3.h")
-file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.cpp" "${CMAKE_CURRENT_BINARY_DIR}/imgui/imgui_impl_opengl3.cpp")
-file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.h" "${CMAKE_CURRENT_BINARY_DIR}/imgui/imgui_impl_sdl.h")
-file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.cpp" "${CMAKE_CURRENT_BINARY_DIR}/imgui/imgui_impl_sdl.cpp")
+if(TARGET CONAN_PKG::imgui)
+  set(IMGUI_EXAMPLES_URL "https://raw.githubusercontent.com/ocornut/imgui/v1.66/examples")
+  set(imgui_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/imgui")
+  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.h" "${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.h")
+  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.cpp" "${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp")
+  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.h" "${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.h")
+  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.cpp" "${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.cpp")
+else()
+  FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui
+    GIT_TAG        v1.66
+    GIT_SHALLOW    ON
+    )
+
+  if(NOT imgui_POPULATED)
+    FetchContent_Populate(imgui)
+  endif()
+
+  add_library(imgui INTERFACE)
+  target_include_directories(imgui INTERFACE ${imgui_SOURCE_DIR})
+  target_sources(imgui INTERFACE
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    )
+endif()
 
 add_library(imgui_impl INTERFACE)
 target_compile_definitions(imgui_impl INTERFACE IMGUI_IMPL_OPENGL_LOADER_GLEW)
 target_include_directories(imgui_impl INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
 target_sources(imgui_impl INTERFACE
-  ${CMAKE_CURRENT_BINARY_DIR}/imgui/imgui_impl_sdl.cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/imgui/imgui_impl_opengl3.cpp
+  ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.cpp
+  ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp
   )
+
+if(TARGET imgui)
+  target_link_libraries(imgui_impl INTERFACE imgui)
+endif()
+
 add_library(external::imgui_impl ALIAS imgui_impl)
