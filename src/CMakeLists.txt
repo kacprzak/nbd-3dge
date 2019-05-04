@@ -41,11 +41,6 @@ file(GLOB_RECURSE nbd-3dge_HDRS "*.h")
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Headers" FILES ${nbd-3dge_HDRS})
 
 add_executable(nbd-3dge WIN32 ${nbd-3dge_HDRS} ${nbd-3dge_SRCS})
-
-if( MSVC )
-  target_compile_options(nbd-3dge PRIVATE /W3)
-else()
-  target_compile_options(nbd-3dge PRIVATE -Wall -Wextra)
-endif()
+target_compile_features(nbd-3dge PRIVATE cxx_std_17)
 target_include_directories(nbd-3dge PRIVATE ${PROJECT_BINARY_DIR})
-target_link_libraries(nbd-3dge PRIVATE ${LINK_LIBS})
+target_link_libraries(nbd-3dge PRIVATE ${nbd-3dge_DEPS})

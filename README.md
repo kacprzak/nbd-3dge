@@ -10,18 +10,13 @@ No Big Deal 3D Game Engine
 This project is created to have fun while experimenting with modern OpenGL
 and C++.
 
-Requirements
-------------
+Build
+-----
 
-* C++14
-* OpengGL 3.3
-* CMake 3.5
-
-Dependencies
-------------
-
-* [SDL2](https://www.libsdl.org/)
-* [Boost](https://www.boost.org/)
-* [GLM (OpenGL Mathematics)](https://glm.g-truc.net)
-* [GLI (OpenGL Image)](https://gli.g-truc.net)
-* [Bullet Physics](http://bulletphysics.org)
+```shell
+mkdir build
+cd build
+conan install .. --build=missing
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```

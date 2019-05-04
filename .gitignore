@@ -1,5 +1,6 @@
 build/
-external/
+release/
+debug/
 .vs/
 
 CMakeCache.txt
