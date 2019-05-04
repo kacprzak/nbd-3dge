@@ -60,7 +60,7 @@ endif()
 
 add_library(imgui_impl INTERFACE)
 target_compile_definitions(imgui_impl INTERFACE IMGUI_IMPL_OPENGL_LOADER_GLEW)
-target_include_directories(imgui_impl INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(imgui_impl INTERFACE ${imgui_SOURCE_DIR})
 target_sources(imgui_impl INTERFACE
   ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.cpp
   ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp
