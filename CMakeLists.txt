@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12...3.14)
 project(nbd-3dge VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
 add_definitions(-DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 
@@ -59,13 +60,9 @@ endif()
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(nbd-3dge_DEPS ${nbd-3dge_DEPS} c++abi c++fs)
+    set(nbd-3dge_DEPS ${nbd-3dge_DEPS} sndio)
   endif()
-  set(nbd-3dge_DEPS ${nbd-3dge_DEPS} c++abi c++fs)
-  #set(nbd-3dge_DEPS ${nbd-3dge_DEPS} stdc++fs)
-  set(nbd-3dge_DEPS ${nbd-3dge_DEPS} sndio)
-  
-  set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
-
   # For Emacs irony-mode to work
   #set(LIBCLANG_INCLUDES /usr/include/c++/8)
   #include_directories(${LIBCLANG_INCLUDES})
