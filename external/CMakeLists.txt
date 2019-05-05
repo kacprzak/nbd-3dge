@@ -1,10 +1,14 @@
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+set(FETCHCONTENT_QUIET OFF)
 
 FetchContent_Declare(
   gli
   GIT_REPOSITORY https://github.com/g-truc/gli.git
   GIT_SHALLOW    ON
+  GIT_PROGRESS   ON
+  BUILD_COMMAND  ""
+  LOG_DOWNLOAD   ON
   )
 
 FetchContent_GetProperties(gli)
@@ -43,6 +47,9 @@ else()
     GIT_REPOSITORY https://github.com/ocornut/imgui
     GIT_TAG        v1.66
     GIT_SHALLOW    ON
+    GIT_PROGRESS   ON
+    BUILD_COMMAND  ""
+    LOG_DOWNLOAD   ON
     )
 
   if(NOT imgui_POPULATED)
