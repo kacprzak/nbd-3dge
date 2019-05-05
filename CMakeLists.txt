@@ -62,6 +62,8 @@ if(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     set(nbd-3dge_DEPS ${nbd-3dge_DEPS} c++abi c++fs)
     set(nbd-3dge_DEPS ${nbd-3dge_DEPS} sndio)
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(nbd-3dge_DEPS ${nbd-3dge_DEPS} stdc++fs)
   endif()
   # For Emacs irony-mode to work
   #set(LIBCLANG_INCLUDES /usr/include/c++/8)
