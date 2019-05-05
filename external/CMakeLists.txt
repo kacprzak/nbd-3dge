@@ -2,6 +2,13 @@ include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 set(FETCHCONTENT_QUIET OFF)
 
+function(download_if_not_exists url file)
+  if(NOT EXISTS ${file})
+    message(STATUS "Downloading: " ${file})
+    file(DOWNLOAD ${url} ${file})
+  endif()
+endfunction()
+
 FetchContent_Declare(
   gli
   GIT_REPOSITORY https://github.com/g-truc/gli.git
@@ -27,7 +34,7 @@ target_include_directories(gli INTERFACE ${gli_SOURCE_DIR})
 target_link_libraries(gli INTERFACE glm)
 add_library(external::gli ALIAS gli)
 
-file(DOWNLOAD "https://raw.githubusercontent.com/jessey-git/fx-gltf/master/include/fx/gltf.h"
+download_if_not_exists("https://raw.githubusercontent.com/jessey-git/fx-gltf/master/include/fx/gltf.h"
   "${CMAKE_CURRENT_BINARY_DIR}/fx/gltf.h")
 
 add_library(fx-gltf INTERFACE)
@@ -37,10 +44,10 @@ add_library(external::fx-gltf ALIAS fx-gltf)
 if(TARGET CONAN_PKG::imgui)
   set(IMGUI_EXAMPLES_URL "https://raw.githubusercontent.com/ocornut/imgui/v1.66/examples")
   set(imgui_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/imgui")
-  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.h" "${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.h")
-  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.cpp" "${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp")
-  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.h" "${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.h")
-  file(DOWNLOAD "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.cpp" "${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.cpp")
+  download_if_not_exists( "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.h" "${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.h")
+  download_if_not_exists( "${IMGUI_EXAMPLES_URL}/imgui_impl_opengl3.cpp" "${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3.cpp")
+  download_if_not_exists( "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.h" "${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.h")
+  download_if_not_exists( "${IMGUI_EXAMPLES_URL}/imgui_impl_sdl.cpp" "${imgui_SOURCE_DIR}/examples/imgui_impl_sdl.cpp")
 else()
   FetchContent_Declare(
     imgui
