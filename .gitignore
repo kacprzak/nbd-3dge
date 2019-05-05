@@ -22,3 +22,6 @@ TAGS
 
 *.bmp
 *.ppm
+
+.dir-locals.el
+
