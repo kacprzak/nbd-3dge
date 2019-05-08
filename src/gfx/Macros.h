@@ -12,21 +12,21 @@
 #define OSTREAM_FRIEND(klass) friend std::ostream& operator<<(std::ostream&, const klass&)
 
 #define OSTREAM_IMPL(klass)                                                                        \
-    static inline std::ostream& operator<<(std::ostream& out, const klass& rhs)                    \
+    inline std::ostream& operator<<(std::ostream& out, const klass& rhs)                           \
     {                                                                                              \
         out << "<" << #klass << PRINT_ADDRESS ">";                                                 \
         return out;                                                                                \
     }
 
 #define OSTREAM_IMPL_1(klass, member)                                                              \
-    static inline std::ostream& operator<<(std::ostream& out, const klass& rhs)                    \
+    inline std::ostream& operator<<(std::ostream& out, const klass& rhs)                           \
     {                                                                                              \
         out << "<" << #klass << ":" << rhs.member << PRINT_ADDRESS ">";                            \
         return out;                                                                                \
     }
 
 #define OSTREAM_IMPL_2(klass, member1, member2)                                                    \
-    static inline std::ostream& operator<<(std::ostream& out, const klass& rhs)                    \
+    inline std::ostream& operator<<(std::ostream& out, const klass& rhs)                           \
     {                                                                                              \
         out << "<" << #klass << ":" << rhs.member1 << ":" << rhs.member2 << PRINT_ADDRESS ">";     \
         return out;                                                                                \
