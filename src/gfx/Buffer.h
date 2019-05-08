@@ -1,6 +1,8 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include "Macros.h"
+
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
@@ -13,6 +15,8 @@ namespace gfx {
 
 class Buffer final
 {
+    OSTREAM_FRIEND(Buffer);
+
   public:
     Buffer();
     Buffer(const Buffer&) = delete;
@@ -31,6 +35,8 @@ class Buffer final
   private:
     GLuint m_bufferId = 0;
 };
+
+OSTREAM_IMPL_1(gfx::Buffer, m_bufferId)
 
 struct Accessor final
 {
@@ -69,6 +75,8 @@ struct Accessor final
     std::array<float, 4> min{};
     std::array<float, 4> max{};
 };
+
+OSTREAM_IMPL(gfx::Accessor)
 
 // clang-format off
 template <> inline GLenum Accessor::glTypeToEnum<GLushort>() const { return GL_UNSIGNED_SHORT; }

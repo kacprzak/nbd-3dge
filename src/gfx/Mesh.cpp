@@ -44,7 +44,7 @@ Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor 
     auto maxPos = m_positionsAcc.max;
     m_aabb      = Aabb{{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[2]}};
 
-    LOG_INFO("Loaded Mesh: {}", m_vao);
+    LOG_CREATED;
 
     glBindVertexArray(0);
 }
@@ -63,7 +63,7 @@ Mesh::~Mesh()
 {
     glDeleteVertexArrays(1, &m_vao);
 
-    LOG_INFO("Released Mesh: {}", m_vao);
+    LOG_RELEASED;
 }
 
 void Mesh::draw(ShaderProgram* shaderProgram) const

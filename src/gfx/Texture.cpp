@@ -1,9 +1,5 @@
 #include "Texture.h"
 
-#include "../Logger.h"
-
-//#include <SDL.h>
-
 #include <gli/gl.hpp>
 #include <gli/gli.hpp>
 #include <glm/glm.hpp>
@@ -22,7 +18,7 @@ Sampler::Sampler()
 
     setRepeat();
 
-    LOG_INFO("Created Sampler: {}", m_samplerId);
+    LOG_CREATED;
 }
 
 Sampler::Sampler(Sampler&& other) { std::swap(m_samplerId, other.m_samplerId); }
@@ -31,7 +27,7 @@ Sampler::~Sampler()
 {
     glDeleteSamplers(1, &m_samplerId);
 
-    if (m_samplerId) LOG_INFO("Released Sampler: {}", m_samplerId);
+    if (m_samplerId) LOG_RELEASED;
 }
 
 void Sampler::bind(int textureUnit) { glBindSampler(textureUnit, m_samplerId); }
@@ -69,19 +65,18 @@ void Sampler::setParameter(GLenum param, GLint value)
 
 //------------------------------------------------------------------------------
 
-Texture::Texture(GLenum target)
+Texture::Texture(GLenum target, const std::string& _name)
     : m_target{target}
 {
     glGenTextures(1, &m_textureId);
+    name = _name;
+    LOG_CREATED;
 }
 
 Texture::Texture(const std::filesystem::path& file, const std::string& _name)
-    : Texture{GL_TEXTURE_2D}
+    : Texture{GL_TEXTURE_2D, _name.empty() ? file.filename().string() : _name}
 {
     createTexture(file.string().c_str());
-
-    name = _name.empty() ? file.filename().string() : _name;
-    LOG_INFO("Created Texture: {} | {}", m_textureId, name);
 }
 
 Texture::Texture(Texture&& other)
@@ -97,13 +92,12 @@ Texture::~Texture()
 {
     glDeleteTextures(1, &m_textureId);
 
-    if (m_textureId) LOG_INFO("Released Texture: {}", m_textureId);
+    if (m_textureId) LOG_RELEASED;
 }
 
 Texture Texture::createShadowMap(glm::ivec2 size)
 {
-    Texture tex{GL_TEXTURE_2D};
-    LOG_INFO("Created Texture: {} | {}", tex.m_textureId, "ShadowMap2D");
+    Texture tex{GL_TEXTURE_2D, "ShadowMap2D"};
 
     glBindTexture(tex.m_target, tex.m_textureId);
     glTexImage2D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.x, size.y, 0, GL_DEPTH_COMPONENT,
@@ -122,8 +116,7 @@ Texture Texture::createShadowMap(glm::ivec2 size)
 
 Texture Texture::createShadowMap(glm::ivec3 size)
 {
-    Texture tex{GL_TEXTURE_2D_ARRAY};
-    LOG_INFO("Created Texture: {} | {}", tex.m_textureId, "ShadowMap2DArray");
+    Texture tex{GL_TEXTURE_2D_ARRAY, "ShadowMap2DArray"};
 
     glBindTexture(tex.m_target, tex.m_textureId);
     glTexImage3D(tex.m_target, 0, GL_DEPTH_COMPONENT16, size.x, size.y, size.z, 0,

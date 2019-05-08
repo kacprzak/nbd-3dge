@@ -23,9 +23,6 @@ Skybox::Skybox()
      *
      */
 
-    std::array<Accessor, Accessor::Attribute::Size> attributes{};
-    auto primitive = GL_TRIANGLES;
-
     // clang-format off
     std::vector<glm::vec3> positions = {
         { x, -x,  x},
@@ -62,8 +59,6 @@ Skybox::Skybox()
 
     auto indicesBuffer = std::make_shared<Buffer>();
     indicesBuffer->loadData(indices.data(), sizeof(indices[0]) * indices.size());
-    auto positionsBuffer = std::make_shared<Buffer>();
-    positionsBuffer->loadData(positions.data(), sizeof(positions[0]) * positions.size());
 
     Accessor indicesAcc;
     indicesAcc.buffer = indicesBuffer;
@@ -71,14 +66,19 @@ Skybox::Skybox()
     indicesAcc.count  = indices.size();
     indicesAcc.size   = 1;
 
+    auto positionsBuffer = std::make_shared<Buffer>();
+    positionsBuffer->loadData(positions.data(), sizeof(positions[0]) * positions.size());
+
     Accessor posAcc;
-    posAcc.buffer                             = positionsBuffer;
-    posAcc.type                               = GL_FLOAT;
-    posAcc.count                              = positions.size();
-    posAcc.size                               = 3;
+    posAcc.buffer = positionsBuffer;
+    posAcc.type   = GL_FLOAT;
+    posAcc.count  = positions.size();
+    posAcc.size   = 3;
+
+    std::array<Accessor, Accessor::Attribute::Size> attributes{};
     attributes[Accessor::Attribute::Position] = posAcc;
 
-    m_mesh       = std::make_shared<Mesh>(attributes, indicesAcc, primitive);
+    m_mesh       = std::make_shared<Mesh>(attributes, indicesAcc, GL_TRIANGLES);
     m_mesh->name = "SKYBOX";
 }
 

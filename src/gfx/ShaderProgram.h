@@ -1,6 +1,7 @@
 #ifndef SHADERPROGRAM_H
 #define SHADERPROGRAM_H
 
+#include "Macros.h"
 #include "Shader.h"
 
 #include <GL/glew.h>
@@ -15,6 +16,8 @@ namespace gfx {
 
 class ShaderProgram final
 {
+    OSTREAM_FRIEND(ShaderProgram);
+
   public:
     ShaderProgram();
     ShaderProgram(const ShaderProgram& other) = delete;
@@ -39,6 +42,8 @@ class ShaderProgram final
     boost::container::flat_map<std::string, GLint> m_uniformLocs;
     bool m_linked = false;
 };
+
+OSTREAM_IMPL_1(gfx::ShaderProgram, m_shaderProgramId)
 
 } // namespace gfx
 

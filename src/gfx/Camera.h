@@ -6,6 +6,10 @@
 
 #include <glm/glm.hpp>
 
+// minwindef.h defines those
+#undef near
+#undef far
+
 namespace gfx {
 
 class Camera

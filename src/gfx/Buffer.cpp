@@ -1,13 +1,11 @@
 #include "Buffer.h"
 
-#include "../Logger.h"
-
 namespace gfx {
 
 Buffer::Buffer()
 {
     glGenBuffers(1, &m_bufferId);
-    LOG_INFO("Created Buffer: {}", m_bufferId);
+    LOG_CREATED;
 }
 
 Buffer::Buffer(Buffer&& other)
@@ -21,7 +19,7 @@ Buffer::~Buffer()
 {
     if (m_bufferId) {
         glDeleteBuffers(1, &m_bufferId);
-        LOG_INFO("Released Buffer: {}", m_bufferId);
+        LOG_RELEASED;
     }
 }
 

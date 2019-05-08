@@ -1,6 +1,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include "Macros.h"
+
 #include <GL/glew.h>
 #include <glm/fwd.hpp>
 
@@ -13,6 +15,8 @@ namespace gfx {
 
 class Sampler final
 {
+    OSTREAM_FRIEND(Sampler);
+
   public:
     Sampler();
     Sampler(const Sampler&) = delete;
@@ -34,10 +38,13 @@ class Sampler final
     GLuint m_samplerId = 0;
 };
 
+OSTREAM_IMPL_1(gfx::Sampler, m_samplerId)
+
 //------------------------------------------------------------------------------
 
 class Texture final
 {
+    OSTREAM_FRIEND(Texture);
     friend class Framebuffer;
 
   public:
@@ -69,7 +76,7 @@ class Texture final
     void createTexture(const char* filename);
     void createSampler();
 
-    Texture(GLenum target);
+    Texture(GLenum target, const std::string& name = "");
 
     GLenum m_target;
     GLuint m_textureId = 0;
@@ -80,6 +87,8 @@ class Texture final
 
     std::shared_ptr<Sampler> m_sampler;
 };
+
+OSTREAM_IMPL_2(gfx::Texture, m_textureId, name)
 
 //------------------------------------------------------------------------------
 

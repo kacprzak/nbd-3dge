@@ -10,6 +10,8 @@ namespace gfx {
 
 class Framebuffer final
 {
+    OSTREAM_FRIEND(Framebuffer);
+
   public:
     Framebuffer(glm::ivec3 size);
     ~Framebuffer();
@@ -21,6 +23,8 @@ class Framebuffer final
     GLuint m_framebufferId = 0;
     Texture m_shadowMap;
 };
+
+OSTREAM_IMPL_1(gfx::Framebuffer, m_framebufferId)
 
 } // namespace gfx
 

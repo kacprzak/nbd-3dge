@@ -31,7 +31,7 @@ class Model
 
     Aabb aabb() const;
 
-    gfx::Node* findNode(const std::string& node);
+    Node* findNode(const std::string& node);
 
   private:
     std::vector<std::shared_ptr<Buffer>> m_buffers;
@@ -42,8 +42,8 @@ class Model
     std::vector<Accessor> m_accessors;
     std::vector<Material> m_materials;
     std::vector<Camera> m_cameras;
-    std::vector<gfx::Node> m_nodes;
-    std::vector<gfx::Node*> m_scene;
+    std::vector<Node> m_nodes;
+    std::vector<Node*> m_scene;
 };
 
 } // namespace gfx

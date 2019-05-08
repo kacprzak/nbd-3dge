@@ -3,6 +3,7 @@
 
 #include "../Aabb.h"
 #include "Buffer.h"
+#include "Macros.h"
 #include "Material.h"
 #include "ShaderProgram.h"
 
@@ -12,6 +13,8 @@ namespace gfx {
 
 class Mesh final
 {
+    OSTREAM_FRIEND(Mesh);
+
   public:
     Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor indices,
          GLenum primitive);
@@ -45,6 +48,8 @@ class Mesh final
   public:
     std::string name;
 };
+
+OSTREAM_IMPL_1(gfx::Mesh, m_vao)
 
 } // namespace gfx
 

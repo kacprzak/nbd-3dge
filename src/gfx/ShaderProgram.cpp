@@ -11,7 +11,7 @@ namespace gfx {
 ShaderProgram::ShaderProgram()
 {
     m_shaderProgramId = glCreateProgram();
-    LOG_TRACE("Created Program: {}", m_shaderProgramId);
+    LOG_CREATED;
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram&& other)
@@ -24,7 +24,7 @@ ShaderProgram::ShaderProgram(ShaderProgram&& other)
 ShaderProgram::~ShaderProgram()
 {
     glDeleteProgram(m_shaderProgramId);
-    LOG_TRACE("Deleted Program: {}", m_shaderProgramId);
+    LOG_RELEASED;
 }
 
 void ShaderProgram::link(const std::vector<Shader*>& shaders)

@@ -120,7 +120,6 @@ int main(int ac, char** av)
     } catch (const std::exception& e) {
         LOG_FATAL(e.what());
         spdlog::drop_all();
-        throw;
     }
 
     spdlog::drop_all();
