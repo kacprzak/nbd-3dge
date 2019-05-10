@@ -10,11 +10,11 @@ namespace gfx {
 
 Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor indices,
            GLenum primitive)
-    : m_primitive{primitive}
+    : m_attributes{attributes}
+    , m_indices{indices}
+    , m_primitive{primitive}
 {
-    m_positionsAcc = attributes[Accessor::Attribute::Position];
-
-    if (m_positionsAcc.count == 0) {
+    if (m_attributes[Accessor::Attribute::Position].count == 0) {
         auto msg = "Mesh must have positions buffer";
         LOG_ERROR(msg);
         throw std::runtime_error{msg};
@@ -23,26 +23,19 @@ Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor 
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
 
-    if (indices.count > 0) {
-        m_typeOfElement    = indices.type;
-        m_numberOfElements = indices.count;
-        indices.buffer->bind(GL_ELEMENT_ARRAY_BUFFER);
+    if (m_indices.count > 0) {
+        m_indices.buffer->bind(GL_ELEMENT_ARRAY_BUFFER);
     }
 
     for (int i = 0; i < Accessor::Attribute::Size; ++i) {
-        const Accessor& acc = attributes[i];
+        const Accessor& acc = m_attributes[i];
         if (acc.count > 0) {
-            m_numberOfVertices = acc.count;
             acc.buffer->bind(GL_ARRAY_BUFFER);
             glEnableVertexAttribArray(i);
             glVertexAttribPointer(i, acc.size, acc.type, acc.normalized, acc.buffer->m_byteStride,
                                   (const void*)acc.byteOffset);
         }
     }
-
-    auto minPos = m_positionsAcc.min;
-    auto maxPos = m_positionsAcc.max;
-    m_aabb      = Aabb{{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[2]}};
 
     LOG_CREATED;
 
@@ -52,11 +45,9 @@ Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor 
 Mesh::Mesh(Mesh&& other)
 {
     std::swap(m_vao, other.m_vao);
+    std::swap(m_attributes, other.m_attributes);
+    std::swap(m_indices, other.m_indices);
     std::swap(m_primitive, other.m_primitive);
-    std::swap(m_typeOfElement, other.m_typeOfElement);
-    std::swap(m_numberOfElements, other.m_numberOfElements);
-    std::swap(m_numberOfVertices, other.m_numberOfVertices);
-    std::swap(m_aabb, other.m_aabb);
 }
 
 Mesh::~Mesh()
@@ -75,10 +66,10 @@ void Mesh::draw(ShaderProgram* shaderProgram) const
 
     glBindVertexArray(m_vao);
 
-    if (m_numberOfElements == 0) {
-        glDrawArrays(m_primitive, 0, m_numberOfVertices);
+    if (m_indices.count == 0) {
+        glDrawArrays(m_primitive, 0, m_attributes[Accessor::Attribute::Position].count);
     } else {
-        glDrawElements(m_primitive, m_numberOfElements, m_typeOfElement, 0);
+        glDrawElements(m_primitive, m_indices.count, m_indices.type, 0);
     }
 
     glBindVertexArray(0);
@@ -101,6 +92,14 @@ std::vector<float> Mesh::positions() const
     // return m_positionsAcc.buffer->getData();
 
     return retVal;
+}
+
+Aabb Mesh::aabb() const
+{
+    auto minPos = m_attributes[Accessor::Attribute::Position].min;
+    auto maxPos = m_attributes[Accessor::Attribute::Position].max;
+
+    return {{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[2]}};
 }
 
 void Mesh::setMaterial(const Material& material) { m_material = material; }

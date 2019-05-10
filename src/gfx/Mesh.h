@@ -28,21 +28,17 @@ class Mesh final
     void draw(ShaderProgram* shaderProgram) const;
 
     std::vector<float> positions() const;
-    Aabb aabb() const { return m_aabb; }
+    Aabb aabb() const;
 
     void setMaterial(const Material& material);
 
   private:
     GLuint m_vao;
 
-    GLenum m_primitive              = GL_TRIANGLES;
-    GLenum m_typeOfElement          = GL_UNSIGNED_SHORT;
-    unsigned int m_numberOfElements = 0u;
-    unsigned int m_numberOfVertices = 0u;
+    std::array<Accessor, Accessor::Attribute::Size> m_attributes;
+    Accessor m_indices;
+    GLenum m_primitive = GL_TRIANGLES;
 
-    Aabb m_aabb;
-
-    Accessor m_positionsAcc;
     Material m_material;
 
   public:
