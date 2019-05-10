@@ -1,7 +1,7 @@
 #include "ResourcesMgr.h"
 
 #include "Logger.h"
-#include "MtlLoader.h"
+#include "loaders/MtlLoader.h"
 
 #include <SDL.h>
 #include <nlohmann/json.hpp>

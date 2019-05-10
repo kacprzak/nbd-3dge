@@ -1,7 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "../Aabb.h"
+#include "Aabb.h"
 #include "Buffer.h"
 #include "Macros.h"
 #include "Material.h"

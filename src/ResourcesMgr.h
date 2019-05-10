@@ -1,12 +1,12 @@
 #ifndef RESOURCESMGR_H
 #define RESOURCESMGR_H
 
-#include "FontLoader.h"
+#include "loaders/FontLoader.h"
+#include "loaders/MeshData.h"
+#include "loaders/TextureData.h"
+#include "loaders/MaterialData.h"
 #include "Heightfield.h"
-#include "MeshData.h"
 #include "Script.h"
-#include "TextureData.h"
-#include "MaterialData.h"
 
 #include "gfx/Font.h"
 #include "gfx/Material.h"

@@ -1,7 +1,7 @@
 #include "MtlLoader.h"
 
-#include "Logger.h"
-#include "Util.h"
+#include "../Logger.h"
+#include "../Util.h"
 
 #include <glm/glm.hpp>
 

@@ -7,8 +7,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "Util.h"
-
 void Loader::load(const std::filesystem::path& file)
 {
     using namespace std;

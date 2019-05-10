@@ -1,8 +1,8 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
-#include "Aabb.h"
 #include "Components.h"
+#include "gfx/Aabb.h"
 #include "gfx/Camera.h"
 #include "gfx/Model.h"
 #include "gfx/ShaderProgram.h"

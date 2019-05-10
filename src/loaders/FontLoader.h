@@ -1,7 +1,7 @@
 #ifndef FONTLOADER_H
 #define FONTLOADER_H
 
-#include "gfx/Font.h"
+#include "../gfx/Font.h"
 #include "Loader.h"
 
 class FontLoader : public Loader

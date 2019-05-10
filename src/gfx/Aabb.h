@@ -6,6 +6,8 @@
 #include <array>
 #include <vector>
 
+namespace gfx {
+
 struct Aabb final
 {
     Aabb() = default;
@@ -141,5 +143,7 @@ inline Aabb operator*(const glm::mat4& matrix, const Aabb& aabb)
     }
     return Aabb(positions);
 }
+
+} // namespace gfx
 
 #endif /* AABB_H */

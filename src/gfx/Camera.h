@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "../Aabb.h"
+#include "Aabb.h"
 #include "ShaderProgram.h"
 
 #include <glm/glm.hpp>

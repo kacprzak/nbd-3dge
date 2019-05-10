@@ -13,18 +13,18 @@ set(nbd-3dge_SRCS
     gfx/Skybox.cpp
     gfx/Texture.cpp
     gfx/Text.cpp
+    loaders/FontLoader.cpp
+    loaders/Loader.cpp
+    loaders/MeshData.cpp
+    loaders/MtlLoader.cpp
+    loaders/ObjLoader.cpp
     Actor.cpp
     ActorFactory.cpp
     Engine.cpp
-    FontLoader.cpp
     GameClient.cpp
     GameLogic.cpp
     InputSystem.cpp
-    Loader.cpp
     Logger.cpp
-    MeshData.cpp
-    MtlLoader.cpp
-    ObjLoader.cpp
     PhysicsDebugDrawer.cpp
     PhysicsSystem.cpp
     RenderSystem.cpp

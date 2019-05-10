@@ -1,7 +1,7 @@
 #include "FontLoader.h"
 
-#include "Logger.h"
-#include "Util.h"
+#include "../Logger.h"
+#include "../Util.h"
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
