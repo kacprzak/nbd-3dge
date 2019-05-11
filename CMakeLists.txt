@@ -83,3 +83,9 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   add_subdirectory(tests)
 endif()
 
+# For clangd support
+if(UNIX)
+  execute_process(COMMAND ln -s "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+

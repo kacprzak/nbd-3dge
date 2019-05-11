@@ -6,4 +6,4 @@
          (projectile-project-test-cmd . "cd @CMAKE_BINARY_DIR@ && ctest")
          (projectile-project-run-cmd . "cd @CMAKE_BINARY_DIR@/bin && ./nbd-3dge")
          ))
- (c-mode . ((mode . c++))))
+ )

@@ -24,4 +24,4 @@ TAGS
 *.ppm
 
 .dir-locals.el
-
+compile_commands.json
