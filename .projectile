@@ -4,6 +4,8 @@
 -Doxyfile.in
 -/data
 -/bin
+-/build
 -GPATH
 -GRTAGS
 -GTAGS
+-compile_commands.json
