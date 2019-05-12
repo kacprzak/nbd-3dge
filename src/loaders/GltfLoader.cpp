@@ -1,0 +1,270 @@
+#include "GltfLoader.h"
+
+#include <fx/gltf.h>
+
+namespace loaders {
+
+int typeToSize(fx::gltf::Accessor::Type type)
+{
+    switch (type) {
+    case fx::gltf::Accessor::Type::None: return -1;
+    case fx::gltf::Accessor::Type::Scalar: return 1;
+    case fx::gltf::Accessor::Type::Vec2: return 2;
+    case fx::gltf::Accessor::Type::Vec3: return 3;
+    case fx::gltf::Accessor::Type::Vec4: return 4;
+    case fx::gltf::Accessor::Type::Mat2: return 4;
+    case fx::gltf::Accessor::Type::Mat3: return 9;
+    case fx::gltf::Accessor::Type::Mat4: return 16;
+    default: throw std::invalid_argument("Unknown type");
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::load(const std::filesystem::path& file)
+{
+    using namespace gfx;
+
+    fx::gltf::Document doc = fx::gltf::LoadFromText(file.string());
+
+    loadBuffers(doc);
+    loadAccessors(doc);
+    loadSamplers(doc);
+    loadTextures(doc, file);
+    loadMaterials(doc);
+    loadMeshes(doc);
+    loadCameras(doc);
+    loadNodes(doc);
+
+    m_rootNodeIdx = doc.scenes[doc.scene].nodes[0];
+}
+
+//------------------------------------------------------------------------------
+
+std::shared_ptr<gfx::Model> GltfLoader::model() const
+{
+    auto model = std::make_shared<gfx::Model>();
+
+    model->m_buffers  = m_buffers;
+    model->m_samplers = m_samplers;
+    model->m_textures = m_textures;
+    model->m_meshes   = m_meshes;
+
+    model->m_nodes = m_nodes;
+    model->m_rootNodeIdx = m_rootNodeIdx;
+
+    return model;
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadBuffers(const fx::gltf::Document& doc)
+{
+    for (auto& bv : doc.bufferViews) {
+        auto gpuBuffer = std::make_shared<gfx::Buffer>();
+
+        gpuBuffer->loadData(reinterpret_cast<const uint8_t*>(doc.buffers[bv.buffer].data.data()) +
+                                bv.byteOffset,
+                            bv.byteLength);
+        gpuBuffer->m_byteStride = bv.byteStride;
+
+        m_buffers.push_back(gpuBuffer);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadAccessors(const fx::gltf::Document& doc)
+{
+    for (auto& acc : doc.accessors) {
+        gfx::Accessor accessor;
+
+        accessor.buffer     = m_buffers[acc.bufferView];
+        accessor.byteOffset = acc.byteOffset;
+        accessor.count      = acc.count;
+        accessor.size       = typeToSize(acc.type);
+        accessor.type       = static_cast<GLenum>(acc.componentType);
+        accessor.normalized = acc.normalized;
+        std::copy(std::begin(acc.min), std::end(acc.min), std::begin(accessor.min));
+        std::copy(std::begin(acc.max), std::end(acc.max), std::begin(accessor.max));
+
+        m_accessors.push_back(accessor);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadSamplers(const fx::gltf::Document& doc)
+{
+    for (auto& smpl : doc.samplers) {
+        auto sampler = std::make_shared<gfx::Sampler>();
+
+        sampler->setParameter(GL_TEXTURE_WRAP_S, static_cast<GLint>(smpl.wrapS));
+        sampler->setParameter(GL_TEXTURE_WRAP_T, static_cast<GLint>(smpl.wrapT));
+        if (smpl.magFilter != fx::gltf::Sampler::MagFilter::None)
+            sampler->setParameter(GL_TEXTURE_MAG_FILTER, static_cast<GLint>(smpl.magFilter));
+        if (smpl.minFilter != fx::gltf::Sampler::MinFilter::None)
+            sampler->setParameter(GL_TEXTURE_MIN_FILTER, static_cast<GLint>(smpl.minFilter));
+
+        m_samplers.push_back(sampler);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadTextures(const fx::gltf::Document& doc, const std::filesystem::path& file)
+{
+    for (auto& txr : doc.textures) {
+        const auto filename =
+            file.parent_path() /
+            std::filesystem::path(doc.images[txr.source].uri).replace_extension(".ktx");
+
+        auto texture = std::make_shared<gfx::Texture>(filename, txr.name);
+
+        if (txr.sampler != -1) {
+            texture->setSampler(m_samplers[txr.sampler]);
+        }
+
+        m_textures.push_back(texture);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadMaterials(const fx::gltf::Document& doc)
+{
+    using namespace gfx;
+
+    for (auto& mtl : doc.materials) {
+        Material material;
+
+        // BaseColor
+        for (int i = 0; i < 4; ++i)
+            material.baseColorFactor[i] = mtl.pbrMetallicRoughness.baseColorFactor[i];
+
+        if (!mtl.pbrMetallicRoughness.baseColorTexture.empty())
+            material.textures[TextureUnit::BaseColor] =
+                m_textures.at(mtl.pbrMetallicRoughness.baseColorTexture.index);
+
+        // Normal
+        if (!mtl.normalTexture.empty()) {
+            material.normalScale                   = mtl.normalTexture.scale;
+            material.textures[TextureUnit::Normal] = m_textures.at(mtl.normalTexture.index);
+        }
+
+        // MetallicRoughness
+        material.metallicFactor  = mtl.pbrMetallicRoughness.metallicFactor;
+        material.roughnessFactor = mtl.pbrMetallicRoughness.roughnessFactor;
+        if (!mtl.pbrMetallicRoughness.metallicRoughnessTexture.empty()) {
+            material.textures[TextureUnit::MetallicRoughness] =
+                m_textures.at(mtl.pbrMetallicRoughness.metallicRoughnessTexture.index);
+        }
+
+        // Ambient Occlusion
+        if (!mtl.occlusionTexture.empty()) {
+            material.occlusionStrength                = mtl.occlusionTexture.strength;
+            material.textures[TextureUnit::Occlusion] = m_textures.at(mtl.occlusionTexture.index);
+        }
+
+        // Emissive
+        for (int i = 0; i < 3; ++i)
+            material.emissiveFactor[i] = mtl.emissiveFactor[i];
+        if (!mtl.emissiveTexture.empty()) {
+            material.textures[TextureUnit::Emissive] = m_textures.at(mtl.emissiveTexture.index);
+        }
+
+        material.name = mtl.name;
+
+        m_materials.push_back(material);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
+{
+    using namespace gfx;
+
+    for (auto& mesh : doc.meshes) {
+        for (auto& subMesh : mesh.primitives) {
+
+            std::array<Accessor, Accessor::Attribute::Size> attributes{};
+            auto primitive = static_cast<GLenum>(subMesh.mode);
+
+            Accessor& indices = m_accessors[subMesh.indices];
+
+            auto attr = subMesh.attributes.find("POSITION");
+            if (attr != std::end(subMesh.attributes))
+                attributes[Accessor::Attribute::Position] = m_accessors[attr->second];
+
+            attr = subMesh.attributes.find("NORMAL");
+            if (attr != std::end(subMesh.attributes))
+                attributes[Accessor::Attribute::Normal] = m_accessors[attr->second];
+
+            attr = subMesh.attributes.find("TANGENT");
+            if (attr != std::end(subMesh.attributes)) {
+                attributes[Accessor::Attribute::Tangent] = m_accessors[attr->second];
+            }
+
+            attr = subMesh.attributes.find("TEXCOORD_0");
+            if (attr != std::end(subMesh.attributes))
+                attributes[Accessor::Attribute::TexCoord_0] = m_accessors[attr->second];
+
+            // Missing tangent vectors!
+            if (!attributes[Accessor::Attribute::Tangent].buffer)
+                attributes[Accessor::Attribute::Tangent] = calculateTangents(attributes, indices);
+
+            auto m = std::make_shared<Mesh>(attributes, indices, primitive);
+
+            if (subMesh.material != -1) {
+                m->setMaterial(m_materials.at(subMesh.material));
+            }
+
+            m_meshes.push_back(m);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadCameras(const fx::gltf::Document& doc)
+{
+    for (auto& cam : doc.cameras) {
+        gfx::Camera camera;
+        camera.setAspectRatio(cam.perspective.aspectRatio);
+        camera.setPerspective(cam.perspective.yfov, cam.perspective.znear, cam.perspective.zfar);
+
+        m_cameras.push_back(std::move(camera));
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadNodes(const fx::gltf::Document& doc)
+{
+    for (auto& n : doc.nodes) {
+        static int actorId = 0;
+        gfx::Node node{actorId++};
+
+        node.setTranslation({n.translation[0], n.translation[1], n.translation[2]});
+        node.setScale({n.scale[0], n.scale[1], n.scale[2]});
+        node.setRotation({n.rotation[3], n.rotation[0], n.rotation[1], n.rotation[2]});
+
+        node.setMesh(n.mesh);
+        node.setCamera(n.camera);
+
+        node.name = n.name;
+
+        m_nodes.push_back(std::move(node));
+    }
+
+    for (auto i = 0u; i < doc.nodes.size(); ++i) {
+        const auto& gltfNode = doc.nodes[i];
+
+        for (auto nodeIdx : gltfNode.children) {
+            m_nodes[i].addChild(nodeIdx);
+        }
+    }
+}
+
+} // namespace loaders

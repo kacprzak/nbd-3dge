@@ -1,8 +1,7 @@
 #include "Node.h"
 
-#include "Camera.h"
 #include "Light.h"
-#include "Material.h"
+#include "Model.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -17,10 +16,6 @@ Node::Node(int actorId, TransformationComponent* tr, RenderComponent* rd)
     , m_rd{rd}
 {
 }
-
-//------------------------------------------------------------------------------
-
-void Node::setMesh(const std::shared_ptr<Mesh>& mesh) { m_mesh = mesh; }
 
 //------------------------------------------------------------------------------
 
@@ -42,12 +37,13 @@ void Node::rebuildModelMatrix()
 //------------------------------------------------------------------------------
 
 void Node::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-                const Camera* camera, const std::array<Light*, 8>& lights,
-                const TexturePack& environment) const
+                std::array<Light*, 8>& lights) const
 {
     const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
 
-    if (m_mesh) {
+    if (m_model && m_mesh != -1) {
+        auto mesh = m_model->getMesh(m_mesh);
+
         shaderProgram->use();
 
         for (size_t i = 0; i < lights.size(); ++i) {
@@ -62,34 +58,18 @@ void Node::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram
             }
         }
 
-        shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
-        shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
         shaderProgram->setUniform("modelMatrix", modelMatrix);
-
-        shaderProgram->setUniform("cameraPosition", camera->worldTranslation());
-
-        if (auto& t = environment[TextureUnit::BrdfLUT]) {
-            shaderProgram->setUniform("brdfLUT", TextureUnit::BrdfLUT);
-            t->bind(TextureUnit::BrdfLUT);
-        }
-        if (auto& t = environment[TextureUnit::Irradiance]) {
-            shaderProgram->setUniform("irradianceCube", TextureUnit::Irradiance);
-            t->bind(TextureUnit::Irradiance);
-        }
-        if (auto& t = environment[TextureUnit::Radiance]) {
-            shaderProgram->setUniform("radianceCube", TextureUnit::Radiance);
-            t->bind(TextureUnit::Radiance);
-        }
 
         // if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);
 
-        m_mesh->draw(shaderProgram);
+        mesh->draw(shaderProgram);
 
         // if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
     }
 
     for (auto child : m_children) {
-        child->draw(modelMatrix, shaderProgram, camera, lights, environment);
+        auto n = m_model->getNode(child);
+        n->draw(modelMatrix, shaderProgram, lights);
     }
 }
 
@@ -101,36 +81,52 @@ void Node::update(const glm::mat4& parentModelMatrix, float deltaTime)
 
     const auto& worldMatrix = parentModelMatrix * m_modelMatrix;
 
-    if (m_camera) m_camera->update(worldMatrix, deltaTime);
-    if (m_light) m_light->update(worldMatrix, deltaTime);
+    if (m_model) {
+        if (auto camera = m_model->getCamera(m_camera)) camera->update(worldMatrix, deltaTime);
+        if (auto light = m_model->getLight(m_light)) light->update(worldMatrix, deltaTime);
+    }
 
     for (auto child : m_children) {
-        child->update(worldMatrix, deltaTime);
+        auto n = m_model->getNode(child);
+        n->update(worldMatrix, deltaTime);
     }
 }
 
 //------------------------------------------------------------------------------
 
-void Node::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-                    const Camera* camera)
+Aabb Node::aabb() const
+{
+    Aabb aabb;
+
+    if (m_model && m_mesh != -1) aabb = aabb.mbr(m_modelMatrix * m_model->getMesh(m_mesh)->aabb());
+
+    for (auto& child : m_children) {
+        auto n = m_model->getNode(child);
+        aabb   = aabb.mbr(m_modelMatrix * n->aabb());
+    }
+    return aabb;
+}
+
+//------------------------------------------------------------------------------
+
+void Node::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram) const
 {
     const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
 
-    if (m_mesh) {
+    if (m_model && m_mesh != -1) {
+        auto mesh = m_model->getMesh(m_mesh);
+
         shaderProgram->use();
 
-        shaderProgram->setUniform("projectionMatrix", camera->projectionMatrix());
-        shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
-        shaderProgram->setUniform("modelMatrix", modelMatrix);
-
-        shaderProgram->setUniform("minimum", m_mesh->aabb().minimum);
-        shaderProgram->setUniform("maximum", m_mesh->aabb().maximum);
+        shaderProgram->setUniform("minimum", mesh->aabb().minimum);
+        shaderProgram->setUniform("maximum", mesh->aabb().maximum);
 
         glDrawArrays(GL_POINTS, 0, 1);
     }
 
     for (auto child : m_children) {
-        child->drawAabb(modelMatrix, shaderProgram, camera);
+        auto n = m_model->getNode(child);
+        n->drawAabb(modelMatrix, shaderProgram);
     }
 }
 

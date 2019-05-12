@@ -18,6 +18,7 @@ class Light : public Camera
         if (lt->type == LightComponent::Type::Directional) setOrtho();
     }
 
+    void applyTo(ShaderProgram* shaderProgram) const { Camera::applyTo(shaderProgram); }
     void applyTo(ShaderProgram* shaderProgram, int idx) const;
 
   private:

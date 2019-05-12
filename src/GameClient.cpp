@@ -7,6 +7,7 @@
 #include "gfx/Shader.h"
 #include "gfx/Skybox.h"
 #include "gfx/Texture.h"
+#include "loaders/GltfLoader.h"
 
 #include <imgui.h>
 
@@ -51,14 +52,18 @@ void GameClient::loadResources(const std::string& file)
     m_resourcesMgr->load(file);
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
     // Scene scene;
-    m_scene = std::make_shared<gfx::Model>();
+    loaders::GltfLoader loader;
+    //loader.load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
+    
     // m_scene->load(m_settings.dataFolder + "untitled.gltf");
     // m_scene->load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
+    loader.load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
     // m_scene->load(m_settings.dataFolder + "DamagedHelmet/glTF/DamagedHelmet.gltf");
-    m_scene->load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
     // m_scene->load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
     // m_scene->load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
     // m_scene->load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
+
+    m_scene = loader.model();
 
     m_renderSystem.setScene(m_scene);
 

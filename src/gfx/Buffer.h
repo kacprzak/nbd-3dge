@@ -38,6 +38,8 @@ class Buffer final
 
 OSTREAM_IMPL_1(gfx::Buffer, m_bufferId)
 
+//------------------------------------------------------------------------------
+
 struct Accessor final
 {
     enum Attribute {
@@ -86,6 +88,11 @@ template <> inline GLenum Accessor::glTypeToEnum<glm::vec2>() const { return GL_
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec3>() const { return GL_FLOAT; }
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec4>() const { return GL_FLOAT; }
 // clang-format on
+
+//------------------------------------------------------------------------------
+
+Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes,
+                           const Accessor& indices);
 
 } // namespace gfx
 

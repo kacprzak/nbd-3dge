@@ -14,6 +14,7 @@ set(nbd-3dge_SRCS
     gfx/Texture.cpp
     gfx/Text.cpp
     loaders/FontLoader.cpp
+    loaders/GltfLoader.cpp
     loaders/Loader.cpp
     loaders/MeshData.cpp
     loaders/MtlLoader.cpp

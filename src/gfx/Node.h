@@ -2,8 +2,9 @@
 #define GFX_NODE_H
 
 #include "../Components.h"
-#include "Mesh.h"
+#include "Aabb.h"
 #include "ShaderProgram.h"
+#include "Texture.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
@@ -13,6 +14,7 @@
 
 namespace gfx {
 
+class Model;
 class Camera;
 class Light;
 
@@ -22,14 +24,12 @@ class Node final
     explicit Node(int actorId, TransformationComponent* tr = nullptr,
                   RenderComponent* rd = nullptr);
 
-    Node(const Node&) = delete;
-    Node& operator=(const Node&) = delete;
+    Node(const Node&) = default;
+    Node& operator=(const Node&) = default;
 
     Node(Node&& other) = default;
 
     ~Node() = default;
-
-    void setMesh(const std::shared_ptr<Mesh>& mesh);
 
     void setTranslation(glm::vec3 translation) { m_translation = translation; }
     glm::vec3 getTranslation() const { return m_translation; }
@@ -50,11 +50,9 @@ class Node final
     }
 
     void draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-              const Camera* camera, const std::array<Light*, 8>& lights,
-              const TexturePack& environment) const;
+              std::array<Light*, 8>& lights) const;
 
-    void drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
-                  const Camera* camera);
+    void drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram) const;
 
     void update(const glm::mat4& parentModelMatrix, float delta);
 
@@ -64,40 +62,40 @@ class Node final
     RenderComponent* render() { return m_rd; }
     const RenderComponent* render() const { return m_rd; }
 
-    Aabb aabb() const
-    {
-        Aabb aabb;
-
-        if (m_mesh) aabb = aabb.mbr(m_modelMatrix * m_mesh->aabb());
-
-        for (auto& n : m_children)
-            aabb = aabb.mbr(m_modelMatrix * n->aabb());
-
-        return aabb;
-    }
+    Aabb aabb() const;
 
     void setCastShadows(bool castsShadows) { m_castsShadows = castsShadows; }
     bool castsShadows() const { return m_castsShadows; }
 
-    void addChild(Node* node) { m_children.push_back(node); }
+    void addChild(int node) { m_children.push_back(node); }
 
-    void removeChild(Node* node)
+    void removeChild(int node)
     {
         m_children.erase(std::remove(m_children.begin(), m_children.end(), node), m_children.end());
     }
 
-    void setCamera(Camera* camera) { m_camera = camera; }
-    void removeCamera() { m_camera = nullptr; }
+    void setModel(Model* model)
+    {
+        m_model = model;
+        m_mesh = m_camera = m_light = -1;
+    }
+    Model* getModel() { return m_model; }
 
-    void setLight(Light* light) { m_light = light; }
-    void removeLight() { m_light = nullptr; }
+    void setMesh(int mesh) { m_mesh = mesh; }
+    void removeMesh(int mesh) { m_mesh = -1; }
+
+    void setCamera(int camera) { m_camera = camera; }
+    void removeCamera() { m_camera = -1; }
+
+    void setLight(int light) { m_light = light; }
+    void removeLight() { m_light = -1; }
 
     std::string name;
 
   private:
     const glm::mat4& modelMatrix() const { return m_modelMatrix; }
 
-    const int m_actorId;
+    int m_actorId;
 
     TransformationComponent* m_tr = nullptr;
     RenderComponent* m_rd         = nullptr;
@@ -110,11 +108,11 @@ class Node final
 
     glm::mat4 m_modelMatrix{1.0f};
 
-    std::vector<Node*> m_children;
-    Camera* m_camera = nullptr;
-    Light* m_light   = nullptr;
-
-    std::shared_ptr<Mesh> m_mesh;
+    Model* m_model = nullptr;
+    int m_mesh     = -1;
+    int m_camera   = -1;
+    int m_light    = -1;
+    std::vector<int> m_children;
 
     bool m_castsShadows = false;
 };

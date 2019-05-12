@@ -53,6 +53,8 @@ class Camera
     glm::vec2 cascadeIdx2NearFar(int cascadeIndex) const;
     void setCascade(int cascadeIndex);
 
+    void applyTo(ShaderProgram* shaderProgram) const;
+
   protected:
     Frustum perspectiveArgsToFrustum(float fov, float ratio, float near, float far) const;
     Frustum ortoArgsToFrustum(float left, float right, float bottom, float top, float near,

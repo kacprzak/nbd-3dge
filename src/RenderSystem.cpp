@@ -80,7 +80,7 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 
     auto node = std::make_shared<gfx::Node>(99);
     node->setTranslation(glm::vec3{1.0f});
-    node->setLight(m_lights.begin()->second.get());
+    // node->setLight(m_lights.begin()->second.get());
 
     m_nodes[99] = node;
 }
@@ -102,7 +102,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
                 // } else {
                 node         = std::make_shared<gfx::Node>(id, tr, rd);
                 auto meshPtr = resourcesMgr.getMesh(rd->mesh);
-                node->setMesh(meshPtr);
+                // node->setMesh(meshPtr);
                 if (!lt) node->setCastShadows(true);
                 //}
             }
@@ -204,7 +204,12 @@ void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) con
     TexturePack environment;
     if (m_skybox) environment = m_skybox->textures();
 
-    m_scene->draw(m_defaultShader.get(), camera, lights, environment);
+    auto shaderProgram = m_defaultShader.get();
+
+    shaderProgram->use();
+    camera->applyTo(shaderProgram);
+
+    m_scene->draw(shaderProgram, lights, environment);
 
     /*
 for (const auto& node : m_nodes) {
@@ -236,10 +241,10 @@ void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camer
     std::array<Light*, 8> lights = {};
 
     for (const auto& node : m_nodes) {
-        node.second->draw(identity, shaderProgram, camera, lights, {});
+        node.second->draw(identity, shaderProgram, lights);
     }
 
-    m_scene->draw(shaderProgram, camera, lights, {});
+    m_scene->draw(shaderProgram, lights, {});
 }
 
 void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Light* light) const
@@ -263,8 +268,8 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
             glClear(GL_DEPTH_BUFFER_BIT);
 
             for (const auto& node : m_nodes) {
-                if (node.second->castsShadows())
-                    node.second->draw(glm::mat4{}, shaderProgram, light, lights, {});
+                if (node.second->castsShadows()) light->applyTo(shaderProgram);
+                node.second->draw(glm::mat4{}, shaderProgram, lights);
             }
         }
 
@@ -297,10 +302,10 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
     glBindVertexArray(m_emptyVao);
 
     for (const auto& node : m_nodes) {
-        node.second->drawAabb(glm::mat4{}, shaderProgram, camera);
+        node.second->drawAabb(glm::mat4{}, shaderProgram);
     }
 
-    m_scene->drawAabb(shaderProgram, camera);
+    m_scene->drawAabb(shaderProgram);
 }
 
 void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const
@@ -429,20 +434,10 @@ void RenderSystem::setScene(std::shared_ptr<Model> scene)
 {
     m_scene = scene;
 
-    auto cam = m_scene->findNode("Camera");
-    if (!cam) {
-        auto aabb = m_scene->aabb();
-        auto rn   = std::make_shared<gfx::Node>(-1);
+    auto aabb = m_scene->aabb();
 
-        glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
-        rn->setModelMatrix(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})));
-        rn->name = "Camera";
-        rn->setCamera(m_camera);
-
-        m_nodes[-1] = rn;
-    } else {
-        cam->setCamera(m_camera);
-    }
+    glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
+    m_camera->update(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})), 0);
 }
 
 gfx::Node* RenderSystem::findNode(const std::string& node)
