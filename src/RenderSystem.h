@@ -59,7 +59,8 @@ class RenderSystem final
     void add(std::shared_ptr<Text> actor) { m_texts.insert(actor); }
     void remove(std::shared_ptr<Text> actor) { m_texts.erase(actor); }
 
-    void draw(const Camera* camera, std::array<Light*, 8>& lights) const;
+    void draw(ShaderProgram* shaderProgram, const Camera* camera,
+              std::array<Light*, 8>& lights) const;
 
     void drawNormals(ShaderProgram* shaderProgram, const Camera* camera) const;
     void drawShadows(ShaderProgram* shaderProgram, Camera* camera, Light* light) const;
@@ -79,7 +80,6 @@ class RenderSystem final
     glm::ivec2 m_windowSize;
 
     std::map<int, std::shared_ptr<gfx::Node>> m_nodes;
-    std::map<int, std::shared_ptr<gfx::Node>> m_transparentNodes;
     std::map<int, std::shared_ptr<Light>> m_lights;
     std::vector<Camera> m_cameras;
     Camera* m_camera; // current camera

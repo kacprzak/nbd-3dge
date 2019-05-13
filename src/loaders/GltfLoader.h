@@ -9,7 +9,7 @@
 
 namespace fx {
 namespace gltf {
-class Document;
+struct Document;
 } // namespace gltf
 } // namespace fx
 

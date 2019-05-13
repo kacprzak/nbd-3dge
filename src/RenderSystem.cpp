@@ -75,14 +75,14 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 
     setSkybox(skybox);
 
-    static LightComponent lt;
-    addActor(0, nullptr, nullptr, &lt, resourcesMgr);
+    // static LightComponent lt;
+    // addActor(0, nullptr, nullptr, &lt, resourcesMgr);
 
-    auto node = std::make_shared<gfx::Node>(99);
-    node->setTranslation(glm::vec3{1.0f});
+    // auto node = std::make_shared<gfx::Node>(99);
+    // node->setTranslation(glm::vec3{1.0f});
     // node->setLight(m_lights.begin()->second.get());
 
-    m_nodes[99] = node;
+    // m_nodes[99] = node;
 }
 
 //------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
                 //                                      *resourcesMgr.getHeightfield(rd->mesh));
                 //     // node->setCastShadows(true);
                 // } else {
-                node         = std::make_shared<gfx::Node>(id, tr, rd);
+                node         = std::make_shared<gfx::Node>();
                 auto meshPtr = resourcesMgr.getMesh(rd->mesh);
                 // node->setMesh(meshPtr);
                 if (!lt) node->setCastShadows(true);
@@ -114,10 +114,10 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
 
             // node->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
 
-            if (!node->render()->transparent)
-                m_nodes[id] = node;
-            else
-                m_transparentNodes[id] = node;
+            // if (!node->render()->transparent)
+            //     m_nodes[id] = node;
+            // else
+            //     m_transparentNodes[id] = node;
 
         } else if (rd->role == Role::Skybox) {
             auto skybox = std::make_shared<Skybox>();
@@ -147,7 +147,6 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
 void RenderSystem::removeActor(int id)
 {
     m_nodes.erase(id);
-    m_transparentNodes.erase(id);
     m_lights.erase(id);
 }
 
@@ -166,10 +165,6 @@ void RenderSystem::update(float delta)
     for (const auto& node : m_nodes) {
         node.second->update(identity, delta);
     }
-
-    for (const auto& node : m_transparentNodes) {
-        node.second->update(identity, delta);
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -177,16 +172,16 @@ void RenderSystem::update(float delta)
 void RenderSystem::draw()
 {
     std::array<Light*, 8> lights = {};
-    Light* sun                   = m_lights.begin()->second.get();
+    // Light* sun                   = m_lights.begin()->second.get();
 
-    drawShadows(m_shadowShader.get(), m_camera, sun);
+    // drawShadows(m_shadowShader.get(), m_camera, sun);
     // drawShadows(m_shadowShader.get(), &m_cameras[Player], sun);
 
-    lights[0] = sun;
+    // lights[0] = sun;
 
     // sun->setCascade(0);
     // draw(sun, lights);
-    draw(m_camera, lights);
+    draw(m_defaultShader.get(), m_camera, lights);
 
     if (m_drawNormals) {
         drawNormals(m_normalsShader.get(), m_camera);
@@ -195,19 +190,18 @@ void RenderSystem::draw()
     }
 }
 
-void RenderSystem::draw(const Camera* camera, std::array<Light*, 8>& lights) const
+void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
+                        std::array<Light*, 8>& lights) const
 {
+    shaderProgram->use();
+    camera->applyTo(shaderProgram);
+
     const glm::mat4 identity{1.0f};
 
     if (m_polygonMode != GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, m_polygonMode);
 
     TexturePack environment;
     if (m_skybox) environment = m_skybox->textures();
-
-    auto shaderProgram = m_defaultShader.get();
-
-    shaderProgram->use();
-    camera->applyTo(shaderProgram);
 
     m_scene->draw(shaderProgram, lights, environment);
 
@@ -237,6 +231,9 @@ glDepthMask(GL_TRUE);
 
 void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camera) const
 {
+    shaderProgram->use();
+    camera->applyTo(shaderProgram);
+
     const glm::mat4 identity{1.0f};
     std::array<Light*, 8> lights = {};
 
@@ -299,6 +296,9 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
 void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) const
 {
+    shaderProgram->use();
+    camera->applyTo(shaderProgram);
+
     glBindVertexArray(m_emptyVao);
 
     for (const auto& node : m_nodes) {
@@ -310,6 +310,9 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
 
 void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const
 {
+    shaderProgram->use();
+    camera->applyTo(shaderProgram);
+
     glBindVertexArray(m_emptyVao);
 
     m_cameras.at(Player).drawFrustum(shaderProgram, camera);

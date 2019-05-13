@@ -1,7 +1,6 @@
 #ifndef GFX_NODE_H
 #define GFX_NODE_H
 
-#include "../Components.h"
 #include "Aabb.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
@@ -21,8 +20,7 @@ class Light;
 class Node final
 {
   public:
-    explicit Node(int actorId, TransformationComponent* tr = nullptr,
-                  RenderComponent* rd = nullptr);
+    explicit Node();
 
     Node(const Node&) = default;
     Node& operator=(const Node&) = default;
@@ -56,12 +54,6 @@ class Node final
 
     void update(const glm::mat4& parentModelMatrix, float delta);
 
-    TransformationComponent* transformation() { return m_tr; }
-    const TransformationComponent* transformation() const { return m_tr; }
-
-    RenderComponent* render() { return m_rd; }
-    const RenderComponent* render() const { return m_rd; }
-
     Aabb aabb() const;
 
     void setCastShadows(bool castsShadows) { m_castsShadows = castsShadows; }
@@ -77,7 +69,7 @@ class Node final
     void setModel(Model* model)
     {
         m_model = model;
-        m_mesh = m_camera = m_light = -1;
+        //m_mesh = m_camera = m_light = -1;
     }
     Model* getModel() { return m_model; }
 
@@ -94,11 +86,6 @@ class Node final
 
   private:
     const glm::mat4& modelMatrix() const { return m_modelMatrix; }
-
-    int m_actorId;
-
-    TransformationComponent* m_tr = nullptr;
-    RenderComponent* m_rd         = nullptr;
 
     void rebuildModelMatrix();
 

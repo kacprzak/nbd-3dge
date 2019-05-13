@@ -51,6 +51,9 @@ std::shared_ptr<gfx::Model> GltfLoader::model() const
     model->m_meshes   = m_meshes;
 
     model->m_nodes = m_nodes;
+    for (auto& n : model->m_nodes)
+        n.setModel(model.get());
+
     model->m_rootNodeIdx = m_rootNodeIdx;
 
     return model;
@@ -243,8 +246,7 @@ void GltfLoader::loadCameras(const fx::gltf::Document& doc)
 void GltfLoader::loadNodes(const fx::gltf::Document& doc)
 {
     for (auto& n : doc.nodes) {
-        static int actorId = 0;
-        gfx::Node node{actorId++};
+        gfx::Node node;
 
         node.setTranslation({n.translation[0], n.translation[1], n.translation[2]});
         node.setScale({n.scale[0], n.scale[1], n.scale[2]});

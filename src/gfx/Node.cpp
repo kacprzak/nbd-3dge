@@ -10,23 +10,12 @@
 
 namespace gfx {
 
-Node::Node(int actorId, TransformationComponent* tr, RenderComponent* rd)
-    : m_actorId{actorId}
-    , m_tr{tr}
-    , m_rd{rd}
-{
-}
+Node::Node() {}
 
 //------------------------------------------------------------------------------
 
 void Node::rebuildModelMatrix()
 {
-    if (m_tr) {
-        m_rotation    = m_tr->rotation;
-        m_translation = m_tr->translation;
-        m_scale       = m_tr->scale;
-    }
-
     const auto T = glm::translate(glm::mat4(1.f), m_translation);
     const auto R = glm::toMat4(m_rotation);
     const auto S = glm::scale(glm::mat4(1.f), m_scale);
@@ -60,11 +49,7 @@ void Node::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram
 
         shaderProgram->setUniform("modelMatrix", modelMatrix);
 
-        // if (!m_rd->backfaceCulling) glDisable(GL_CULL_FACE);
-
         mesh->draw(shaderProgram);
-
-        // if (!m_rd->backfaceCulling) glEnable(GL_CULL_FACE);
     }
 
     for (auto child : m_children) {
