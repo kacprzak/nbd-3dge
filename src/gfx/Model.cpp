@@ -22,21 +22,27 @@ void Model::draw(ShaderProgram* shaderProgram, std::array<Light*, 8>& lights,
 
     glm::mat4 identity{1.0f};
 
-    if (auto n = getRoot()) n->draw(identity, shaderProgram, lights);
+    for (const auto& scene : m_scenes)
+        for (auto rootIdx : scene)
+            getNode(rootIdx)->draw(identity, shaderProgram, lights);
 }
 
 void Model::drawAabb(ShaderProgram* shaderProgram)
 {
     glm::mat4 identity{1.0f};
 
-    if (auto n = getRoot()) n->drawAabb(identity, shaderProgram);
+    for (const auto& scene : m_scenes)
+        for (auto rootIdx : scene)
+            getNode(rootIdx)->drawAabb(identity, shaderProgram);
 }
 
 void Model::update(float delta)
 {
     glm::mat4 identity{1.0f};
 
-    if (auto n = getRoot()) n->update(identity, delta);
+    for (const auto& scene : m_scenes)
+        for (auto rootIdx : scene)
+            getNode(rootIdx)->update(identity, delta);
 }
 
 gfx::Node* Model::findNode(const std::string& node)

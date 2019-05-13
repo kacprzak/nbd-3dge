@@ -53,19 +53,18 @@ void GameClient::loadResources(const std::string& file)
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
     // Scene scene;
     loaders::GltfLoader loader;
-    //loader.load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
-    
-    // m_scene->load(m_settings.dataFolder + "untitled.gltf");
-    // m_scene->load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
-    loader.load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
-    // m_scene->load(m_settings.dataFolder + "DamagedHelmet/glTF/DamagedHelmet.gltf");
-    // m_scene->load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
-    // m_scene->load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
-    // m_scene->load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
+    loader.load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
 
-    m_scene = loader.model();
+    // loader.load(m_settings.dataFolder + "untitled.gltf");
+    // loader.load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
+    // loader.load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
+    // loader.load(m_settings.dataFolder + "DamagedHelmet/glTF/DamagedHelmet.gltf");
+    // loader.load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
+    // loader.load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
+    // loader.load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
 
-    m_renderSystem.setScene(m_scene);
+    auto model = loader.model();
+    m_renderSystem.addModel(model);
 
     m_resourcesFile = file;
 

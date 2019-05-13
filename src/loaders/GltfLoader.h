@@ -40,7 +40,9 @@ class GltfLoader
     std::vector<gfx::Material> m_materials;
     std::vector<gfx::Camera> m_cameras;
     std::vector<gfx::Node> m_nodes;
-    int m_rootNodeIdx = -1;
+    std::vector<std::vector<unsigned>> m_scenes;
+
+	std::string m_name;
 };
 
 } // namespace loaders

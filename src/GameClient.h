@@ -42,7 +42,6 @@ class GameClient : public SDLWindow
 
   private:
     PhysicsDebugDrawer m_debugDraw;
-    std::shared_ptr<gfx::Model> m_scene;
     std::shared_ptr<ResourcesMgr> m_resourcesMgr;
     std::string m_resourcesFile;
 

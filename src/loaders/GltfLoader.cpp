@@ -36,7 +36,11 @@ void GltfLoader::load(const std::filesystem::path& file)
     loadCameras(doc);
     loadNodes(doc);
 
-    m_rootNodeIdx = doc.scenes[doc.scene].nodes[0];
+    for (auto& scene : doc.scenes) {
+        m_scenes.push_back(scene.nodes);
+    }
+
+    m_name = file.filename().string();
 }
 
 //------------------------------------------------------------------------------
@@ -54,7 +58,8 @@ std::shared_ptr<gfx::Model> GltfLoader::model() const
     for (auto& n : model->m_nodes)
         n.setModel(model.get());
 
-    model->m_rootNodeIdx = m_rootNodeIdx;
+    model->m_scenes = m_scenes;
+    model->name     = m_name;
 
     return model;
 }

@@ -49,7 +49,7 @@ class RenderSystem final
     gfx::Node* findNode(const std::string& node);
 
     void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
-    void setScene(std::shared_ptr<Model> scene);
+    void addModel(std::shared_ptr<Model> model);
 
     void resizeWindow(glm::ivec2 size);
 
@@ -84,7 +84,7 @@ class RenderSystem final
     std::vector<Camera> m_cameras;
     Camera* m_camera; // current camera
 
-    std::shared_ptr<Model> m_scene;
+    std::shared_ptr<Model> m_model;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Text> m_cameraText;
     std::set<std::shared_ptr<Text>> m_texts;

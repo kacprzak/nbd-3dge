@@ -160,7 +160,7 @@ void RenderSystem::update(float delta)
         updateCameraText();
     }
 
-    m_scene->update(delta);
+    m_model->update(delta);
 
     for (const auto& node : m_nodes) {
         node.second->update(identity, delta);
@@ -203,7 +203,7 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
     TexturePack environment;
     if (m_skybox) environment = m_skybox->textures();
 
-    m_scene->draw(shaderProgram, lights, environment);
+    m_model->draw(shaderProgram, lights, environment);
 
     /*
 for (const auto& node : m_nodes) {
@@ -241,7 +241,7 @@ void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camer
         node.second->draw(identity, shaderProgram, lights);
     }
 
-    m_scene->draw(shaderProgram, lights, {});
+    m_model->draw(shaderProgram, lights, {});
 }
 
 void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Light* light) const
@@ -305,7 +305,7 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
         node.second->drawAabb(glm::mat4{}, shaderProgram);
     }
 
-    m_scene->drawAabb(shaderProgram);
+    m_model->drawAabb(shaderProgram);
 }
 
 void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const
@@ -433,11 +433,11 @@ void RenderSystem::updateCameraText()
     m_cameraText->setText(buffer.data());
 }
 
-void RenderSystem::setScene(std::shared_ptr<Model> scene)
+void RenderSystem::addModel(std::shared_ptr<Model> model)
 {
-    m_scene = scene;
+    m_model = model;
 
-    auto aabb = m_scene->aabb();
+    auto aabb = m_model->aabb();
 
     glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
     m_camera->update(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})), 0);
@@ -448,7 +448,7 @@ gfx::Node* RenderSystem::findNode(const std::string& node)
     for (auto& n : m_nodes) {
         if (n.second->name == node) return n.second.get();
     }
-    return m_scene->findNode(node);
+    return m_model->findNode(node);
 }
 
 } // namespace gfx

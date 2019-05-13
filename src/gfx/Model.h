@@ -64,7 +64,7 @@ class Model
         return nullptr;
     }
 
-    Node* getRoot() { return getNode(m_rootNodeIdx); }
+    std::string name;
 
   private:
     std::vector<std::shared_ptr<Buffer>> m_buffers;
@@ -76,7 +76,7 @@ class Model
     std::vector<Material> m_materials;
     std::vector<Camera> m_cameras;
     std::vector<Node> m_nodes;
-    int m_rootNodeIdx = -1;
+    std::vector<std::vector<unsigned>> m_scenes;
 };
 
 } // namespace gfx
