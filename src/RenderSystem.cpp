@@ -90,64 +90,31 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
 void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
                             LightComponent* lt, const ResourcesMgr& resourcesMgr)
 {
-    // Render component
-    if (rd) {
-        if (rd->role == Role::Dynamic) {
-            std::shared_ptr<gfx::Node> node;
-            if (!rd->mesh.empty()) {
-                // if (boost::starts_with(rd->mesh, "heightfield:")) {
-                //     node = std::make_shared<Terrain>(id, tr, rd,
-                //                                      *resourcesMgr.getHeightfield(rd->mesh));
-                //     // node->setCastShadows(true);
-                // } else {
-                node         = std::make_shared<gfx::Node>();
-                auto meshPtr = resourcesMgr.getMesh(rd->mesh);
-                // node->setMesh(meshPtr);
-                if (!lt) node->setCastShadows(true);
-                //}
-            }
+    Actor actor;
+    actor.id = id;
+    actor.tr = tr;
+    actor.rd = rd;
+    actor.lt = lt;
 
-            // if (!rd->material.empty()) {
-            //     auto materialPtr = resourcesMgr.getMaterial(rd->material);
-            //     node->setMaterial(materialPtr);
-            // }
+    auto it = std::find_if(m_models.cbegin(), m_models.cend(),
+                           [&](const auto& m) { return m->name == actor.rd->model; });
 
-            // node->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
-
-            // if (!node->render()->transparent)
-            //     m_nodes[id] = node;
-            // else
-            //     m_transparentNodes[id] = node;
-
-        } else if (rd->role == Role::Skybox) {
-            auto skybox = std::make_shared<Skybox>();
-
-            if (!rd->material.empty()) {
-                auto materialPtr = resourcesMgr.getMaterial(rd->material);
-                // skybox->setMaterial(materialPtr);
-            }
-            skybox->setShaderProgram(resourcesMgr.getShaderProgram(rd->shaderProgram));
-            setSkybox(skybox);
-        }
+    if (it != m_models.cend()) {
+        actor.model = *it;
+    } else {
+        LOG_WARNING("No model named {} found for actor {}", actor.rd->model, id);
     }
 
-    // Light component
-    if (lt) {
-        auto light = std::make_shared<Light>(id, lt);
-
-        // if (!lt->material.empty()) {
-        //     auto materialPtr = resourcesMgr.getMaterial(lt->material);
-        //     light->setMaterial(materialPtr);
-        // }
-
-        m_lights[id] = light;
-    }
+    m_actors.push_back(actor);
 }
+
+//------------------------------------------------------------------------------
 
 void RenderSystem::removeActor(int id)
 {
-    m_nodes.erase(id);
-    m_lights.erase(id);
+    auto it =
+        std::find_if(m_actors.begin(), m_actors.end(), [id](const auto& a) { return a.id == id; });
+    m_actors.erase(it);
 }
 
 //------------------------------------------------------------------------------
@@ -156,15 +123,10 @@ void RenderSystem::update(float delta)
 {
     const glm::mat4 identity{1.0f};
 
-    if (m_camera && m_cameraText) {
-        updateCameraText();
-    }
+    if (m_camera && m_cameraText) updateCameraText();
 
-    m_model->update(delta);
-
-    for (const auto& node : m_nodes) {
-        node.second->update(identity, delta);
-    }
+    for (auto& model : m_models)
+        model->update(delta);
 }
 
 //------------------------------------------------------------------------------
@@ -183,7 +145,7 @@ void RenderSystem::draw()
     // draw(sun, lights);
     draw(m_defaultShader.get(), m_camera, lights);
 
-    if (m_drawNormals) {
+    if (m_drawDebug) {
         drawNormals(m_normalsShader.get(), m_camera);
         drawAabb(m_aabbShader.get(), m_camera);
         drawFrustum(m_frustumShader.get(), m_camera);
@@ -203,7 +165,11 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
     TexturePack environment;
     if (m_skybox) environment = m_skybox->textures();
 
-    m_model->draw(shaderProgram, lights, environment);
+    for (const auto& a : m_actors) {
+        if (auto model = a.model.lock()) {
+            model->draw(a.transformation(), shaderProgram, lights, environment);
+        }
+    }
 
     /*
 for (const auto& node : m_nodes) {
@@ -237,11 +203,11 @@ void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camer
     const glm::mat4 identity{1.0f};
     std::array<Light*, 8> lights = {};
 
-    for (const auto& node : m_nodes) {
-        node.second->draw(identity, shaderProgram, lights);
+    for (const auto& a : m_actors) {
+        if (auto model = a.model.lock()) {
+            model->draw(a.transformation(), shaderProgram, lights, {});
+        }
     }
-
-    m_model->draw(shaderProgram, lights, {});
 }
 
 void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Light* light) const
@@ -263,11 +229,11 @@ void RenderSystem::drawShadows(ShaderProgram* shaderProgram, Camera* camera, Lig
 
             m_shadowMapFB->bindForWriting(ci);
             glClear(GL_DEPTH_BUFFER_BIT);
-
+            /*
             for (const auto& node : m_nodes) {
                 if (node.second->castsShadows()) light->applyTo(shaderProgram);
                 node.second->draw(glm::mat4{}, shaderProgram, lights);
-            }
+            }*/
         }
 
         // glCullFace(GL_BACK);
@@ -301,11 +267,11 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
 
     glBindVertexArray(m_emptyVao);
 
-    for (const auto& node : m_nodes) {
-        node.second->drawAabb(glm::mat4{}, shaderProgram);
+    for (const auto& a : m_actors) {
+        if (auto model = a.model.lock()) {
+            model->drawAabb(a.transformation(), shaderProgram);
+        }
     }
-
-    m_model->drawAabb(shaderProgram);
 }
 
 void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camera) const
@@ -317,12 +283,12 @@ void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camer
 
     m_cameras.at(Player).drawFrustum(shaderProgram, camera);
 
-    for (const auto& light : m_lights) {
-        // light.second->setPerspective(45, 1, 100);
-        // light.second->setOrtho(Aabb{{-10, -10, -100}, {10, 10, -1}});
-        light.second->drawFrustum(shaderProgram, camera);
-        // light.second->setOrtho();
-    }
+    // for (const auto& light : m_lights) {
+    // light.second->setPerspective(45, 1, 100);
+    // light.second->setOrtho(Aabb{{-10, -10, -100}, {10, 10, -1}});
+    // light.second->drawFrustum(shaderProgram, camera);
+    // light.second->setOrtho();
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -351,6 +317,7 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Camera& camera, const Ca
     Aabb tmp      = ans;
     tmp.maximum.z = std::numeric_limits<float>::max();
     // Nodes between light and visible nodes
+    /*
     for (const auto& node : m_nodes) {
         if (!node.second->castsShadows()) continue;
 
@@ -359,6 +326,7 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Camera& camera, const Ca
             ans.maximum.z = std::max(ans.maximum.z, aabb.maximum.z);
         }
     }
+        */
 
     // Shimmering edges
     glm::vec2 worldUnitsPerTexel;
@@ -386,12 +354,12 @@ void RenderSystem::resizeWindow(glm::ivec2 size)
 
 //------------------------------------------------------------------------------
 
-void RenderSystem::setDrawNormals(bool enable, float normalLength)
+void RenderSystem::setDrawDebug(bool enable, float normalLength)
 {
     if (m_normalsShader) {
         m_normalsShader->use();
         m_normalsShader->setUniform("magnitude", normalLength);
-        m_drawNormals = enable;
+        m_drawDebug = enable;
         glUseProgram(0);
     } else {
         LOG_INFO("Shader for drawing normal vectors is not loaded");
@@ -435,20 +403,26 @@ void RenderSystem::updateCameraText()
 
 void RenderSystem::addModel(std::shared_ptr<Model> model)
 {
-    m_model = model;
+    m_models.insert(model);
 
-    auto aabb = m_model->aabb();
+    Aabb aabb;
+    for (const auto& model : m_models)
+        aabb.mbr(model->aabb());
 
     glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
     m_camera->update(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})), 0);
 }
 
-gfx::Node* RenderSystem::findNode(const std::string& node)
+glm::mat4 RenderSystem::Actor::transformation() const
 {
-    for (auto& n : m_nodes) {
-        if (n.second->name == node) return n.second.get();
+    if (tr) {
+        const auto T = glm::translate(glm::mat4(1.f), tr->translation);
+        const auto R = glm::toMat4(tr->rotation);
+        const auto S = glm::scale(glm::mat4(1.f), tr->scale);
+        return T * R * S;
+    } else {
+        return glm::mat4{1.0f};
     }
-    return m_model->findNode(node);
 }
 
 } // namespace gfx

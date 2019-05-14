@@ -3,6 +3,6 @@
          (compile-command . "cd @CMAKE_BINARY_DIR@ && cmake --build .")
          (projectile-project-compilation-cmd . "cd @CMAKE_BINARY_DIR@ && cmake --build .")
          (projectile-project-test-cmd . "cd @CMAKE_BINARY_DIR@ && ctest")
-         (projectile-project-run-cmd . "cd @CMAKE_BINARY_DIR@/bin && ./nbd-3dge")
+         (projectile-project-run-cmd . "cd @CMAKE_BINARY_DIR@/bin && @nbd-3dge_OUTPUT_NAME@")
          ))
  )

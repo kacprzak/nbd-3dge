@@ -26,10 +26,9 @@ struct RenderComponent : public Component
 {
     Role role                 = Role::Dynamic;
     std::string shaderProgram = "default";
-    std::string mesh;
+    std::string model;
     bool transparent     = false;
     bool backfaceCulling = true;
-    std::string material;
 };
 
 struct LightComponent : public Component

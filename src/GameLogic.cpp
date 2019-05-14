@@ -6,8 +6,6 @@
 
 #include <fstream>
 
-//#include <boost/algorithm/string/predicate.hpp>
-
 class RotationScript : public Script
 {
   public:
@@ -86,12 +84,11 @@ void GameLogic::attachView(std::shared_ptr<GameView> gameView, unsigned actorId)
     m_physicsSystem->setDebugDrawer(gameView.get()->debugDrawer());
 }
 
+//------------------------------------------------------------------------------
+
 void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 {
     // Load scene
-    //   using boost::property_tree::ptree;
-    // ptree pt;
-
     nlohmann::json json;
 
     {
@@ -99,22 +96,17 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
         f >> json;
     }
 
-    // read_xml(m_settings.dataFolder + "scene.xml", pt);
-    // const auto& assetsXml = pt.get<std::string>("scene.assets");
-
     for (auto& gv : m_gameViews) {
         gv->loadResources(json["assets"]);
     }
 
-    /*
     ActorFactory factory;
-    for (ptree::value_type& v : pt.get_child("scene")) {
-        if (boost::algorithm::ends_with(v.first, "Prototype")) {
-            factory.registerPrototype(v);
-        } else {
-            auto a = factory.create(v);
-            m_actors.push_back(std::move(a));
-        }
+    for (auto p : json["prototypes"]) {
+        factory.registerPrototype(p);
+    }
+    for (auto i : json["actors"]) {
+        auto a = factory.create(i);
+        m_actors.push_back(std::move(a));
     }
 
     for (auto& gv : m_gameViews) {
@@ -134,8 +126,9 @@ void GameLogic::onBeforeMainLoop(Engine* /*e*/)
 
         if (tr && ph) m_physicsSystem->addActor(a->id(), tr.get(), ph.get(), *m_resourcesMgr);
     }
-    */
 }
+
+//------------------------------------------------------------------------------
 
 void GameLogic::onAfterMainLoop(Engine* /*e*/)
 {

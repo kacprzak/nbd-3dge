@@ -19,9 +19,9 @@ class Model
 
   public:
     void update(float delta);
-    void draw(ShaderProgram* shaderProgram, std::array<Light*, 8>& lights,
-              const TexturePack& environment);
-    void drawAabb(ShaderProgram* shaderProgram);
+    void draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
+              std::array<Light*, 8>& lights, const TexturePack& environment);
+    void drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgram);
 
     Aabb aabb() const;
 
@@ -59,6 +59,12 @@ class Model
     }
 
     Node* getNode(int idx)
+    {
+        if (idx >= 0 || idx < m_nodes.size()) return &m_nodes[idx];
+        return nullptr;
+    }
+
+    const Node* getNode(int idx) const
     {
         if (idx >= 0 || idx < m_nodes.size()) return &m_nodes[idx];
         return nullptr;

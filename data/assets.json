@@ -1,0 +1,71 @@
+{
+    "shaders": [
+        {
+            "name": "default",
+            "vertex": "pbr.vert",
+            "fragment": "pbr.frag"
+        },
+        {
+            "name": "shadow",
+            "vertex": "default.vert",
+            "fragment": "shadow.frag"
+        },
+        {
+            "name": "font",
+            "vertex": "font.vert",
+            "fragment": "font.frag"
+        },
+        {
+            "name": "normals",
+            "vertex": "normals.vert",
+            "geometry": "normals.geom",
+            "fragment": "normals.frag"
+        },
+        {
+            "name": "aabb",
+            "vertex": "aabb.vert",
+            "geometry": "aabb.geom",
+            "fragment": "aabb.frag"
+        },
+        {
+            "name": "frustum",
+            "vertex": "aabb.vert",
+            "geometry": "frustum.geom",
+            "fragment": "aabb.frag"
+        },
+        {
+            "name": "skybox",
+            "vertex": "skybox.vert",
+            "fragment": "skybox.frag"
+        },
+        {
+            "name": "light",
+            "vertex": "light.vert",
+            "fragment": "light.frag"
+        },
+        {
+            "name": "lightAndTex",
+            "vertex": "lightAndTex.vert",
+            "fragment": "lightAndTex.frag"
+        },
+        {
+            "name": "lightAndTex3",
+            "vertex": "lightAndTex3.vert",
+            "fragment": "lightAndTex3.frag"
+        },
+        {
+            "name": "terrain",
+            "vertex": "terrain.vert",
+            "fragment": "terrain.frag"
+        }
+    ],
+
+    "materials": [ "materials.mtl" ],  
+    
+    "fonts": [
+        {
+            "name": "ubuntu",
+            "file": "ubuntu.fnt"
+        }
+    ]
+}

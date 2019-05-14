@@ -76,7 +76,6 @@ add_subdirectory(src)
 
 configure_file(config.h.in config.h)
 configure_file(config.ini.in bin/config.ini)
-configure_file(.dir-locals.el.in ${CMAKE_CURRENT_SOURCE_DIR}/.dir-locals.el)
 
 if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   enable_testing()
@@ -89,3 +88,11 @@ if(UNIX)
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
+# For Emacs support
+set(nbd-3dge_OUTPUT_NAME "nbd-3dge")
+if(WIN32)
+  string(APPEND nbd-3dge_OUTPUT_NAME ".exe")
+else()
+  string(PREPEND nbd-3dge_OUTPUT_NAME "./")
+endif()
+configure_file(.dir-locals.el.in ${CMAKE_SOURCE_DIR}/.dir-locals.el)

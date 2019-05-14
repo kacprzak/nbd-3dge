@@ -18,6 +18,8 @@ namespace loaders {
 class GltfLoader
 {
   public:
+    explicit GltfLoader(const std::filesystem::path& rootDirectory);
+
     void load(const std::filesystem::path& file);
     std::shared_ptr<gfx::Model> model() const;
 
@@ -31,6 +33,8 @@ class GltfLoader
     void loadCameras(const fx::gltf::Document& doc);
     void loadNodes(const fx::gltf::Document& doc);
 
+    const std::filesystem::path m_rootDirectory;
+
     std::vector<std::shared_ptr<gfx::Buffer>> m_buffers;
     std::vector<std::shared_ptr<gfx::Sampler>> m_samplers;
     std::vector<std::shared_ptr<gfx::Texture>> m_textures;
@@ -42,7 +46,7 @@ class GltfLoader
     std::vector<gfx::Node> m_nodes;
     std::vector<std::vector<unsigned>> m_scenes;
 
-	std::string m_name;
+    std::string m_name;
 };
 
 } // namespace loaders

@@ -52,8 +52,8 @@ void GameClient::loadResources(const std::string& file)
     m_resourcesMgr->load(file);
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
     // Scene scene;
-    loaders::GltfLoader loader;
-    loader.load(m_settings.dataFolder + "SciFiHelmet/glTF/SciFiHelmet.gltf");
+    loaders::GltfLoader loader{m_settings.dataFolder};
+    loader.load("SciFiHelmet/glTF/SciFiHelmet.gltf");
 
     // loader.load(m_settings.dataFolder + "untitled.gltf");
     // loader.load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
@@ -63,19 +63,19 @@ void GameClient::loadResources(const std::string& file)
     // loader.load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
     // loader.load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
 
-    auto model = loader.model();
+    auto model  = loader.model();
     m_renderSystem.addModel(model);
 
     m_resourcesFile = file;
 
-    auto* cam = m_renderSystem.findNode("Camera");
-    if (cam) {
-        static TransformationComponent tr;
-        tr.translation = cam->getTranslation();
-        tr.rotation    = cam->getRotation();
+    // auto* cam = m_renderSystem.findNode("Camera");
+    // if (cam) {
+    //   static TransformationComponent tr;
+    //  tr.translation = cam->getTranslation();
+    // tr.rotation    = cam->getRotation();
 
-        m_freeCameraCtrl->camera = &tr;
-    }
+    //        m_freeCameraCtrl->camera = &tr;
+    //   }
     // m_tppCameraCtrl->camera = &tr;
 }
 
@@ -126,11 +126,11 @@ void GameClient::draw()
     if (ImGui::Button("Polygon Mode")) {
         m_renderSystem.setNextPolygonMode();
     }
-    if (ImGui::Checkbox("Normal visible", &showNormals)) {
-        m_renderSystem.setDrawNormals(!m_renderSystem.isDrawNormals(), normalLength);
+    if (ImGui::Checkbox("Draw debug", &showNormals)) {
+        m_renderSystem.setDrawDebug(!m_renderSystem.isDrawDebug(), normalLength);
     }
     if (ImGui::SliderFloat("Normal length", &normalLength, 0.0f, 10.0f)) {
-        m_renderSystem.setDrawNormals(m_renderSystem.isDrawNormals(), normalLength);
+        m_renderSystem.setDrawDebug(m_renderSystem.isDrawDebug(), normalLength);
     }
     ImGui::End();
 
@@ -146,9 +146,9 @@ void GameClient::update(float delta)
     if (m_inputSystem.isMouseRelativeMode()) {
         m_freeCameraCtrl->execute(delta, nullptr);
 
-        auto* cam = m_renderSystem.findNode("Camera");
-        cam->setTranslation(m_freeCameraCtrl->camera->translation);
-        cam->setRotation(m_freeCameraCtrl->camera->rotation);
+        // auto* cam = m_renderSystem.findNode("Camera");
+        // cam->setTranslation(m_freeCameraCtrl->camera->translation);
+        // cam->setRotation(m_freeCameraCtrl->camera->rotation);
     }
 
     m_renderSystem.update(delta);

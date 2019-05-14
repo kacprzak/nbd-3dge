@@ -2,8 +2,8 @@
 
 namespace gfx {
 
-void Model::draw(ShaderProgram* shaderProgram, std::array<Light*, 8>& lights,
-                 const TexturePack& environment)
+void Model::draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
+                 std::array<Light*, 8>& lights, const TexturePack& environment)
 {
     shaderProgram->use();
 
@@ -20,20 +20,16 @@ void Model::draw(ShaderProgram* shaderProgram, std::array<Light*, 8>& lights,
         t->bind(TextureUnit::Radiance);
     }
 
-    glm::mat4 identity{1.0f};
-
     for (const auto& scene : m_scenes)
         for (auto rootIdx : scene)
-            getNode(rootIdx)->draw(identity, shaderProgram, lights);
+            getNode(rootIdx)->draw(transformation, shaderProgram, lights);
 }
 
-void Model::drawAabb(ShaderProgram* shaderProgram)
+void Model::drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgram)
 {
-    glm::mat4 identity{1.0f};
-
     for (const auto& scene : m_scenes)
         for (auto rootIdx : scene)
-            getNode(rootIdx)->drawAabb(identity, shaderProgram);
+            getNode(rootIdx)->drawAabb(transformation, shaderProgram);
 }
 
 void Model::update(float delta)
@@ -56,9 +52,10 @@ gfx::Node* Model::findNode(const std::string& node)
 Aabb Model::aabb() const
 {
     Aabb aabb;
-    for (const auto& n : m_nodes) {
-        aabb = aabb.mbr(n.aabb());
-    }
+    for (const auto& scene : m_scenes)
+        for (auto rootIdx : scene)
+            aabb = aabb.mbr(getNode(rootIdx)->aabb());
+
     return aabb;
 }
 

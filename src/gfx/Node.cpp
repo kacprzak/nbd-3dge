@@ -25,10 +25,10 @@ void Node::rebuildModelMatrix()
 
 //------------------------------------------------------------------------------
 
-void Node::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+void Node::draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
                 std::array<Light*, 8>& lights) const
 {
-    const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
+    const auto& worldMatrix = transformation * m_modelMatrix;
 
     if (m_model && m_mesh != -1) {
         auto mesh = m_model->getMesh(m_mesh);
@@ -47,24 +47,24 @@ void Node::draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram
             }
         }
 
-        shaderProgram->setUniform("modelMatrix", modelMatrix);
+        shaderProgram->setUniform("modelMatrix", worldMatrix);
 
         mesh->draw(shaderProgram);
     }
 
     for (auto child : m_children) {
         auto n = m_model->getNode(child);
-        n->draw(modelMatrix, shaderProgram, lights);
+        n->draw(worldMatrix, shaderProgram, lights);
     }
 }
 
 //------------------------------------------------------------------------------
 
-void Node::update(const glm::mat4& parentModelMatrix, float deltaTime)
+void Node::update(const glm::mat4& transformation, float deltaTime)
 {
     rebuildModelMatrix();
 
-    const auto& worldMatrix = parentModelMatrix * m_modelMatrix;
+    const auto& worldMatrix = transformation * m_modelMatrix;
 
     if (m_model) {
         if (auto camera = m_model->getCamera(m_camera)) camera->update(worldMatrix, deltaTime);
@@ -94,9 +94,9 @@ Aabb Node::aabb() const
 
 //------------------------------------------------------------------------------
 
-void Node::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram) const
+void Node::drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgram) const
 {
-    const auto& modelMatrix = parentModelMatrix * m_modelMatrix;
+    const auto& worldMatrix = transformation * m_modelMatrix;
 
     if (m_model && m_mesh != -1) {
         auto mesh = m_model->getMesh(m_mesh);
@@ -111,7 +111,7 @@ void Node::drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderPro
 
     for (auto child : m_children) {
         auto n = m_model->getNode(child);
-        n->drawAabb(modelMatrix, shaderProgram);
+        n->drawAabb(worldMatrix, shaderProgram);
     }
 }
 

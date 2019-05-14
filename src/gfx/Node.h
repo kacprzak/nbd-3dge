@@ -38,7 +38,7 @@ class Node final
     void setScale(glm::vec3 scale) { m_scale = scale; }
     glm::vec3 getScale() const { return m_scale; }
 
-    void setModelMatrix(glm::mat4 mtx)
+    void setModelMatrix(const glm::mat4& mtx)
     {
         m_modelMatrix = mtx;
 
@@ -47,12 +47,12 @@ class Node final
         glm::decompose(mtx, m_scale, m_rotation, m_translation, skew, perspective);
     }
 
-    void draw(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram,
+    void draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
               std::array<Light*, 8>& lights) const;
 
-    void drawAabb(const glm::mat4& parentModelMatrix, ShaderProgram* shaderProgram) const;
+    void drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgram) const;
 
-    void update(const glm::mat4& parentModelMatrix, float delta);
+    void update(const glm::mat4& transformation, float delta);
 
     Aabb aabb() const;
 
@@ -69,7 +69,7 @@ class Node final
     void setModel(Model* model)
     {
         m_model = model;
-        //m_mesh = m_camera = m_light = -1;
+        // m_mesh = m_camera = m_light = -1;
     }
     Model* getModel() { return m_model; }
 

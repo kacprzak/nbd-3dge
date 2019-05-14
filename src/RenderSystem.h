@@ -22,6 +22,17 @@ class Skybox;
 
 class RenderSystem final
 {
+    struct Actor
+    {
+        int id;
+        TransformationComponent* tr;
+        RenderComponent* rd;
+        LightComponent* lt;
+        std::weak_ptr<Model> model;
+
+		glm::mat4 transformation() const;
+    };
+
   public:
     enum CameraType { Player, Free };
 
@@ -40,13 +51,11 @@ class RenderSystem final
     void update(float delta);
     void setNextPolygonMode();
 
-    void setDrawNormals(bool enable, float normalLength = 1.0f);
-    bool isDrawNormals() const { return m_drawNormals; }
+    void setDrawDebug(bool enable, float normalLength = 1.0f);
+    bool isDrawDebug() const { return m_drawDebug; }
 
     Camera* getCamera() { return m_camera; }
     Camera* getCamera(CameraType type) { return &m_cameras.at(type); }
-
-    gfx::Node* findNode(const std::string& node);
 
     void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
     void addModel(std::shared_ptr<Model> model);
@@ -79,14 +88,13 @@ class RenderSystem final
     int m_shadowCascadesSize;
     glm::ivec2 m_windowSize;
 
-    std::map<int, std::shared_ptr<gfx::Node>> m_nodes;
-    std::map<int, std::shared_ptr<Light>> m_lights;
+    std::vector<Actor> m_actors;
     std::vector<Camera> m_cameras;
     Camera* m_camera; // current camera
 
-    std::shared_ptr<Model> m_model;
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Text> m_cameraText;
+    std::set<std::shared_ptr<Model>> m_models;
     std::set<std::shared_ptr<Text>> m_texts;
 
     std::shared_ptr<ShaderProgram> m_defaultShader;
@@ -98,7 +106,7 @@ class RenderSystem final
     glm::ivec3 m_shadowMapSize;
     std::unique_ptr<Framebuffer> m_shadowMapFB;
 
-    bool m_drawNormals = false;
+    bool m_drawDebug = false;
 };
 
 } // namespace gfx
