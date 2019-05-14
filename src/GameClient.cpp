@@ -7,6 +7,7 @@
 #include "gfx/Shader.h"
 #include "gfx/Skybox.h"
 #include "gfx/Texture.h"
+
 #include "loaders/GltfLoader.h"
 
 #include <imgui.h>
@@ -51,20 +52,6 @@ void GameClient::loadResources(const std::string& file)
 {
     m_resourcesMgr->load(file);
     m_renderSystem.loadCommonResources(*m_resourcesMgr);
-    // Scene scene;
-    loaders::GltfLoader loader{m_settings.dataFolder};
-    loader.load("SciFiHelmet/glTF/SciFiHelmet.gltf");
-
-    // loader.load(m_settings.dataFolder + "untitled.gltf");
-    // loader.load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
-    // loader.load(m_settings.dataFolder + "BoomBox/glTF/BoomBox.gltf");
-    // loader.load(m_settings.dataFolder + "DamagedHelmet/glTF/DamagedHelmet.gltf");
-    // loader.load(m_settings.dataFolder + "Corset/glTF/Corset.gltf");
-    // loader.load(m_settings.dataFolder + "WaterBottle/glTF/WaterBottle.gltf");
-    // loader.load(m_settings.dataFolder + "FlightHelmet/glTF/FlightHelmet.gltf");
-
-    auto model  = loader.model();
-    m_renderSystem.addModel(model);
 
     m_resourcesFile = file;
 
@@ -88,6 +75,16 @@ void GameClient::unloadResources() { m_resourcesMgr.reset(); }
 void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* rd,
                           LightComponent* lt, ControlComponent* ctrl)
 {
+    if (rd) {
+        auto model = m_renderSystem.findModel(rd->model);
+        if (!model) {
+            loaders::GltfLoader loader{m_settings.dataFolder};
+            loader.load(rd->model);
+            model = loader.model();
+            m_renderSystem.addModel(model);
+        }
+    }
+
     m_renderSystem.addActor(id, tr, rd, lt, *m_resourcesMgr);
     if (ctrl) {
         m_inputSystem.addActor(id, ctrl);

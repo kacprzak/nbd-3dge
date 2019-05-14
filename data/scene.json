@@ -2,17 +2,67 @@
     "assets": "assets.json",
     "prototypes": [
         {
-            "name": "scifiHelmetPrototype",
+            "name": "SciFiHelmetPrototype",
             "render": {
                 "model": "SciFiHelmet/glTF/SciFiHelmet.gltf"
+            }
+        },
+        {
+            "name": "BoomBoxPrototype",
+            "render": {
+                "model": "BoomBox/glTF/BoomBox.gltf"
+            }
+        },
+        {
+            "name": "DamagedHelmetPrototype",
+            "render": {
+                "model": "DamagedHelmet/glTF/DamagedHelmet.gltf"
+            }
+        },
+        {
+            "name": "CorsetPrototype",
+            "render": {
+                "model": "Corset/glTF/Corset.gltf"
+            }
+        },
+        {
+            "name": "WaterBottlePrototype",
+            "render": {
+                "model": "WaterBottle/glTF/WaterBottle.gltf"
+            }
+        },
+        {
+            "name": "FlightHelmetPrototype",
+            "render": {
+                "model": "FlightHelmet/glTF/FlightHelmet.gltf"
             }
         }
     ],
     "actors": [
         {
             "name": "actor_1",
-            "prototype": "scifiHelmetPrototype",
-            "render": {}
+            "prototype": "DamagedHelmetPrototype",
+            "render": {},
+            "transformation": {
+                "position": "0 0 0"
+            }
+        },
+        {
+            "name": "actor_2",
+            "prototype": "SciFiHelmetPrototype",
+            "render": {},
+            "transformation": {
+                "position": "-5 0 5"
+            }
+        },
+        {
+            "name": "actor_3",
+            "prototype": "BoomBoxPrototype",
+            "render": {},
+            "transformation": {
+                "position": "0 -5 -5",
+                "scale": "100 100 100"
+            }
         }
     ]
 }

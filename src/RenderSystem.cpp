@@ -96,16 +96,16 @@ void RenderSystem::addActor(int id, TransformationComponent* tr, RenderComponent
     actor.rd = rd;
     actor.lt = lt;
 
-    auto it = std::find_if(m_models.cbegin(), m_models.cend(),
-                           [&](const auto& m) { return m->name == actor.rd->model; });
-
-    if (it != m_models.cend()) {
-        actor.model = *it;
+    auto model = findModel(actor.rd->model);
+    if (model) {
+        actor.model = model;
     } else {
         LOG_WARNING("No model named {} found for actor {}", actor.rd->model, id);
     }
 
     m_actors.push_back(actor);
+
+    lookAtAll();
 }
 
 //------------------------------------------------------------------------------
@@ -401,17 +401,40 @@ void RenderSystem::updateCameraText()
     m_cameraText->setText(buffer.data());
 }
 
-void RenderSystem::addModel(std::shared_ptr<Model> model)
-{
-    m_models.insert(model);
+//------------------------------------------------------------------------------
 
+void RenderSystem::lookAtAll()
+{
     Aabb aabb;
-    for (const auto& model : m_models)
-        aabb.mbr(model->aabb());
+
+    for (const auto& a : m_actors) {
+        if (auto model = a.model.lock()) {
+            aabb = aabb.mbr(a.transformation() * model->aabb());
+        }
+    }
 
     glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
     m_camera->update(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})), 0);
 }
+
+//------------------------------------------------------------------------------
+
+void RenderSystem::addModel(std::shared_ptr<Model> model) { m_models.insert(model); }
+
+//------------------------------------------------------------------------------
+
+std::shared_ptr<Model> RenderSystem::findModel(const std::string& name) const
+{
+    auto it = std::find_if(m_models.cbegin(), m_models.cend(),
+                           [&](const auto& m) { return m->name == name; });
+
+    if (it != m_models.cend())
+        return *it;
+    else
+        return std::shared_ptr<Model>();
+}
+
+//------------------------------------------------------------------------------
 
 glm::mat4 RenderSystem::Actor::transformation() const
 {

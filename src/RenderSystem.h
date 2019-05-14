@@ -30,7 +30,7 @@ class RenderSystem final
         LightComponent* lt;
         std::weak_ptr<Model> model;
 
-		glm::mat4 transformation() const;
+        glm::mat4 transformation() const;
     };
 
   public:
@@ -59,6 +59,7 @@ class RenderSystem final
 
     void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
     void addModel(std::shared_ptr<Model> model);
+    std::shared_ptr<Model> findModel(const std::string& name) const;
 
     void resizeWindow(glm::ivec2 size);
 
@@ -81,6 +82,7 @@ class RenderSystem final
     Aabb calcDirectionalLightProjection(const Camera& camera, const Camera& light,
                                         int cascadeIndex) const;
     void updateCameraText();
+    void lookAtAll();
 
     GLenum m_polygonMode = GL_FILL;
     GLuint m_emptyVao    = 0; // For drawing with no data
