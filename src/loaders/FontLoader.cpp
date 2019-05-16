@@ -4,7 +4,7 @@
 #include "../Util.h"
 
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/lexical_cast.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 static void removeQuotes(std::string& s)
 {
@@ -16,19 +16,7 @@ static void removeQuotes(std::string& s)
 template <typename T>
 T to_int(const std::string& s)
 {
-    return boost::lexical_cast<T>(s);
-}
-
-template <>
-uint8_t to_int<uint8_t>(const std::string& s)
-{
-    return boost::numeric_cast<uint8_t>(boost::lexical_cast<unsigned>(s));
-}
-
-template <>
-int8_t to_int<int8_t>(const std::string& s)
-{
-    return boost::numeric_cast<int8_t>(boost::lexical_cast<int>(s));
+    return boost::numeric_cast<T>(std::stol(s));
 }
 
 gfx::Font FontLoader::getFont() { return m_font; }

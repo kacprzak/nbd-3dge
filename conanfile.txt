@@ -1,7 +1,6 @@
 [requires]
 zlib/1.2.11@conan/stable
 spdlog/1.2.1@bincrafters/stable
-boost_program_options/1.69.0@bincrafters/stable
 boost_algorithm/1.69.0@bincrafters/stable
 boost_tokenizer/1.69.0@bincrafters/stable
 glew/2.1.0@bincrafters/stable
@@ -10,6 +9,7 @@ sdl2/2.0.8@bincrafters/stable
 bullet/2.87@bincrafters/stable
 jsonformoderncpp/3.1.2@vthiery/stable
 imgui/1.66@bincrafters/stable
+CLI11/1.7.1@cliutils/stable
 
 [generators]
 cmake

@@ -15,11 +15,11 @@ if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     CONAN_PKG::bullet
     CONAN_PKG::glew
     CONAN_PKG::spdlog
-    CONAN_PKG::boost_program_options
     CONAN_PKG::boost_tokenizer
     CONAN_PKG::boost_algorithm
     CONAN_PKG::jsonformoderncpp
-    CONAN_PKG::imgui)
+    CONAN_PKG::imgui
+    CONAN_PKG::CLI11)
 else()
   find_package(SDL2 REQUIRED CONFIG)
   

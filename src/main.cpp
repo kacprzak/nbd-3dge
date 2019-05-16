@@ -4,7 +4,7 @@
 #include "Logger.h"
 #include "Settings.h"
 
-#include <boost/program_options.hpp>
+#include <CLI\CLI.hpp>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -40,64 +40,26 @@ void initLogger(const std::string& logLevel)
 
 //------------------------------------------------------------------------------
 
-bool loadSettings(Settings& s, int ac, char** av)
+int loadSettings(Settings& s, int ac, char** av)
 {
-    namespace po = boost::program_options;
+    CLI::App app{"No Big Deal 3D Game Engine"};
 
-    po::options_description desc("Allowed options");
-    // clang-format off
-    desc.add_options()
-        ("help,h", "Produce help message")
-        ("screenWidth", po::value<unsigned short>()->default_value(s.screenWidth), "Screen resolution")
-        ("screenHeight", po::value<unsigned short>()->default_value(s.screenHeight), "Screen resolution")
-        ("fullscreen", "Full screen mode")
-        ("msaa", po::value<unsigned short>()->default_value(s.msaa), "Multisample anti-aliasing")
-        ("dataFolder", po::value<std::string>(), "Path to textures, sounds etc.")
-        ("shadersFolder", po::value<std::string>(), "Path to shaders code")
-        ("logLevel", po::value<std::string>()->default_value(s.logLevel),
-         "Can be trace, debug, info, warning, error or fatal")
-        ;
-    // clang-format on
+    app.set_config("--config", "config.ini");
+    app.add_option("--screenWidth", s.screenWidth, "Screen resolution");
+    app.add_option("screenHeight", s.screenHeight, "Screen resolution");
+    app.add_flag("--fullscreen", s.fullscreen, "Full screen mode");
+    app.add_option("--msaa", s.msaa, "Multisample anti-aliasing");
+    app.add_option("--dataFolder", s.dataFolder, "Path to textures, sounds etc.")
+        ->check(CLI::ExistingDirectory)
+        ->required();
+    app.add_option("--shadersFolder", s.shadersFolder, "Path to shaders code")
+        ->check(CLI::ExistingDirectory)
+        ->required();
+    app.add_set("--logLevel", s.logLevel, {"trace", "debug", "info", "warning", "error", "fatal"});
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(ac, av, desc), vm);
+    CLI11_PARSE(app, ac, av);
 
-    const char* configFile = "config.ini";
-    std::ifstream ifs{configFile};
-    if (ifs) {
-        store(parse_config_file(ifs, desc), vm);
-    } else {
-        char* buffer;
-
-        // Get the current working directory:
-        if ((buffer = getcwd(NULL, 0)) == NULL)
-            perror("getcwd error");
-        else {
-            LOG_WARNING("No {} in {}", configFile, buffer);
-            free(buffer);
-        }
-    }
-
-    po::notify(vm);
-
-    if (vm.count("help")) {
-        std::cout << desc << '\n';
-        return false;
-    }
-
-    s.screenWidth  = vm["screenWidth"].as<unsigned short>();
-    s.screenHeight = vm["screenHeight"].as<unsigned short>();
-
-    if (vm.count("fullscreen")) s.fullscreen = true;
-
-    s.msaa = vm["msaa"].as<unsigned short>();
-
-    s.dataFolder    = vm["dataFolder"].as<std::string>();
-    s.shadersFolder = vm["shadersFolder"].as<std::string>();
-
-    s.logLevel = vm["logLevel"].as<std::string>();
-
-    return true;
+    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -105,7 +67,7 @@ bool loadSettings(Settings& s, int ac, char** av)
 int main(int ac, char** av)
 {
     Settings settings;
-    if (!loadSettings(settings, ac, av)) return 1;
+    if (auto err = loadSettings(settings, ac, av)) return err;
 
     initLogger(settings.logLevel);
 

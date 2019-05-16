@@ -1,13 +1,12 @@
 #include "MtlLoader.h"
 
 #include "../Logger.h"
-#include "../Util.h"
 
 #include <glm/glm.hpp>
 
 static inline glm::vec3 to_glmvec3(const std::vector<std::string>& args)
 {
-    return glm::vec3(to_float(args.at(0)), to_float(args.at(1)), to_float(args.at(2)));
+    return glm::vec3(std::stof(args.at(0)), std::stof(args.at(1)), std::stof(args.at(2)));
 }
 
 void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& args)
@@ -27,7 +26,7 @@ void MtlLoader::command(const std::string& cmd, const std::vector<std::string>& 
         mtl.specular      = to_glmvec3(args);
     } else if (cmd == "Ns") {
         MaterialData& mtl = m_materials.back();
-        mtl.shininess     = to_float(args.at(0));
+        mtl.shininess     = std::stof(args.at(0));
     } else if (cmd == "map_Ka" || cmd == "map_Kd" || cmd == "map_Ks" || cmd == "map_Kn" ||
                cmd == "cube_Ka" || cmd == "cube_Kd" || cmd == "cube_Ks" || cmd == "cube_Kn") {
         MaterialData& mtl = m_materials.back();

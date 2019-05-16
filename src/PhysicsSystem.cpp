@@ -7,7 +7,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/lexical_cast.hpp>
 
 class MotionState : public btMotionState
 {
@@ -192,15 +191,15 @@ PhysicsSystem::createCollisionShape(const PhysicsComponent& ph, const ResourcesM
             return colShape;
 
         } else if (splitted[0] == "capsule") {
-            auto colShape = std::make_unique<btCapsuleShape>(
-                boost::lexical_cast<float>(splitted[1]), boost::lexical_cast<float>(splitted[2]));
+            auto colShape =
+                std::make_unique<btCapsuleShape>(std::stof(splitted[1]), std::stof(splitted[2]));
             return colShape;
 
         } else if (splitted[0] == "box") {
             auto colShape = std::make_unique<btBoxShape>(btVector3{
-                boost::lexical_cast<float>(splitted[1]),
-                boost::lexical_cast<float>(splitted[2]),
-                boost::lexical_cast<float>(splitted[3]),
+                std::stof(splitted[1]),
+                std::stof(splitted[2]),
+                std::stof(splitted[3]),
             });
             return colShape;
 
