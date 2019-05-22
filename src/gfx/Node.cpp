@@ -103,6 +103,7 @@ void Node::drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgra
 
         shaderProgram->use();
 
+        shaderProgram->setUniform("modelMatrix", worldMatrix);
         shaderProgram->setUniform("minimum", mesh->aabb().minimum);
         shaderProgram->setUniform("maximum", mesh->aabb().maximum);
 

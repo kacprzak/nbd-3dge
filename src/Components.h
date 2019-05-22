@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include <string>
 #include <vector>
@@ -18,6 +19,21 @@ struct TransformationComponent : public Component
     glm::quat rotation{1.f, 0.f, 0.f, 0.f};
     glm::vec3 translation{};
     glm::vec3 scale{1.0f, 1.0f, 1.0f};
+
+    glm::mat4 toMatrix() const
+    {
+        const auto T = glm::translate(glm::mat4(1.f), translation);
+        const auto R = glm::toMat4(rotation);
+        const auto S = glm::scale(glm::mat4(1.f), scale);
+        return T * R * S;
+    }
+
+    void fromMatrix(const glm::mat4& mtx)
+    {
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(mtx, scale, rotation, translation, skew, perspective);
+    }
 };
 
 enum class Role { Skybox, Dynamic };

@@ -46,11 +46,12 @@ class GameClient : public SDLWindow
     std::string m_resourcesFile;
 
     const Settings m_settings;
+    gfx::Camera m_camera;
     gfx::RenderSystem m_renderSystem;
     InputSystem m_inputSystem;
 
     std::unique_ptr<CameraController> m_freeCameraCtrl;
-    std::unique_ptr<CameraController> m_tppCameraCtrl;
+    //std::unique_ptr<CameraController> m_tppCameraCtrl;
 };
 
 #endif // GAMECLIENT_H

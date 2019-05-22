@@ -29,14 +29,14 @@ RenderSystem::RenderSystem(glm::ivec2 windowSize)
 
     // m_shadowMapFB = std::make_unique<Framebuffer>(m_shadowMapSize);
 
-    float ratio = m_windowSize.x / float(m_windowSize.y);
+    // float ratio = m_windowSize.x / float(m_windowSize.y);
     // Add player camera
-    m_cameras.emplace_back();
+    // m_cameras.emplace_back();
 
     // Add free camera
-    m_cameras.emplace_back();
+    // m_cameras.emplace_back();
 
-    m_camera = &m_cameras.at(Player);
+    // m_camera = &m_cameras.at(Player);
 }
 
 //------------------------------------------------------------------------------
@@ -133,6 +133,8 @@ void RenderSystem::update(float delta)
 
 void RenderSystem::draw()
 {
+    if (!m_camera) return;
+
     std::array<Light*, 8> lights = {};
     // Light* sun                   = m_lights.begin()->second.get();
 
@@ -281,7 +283,7 @@ void RenderSystem::drawFrustum(ShaderProgram* shaderProgram, const Camera* camer
 
     glBindVertexArray(m_emptyVao);
 
-    m_cameras.at(Player).drawFrustum(shaderProgram, camera);
+    // m_cameras.at(Player).drawFrustum(shaderProgram, camera);
 
     // for (const auto& light : m_lights) {
     // light.second->setPerspective(45, 1, 100);
@@ -347,9 +349,13 @@ Aabb RenderSystem::calcDirectionalLightProjection(const Camera& camera, const Ca
 void RenderSystem::resizeWindow(glm::ivec2 size)
 {
     m_windowSize = size;
-    for (auto& camera : m_cameras) {
-        camera.setAspectRatio(size.x / float(size.y));
-    }
+
+    if (m_camera) m_camera->setAspectRatio(size.x / float(size.y));
+    /*
+for (auto& camera : m_cameras) {
+    camera.setAspectRatio(size.x / float(size.y));
+}
+    */
 }
 
 //------------------------------------------------------------------------------
@@ -439,10 +445,7 @@ std::shared_ptr<Model> RenderSystem::findModel(const std::string& name) const
 glm::mat4 RenderSystem::Actor::transformation() const
 {
     if (tr) {
-        const auto T = glm::translate(glm::mat4(1.f), tr->translation);
-        const auto R = glm::toMat4(tr->rotation);
-        const auto S = glm::scale(glm::mat4(1.f), tr->scale);
-        return T * R * S;
+        return tr->toMatrix();
     } else {
         return glm::mat4{1.0f};
     }

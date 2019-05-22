@@ -24,11 +24,15 @@ GameClient::GameClient(const Settings& settings, const std::shared_ptr<Resources
     }
 
     m_freeCameraCtrl = std::make_unique<FreeCameraController>();
-    // m_freeCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Free)->worldTranslation();
+
+    static TransformationComponent tr;
+    m_freeCameraCtrl->camera = &tr;
     m_inputSystem.addActor(-1, &m_freeCameraCtrl->cameraActions);
 
-    m_tppCameraCtrl = std::make_unique<TppCameraController>();
+    // m_tppCameraCtrl = std::make_unique<TppCameraController>();
     // m_tppCameraCtrl->camera = m_renderSystem.getCamera(RenderSystem::Player)->worldTranslation();
+    m_renderSystem.setCamera(&m_camera);
+    m_renderSystem.resizeWindow({m_settings.screenWidth, m_settings.screenHeight});
 }
 
 //------------------------------------------------------------------------------
@@ -88,8 +92,10 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
     m_renderSystem.addActor(id, tr, rd, lt, *m_resourcesMgr);
     if (ctrl) {
         m_inputSystem.addActor(id, ctrl);
-        m_tppCameraCtrl->player = tr;
+        // m_tppCameraCtrl->player = tr;
     }
+
+    m_freeCameraCtrl->camera->translation = m_camera.worldTranslation();
 }
 
 //------------------------------------------------------------------------------
@@ -144,8 +150,9 @@ void GameClient::update(float delta)
         m_freeCameraCtrl->execute(delta, nullptr);
 
         // auto* cam = m_renderSystem.findNode("Camera");
-        // cam->setTranslation(m_freeCameraCtrl->camera->translation);
-        // cam->setRotation(m_freeCameraCtrl->camera->rotation);
+        // m_camera.setTranslation(m_freeCameraCtrl->camera->translation);
+        // m_camera.setRotation(m_freeCameraCtrl->camera->rotation);
+        m_camera.update(m_freeCameraCtrl->camera->toMatrix(), delta);
     }
 
     m_renderSystem.update(delta);
@@ -178,11 +185,13 @@ void GameClient::keyReleased(const SDL_Event& event)
     case SDL_SCANCODE_TAB: {
         static bool debugCamera = false;
         debugCamera             = !debugCamera;
-        if (debugCamera) {
+        /*
+                if (debugCamera) {
             m_renderSystem.setCamera(gfx::RenderSystem::Free);
         } else {
             m_renderSystem.setCamera(gfx::RenderSystem::Player);
         }
+                */
         m_inputSystem.setDebug(debugCamera);
     } break;
     case SDL_SCANCODE_L: {

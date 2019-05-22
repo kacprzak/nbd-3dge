@@ -34,8 +34,6 @@ class RenderSystem final
     };
 
   public:
-    enum CameraType { Player, Free };
-
     RenderSystem(glm::ivec2 windowSize);
     ~RenderSystem();
     RenderSystem(const RenderSystem&) = delete;
@@ -55,10 +53,9 @@ class RenderSystem final
     bool isDrawDebug() const { return m_drawDebug; }
 
     Camera* getCamera() { return m_camera; }
-    Camera* getCamera(CameraType type) { return &m_cameras.at(type); }
+    void setCamera(Camera* camera) { m_camera = camera; }
 
-    void setCamera(CameraType type) { m_camera = &m_cameras.at(type); }
-    void addModel(std::shared_ptr<Model> model);
+	void addModel(std::shared_ptr<Model> model);
     std::shared_ptr<Model> findModel(const std::string& name) const;
 
     void resizeWindow(glm::ivec2 size);
@@ -90,9 +87,8 @@ class RenderSystem final
     int m_shadowCascadesSize;
     glm::ivec2 m_windowSize;
 
+    Camera* m_camera = nullptr; // current camera
     std::vector<Actor> m_actors;
-    std::vector<Camera> m_cameras;
-    Camera* m_camera; // current camera
 
     std::shared_ptr<Skybox> m_skybox;
     std::shared_ptr<Text> m_cameraText;
