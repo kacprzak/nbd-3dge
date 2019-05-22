@@ -7,9 +7,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/lexical_cast.hpp>
-
-// using namespace boost::property_tree;
 
 static glm::vec4 stringToVector(std::string str)
 {
@@ -20,7 +17,7 @@ static glm::vec4 stringToVector(std::string str)
         std::vector<std::string> splitted;
         boost::split(splitted, str, boost::is_any_of(" \t"));
         for (size_t i = 0; i < splitted.size(); ++i)
-            retval[i] = boost::lexical_cast<float>(splitted[i]);
+            retval[i] = std::stof(splitted[i]);
     }
 
     return retval;
@@ -231,11 +228,6 @@ std::unique_ptr<Actor> ActorFactory::create(const nlohmann::json& node)
     if (ctrlNode != node.cend()) {
         a->addComponent(ComponentId::Control, std::make_shared<ControlComponent>());
     }
-
-    // if (actorType == "skybox") {
-    //    auto rd = a->getComponent<RenderComponent>(ComponentId::Render).lock();
-    //    if (rd) rd->role = Role::Skybox;
-    //}
 
     return a;
 }
