@@ -3,8 +3,9 @@
 #include "GameLogic.h"
 #include "Logger.h"
 #include "Settings.h"
+#include "config.h"
 
-#include <CLI\CLI.hpp>
+#include <CLI/CLI.hpp>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -40,15 +41,13 @@ void initLogger(const std::string& logLevel)
 
 //------------------------------------------------------------------------------
 
-int loadSettings(Settings& s, int ac, char** av)
+void loadSettings(CLI::App& app, Settings& s, int ac, char** av)
 {
-    CLI::App app{"No Big Deal 3D Game Engine"};
-
     app.set_config("--config", "config.ini");
-    app.add_option("--screenWidth", s.screenWidth, "Screen resolution");
-    app.add_option("screenHeight", s.screenHeight, "Screen resolution");
+    app.add_option("--screenWidth", s.screenWidth, "Screen resolution", true);
+    app.add_option("--screenHeight", s.screenHeight, "Screen resolution", true);
     app.add_flag("--fullscreen", s.fullscreen, "Full screen mode");
-    app.add_option("--msaa", s.msaa, "Multisample anti-aliasing");
+    app.add_option("--msaa", s.msaa, "Multisample anti-aliasing", true);
     app.add_option("--dataFolder", s.dataFolder, "Path to textures, sounds etc.")
         ->check(CLI::ExistingDirectory)
         ->required();
@@ -56,18 +55,16 @@ int loadSettings(Settings& s, int ac, char** av)
         ->check(CLI::ExistingDirectory)
         ->required();
     app.add_set("--logLevel", s.logLevel, {"trace", "debug", "info", "warning", "error", "fatal"});
-
-    CLI11_PARSE(app, ac, av);
-
-    return 0;
 }
 
 //------------------------------------------------------------------------------
 
 int main(int ac, char** av)
 {
+    CLI::App app{"No Big Deal 3D Game Engine v" XSTR(VERSION_MAJOR) "." XSTR(VERSION_MINOR)};
     Settings settings;
-    if (auto err = loadSettings(settings, ac, av)) return err;
+    loadSettings(app, settings, ac, av);
+    CLI11_PARSE(app, ac, av);
 
     initLogger(settings.logLevel);
 

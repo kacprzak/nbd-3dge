@@ -22,4 +22,9 @@
   #define WIN32_LEAN_AND_MEAN
 #endif
 
+// utils
+
+#define STR(s) #s
+#define XSTR(s) STR(s)
+
 #endif // CONFIG_H
