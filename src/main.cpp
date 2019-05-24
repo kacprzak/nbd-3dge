@@ -41,7 +41,7 @@ void initLogger(const std::string& logLevel)
 
 //------------------------------------------------------------------------------
 
-void loadSettings(CLI::App& app, Settings& s, int ac, char** av)
+void setupCli(CLI::App& app, Settings& s)
 {
     app.set_config("--config", "config.ini");
     app.add_option("--screenWidth", s.screenWidth, "Screen resolution", true);
@@ -63,7 +63,7 @@ int main(int ac, char** av)
 {
     CLI::App app{"No Big Deal 3D Game Engine v" XSTR(VERSION_MAJOR) "." XSTR(VERSION_MINOR)};
     Settings settings;
-    loadSettings(app, settings, ac, av);
+    setupCli(app, settings);
     CLI11_PARSE(app, ac, av);
 
     initLogger(settings.logLevel);

@@ -9,6 +9,22 @@ function(download_if_not_exists url file)
   endif()
 endfunction()
 
+if(NOT TARGET CONAN_PKG::CLI11)
+  FetchContent_Declare(
+    cli11
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11
+    GIT_SHALLOW    ON
+    GIT_PROGRESS   ON
+    LOG_DOWNLOAD   ON
+    )
+
+  FetchContent_GetProperties(cli11)
+  if(NOT cli11_POPULATED)
+    FetchContent_Populate(cli11)
+    add_subdirectory(${cli11_SOURCE_DIR} ${cli11_BINARY_DIR})
+  endif()
+endif()
+
 FetchContent_Declare(
   gli
   GIT_REPOSITORY https://github.com/g-truc/gli.git

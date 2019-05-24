@@ -65,13 +65,10 @@ if(UNIX)
   elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     list(APPEND nbd-3dge_DEPS stdc++fs)
   endif()
-  # For Emacs irony-mode to work
-  #set(LIBCLANG_INCLUDES /usr/include/c++/8)
-  #include_directories(${LIBCLANG_INCLUDES})
 endif()
 
 add_subdirectory(external)
-list(APPEND nbd-3dge_DEPS external::gli external::glm external::fx-gltf external::imgui_impl)
+list(APPEND nbd-3dge_DEPS external::gli external::glm external::fx-gltf external::imgui_impl CLI11::CLI11)
 add_subdirectory(src)
 
 configure_file(config.h.in config.h)
@@ -84,7 +81,7 @@ endif()
 
 # For clangd support
 if(UNIX)
-  execute_process(COMMAND ln -s "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json"
+  execute_process(COMMAND ln -sf "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
