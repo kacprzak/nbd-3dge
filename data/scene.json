@@ -40,11 +40,20 @@
     ],
     "actors": [
         {
+            "name": "animatedCube",
+            "render": {
+                "model": "AnimatedCube/gltf/AnimatedCube.gltf"
+            },
+            "transformation": {
+                "position": "0 0 0"
+            }
+        },
+        {
             "name": "actor_1",
             "prototype": "DamagedHelmetPrototype",
             "render": {},
             "transformation": {
-                "position": "0 0 0"
+                "position": "-5 -5 0"
             }
         },
         {

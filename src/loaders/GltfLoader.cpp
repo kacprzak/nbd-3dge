@@ -41,6 +41,7 @@ void GltfLoader::load(const std::filesystem::path& file)
     loadTextures(doc, fullPath);
     loadMaterials(doc);
     loadMeshes(doc);
+    loadAnimations(doc);
     loadCameras(doc);
     loadNodes(doc);
 
@@ -57,10 +58,11 @@ std::shared_ptr<gfx::Model> GltfLoader::model() const
 {
     auto model = std::make_shared<gfx::Model>();
 
-    model->m_buffers  = m_buffers;
-    model->m_samplers = m_samplers;
-    model->m_textures = m_textures;
-    model->m_meshes   = m_meshes;
+    model->m_buffers    = m_buffers;
+    model->m_samplers   = m_samplers;
+    model->m_textures   = m_textures;
+    model->m_meshes     = m_meshes;
+    model->m_animations = m_animations;
 
     model->m_nodes = m_nodes;
     for (auto& n : model->m_nodes)
@@ -238,6 +240,53 @@ void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
 
             m_meshes.push_back(m);
         }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void GltfLoader::loadAnimations(const fx::gltf::Document& doc)
+{
+    const auto toInterpolation = [](fx::gltf::Animation::Sampler::Type interpolationType) {
+        switch (interpolationType) {
+        case fx::gltf::Animation::Sampler::Type::Step:
+            return gfx::Animation::Sampler::Interpolation::Step;
+        case fx::gltf::Animation::Sampler::Type::CubicSpline:
+            return gfx::Animation::Sampler::Interpolation::CubicSpline;
+        default: return gfx::Animation::Sampler::Interpolation::Linear;
+        }
+    };
+
+    const auto toPath = [](const std::string& path) {
+        if (path == "rotation")
+            return gfx::Animation::Channel::Path::Rotation;
+        else if (path == "scale")
+            return gfx::Animation::Channel::Path::Scale;
+        else if (path == "weights")
+            return gfx::Animation::Channel::Path::Weights;
+        return gfx::Animation::Channel::Path::Translation;
+    };
+
+    for (auto& animation : doc.animations) {
+        std::vector<gfx::Animation::Sampler> samplers;
+        for (const auto& samp : animation.samplers) {
+            gfx::Animation::Sampler sampler;
+            sampler.interpolation = toInterpolation(samp.interpolation);
+            sampler.input         = m_accessors[samp.input];
+            sampler.output        = m_accessors[samp.output];
+            samplers.push_back(sampler);
+        }
+
+        std::vector<gfx::Animation::Channel> channels;
+        for (const auto& chan : animation.channels) {
+            gfx::Animation::Channel channel;
+            channel.node    = chan.target.node;
+            channel.path    = toPath(chan.target.path);
+            channel.sampler = samplers.at(chan.sampler);
+            channels.push_back(channel);
+        }
+
+        m_animations.emplace_back(channels);
     }
 }
 

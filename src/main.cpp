@@ -7,7 +7,7 @@
 
 #include <CLI/CLI.hpp>
 
-#ifdef _WIN32
+#if PLATFORM == PLATFORM_WINDOWS
 #include <direct.h>
 #define getcwd _getcwd
 #define chdir _chrdir

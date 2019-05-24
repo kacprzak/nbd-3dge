@@ -4,6 +4,7 @@
 #include "Buffer.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Animation.h"
 #include "Node.h"
 #include "Texture.h"
 
@@ -80,6 +81,7 @@ class Model
 
     std::vector<Accessor> m_accessors;
     std::vector<Material> m_materials;
+    std::vector<Animation> m_animations;
     std::vector<Camera> m_cameras;
     std::vector<Node> m_nodes;
     std::vector<std::vector<unsigned>> m_scenes;

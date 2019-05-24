@@ -1,5 +1,5 @@
-#ifndef BUFFER_H
-#define BUFFER_H
+#ifndef GFX_BUFFER_H
+#define GFX_BUFFER_H
 
 #include "Macros.h"
 
@@ -63,7 +63,7 @@ struct Accessor final
         if (glTypeToEnum<T>() != type) {
             throw std::runtime_error("Wrong type while loading data from OpenGL Buffer");
         }
-        std::vector<T> ans(count * size, T{});
+        std::vector<T> ans(count, T{});
         buffer->getData(ans.data(), ans.size() * sizeof(T), byteOffset);
         return ans;
     }
@@ -87,6 +87,7 @@ template <> inline GLenum Accessor::glTypeToEnum<GLfloat>() const { return GL_FL
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec2>() const { return GL_FLOAT; }
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec3>() const { return GL_FLOAT; }
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec4>() const { return GL_FLOAT; }
+template <> inline GLenum Accessor::glTypeToEnum<glm::quat>() const { return GL_FLOAT; }
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -96,4 +97,4 @@ Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>
 
 } // namespace gfx
 
-#endif // BUFFER_H
+#endif // GFX_BUFFER_H

@@ -1,4 +1,5 @@
 set(nbd-3dge_SRCS
+    gfx/Animation.cpp
     gfx/Buffer.cpp
     gfx/Camera.cpp
     gfx/Font.cpp

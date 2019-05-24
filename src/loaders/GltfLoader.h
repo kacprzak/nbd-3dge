@@ -30,6 +30,7 @@ class GltfLoader
     void loadTextures(const fx::gltf::Document& doc, const std::filesystem::path& file);
     void loadMaterials(const fx::gltf::Document& doc);
     void loadMeshes(const fx::gltf::Document& doc);
+    void loadAnimations(const fx::gltf::Document& doc);
     void loadCameras(const fx::gltf::Document& doc);
     void loadNodes(const fx::gltf::Document& doc);
 
@@ -42,6 +43,7 @@ class GltfLoader
 
     std::vector<gfx::Accessor> m_accessors;
     std::vector<gfx::Material> m_materials;
+    std::vector<gfx::Animation> m_animations;
     std::vector<gfx::Camera> m_cameras;
     std::vector<gfx::Node> m_nodes;
     std::vector<std::vector<unsigned>> m_scenes;

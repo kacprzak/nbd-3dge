@@ -36,6 +36,9 @@ void Model::update(float delta)
 {
     glm::mat4 identity{1.0f};
 
+    for (auto& animation : m_animations)
+        animation.update(delta, m_nodes);
+
     for (const auto& scene : m_scenes)
         for (auto rootIdx : scene)
             getNode(rootIdx)->update(identity, delta);
