@@ -232,7 +232,28 @@ void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
             if (!attributes[Accessor::Attribute::Tangent].buffer)
                 attributes[Accessor::Attribute::Tangent] = calculateTangents(attributes, indices);
 
-            auto m = std::make_shared<Mesh>(attributes, indices, primitive);
+            std::vector<std::array<Accessor, Accessor::Attribute::Size>> targets;
+
+            for (auto& target : subMesh.targets) {
+                std::array<Accessor, Accessor::Attribute::Size> attributes{};
+
+                auto attr = target.find("POSITION");
+                if (attr != std::end(target))
+                    attributes[Accessor::Attribute::Position] = m_accessors[attr->second];
+
+                attr = target.find("NORMAL");
+                if (attr != std::end(target))
+                    attributes[Accessor::Attribute::Normal] = m_accessors[attr->second];
+
+                attr = target.find("TANGENT");
+                if (attr != std::end(target)) {
+                    attributes[Accessor::Attribute::Tangent] = m_accessors[attr->second];
+                }
+
+                targets.push_back(attributes);
+            }
+
+            auto m = std::make_shared<Mesh>(attributes, indices, primitive, targets);
 
             if (subMesh.material != -1) {
                 m->setMaterial(m_materials.at(subMesh.material));

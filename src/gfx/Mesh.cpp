@@ -8,11 +8,12 @@
 
 namespace gfx {
 
-Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor indices,
-           GLenum primitive)
+Mesh::Mesh(Attributes attributes, Accessor indices, GLenum primitive,
+           std::vector<Attributes> targets)
     : m_attributes{attributes}
     , m_indices{indices}
     , m_primitive{primitive}
+    , m_targets{targets}
 {
     if (m_attributes[Accessor::Attribute::Position].count == 0) {
         auto msg = "Mesh must have positions buffer";
@@ -27,14 +28,18 @@ Mesh::Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor 
         m_indices.buffer->bind(GL_ELEMENT_ARRAY_BUFFER);
     }
 
-    for (int i = 0; i < Accessor::Attribute::Size; ++i) {
-        const Accessor& acc = m_attributes[i];
+    const auto defineArray = [](int index, const Accessor& acc) {
         if (acc.count > 0) {
             acc.buffer->bind(GL_ARRAY_BUFFER);
-            glEnableVertexAttribArray(i);
-            glVertexAttribPointer(i, acc.size, acc.type, acc.normalized, acc.buffer->m_byteStride,
-                                  (const void*)acc.byteOffset);
+            glEnableVertexAttribArray(index);
+            glVertexAttribPointer(index, acc.size, acc.type, acc.normalized,
+                                  acc.buffer->m_byteStride, (const void*)acc.byteOffset);
         }
+    };
+
+    for (int i = 0; i < Accessor::Attribute::Size; ++i) {
+        const Accessor& acc = m_attributes[i];
+        defineArray(i, acc);
     }
 
     LOG_CREATED;
@@ -48,6 +53,7 @@ Mesh::Mesh(Mesh&& other)
     std::swap(m_attributes, other.m_attributes);
     std::swap(m_indices, other.m_indices);
     std::swap(m_primitive, other.m_primitive);
+    std::swap(m_targets, other.m_targets);
 }
 
 Mesh::~Mesh()

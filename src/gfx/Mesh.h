@@ -15,9 +15,11 @@ class Mesh final
 {
     OSTREAM_FRIEND(Mesh);
 
+    using Attributes = std::array<Accessor, Accessor::Attribute::Size>;
+
   public:
-    Mesh(std::array<Accessor, Accessor::Attribute::Size> attributes, Accessor indices,
-         GLenum primitive);
+    Mesh(Attributes attributes, Accessor indices, GLenum primitive,
+         std::vector<Attributes> targets = {});
 
     Mesh(Mesh&& other);
     Mesh(const Mesh&) = delete;
@@ -35,9 +37,10 @@ class Mesh final
   private:
     GLuint m_vao;
 
-    std::array<Accessor, Accessor::Attribute::Size> m_attributes;
+    Attributes m_attributes;
     Accessor m_indices;
     GLenum m_primitive = GL_TRIANGLES;
+    std::vector<Attributes> m_targets;
 
     Material m_material;
 
