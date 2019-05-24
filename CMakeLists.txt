@@ -49,6 +49,7 @@ else()
     Boost::program_options
     OpenGL::GL
     GLEW::GLEW
+    CLI11::CLI11
     )
 endif()
 
@@ -68,7 +69,7 @@ if(UNIX)
 endif()
 
 add_subdirectory(external)
-list(APPEND nbd-3dge_DEPS external::gli external::glm external::fx-gltf external::imgui_impl CLI11::CLI11)
+list(APPEND nbd-3dge_DEPS external::gli external::glm external::fx-gltf external::imgui_impl)
 add_subdirectory(src)
 
 configure_file(config.h.in config.h)
