@@ -35,11 +35,7 @@ void Buffer::loadData(const void* data, size_t size, GLenum usage)
 void Buffer::getData(void* data, size_t size, std::ptrdiff_t byteOffset) const
 {
     glBindBuffer(GL_COPY_READ_BUFFER, m_bufferId);
-    void* buff = glMapBuffer(GL_COPY_READ_BUFFER, GL_READ_ONLY);
-
-    std::memcpy(data, (uint8_t*)buff + byteOffset, std::min(size, m_size - byteOffset));
-
-    glUnmapBuffer(GL_COPY_READ_BUFFER);
+    glGetBufferSubData(GL_COPY_READ_BUFFER, byteOffset, size, data);
 }
 
 //------------------------------------------------------------------------------

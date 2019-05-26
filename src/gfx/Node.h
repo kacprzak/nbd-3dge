@@ -66,11 +66,7 @@ class Node final
         m_children.erase(std::remove(m_children.begin(), m_children.end(), node), m_children.end());
     }
 
-    void setModel(Model* model)
-    {
-        m_model = model;
-        // m_mesh = m_camera = m_light = -1;
-    }
+    void setModel(Model* model) { m_model = model; }
     Model* getModel() { return m_model; }
 
     void setMesh(int mesh) { m_mesh = mesh; }
@@ -81,6 +77,9 @@ class Node final
 
     void setLight(int light) { m_light = light; }
     void removeLight() { m_light = -1; }
+
+    void setWeights(const std::array<float, 8>& weights) { m_weights = weights; }
+    void removeWeights() { m_weights.reset(); }
 
     std::string name;
 
@@ -102,6 +101,8 @@ class Node final
     std::vector<int> m_children;
 
     bool m_castsShadows = false;
+
+    std::optional<std::array<float, 8>> m_weights;
 };
 
 } // namespace gfx

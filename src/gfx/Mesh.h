@@ -15,11 +15,12 @@ class Mesh final
 {
     OSTREAM_FRIEND(Mesh);
 
-    using Attributes = std::array<Accessor, Accessor::Attribute::Size>;
+    using Attributes  = std::array<Accessor, Accessor::Attribute::Size>;
+    using MorphTarget = std::array<Accessor, 3>; // positions, normals, tangents
 
   public:
     Mesh(Attributes attributes, Accessor indices, GLenum primitive,
-         std::vector<Attributes> targets = {});
+         std::vector<MorphTarget> targets = {});
 
     Mesh(Mesh&& other);
     Mesh(const Mesh&) = delete;
@@ -28,11 +29,13 @@ class Mesh final
     ~Mesh();
 
     void draw(ShaderProgram* shaderProgram) const;
+    void draw(ShaderProgram* shaderProgram, const std::array<float, 8>& weights) const;
 
     std::vector<float> positions() const;
     Aabb aabb() const;
 
     void setMaterial(const Material& material);
+    void setWeights(const std::array<float, 8> weights);
 
   private:
     GLuint m_vao;
@@ -40,9 +43,10 @@ class Mesh final
     Attributes m_attributes;
     Accessor m_indices;
     GLenum m_primitive = GL_TRIANGLES;
-    std::vector<Attributes> m_targets;
+    std::vector<MorphTarget> m_targets;
 
     Material m_material;
+    std::array<float, 8> m_weights{}; //< Default weights
 
   public:
     std::string name;

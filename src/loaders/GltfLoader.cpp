@@ -232,10 +232,10 @@ void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
             if (!attributes[Accessor::Attribute::Tangent].buffer)
                 attributes[Accessor::Attribute::Tangent] = calculateTangents(attributes, indices);
 
-            std::vector<std::array<Accessor, Accessor::Attribute::Size>> targets;
+            std::vector<std::array<Accessor, 3>> targets;
 
             for (auto& target : subMesh.targets) {
-                std::array<Accessor, Accessor::Attribute::Size> attributes{};
+                std::array<Accessor, 3> attributes{};
 
                 auto attr = target.find("POSITION");
                 if (attr != std::end(target))

@@ -69,10 +69,10 @@ struct Accessor final
     }
 
     std::shared_ptr<Buffer> buffer;
-    unsigned byteOffset = 0;
-    unsigned count      = 0; //< Number of elements (not bytes!)
-    unsigned size       = 4; //< Number of components per element
-    GLenum type;             //< Component type
+    std::ptrdiff_t byteOffset = 0;
+    unsigned count            = 0; //< Number of elements (not bytes!)
+    unsigned size             = 4; //< Number of components per element
+    GLenum type;                   //< Component type
     bool normalized = false;
     std::array<float, 4> min{};
     std::array<float, 4> max{};

@@ -9,7 +9,7 @@
 namespace gfx {
 
 Mesh::Mesh(Attributes attributes, Accessor indices, GLenum primitive,
-           std::vector<Attributes> targets)
+           std::vector<MorphTarget> targets)
     : m_attributes{attributes}
     , m_indices{indices}
     , m_primitive{primitive}
@@ -37,9 +37,15 @@ Mesh::Mesh(Attributes attributes, Accessor indices, GLenum primitive,
         }
     };
 
-    for (int i = 0; i < Accessor::Attribute::Size; ++i) {
-        const Accessor& acc = m_attributes[i];
-        defineArray(i, acc);
+    int index = 0;
+    for (const Accessor& acc : m_attributes) {
+        defineArray(index++, acc);
+    }
+
+    for (const MorphTarget& mt : m_targets) {
+        for (const Accessor& acc : mt) {
+            defineArray(index++, acc);
+        }
     }
 
     LOG_CREATED;
@@ -54,6 +60,7 @@ Mesh::Mesh(Mesh&& other)
     std::swap(m_indices, other.m_indices);
     std::swap(m_primitive, other.m_primitive);
     std::swap(m_targets, other.m_targets);
+    std::swap(m_weights, other.m_weights);
 }
 
 Mesh::~Mesh()
@@ -63,11 +70,14 @@ Mesh::~Mesh()
     LOG_RELEASED;
 }
 
-void Mesh::draw(ShaderProgram* shaderProgram) const
+void Mesh::draw(ShaderProgram* shaderProgram) const { draw(shaderProgram, m_weights); }
+
+void Mesh::draw(ShaderProgram* shaderProgram, const std::array<float, 8>& weights) const
 {
     if (shaderProgram) {
         shaderProgram->use();
         m_material.applyTo(shaderProgram);
+        shaderProgram->setUniform("weights", {weights[0], weights[1], weights[2]});
     }
 
     glBindVertexArray(m_vao);
@@ -109,5 +119,7 @@ Aabb Mesh::aabb() const
 }
 
 void Mesh::setMaterial(const Material& material) { m_material = material; }
+
+void Mesh::setWeights(const std::array<float, 8> weights) { m_weights = weights; }
 
 } // namespace gfx
