@@ -18,6 +18,7 @@ out VS_OUT
 {
     vec3 normal;
     vec3 tangent;
+    vec3 bitangent;
 }
 vs_out;
 
@@ -34,5 +35,6 @@ void main()
 
     vs_out.normal  = normal;
     vs_out.tangent = tangent;
+    vs_out.bitangent = cross(normal, tangent);
     gl_Position    = vec4(pos, 1.0);
 }

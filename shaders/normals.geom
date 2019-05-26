@@ -1,12 +1,13 @@
 #version 330 core
 
 layout(triangles) in;
-layout(line_strip, max_vertices = 12) out;
+layout(line_strip, max_vertices = 18) out;
 
 in VS_OUT
 {
     vec3 normal;
     vec3 tangent;
+    vec3 bitangent;
 }
 gs_in[];
 
@@ -24,32 +25,16 @@ mat4 MVP;
 
 const float mag_scale = 0.025;
 
-void generateNormal(int index)
+void generateVector(vec4 position, vec3 vector, float length, vec3 color)
 {
-    vec4 pos  = gl_in[index].gl_Position;
-    vec4 norm = (modelMatrix * pos) +
-                normalize(modelMatrix * vec4(gs_in[index].normal, 0.0)) * lengths[0] * mag_scale;
+    vec4 v =
+        (modelMatrix * position) + normalize(modelMatrix * vec4(vector, 0.0)) * length * mag_scale;
 
-    gl_Position  = MVP * pos;
-    gs_out.color = vec3(0.0, 0.0, 1.0);
+    gl_Position  = MVP * position;
+    gs_out.color = color;
     EmitVertex();
-    gl_Position  = VP * norm;
-    gs_out.color = vec3(0.0, 0.0, 1.0);
-    EmitVertex();
-    EndPrimitive();
-}
-
-void generateTangent(int index)
-{
-    vec4 pos  = gl_in[index].gl_Position;
-    vec4 tang = (modelMatrix * pos) +
-                normalize(modelMatrix * vec4(gs_in[index].tangent, 0.0)) * lengths[1] * mag_scale;
-
-    gl_Position  = MVP * pos;
-    gs_out.color = vec3(1.0, 0.0, 0.0);
-    EmitVertex();
-    gl_Position  = VP * tang;
-    gs_out.color = vec3(1.0, 0.0, 0.0);
+    gl_Position  = VP * v;
+    gs_out.color = color;
     EmitVertex();
     EndPrimitive();
 }
@@ -60,7 +45,8 @@ void main()
     MVP = VP * modelMatrix;
 
     for (int i = 0; i < gl_in.length(); ++i) {
-        generateNormal(i);
-        generateTangent(i);
+        generateVector(gl_in[i].gl_Position, gs_in[i].normal, lengths[0], vec3(0.0, 0.0, 1.0));
+        generateVector(gl_in[i].gl_Position, gs_in[i].tangent, lengths[1], vec3(1.0, 0.0, 0.0));
+        generateVector(gl_in[i].gl_Position, gs_in[i].bitangent, lengths[2], vec3(0.0, 1.0, 0.0));
     }
 }
