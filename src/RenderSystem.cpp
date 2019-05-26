@@ -360,11 +360,11 @@ for (auto& camera : m_cameras) {
 
 //------------------------------------------------------------------------------
 
-void RenderSystem::setDrawDebug(bool enable, float normalLength)
+void RenderSystem::setDrawDebug(bool enable, glm::vec3 ntbLengths)
 {
     if (m_normalsShader) {
         m_normalsShader->use();
-        m_normalsShader->setUniform("magnitude", normalLength);
+        m_normalsShader->setUniform("lengths", ntbLengths);
         m_drawDebug = enable;
         glUseProgram(0);
     } else {

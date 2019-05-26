@@ -49,13 +49,13 @@ class RenderSystem final
     void update(float delta);
     void setNextPolygonMode();
 
-    void setDrawDebug(bool enable, float normalLength = 1.0f);
+    void setDrawDebug(bool enable, glm::vec3 ntbLengths);
     bool isDrawDebug() const { return m_drawDebug; }
 
     Camera* getCamera() { return m_camera; }
     void setCamera(Camera* camera) { m_camera = camera; }
 
-	void addModel(std::shared_ptr<Model> model);
+    void addModel(std::shared_ptr<Model> model);
     std::shared_ptr<Model> findModel(const std::string& name) const;
 
     void resizeWindow(glm::ivec2 size);

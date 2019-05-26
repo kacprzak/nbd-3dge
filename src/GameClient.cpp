@@ -115,9 +115,11 @@ void GameClient::draw()
     m_renderSystem.draw();
     m_debugDraw.draw(m_renderSystem.getCamera());
 
-    static bool showNormals   = false;
-    static float normalLength = 1.00;
-    static bool vsync         = true;
+    static bool showNormals    = false;
+    static float normalLength  = 1.0f;
+    static float tangentLength = 1.0f;
+    static glm::vec3 ntbLenghts{1.0f, 1.0f, 1.0f};
+    static bool vsync = true;
 
     ImGui::Begin("Debug");
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
@@ -130,10 +132,16 @@ void GameClient::draw()
         m_renderSystem.setNextPolygonMode();
     }
     if (ImGui::Checkbox("Draw debug", &showNormals)) {
-        m_renderSystem.setDrawDebug(!m_renderSystem.isDrawDebug(), normalLength);
+        m_renderSystem.setDrawDebug(!m_renderSystem.isDrawDebug(), ntbLenghts);
     }
-    if (ImGui::SliderFloat("Normal length", &normalLength, 0.0f, 10.0f)) {
-        m_renderSystem.setDrawDebug(m_renderSystem.isDrawDebug(), normalLength);
+    if (ImGui::SliderFloat("Normal", &ntbLenghts[0], 0.0f, 10.0f)) {
+        m_renderSystem.setDrawDebug(m_renderSystem.isDrawDebug(), ntbLenghts);
+    }
+    if (ImGui::SliderFloat("Tangent", &ntbLenghts[1], 0.0f, 10.0f)) {
+        m_renderSystem.setDrawDebug(m_renderSystem.isDrawDebug(), ntbLenghts);
+    }
+    if (ImGui::SliderFloat("Bitangent", &ntbLenghts[2], 0.0f, 10.0f)) {
+        m_renderSystem.setDrawDebug(m_renderSystem.isDrawDebug(), ntbLenghts);
     }
     ImGui::End();
 

@@ -13,7 +13,7 @@ gs_in[];
 out GS_OUT { vec3 color; }
 gs_out;
 
-uniform float magnitude = 1.0;
+uniform vec3 lengths = vec3(1.0, 1.0, 1.0);
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -28,7 +28,7 @@ void generateNormal(int index)
 {
     vec4 pos  = gl_in[index].gl_Position;
     vec4 norm = (modelMatrix * pos) +
-                normalize(modelMatrix * vec4(gs_in[index].normal, 0.0)) * magnitude * mag_scale;
+                normalize(modelMatrix * vec4(gs_in[index].normal, 0.0)) * lengths[0] * mag_scale;
 
     gl_Position  = MVP * pos;
     gs_out.color = vec3(0.0, 0.0, 1.0);
@@ -43,7 +43,7 @@ void generateTangent(int index)
 {
     vec4 pos  = gl_in[index].gl_Position;
     vec4 tang = (modelMatrix * pos) +
-                normalize(modelMatrix * vec4(gs_in[index].tangent, 0.0)) * magnitude * mag_scale;
+                normalize(modelMatrix * vec4(gs_in[index].tangent, 0.0)) * lengths[1] * mag_scale;
 
     gl_Position  = MVP * pos;
     gs_out.color = vec3(1.0, 0.0, 0.0);

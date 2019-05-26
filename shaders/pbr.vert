@@ -14,17 +14,9 @@ layout(location = 4) in vec2 in_texCoord_1;
 layout(location = 5) in vec2 in_texCoord_2;
 layout(location = 6) in vec2 in_texCoord_3;
 
-layout(location = 7) in vec3 in_position_morph_0;
-layout(location = 8) in vec3 in_normal_morph_0;
-layout(location = 9) in vec3 in_tangent_morph_0;
-
-layout(location = 10) in vec3 in_position_morph_1;
-layout(location = 11) in vec3 in_normal_morph_1;
-layout(location = 12) in vec3 in_tangent_morph_1;
-
-layout(location = 13) in vec3 in_position_morph_2;
-layout(location = 14) in vec3 in_normal_morph_2;
-layout(location = 15) in vec3 in_tangent_morph_2;
+layout(location = 7) in vec3 in_morph_0[3];
+layout(location = 10) in vec3 in_morph_1[3];
+layout(location = 13) in vec3 in_morph_2[3];
 
 out vec4 position;
 out vec2 texCoord_0;
@@ -32,14 +24,14 @@ out mat3 TBN;
 
 void main()
 {
-    vec3 pos = in_position + in_position_morph_0 * weights[0] + in_position_morph_1 * weights[1] +
-               in_position_morph_2 * weights[2];
+    vec3 pos = in_position + in_morph_0[0] * weights[0] + in_morph_1[0] * weights[1] +
+               in_morph_2[0] * weights[2];
 
-    vec3 normal = in_normal + in_normal_morph_0 * weights[0] + in_normal_morph_1 * weights[1] +
-                  in_normal_morph_2 * weights[2];
+    vec3 normal = in_normal + in_morph_0[1] * weights[0] + in_morph_1[1] * weights[1] +
+                  in_morph_2[1] * weights[2];
 
-    vec3 tangent = in_tangent + in_tangent_morph_0 * weights[0] + in_tangent_morph_1 * weights[1] +
-                   in_tangent_morph_2 * weights[2];
+    vec3 tangent = in_tangent + in_morph_0[2] * weights[0] + in_morph_1[2] * weights[1] +
+                   in_morph_2[2] * weights[2];
 
     vec3 N = normalize(vec3(modelMatrix * vec4(normal, 0.0)));
     vec3 T = normalize(vec3(modelMatrix * vec4(tangent, 0.0)));
