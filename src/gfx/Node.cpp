@@ -49,10 +49,10 @@ void Node::draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
 
         shaderProgram->setUniform("modelMatrix", worldMatrix);
 
-        if (m_weights)
-            mesh->draw(shaderProgram, m_weights.value());
+        if (!m_weights.empty())
+            mesh->draw(shaderProgram, m_weights);
         else
-            mesh->draw(shaderProgram);
+            mesh->draw(shaderProgram); // draw with default weights
     }
 
     for (auto child : m_children) {

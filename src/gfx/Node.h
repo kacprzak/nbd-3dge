@@ -78,8 +78,8 @@ class Node final
     void setLight(int light) { m_light = light; }
     void removeLight() { m_light = -1; }
 
-    void setWeights(const std::array<float, 8>& weights) { m_weights = weights; }
-    void removeWeights() { m_weights.reset(); }
+    void setWeights(const std::vector<float>& weights) { m_weights = weights; }
+    void removeWeights() { m_weights.clear(); }
 
     std::string name;
 
@@ -102,7 +102,7 @@ class Node final
 
     bool m_castsShadows = false;
 
-    std::optional<std::array<float, 8>> m_weights;
+    std::vector<float> m_weights;
 };
 
 } // namespace gfx

@@ -29,13 +29,15 @@ class Mesh final
     ~Mesh();
 
     void draw(ShaderProgram* shaderProgram) const;
-    void draw(ShaderProgram* shaderProgram, const std::array<float, 8>& weights) const;
+    void draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const;
 
     std::vector<float> positions() const;
     Aabb aabb() const;
 
     void setMaterial(const Material& material);
-    void setWeights(const std::array<float, 8> weights);
+
+    void setWeights(const std::vector<float>& weights);
+    std::size_t morphTargetsSize() const { return m_targets.size(); }
 
   private:
     GLuint m_vao;
@@ -43,10 +45,11 @@ class Mesh final
     Attributes m_attributes;
     Accessor m_indices;
     GLenum m_primitive = GL_TRIANGLES;
-    std::vector<MorphTarget> m_targets;
 
     Material m_material;
-    std::array<float, 8> m_weights{}; //< Default weights
+
+    std::vector<MorphTarget> m_targets;
+    std::vector<float> m_weights; //< Default weights
 
   public:
     std::string name;

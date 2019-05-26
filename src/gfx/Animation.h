@@ -17,8 +17,13 @@ class Animation final
         Accessor input;
         Accessor output;
 
+        std::pair<int, int> findKeyFrames(float time, const std::vector<float>& input) const;
+
         template <typename T>
         T lookup(float time) const;
+
+        template <typename T>
+        void lookupArray(float time, std::vector<T>& result) const;
     };
 
     struct Channel

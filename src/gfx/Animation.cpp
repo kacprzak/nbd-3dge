@@ -4,27 +4,62 @@
 
 namespace gfx {
 
+std::pair<int, int> Animation::Sampler::findKeyFrames(float time,
+                                                      const std::vector<float>& input) const
+{
+    // todo: change to binary search
+    auto it = std::find_if(input.cbegin(), input.cend(), [time](float x) { return x > time; });
+    std::size_t nextKeyFrameIdx = std::distance(input.cbegin(), it);
+    return {nextKeyFrameIdx - 1, nextKeyFrameIdx};
+}
+
+//------------------------------------------------------------------------------
+
 template <typename T>
 T Animation::Sampler::lookup(float time) const
 {
     auto in = input.getData<float>();
+    time    = glm::mod(time, in.back());
 
-    float animTime = glm::mod(time, in.back());
-    // todo: change to binary search
-    auto it = std::find_if(in.cbegin(), in.cend(), [animTime](float x) { return x > animTime; });
-    std::size_t nextKeyFrameIdx = std::distance(in.cbegin(), it);
+    auto keyFrames = findKeyFrames(time, in);
 
-    float nextFrameTime = in.at(nextKeyFrameIdx);
-    float prevFrameTime = in.at(nextKeyFrameIdx - 1);
+    float prevFrameTime = in.at(keyFrames.first);
+    float nextFrameTime = in.at(keyFrames.second);
+
+    float progress = (time - prevFrameTime) / (nextFrameTime - prevFrameTime);
 
     auto out = output.getData<T>();
 
-    auto nextFrameValue = out.at(nextKeyFrameIdx);
-    auto prevFrameValue = out.at(nextKeyFrameIdx - 1);
-
-    float progress = (animTime - prevFrameTime) / (nextFrameTime - prevFrameTime);
+    auto prevFrameValue = out.at(keyFrames.first);
+    auto nextFrameValue = out.at(keyFrames.second);
 
     return glm::mix(prevFrameValue, nextFrameValue, progress);
+}
+
+//------------------------------------------------------------------------------
+
+template <typename T>
+void Animation::Sampler::lookupArray(float time, std::vector<T>& result) const
+{
+    auto in = input.getData<float>();
+    time    = glm::mod(time, in.back());
+
+    auto keyFrames = findKeyFrames(time, in);
+
+    float prevFrameTime = in.at(keyFrames.first);
+    float nextFrameTime = in.at(keyFrames.second);
+
+    float progress = (time - prevFrameTime) / (nextFrameTime - prevFrameTime);
+
+    auto out = output.getData<T>();
+
+    auto numOfElements = out.size() / in.size();
+
+    for (auto i = 0u; i < numOfElements; ++i) {
+        auto prevFrameValue = out.at(keyFrames.first * numOfElements + i);
+        auto nextFrameValue = out.at(keyFrames.second * numOfElements + i);
+        result.push_back(glm::mix(prevFrameValue, nextFrameValue, progress));
+    }
 }
 
 //==============================================================================
@@ -51,7 +86,9 @@ void Animation::update(float delta, std::vector<Node>& nodes)
             node.setScale(sample);
         } break;
         case Channel::Weights: {
-            // todo
+            std::vector<float> weights;
+            channel.sampler.lookupArray(progress, weights);
+            node.setWeights(weights);
         } break;
         }
     }

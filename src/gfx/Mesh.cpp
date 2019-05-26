@@ -72,12 +72,16 @@ Mesh::~Mesh()
 
 void Mesh::draw(ShaderProgram* shaderProgram) const { draw(shaderProgram, m_weights); }
 
-void Mesh::draw(ShaderProgram* shaderProgram, const std::array<float, 8>& weights) const
+void Mesh::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const
 {
     if (shaderProgram) {
         shaderProgram->use();
         m_material.applyTo(shaderProgram);
-        shaderProgram->setUniform("weights", {weights[0], weights[1], weights[2]});
+
+        glm::vec3 wgh{};
+        for (auto i = 0u; i < weights.size() && i < wgh.length(); ++i)
+            wgh[i] = weights[i];
+        shaderProgram->setUniform("weights", wgh);
     }
 
     glBindVertexArray(m_vao);
@@ -120,6 +124,6 @@ Aabb Mesh::aabb() const
 
 void Mesh::setMaterial(const Material& material) { m_material = material; }
 
-void Mesh::setWeights(const std::array<float, 8> weights) { m_weights = weights; }
+void Mesh::setWeights(const std::vector<float>& weights) { m_weights = weights; }
 
 } // namespace gfx
