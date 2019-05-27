@@ -58,14 +58,28 @@ struct Accessor final
     // clang-format on
 
     template <typename T>
+    std::vector<T> getElements(std::size_t from, std::size_t to) const
+    {
+        if (from >= to) {
+            throw std::invalid_argument{"<to> must be larger than <from>"};
+        }
+
+        if (to > count) {
+            throw std::out_of_range{"<to> is larger than <count>"};
+        }
+
+        if (glTypeToEnum<T>() != type) {
+            throw std::runtime_error{"Wrong type while loading data from OpenGL Buffer"};
+        }
+        std::vector<T> ans(to - from, T{});
+        buffer->getData(ans.data(), ans.size() * sizeof(T), byteOffset + from * sizeof(T));
+        return ans;
+    }
+
+    template <typename T>
     std::vector<T> getData() const
     {
-        if (glTypeToEnum<T>() != type) {
-            throw std::runtime_error("Wrong type while loading data from OpenGL Buffer");
-        }
-        std::vector<T> ans(count, T{});
-        buffer->getData(ans.data(), ans.size() * sizeof(T), byteOffset);
-        return ans;
+        return getElements<T>(0, count);
     }
 
     std::shared_ptr<Buffer> buffer;

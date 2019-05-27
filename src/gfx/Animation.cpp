@@ -18,8 +18,8 @@ std::pair<int, int> Animation::Sampler::findKeyFrames(float time,
 template <typename T>
 T Animation::Sampler::lookup(float time) const
 {
-    auto in = input.getData<float>();
-    time    = glm::mod(time, in.back());
+    const auto& in = input.getData<float>();
+    time           = glm::mod(time, in.back());
 
     auto keyFrames = findKeyFrames(time, in);
 
@@ -28,12 +28,9 @@ T Animation::Sampler::lookup(float time) const
 
     float progress = (time - prevFrameTime) / (nextFrameTime - prevFrameTime);
 
-    auto out = output.getData<T>();
+    const auto& values = output.getElements<T>(keyFrames.first, keyFrames.second + 1);
 
-    auto prevFrameValue = out.at(keyFrames.first);
-    auto nextFrameValue = out.at(keyFrames.second);
-
-    return glm::mix(prevFrameValue, nextFrameValue, progress);
+    return glm::mix(values[0], values[1], progress);
 }
 
 //------------------------------------------------------------------------------
@@ -41,8 +38,8 @@ T Animation::Sampler::lookup(float time) const
 template <typename T>
 void Animation::Sampler::lookupArray(float time, std::vector<T>& result) const
 {
-    auto in = input.getData<float>();
-    time    = glm::mod(time, in.back());
+    const auto& in = input.getData<float>();
+    time           = glm::mod(time, in.back());
 
     auto keyFrames = findKeyFrames(time, in);
 
@@ -51,14 +48,15 @@ void Animation::Sampler::lookupArray(float time, std::vector<T>& result) const
 
     float progress = (time - prevFrameTime) / (nextFrameTime - prevFrameTime);
 
-    auto out = output.getData<T>();
+    auto numOfElements = output.count / in.size();
 
-    auto numOfElements = out.size() / in.size();
+    const auto& values = output.getElements<T>(keyFrames.first * numOfElements,
+                                               keyFrames.second * numOfElements + numOfElements);
 
+    result.resize(numOfElements);
+    // Zip
     for (auto i = 0u; i < numOfElements; ++i) {
-        auto prevFrameValue = out.at(keyFrames.first * numOfElements + i);
-        auto nextFrameValue = out.at(keyFrames.second * numOfElements + i);
-        result.push_back(glm::mix(prevFrameValue, nextFrameValue, progress));
+        result[i] = glm::mix(values[i], values[numOfElements + i], progress);
     }
 }
 

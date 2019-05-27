@@ -54,6 +54,15 @@
                 "model": "AnimatedMorphCube/glTF/AnimatedMorphCube.gltf"
             },
             "transformation": {
+                "position": "0 5 0"
+            }
+        },
+        {
+            "name": "animatedMorphSphere",
+            "render": {
+                "model": "AnimatedMorphSphere/glTF/AnimatedMorphSphere.gltf"
+            },
+            "transformation": {
                 "position": "0 0 0"
             }
         },
