@@ -8,15 +8,15 @@
 
 namespace gfx {
 
-Mesh::Mesh(Attributes attributes, Accessor indices, GLenum primitive,
-           std::vector<MorphTarget> targets)
+Primitive::Primitive(Attributes attributes, Accessor indices, GLenum mode,
+                     std::vector<MorphTarget> targets)
     : m_attributes{attributes}
     , m_indices{indices}
-    , m_primitive{primitive}
+    , m_mode{mode}
     , m_targets{targets}
 {
     if (m_attributes[Accessor::Attribute::Position].count == 0) {
-        auto msg = "Mesh must have positions buffer";
+        auto msg = "Primitive must have positions buffer";
         LOG_ERROR(msg);
         throw std::runtime_error{msg};
     }
@@ -53,26 +53,29 @@ Mesh::Mesh(Attributes attributes, Accessor indices, GLenum primitive,
     glBindVertexArray(0);
 }
 
-Mesh::Mesh(Mesh&& other)
+//------------------------------------------------------------------------------
+
+Primitive::Primitive(Primitive&& other)
 {
     std::swap(m_vao, other.m_vao);
     std::swap(m_attributes, other.m_attributes);
     std::swap(m_indices, other.m_indices);
-    std::swap(m_primitive, other.m_primitive);
+    std::swap(m_mode, other.m_mode);
     std::swap(m_targets, other.m_targets);
-    std::swap(m_weights, other.m_weights);
 }
 
-Mesh::~Mesh()
+//------------------------------------------------------------------------------
+
+Primitive::~Primitive()
 {
     glDeleteVertexArrays(1, &m_vao);
 
     LOG_RELEASED;
 }
 
-void Mesh::draw(ShaderProgram* shaderProgram) const { draw(shaderProgram, m_weights); }
+//------------------------------------------------------------------------------
 
-void Mesh::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const
+void Primitive::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const
 {
     if (shaderProgram) {
         shaderProgram->use();
@@ -87,34 +90,24 @@ void Mesh::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights)
     glBindVertexArray(m_vao);
 
     if (m_indices.count == 0) {
-        glDrawArrays(m_primitive, 0, m_attributes[Accessor::Attribute::Position].count);
+        glDrawArrays(m_mode, 0, m_attributes[Accessor::Attribute::Position].count);
     } else {
-        glDrawElements(m_primitive, m_indices.count, m_indices.type, 0);
+        glDrawElements(m_mode, m_indices.count, m_indices.type, 0);
     }
 
     glBindVertexArray(0);
 }
 
-std::vector<float> Mesh::positions() const
+//------------------------------------------------------------------------------
+
+std::vector<glm::vec3> Primitive::positions() const
 {
-    std::vector<float> retVal;
-    /*
-    retVal.resize(m_bufferSizes[POSITIONS] / sizeof(float));
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_buffers[POSITIONS]);
-    void* buff = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
-
-    std::memcpy(retVal.data(), buff, m_bufferSizes[POSITIONS]);
-
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-*/
-    // return m_positionsAcc.buffer->getData();
-
-    return retVal;
+    return m_attributes[Accessor::Attribute::Position].getData<glm::vec3>();
 }
 
-Aabb Mesh::aabb() const
+//------------------------------------------------------------------------------
+
+Aabb Primitive::aabb() const
 {
     auto minPos = m_attributes[Accessor::Attribute::Position].min;
     auto maxPos = m_attributes[Accessor::Attribute::Position].max;
@@ -122,7 +115,68 @@ Aabb Mesh::aabb() const
     return {{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[2]}};
 }
 
-void Mesh::setMaterial(const Material& material) { m_material = material; }
+//------------------------------------------------------------------------------
+
+void Primitive::setMaterial(const Material& material) { m_material = material; }
+
+//==============================================================================
+
+Mesh::Mesh(std::vector<Primitive>&& primitives)
+    : m_primitives{std::move(primitives)}
+{
+}
+
+//------------------------------------------------------------------------------
+
+Mesh::Mesh(Primitive::Attributes attributes, Accessor indices, GLenum mode,
+           std::vector<Primitive::MorphTarget> targets)
+{
+    m_primitives.emplace_back(attributes, indices, mode, targets);
+}
+
+//------------------------------------------------------------------------------
+
+Mesh::Mesh(Mesh&& other)
+{
+    std::swap(m_primitives, other.m_primitives);
+    std::swap(m_weights, other.m_weights);
+}
+
+//------------------------------------------------------------------------------
+
+void Mesh::draw(ShaderProgram* shaderProgram) const { draw(shaderProgram, m_weights); }
+
+//------------------------------------------------------------------------------
+
+void Mesh::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const
+{
+    for (auto& primitive : m_primitives)
+        primitive.draw(shaderProgram, weights);
+}
+
+//------------------------------------------------------------------------------
+
+std::vector<glm::vec3> Mesh::positions() const
+{
+    std::vector<glm::vec3> p;
+    for (const auto& primitive : m_primitives) {
+        const auto& tmp = primitive.positions();
+        p.insert(std::end(p), std::begin(tmp), std::end(tmp));
+    }
+    return p;
+}
+
+//------------------------------------------------------------------------------
+
+Aabb Mesh::aabb() const
+{
+    Aabb aabb;
+    for (const auto& primitive : m_primitives)
+        aabb = aabb.mbr(primitive.aabb());
+    return aabb;
+}
+
+//------------------------------------------------------------------------------
 
 void Mesh::setWeights(const std::vector<float>& weights) { m_weights = weights; }
 

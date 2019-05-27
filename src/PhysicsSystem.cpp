@@ -183,9 +183,9 @@ PhysicsSystem::createCollisionShape(const PhysicsComponent& ph, const ResourcesM
         } else if (splitted[0] == "mesh") {
             auto colShape = std::make_unique<btConvexHullShape>();
 
-            const auto& v = resourcesMgr.getMesh(splitted[1])->positions();
-            for (size_t i = 0; i < v.size(); i = i + 3) {
-                colShape->addPoint(btVector3{v[i], v[i + 1], v[i + 2]}, false);
+            const auto& positions = resourcesMgr.getMesh(splitted[1])->positions();
+            for (const auto p : positions) {
+                colShape->addPoint(btVector3{p.x, p.y, p.z}, false);
             }
             colShape->recalcLocalAabb();
             return colShape;

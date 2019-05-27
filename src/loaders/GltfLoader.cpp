@@ -204,28 +204,31 @@ void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
     using namespace gfx;
 
     for (auto& mesh : doc.meshes) {
-        for (auto& subMesh : mesh.primitives) {
+
+        std::vector<Primitive> primitives;
+
+        for (auto& prim : mesh.primitives) {
 
             std::array<Accessor, Accessor::Attribute::Size> attributes{};
-            auto primitive = static_cast<GLenum>(subMesh.mode);
+            auto primitive = static_cast<GLenum>(prim.mode);
 
-            Accessor& indices = m_accessors[subMesh.indices];
+            Accessor& indices = m_accessors[prim.indices];
 
-            auto attr = subMesh.attributes.find("POSITION");
-            if (attr != std::end(subMesh.attributes))
+            auto attr = prim.attributes.find("POSITION");
+            if (attr != std::end(prim.attributes))
                 attributes[Accessor::Attribute::Position] = m_accessors[attr->second];
 
-            attr = subMesh.attributes.find("NORMAL");
-            if (attr != std::end(subMesh.attributes))
+            attr = prim.attributes.find("NORMAL");
+            if (attr != std::end(prim.attributes))
                 attributes[Accessor::Attribute::Normal] = m_accessors[attr->second];
 
-            attr = subMesh.attributes.find("TANGENT");
-            if (attr != std::end(subMesh.attributes)) {
+            attr = prim.attributes.find("TANGENT");
+            if (attr != std::end(prim.attributes)) {
                 attributes[Accessor::Attribute::Tangent] = m_accessors[attr->second];
             }
 
-            attr = subMesh.attributes.find("TEXCOORD_0");
-            if (attr != std::end(subMesh.attributes))
+            attr = prim.attributes.find("TEXCOORD_0");
+            if (attr != std::end(prim.attributes))
                 attributes[Accessor::Attribute::TexCoord_0] = m_accessors[attr->second];
 
             // Missing tangent vectors!
@@ -234,7 +237,7 @@ void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
 
             std::vector<std::array<Accessor, 3>> targets;
 
-            for (auto& target : subMesh.targets) {
+            for (auto& target : prim.targets) {
                 std::array<Accessor, 3> attributes{};
 
                 auto attr = target.find("POSITION");
@@ -253,14 +256,15 @@ void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
                 targets.push_back(attributes);
             }
 
-            auto m = std::make_shared<Mesh>(attributes, indices, primitive, targets);
-
-            if (subMesh.material != -1) {
-                m->setMaterial(m_materials.at(subMesh.material));
+            primitives.emplace_back(attributes, indices, primitive, targets);
+            if (prim.material != -1) {
+                primitives.back().setMaterial(m_materials.at(prim.material));
             }
-
-            m_meshes.push_back(m);
         }
+
+        auto m = std::make_shared<Mesh>(std::move(primitives));
+        m_meshes.push_back(m);
+        m_meshes.back()->name = mesh.name;
     }
 }
 
