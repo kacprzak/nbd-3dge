@@ -28,16 +28,21 @@ class Primitive final
 
     ~Primitive();
 
-    void draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const;
+    void draw(ShaderProgram* shaderProgram);
 
     std::vector<glm::vec3> positions() const;
     Aabb aabb() const;
 
     void setMaterial(const Material& material);
 
-    std::size_t morphTargetsSize() const { return m_targets.size(); }
+    std::size_t targetsSize() const { return m_targets.size(); }
+    // Sets indices of active morph targets.
+    void setActiveTargets(const std::array<int, 3>& targets);
 
   private:
+    void setVertexAttribute(int index, const Accessor& acc);
+    void updateActiveTargets();
+
     GLuint m_vao;
 
     Attributes m_attributes;
@@ -47,6 +52,8 @@ class Primitive final
     Material m_material;
 
     std::vector<MorphTarget> m_targets;
+    std::array<int, 3> m_activeTargets;
+    bool m_activeTargetsDirty = true;
 };
 
 OSTREAM_IMPL_1(gfx::Primitive, m_vao)
@@ -66,8 +73,8 @@ class Mesh final
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
 
-    void draw(ShaderProgram* shaderProgram) const;
-    void draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const;
+    void draw(ShaderProgram* shaderProgram);
+    void draw(ShaderProgram* shaderProgram, const std::vector<float>& weights);
 
     std::vector<glm::vec3> positions() const;
     Aabb aabb() const;
@@ -75,6 +82,8 @@ class Mesh final
     void setWeights(const std::vector<float>& weights);
 
   private:
+    std::array<int, 3> selectActiveTargets(const std::vector<float>& weights) const;
+
     std::vector<Primitive> m_primitives;
     std::vector<float> m_weights; //< Default weights
 

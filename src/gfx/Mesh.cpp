@@ -14,6 +14,7 @@ Primitive::Primitive(Attributes attributes, Accessor indices, GLenum mode,
     , m_indices{indices}
     , m_mode{mode}
     , m_targets{targets}
+    , m_activeTargets{{-1, -1, -1}}
 {
     if (m_attributes[Accessor::Attribute::Position].count == 0) {
         auto msg = "Primitive must have positions buffer";
@@ -28,24 +29,9 @@ Primitive::Primitive(Attributes attributes, Accessor indices, GLenum mode,
         m_indices.buffer->bind(GL_ELEMENT_ARRAY_BUFFER);
     }
 
-    const auto defineArray = [](int index, const Accessor& acc) {
-        if (acc.count > 0) {
-            acc.buffer->bind(GL_ARRAY_BUFFER);
-            glEnableVertexAttribArray(index);
-            glVertexAttribPointer(index, acc.size, acc.type, acc.normalized,
-                                  acc.buffer->m_byteStride, (const void*)acc.byteOffset);
-        }
-    };
-
     int index = 0;
     for (const Accessor& acc : m_attributes) {
-        defineArray(index++, acc);
-    }
-
-    for (const MorphTarget& mt : m_targets) {
-        for (const Accessor& acc : mt) {
-            defineArray(index++, acc);
-        }
+        setVertexAttribute(index++, acc);
     }
 
     LOG_CREATED;
@@ -62,6 +48,8 @@ Primitive::Primitive(Primitive&& other)
     std::swap(m_indices, other.m_indices);
     std::swap(m_mode, other.m_mode);
     std::swap(m_targets, other.m_targets);
+    std::swap(m_activeTargets, other.m_activeTargets);
+    std::swap(m_activeTargetsDirty, other.m_activeTargetsDirty);
 }
 
 //------------------------------------------------------------------------------
@@ -75,19 +63,17 @@ Primitive::~Primitive()
 
 //------------------------------------------------------------------------------
 
-void Primitive::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const
+void Primitive::draw(ShaderProgram* shaderProgram)
 {
-    if (shaderProgram) {
-        shaderProgram->use();
-        m_material.applyTo(shaderProgram);
-
-        glm::vec3 wgh{};
-        for (auto i = 0u; i < weights.size() && i < wgh.length(); ++i)
-            wgh[i] = weights[i];
-        shaderProgram->setUniform("weights", wgh);
-    }
+    shaderProgram->use();
+    m_material.applyTo(shaderProgram);
 
     glBindVertexArray(m_vao);
+
+    if (m_activeTargetsDirty) {
+        updateActiveTargets();
+        m_activeTargetsDirty = false;
+    }
 
     if (m_indices.count == 0) {
         glDrawArrays(m_mode, 0, m_attributes[Accessor::Attribute::Position].count);
@@ -119,6 +105,45 @@ Aabb Primitive::aabb() const
 
 void Primitive::setMaterial(const Material& material) { m_material = material; }
 
+//------------------------------------------------------------------------------
+
+void Primitive::setActiveTargets(const std::array<int, 3>& targets)
+{
+    if (m_activeTargets != targets) {
+        m_activeTargets      = targets;
+        m_activeTargetsDirty = true;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void Primitive::setVertexAttribute(int index, const Accessor& acc)
+{
+    if (acc.count > 0) {
+        acc.buffer->bind(GL_ARRAY_BUFFER);
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(index, acc.size, acc.type, acc.normalized, acc.buffer->m_byteStride,
+                              (const void*)acc.byteOffset);
+    } else {
+        glDisableVertexAttribArray(index);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void Primitive::updateActiveTargets()
+{
+    int index = Accessor::Attribute::Size;
+    for (auto at : m_activeTargets) {
+        if (at == -1) break;
+
+        const MorphTarget& mt = m_targets[at];
+        for (const Accessor& acc : mt) {
+            setVertexAttribute(index++, acc);
+        }
+    }
+}
+
 //==============================================================================
 
 Mesh::Mesh(std::vector<Primitive>&& primitives)
@@ -144,14 +169,27 @@ Mesh::Mesh(Mesh&& other)
 
 //------------------------------------------------------------------------------
 
-void Mesh::draw(ShaderProgram* shaderProgram) const { draw(shaderProgram, m_weights); }
+void Mesh::draw(ShaderProgram* shaderProgram) { draw(shaderProgram, m_weights); }
 
 //------------------------------------------------------------------------------
 
-void Mesh::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights) const
+void Mesh::draw(ShaderProgram* shaderProgram, const std::vector<float>& weights)
 {
-    for (auto& primitive : m_primitives)
-        primitive.draw(shaderProgram, weights);
+    shaderProgram->use();
+
+    const auto& activeTargets = selectActiveTargets(weights);
+
+    std::array<float, 3> w{};
+    std::transform(std::cbegin(activeTargets),
+                   std::find(std::cbegin(activeTargets), std::cend(activeTargets), -1),
+                   std::begin(w), [&weights](int i) { return weights[i]; });
+
+    shaderProgram->setUniform("weights", glm::vec3{w[0], w[1], w[2]});
+
+    for (auto& primitive : m_primitives) {
+        primitive.setActiveTargets(activeTargets);
+        primitive.draw(shaderProgram);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -179,5 +217,16 @@ Aabb Mesh::aabb() const
 //------------------------------------------------------------------------------
 
 void Mesh::setWeights(const std::vector<float>& weights) { m_weights = weights; }
+
+//------------------------------------------------------------------------------
+
+std::array<int, 3> Mesh::selectActiveTargets(const std::vector<float>& weights) const
+{
+    // todo: prioritize targets
+    std::array<int, 3> activeTargets = {-1, -1, -1};
+    for (int i = 0; i < weights.size(); ++i)
+        activeTargets[i] = i;
+    return activeTargets;
+}
 
 } // namespace gfx
