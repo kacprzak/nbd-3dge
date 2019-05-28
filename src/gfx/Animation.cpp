@@ -7,10 +7,9 @@ namespace gfx {
 std::pair<int, int> Animation::Sampler::findKeyFrames(float time,
                                                       const std::vector<float>& input) const
 {
-    // todo: change to binary search
-    auto it = std::find_if(input.cbegin(), input.cend(), [time](float x) { return x > time; });
-    std::size_t nextKeyFrameIdx = std::distance(input.cbegin(), it);
-    return {nextKeyFrameIdx - 1, nextKeyFrameIdx};
+    auto it             = std::upper_bound(input.cbegin(), input.cend(), time);
+    std::size_t nextIdx = std::distance(input.cbegin(), it);
+    return {nextIdx - 1, nextIdx};
 }
 
 //------------------------------------------------------------------------------

@@ -5,6 +5,8 @@
 #include <array>
 #include <cstring>
 #include <limits>
+#include <numeric> // iota
+#include <queue>   // priority_queue
 
 namespace gfx {
 
@@ -222,10 +224,27 @@ void Mesh::setWeights(const std::vector<float>& weights) { m_weights = weights; 
 
 std::array<int, 3> Mesh::selectActiveTargets(const std::vector<float>& weights) const
 {
-    // todo: prioritize targets
     std::array<int, 3> activeTargets = {-1, -1, -1};
-    for (int i = 0; i < weights.size(); ++i)
-        activeTargets[i] = i;
+
+    if (weights.empty()) {
+        // do nothing
+    } else if (weights.size() <= activeTargets.size()) {
+        // just populate in default order
+        auto begin = std::begin(activeTargets);
+        std::iota(begin, begin + weights.size(), 0);
+    } else {
+        // select targets with largest weights
+        const auto cmp = [&weights](int left, int right) { return weights[left] < weights[right]; };
+        std::priority_queue<int, std::vector<int>, decltype(cmp)> queue{cmp};
+        for (int i = 0; i < weights.size(); ++i)
+            queue.push(i);
+
+        for (auto& at : activeTargets) {
+            at = queue.top();
+            queue.pop();
+        }
+    }
+
     return activeTargets;
 }
 
