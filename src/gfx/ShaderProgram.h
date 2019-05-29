@@ -27,16 +27,16 @@ class ShaderProgram final
     void link(const std::vector<Shader*>& shaders);
     void use();
 
-    void setUniform(const char* name, const glm::mat4& matrix);
-    void setUniform(const char* name, const glm::vec4& vector);
-    void setUniform(const char* name, const glm::vec3& vector);
-    void setUniform(const char* name, float value);
-    void setUniform(const char* name, int value);
+    void setUniform(const std::string& name, const glm::mat4& matrix);
+    void setUniform(const std::string& name, const glm::vec4& vector);
+    void setUniform(const std::string& name, const glm::vec3& vector);
+    void setUniform(const std::string& name, float value);
+    void setUniform(const std::string& name, int value);
 
     std::string name;
 
   private:
-    GLint getUniformLocation(const char* name);
+    GLint getUniformLocation(const std::string& name);
 
     GLuint m_shaderProgramId = 0;
     boost::container::flat_map<std::string, GLint> m_uniformLocs;
