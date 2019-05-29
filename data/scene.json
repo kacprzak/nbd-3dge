@@ -40,12 +40,21 @@
     ],
     "actors": [
         {
+            "name": "interpolationTest",
+            "render": {
+                "model": "InterpolationTest/glTF/InterpolationTest.gltf"
+            },
+            "transformation": {
+                "position": "0 0 0"
+            }
+        },
+        {
             "name": "animatedCube",
             "render": {
                 "model": "AnimatedCube/glTF/AnimatedCube.gltf"
             },
             "transformation": {
-                "position": "0 -5 0"
+                "position": "0 -15 15"
             }
         },
         {
@@ -54,7 +63,7 @@
                 "model": "AnimatedMorphCube/glTF/AnimatedMorphCube.gltf"
             },
             "transformation": {
-                "position": "0 5 0"
+                "position": "0 15 10"
             }
         },
         {
@@ -63,7 +72,7 @@
                 "model": "AnimatedMorphSphere/glTF/AnimatedMorphSphere.gltf"
             },
             "transformation": {
-                "position": "0 0 0"
+                "position": "0 -15 0"
             }
         },
         {

@@ -80,6 +80,7 @@ class Node final
 
     void setWeights(const std::vector<float>& weights) { m_weights = weights; }
     void removeWeights() { m_weights.clear(); }
+    std::size_t getWeightsSize() const;
 
     std::string name;
 

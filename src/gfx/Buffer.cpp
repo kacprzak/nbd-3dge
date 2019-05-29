@@ -40,10 +40,13 @@ void Buffer::getData(void* data, size_t size, std::ptrdiff_t byteOffset) const
 
 //------------------------------------------------------------------------------
 
-Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes,
-                           const Accessor& indicesAcc)
+namespace {
+
+template <typename T>
+Accessor _calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes,
+                            const Accessor& indicesAcc)
 {
-    auto indices   = indicesAcc.getData<uint16_t>();
+    auto indices   = indicesAcc.getData<T>();
     auto positions = attributes[Accessor::Attribute::Normal].getData<glm::vec3>();
     auto normals   = attributes[Accessor::Attribute::Normal].getData<glm::vec3>();
     auto texcoords = attributes[Accessor::Attribute::TexCoord_0].getData<glm::vec2>();
@@ -56,7 +59,7 @@ Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>
 
     auto inc = 3; // Only GL_TRIANGLES supported
 
-    for (size_t i = 2; i < indices.size(); i += inc) {
+    for (std::ptrdiff_t i = 2; i < indices.size(); i += inc) {
         auto index0 = indices[i - 2];
         auto index1 = indices[i - 1];
         auto index2 = indices[i - 0];
@@ -99,6 +102,19 @@ Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>
     tangentsAccesor.size   = sizeof(tangents[0]) / sizeof(tangents[0][0]);
 
     return tangentsAccesor;
+}
+
+} // namespace
+
+Accessor calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes,
+                           const Accessor& indicesAcc)
+{
+    switch (indicesAcc.type) {
+    case GL_UNSIGNED_BYTE: return _calculateTangents<uint8_t>(attributes, indicesAcc);
+    case GL_UNSIGNED_SHORT: return _calculateTangents<uint16_t>(attributes, indicesAcc);
+    case GL_UNSIGNED_INT: return _calculateTangents<uint32_t>(attributes, indicesAcc);
+    default: throw std::invalid_argument{"Unknown indices type"};
+    }
 }
 
 } // namespace gfx

@@ -14,6 +14,16 @@ Node::Node() {}
 
 //------------------------------------------------------------------------------
 
+std::size_t Node::getWeightsSize() const
+{
+    if (m_model && m_mesh != -1) {
+        auto mesh = m_model->getMesh(m_mesh);
+    }
+    return 0;
+}
+
+//------------------------------------------------------------------------------
+
 void Node::rebuildModelMatrix()
 {
     const auto T = glm::translate(glm::mat4(1.f), m_translation);

@@ -95,7 +95,11 @@ struct Accessor final
 OSTREAM_IMPL(gfx::Accessor)
 
 // clang-format off
+template <> inline GLenum Accessor::glTypeToEnum<GLbyte>() const { return GL_BYTE; }
+template <> inline GLenum Accessor::glTypeToEnum<GLubyte>() const { return GL_UNSIGNED_BYTE; }
+template <> inline GLenum Accessor::glTypeToEnum<GLshort>() const { return GL_SHORT; }
 template <> inline GLenum Accessor::glTypeToEnum<GLushort>() const { return GL_UNSIGNED_SHORT; }
+template <> inline GLenum Accessor::glTypeToEnum<GLint>() const { return GL_INT; }
 template <> inline GLenum Accessor::glTypeToEnum<GLuint>() const { return GL_UNSIGNED_INT; }
 template <> inline GLenum Accessor::glTypeToEnum<GLfloat>() const { return GL_FLOAT; }
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec2>() const { return GL_FLOAT; }
