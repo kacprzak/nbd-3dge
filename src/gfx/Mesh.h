@@ -80,6 +80,7 @@ class Mesh final
     Aabb aabb() const;
 
     void setWeights(const std::vector<float>& weights);
+    std::size_t getWeightsSize() const;
 
   private:
     std::array<int, 3> selectActiveTargets(const std::vector<float>& weights) const;

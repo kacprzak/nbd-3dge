@@ -18,6 +18,7 @@ std::size_t Node::getWeightsSize() const
 {
     if (m_model && m_mesh != -1) {
         auto mesh = m_model->getMesh(m_mesh);
+        return mesh->getWeightsSize();
     }
     return 0;
 }

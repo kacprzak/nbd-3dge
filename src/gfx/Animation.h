@@ -22,9 +22,6 @@ class Animation final
         template <typename T>
         void lookup(float time, T* result, std::size_t size = 1u) const;
 
-        template <typename T>
-        void lookupArray(float time, std::vector<T>& result) const;
-
       private:
         // v0	first point
         // b0	first point output tangent
@@ -54,6 +51,7 @@ class Animation final
 
   private:
     std::vector<Channel> m_channels;
+    float progress = 0.0f;
 };
 
 } // namespace gfx

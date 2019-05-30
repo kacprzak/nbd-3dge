@@ -27,14 +27,16 @@ void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
 
     auto keyFrames = findKeyFrames(time, in);
 
-    float prevFrameTime = in.at(keyFrames.first);
-    float nextFrameTime = in.at(keyFrames.second);
-    float dt            = nextFrameTime - prevFrameTime;
-    float t             = dt == 0.0f ? 0.0f : (time - prevFrameTime) / dt;
+    const float prevFrameTime = in.at(keyFrames.first);
+    const float nextFrameTime = in.at(keyFrames.second);
+    const float dt            = nextFrameTime - prevFrameTime;
+    const float t             = dt == 0.0f ? 0.0f : (time - prevFrameTime) / dt;
+
+    const auto kfd = keyFrames.second - keyFrames.first; // keyframes distance. Typically 1 or 0
 
     T v0, b0{}, a1{}, v1{};
 
-    if (interpolation == Step || t == 0.0f) {
+    if (interpolation == Step) {
         const auto& values =
             output.getElements<T>(keyFrames.first * size, (keyFrames.first + 1) * size);
 
@@ -47,10 +49,12 @@ void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
         const auto& values = output.getElements<T>((keyFrames.first * 3) * size + 1,
                                                    ((keyFrames.second + 1) * 3) * size - 1);
         for (std::size_t i = 0u; i < size; ++i) {
-            v0        = values[i * size];
-            b0        = values[i * size + 1];
-            a1        = values[i * size + 2];
-            v1        = values[i * size + 3];
+            v0 = values[i * 3];
+            v1 = values[(i + kfd * size) * 3];
+            if (kfd > 0) {
+                b0 = values[i * 3 + 1];
+                a1 = values[(i + kfd * size) * 3 - 1];
+            }
             result[i] = interpolate(v0, b0, a1, v1, dt, t);
         }
     } else /* Linear */ {
@@ -58,8 +62,8 @@ void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
             output.getElements<T>(keyFrames.first * size, (keyFrames.second + 1) * size);
 
         for (std::size_t i = 0u; i < size; ++i) {
-            v0        = values[i * size];
-            v1        = values[i * size + 1];
+            v0        = values[i];
+            v1        = values[i + kfd * size];
             result[i] = interpolate(v0, b0, a1, v1, dt, t);
         }
     }
@@ -68,51 +72,17 @@ void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
 //------------------------------------------------------------------------------
 
 template <typename T>
-void Animation::Sampler::lookupArray(float time, std::vector<T>& result) const
-{
-    const auto& in = input.getData<float>();
-    time           = glm::mod(time, in.back());
-
-    auto keyFrames = findKeyFrames(time, in);
-
-    float prevFrameTime = in.at(keyFrames.first);
-    float nextFrameTime = in.at(keyFrames.second);
-    float dt            = nextFrameTime - prevFrameTime;
-    float t             = dt == 0.0f ? 0.0f : (time - prevFrameTime) / dt;
-
-    auto numOfElements = output.count / in.size();
-    result.resize(numOfElements);
-
-    if (interpolation == Step || keyFrames.first == keyFrames.second) {
-        const auto& values = output.getElements<T>(keyFrames.first * numOfElements,
-                                                   keyFrames.first * numOfElements + numOfElements);
-        std::copy(std::cbegin(values), std::cend(values), std::begin(result));
-
-    } else /* Linear */ {
-        const auto& values = output.getElements<T>(
-            keyFrames.first * numOfElements, keyFrames.second * numOfElements + numOfElements);
-
-        // Zip
-        for (auto i = 0u; i < numOfElements; ++i) {
-            result[i] = glm::mix(values[i], values[numOfElements + i], t);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-
-template <typename T>
 T Animation::Sampler::interpolate(T v0, T b0, T a1, T v1, float dt, float t) const
 {
-    if (interpolation == Step) {
+    if (interpolation == Step || dt == 0.0f) {
         return v0;
 
     } else if (interpolation == CubicSpline) {
         auto p0 = v0;      // point 0
-        auto m0 = dt * b0; // out-tangent 0
+        auto m0 = b0 * dt; // out-tangent 0
         auto p1 = v1;      // point 1
-        auto m1 = dt * a1; // in-tangent 1
-        // Herimte interpolation
+        auto m1 = a1 * dt; // in-tangent 1
+        // Hermite interpolation
         float t2 = t * t;
         float t3 = t2 * t;
         return (2 * t3 - 3 * t2 + 1) * p0 + (t3 - 2 * t2 + t) * m0 + (-2 * t3 + 3 * t2) * p1 +
@@ -130,8 +100,7 @@ void Animation::update(float delta, std::vector<Node>& nodes)
     for (const auto& channel : m_channels) {
         Node& node = nodes.at(channel.node);
 
-        static float progress = 0.0f;
-        progress += delta / 30.0f;
+        progress += delta;
 
         switch (channel.path) {
         case Channel::Translation: {
@@ -150,8 +119,9 @@ void Animation::update(float delta, std::vector<Node>& nodes)
             node.setScale(scale);
         } break;
         case Channel::Weights: {
-            std::vector<float> weights;
-            channel.sampler.lookupArray(progress, weights);
+            auto weightsSize = node.getWeightsSize();
+            std::vector<float> weights(weightsSize);
+            channel.sampler.lookup(progress, weights.data(), weights.size());
             node.setWeights(weights);
         } break;
         }

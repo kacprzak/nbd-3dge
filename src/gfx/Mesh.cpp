@@ -222,6 +222,17 @@ void Mesh::setWeights(const std::vector<float>& weights) { m_weights = weights; 
 
 //------------------------------------------------------------------------------
 
+std::size_t Mesh::getWeightsSize() const
+{
+    std::size_t ans = 0u;
+    for (const auto& p : m_primitives) {
+        ans = std::max(ans, p.targetsSize());
+    }
+    return ans;
+}
+
+//------------------------------------------------------------------------------
+
 std::array<int, 3> Mesh::selectActiveTargets(const std::vector<float>& weights) const
 {
     std::array<int, 3> activeTargets = {-1, -1, -1};
