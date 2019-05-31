@@ -40,12 +40,31 @@
     ],
     "actors": [
         {
+            "name": "riggedSimple",
+            "render": {
+                "model": "RiggedSimple/glTF/RiggedSimple.gltf"
+            },
+            "transformation": {
+                "position": "5 0 0"
+            }
+        },
+        {
+            "name": "boxAnimated",
+            "render": {
+                "model": "BoxAnimated/glTF/BoxAnimated.gltf"
+            },
+            "transformation": {
+                "position": "0 0 0"
+            }
+        },
+        {
             "name": "interpolationTest",
             "render": {
                 "model": "InterpolationTest/glTF/InterpolationTest.gltf"
             },
             "transformation": {
-                "position": "0 0 0"
+                "position": "10 0 0",
+                "scale": "0.25 0.25 0.25"
             }
         },
         {
@@ -54,7 +73,7 @@
                 "model": "AnimatedCube/glTF/AnimatedCube.gltf"
             },
             "transformation": {
-                "position": "0 -15 15"
+                "position": "0 -10 10"
             }
         },
         {
@@ -63,7 +82,7 @@
                 "model": "AnimatedMorphCube/glTF/AnimatedMorphCube.gltf"
             },
             "transformation": {
-                "position": "0 15 10"
+                "position": "0 10 10"
             }
         },
         {
@@ -72,13 +91,13 @@
                 "model": "AnimatedMorphSphere/glTF/AnimatedMorphSphere.gltf"
             },
             "transformation": {
-                "position": "0 -15 0"
+                "position": "0 -10 0"
             }
         },
         {
             "name": "actor_1",
             "prototype": "DamagedHelmetPrototype",
-            "render": {},
+            "render": { },
             "transformation": {
                 "position": "-5 -5 0"
             }
@@ -86,7 +105,7 @@
         {
             "name": "actor_2",
             "prototype": "SciFiHelmetPrototype",
-            "render": {},
+            "render": { },
             "transformation": {
                 "position": "-5 0 5"
             }
@@ -94,7 +113,7 @@
         {
             "name": "actor_3",
             "prototype": "BoomBoxPrototype",
-            "render": {},
+            "render": { },
             "transformation": {
                 "position": "0 -5 -5",
                 "scale": "100 100 100"

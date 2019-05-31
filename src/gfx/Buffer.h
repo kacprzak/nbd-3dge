@@ -60,8 +60,10 @@ struct Accessor final
     template <typename T>
     std::vector<T> getElements(std::size_t from, std::size_t to) const
     {
-        if (from >= to) {
-            throw std::invalid_argument{"<to> must be larger than <from>"};
+        if (from == to) return {};
+
+        if (from > to) {
+            throw std::invalid_argument{"<to> must be larger or equal than <from>"};
         }
 
         if (to > count) {
@@ -82,14 +84,25 @@ struct Accessor final
         return getElements<T>(0, count);
     }
 
+    std::size_t typeSize() const
+    {
+        switch (type) {
+        case GL_BYTE:
+        case GL_UNSIGNED_BYTE: return 1;
+        case GL_SHORT:
+        case GL_UNSIGNED_SHORT: return 2;
+        default: return 4;
+        }
+    }
+
     std::shared_ptr<Buffer> buffer;
     std::ptrdiff_t byteOffset = 0;
     unsigned count            = 0; //< Number of elements (not bytes!)
     unsigned size             = 4; //< Number of components per element
     GLenum type;                   //< Component type
     bool normalized = false;
-    std::array<float, 4> min{};
-    std::array<float, 4> max{};
+    std::array<float, 16> min{};
+    std::array<float, 16> max{};
 };
 
 OSTREAM_IMPL(gfx::Accessor)

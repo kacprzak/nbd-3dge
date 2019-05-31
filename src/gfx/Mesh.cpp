@@ -80,7 +80,7 @@ void Primitive::draw(ShaderProgram* shaderProgram)
     if (m_indices.count == 0) {
         glDrawArrays(m_mode, 0, m_attributes[Accessor::Attribute::Position].count);
     } else {
-        glDrawElements(m_mode, m_indices.count, m_indices.type, 0);
+        glDrawElements(m_mode, m_indices.count, m_indices.type, (const void*)m_indices.byteOffset);
     }
 
     glBindVertexArray(0);
