@@ -17,10 +17,8 @@ std::pair<int, int> Animation::Sampler::findKeyFrames(float time,
 //------------------------------------------------------------------------------
 
 template <typename T>
-void Animation::Sampler::lookup(float time, bool wrap, T* result, std::size_t size) const
+void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
 {
-    if (wrap) time = glm::mod(time, input.max[0]);
-
     std::pair<int, int> keyFrames;
     const auto& in = input.getData<float>();
 
@@ -105,36 +103,45 @@ T Animation::Sampler::interpolate(T v0, T b0, T a1, T v1, float dt, float t) con
 void Animation::update(float delta, std::vector<Node>& nodes)
 {
     bool loop = true;
+    progress += delta;
+    if (loop) progress = glm::mod(progress, duration());
 
     for (const auto& channel : m_channels) {
         Node& node = nodes.at(channel.node);
 
-        progress += delta;
-
         switch (channel.path) {
         case Channel::Translation: {
             glm::vec3 translation;
-            channel.sampler.lookup(progress, loop, &translation);
+            channel.sampler.lookup(progress, &translation);
             node.setTranslation(translation);
         } break;
         case Channel::Rotation: {
             glm::quat rotation;
-            channel.sampler.lookup(progress, loop, &rotation);
+            channel.sampler.lookup(progress, &rotation);
             node.setRotation(glm::normalize(rotation));
         } break;
         case Channel::Scale: {
             glm::vec3 scale;
-            channel.sampler.lookup(progress, loop, &scale);
+            channel.sampler.lookup(progress, &scale);
             node.setScale(scale);
         } break;
         case Channel::Weights: {
             auto weightsSize = node.getWeightsSize();
             std::vector<float> weights(weightsSize);
-            channel.sampler.lookup(progress, loop, weights.data(), weights.size());
+            channel.sampler.lookup(progress, weights.data(), weights.size());
             node.setWeights(weights);
         } break;
         }
     }
+}
+
+float Animation::duration() const
+{
+    float ans = 0.0f;
+    for (const auto& channel : m_channels) {
+        ans = std::max(ans, channel.sampler.input.max[0]);
+    }
+    return ans;
 }
 
 } // namespace gfx
