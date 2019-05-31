@@ -4,6 +4,8 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
+uniform mat4 jointMatrices[12];
+
 uniform vec3 weights;
 
 layout(location = 0) in vec3 in_position;
@@ -33,14 +35,20 @@ void main()
     vec3 tangent = in_tangent + in_morph_0[2] * weights[0] + in_morph_1[2] * weights[1] +
                    in_morph_2[2] * weights[2];
 
-    vec3 N = normalize(vec3(modelMatrix * vec4(normal, 0.0)));
-    vec3 T = normalize(vec3(modelMatrix * vec4(tangent, 0.0)));
+    mat4 skinMatrix =
+        in_weights_0.x * jointMatrices[int(in_joints_0.x)] +
+        in_weights_0.y * jointMatrices[int(in_joints_0.y)] +
+        in_weights_0.z * jointMatrices[int(in_joints_0.z)] +
+        in_weights_0.w * jointMatrices[int(in_joints_0.w)];
+
+    vec3 N = normalize(vec3(modelMatrix * skinMatrix * vec4(normal, 0.0)));
+    vec3 T = normalize(vec3(modelMatrix * skinMatrix * vec4(tangent, 0.0)));
     vec3 B = cross(N, T);
     TBN    = mat3(T, B, N);
 
     texCoord_0 = in_texCoord_0;
     // texCoord_0 = vec2(in_texCoord_0.s, 1.0 - in_texCoord_0.t);
 
-    position    = modelMatrix * vec4(pos, 1.0);
+    position    = modelMatrix * skinMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * viewMatrix * position;
 }

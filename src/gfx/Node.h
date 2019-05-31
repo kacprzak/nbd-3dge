@@ -39,6 +39,8 @@ class Node final
     glm::vec3 getScale() const { return m_scale; }
 
     void setModelMatrix(const glm::mat4& mtx);
+    glm::mat4 getModelMatrix() const { return m_modelMatrix; }
+    glm::mat4 getWorldMatrix() const { return m_worldMatrix; }
 
     void draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
               std::array<Light*, 8>& lights) const;
@@ -61,6 +63,7 @@ class Node final
 
     void setModel(Model* model) { m_model = model; }
     Model* getModel() { return m_model; }
+    const Model* getModel() const { return m_model; }
 
     void setMesh(int mesh) { m_mesh = mesh; }
     void removeMesh(int mesh) { m_mesh = -1; }
@@ -90,6 +93,7 @@ class Node final
     glm::vec3 m_scale{1.0f, 1.0f, 1.0f};
 
     glm::mat4 m_modelMatrix{1.0f};
+    glm::mat4 m_worldMatrix{1.0f};
     bool m_modelMatrixDirty = true;
 
     Model* m_model = nullptr;

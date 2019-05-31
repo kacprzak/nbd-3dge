@@ -110,6 +110,8 @@ template <> inline GLenum Accessor::glTypeToEnum<glm::vec2>() const { return GL_
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec3>() const { return GL_FLOAT; }
 template <> inline GLenum Accessor::glTypeToEnum<glm::vec4>() const { return GL_FLOAT; }
 template <> inline GLenum Accessor::glTypeToEnum<glm::quat>() const { return GL_FLOAT; }
+template <> inline GLenum Accessor::glTypeToEnum<glm::mat3>() const { return GL_FLOAT; }
+template <> inline GLenum Accessor::glTypeToEnum<glm::mat4>() const { return GL_FLOAT; }
 // clang-format on
 
 //------------------------------------------------------------------------------

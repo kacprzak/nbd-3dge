@@ -87,13 +87,25 @@ void Node::draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
                 light.applyTo(shaderProgram, i);
 
                 const auto& lightMVPIndex = "lightMVP[" + std::to_string(i) + "]";
-                shaderProgram->setUniform(lightMVPIndex.c_str(), light.projectionMatrix() *
-                                                                     light.viewMatrix() *
-                                                                     m_modelMatrix);
+                shaderProgram->setUniform(lightMVPIndex, light.projectionMatrix() *
+                                                             light.viewMatrix() * m_modelMatrix);
             }
         }
 
         shaderProgram->setUniform("modelMatrix", worldMatrix);
+
+        std::array<glm::mat4, 12> jointMatrices{};
+        for (auto& m : jointMatrices)
+            m = glm::mat4{1.0f};
+
+        if (m_skin != -1) {
+            m_model->getSkin(m_skin)->calculateJointMatrices(jointMatrices, this);
+        }
+
+        for (int i = 0; i < jointMatrices.size(); ++i) {
+            const auto& jointMatIndex = "jointMatrices[" + std::to_string(i) + "]";
+            shaderProgram->setUniform(jointMatIndex, jointMatrices[i]);
+        }
 
         if (!m_weights.empty())
             mesh->draw(shaderProgram, m_weights);
@@ -116,16 +128,14 @@ void Node::update(const glm::mat4& transformation, float deltaTime)
         m_modelMatrixDirty = false;
     }
 
-    const auto& worldMatrix = transformation * m_modelMatrix;
+    m_worldMatrix = transformation * m_modelMatrix;
 
-    if (m_model) {
-        if (auto camera = m_model->getCamera(m_camera)) camera->update(worldMatrix, deltaTime);
-        if (auto light = m_model->getLight(m_light)) light->update(worldMatrix, deltaTime);
-    }
+    if (auto camera = m_model->getCamera(m_camera)) camera->update(m_worldMatrix, deltaTime);
+    if (auto light = m_model->getLight(m_light)) light->update(m_worldMatrix, deltaTime);
 
     for (auto child : m_children) {
         auto n = m_model->getNode(child);
-        n->update(worldMatrix, deltaTime);
+        n->update(m_worldMatrix, deltaTime);
     }
 }
 

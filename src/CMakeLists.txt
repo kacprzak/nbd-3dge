@@ -11,6 +11,7 @@ set(nbd-3dge_SRCS
     gfx/Model.cpp
     gfx/Shader.cpp
     gfx/ShaderProgram.cpp
+    gfx/Skin.cpp
     gfx/Skybox.cpp
     gfx/Texture.cpp
     gfx/Text.cpp
