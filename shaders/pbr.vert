@@ -10,9 +10,9 @@ layout(location = 0) in vec3 in_position;
 layout(location = 1) in vec3 in_normal;
 layout(location = 2) in vec3 in_tangent;
 layout(location = 3) in vec2 in_texCoord_0;
-layout(location = 4) in vec2 in_texCoord_1;
-layout(location = 5) in vec2 in_texCoord_2;
-layout(location = 6) in vec2 in_texCoord_3;
+layout(location = 4) in vec4 in_color_0;
+layout(location = 5) in vec4 in_joints_0;
+layout(location = 6) in vec4 in_weights_0;
 
 layout(location = 7) in vec3 in_morph_0[3];
 layout(location = 10) in vec3 in_morph_1[3];

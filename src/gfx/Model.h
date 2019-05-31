@@ -1,11 +1,12 @@
 #ifndef GFX_MODEL_H
 #define GFX_MODEL_H
 
+#include "Animation.h"
 #include "Buffer.h"
 #include "Camera.h"
 #include "Mesh.h"
-#include "Animation.h"
 #include "Node.h"
+#include "Skin.h"
 #include "Texture.h"
 
 namespace loaders {
@@ -32,6 +33,8 @@ class Model
     Sampler* getSampler(int idx) { return m_samplers.at(idx).get(); }
     Texture* getTexture(int idx) { return m_textures.at(idx).get(); }
     Mesh* getMesh(int idx) { return m_meshes.at(idx).get(); }
+
+    Skin* getSkin(int idx) { return &m_skins.at(idx); }
 
     Material* getMaterial(int idx)
     {
@@ -82,6 +85,7 @@ class Model
     std::vector<Accessor> m_accessors;
     std::vector<Material> m_materials;
     std::vector<Animation> m_animations;
+    std::vector<Skin> m_skins;
     std::vector<Camera> m_cameras;
     std::vector<Node> m_nodes;
     std::vector<std::vector<unsigned>> m_scenes;

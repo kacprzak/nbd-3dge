@@ -14,6 +14,30 @@ Node::Node() {}
 
 //------------------------------------------------------------------------------
 
+void Node::setTranslation(glm::vec3 translation)
+{
+    m_translation      = translation;
+    m_modelMatrixDirty = true;
+}
+
+//------------------------------------------------------------------------------
+
+void Node::setRotation(glm::quat rotation)
+{
+    m_rotation         = rotation;
+    m_modelMatrixDirty = true;
+}
+
+//------------------------------------------------------------------------------
+
+void Node::setScale(glm::vec3 scale)
+{
+    m_scale            = scale;
+    m_modelMatrixDirty = true;
+}
+
+//------------------------------------------------------------------------------
+
 std::size_t Node::getWeightsSize() const
 {
     if (m_model && m_mesh != -1) {
@@ -32,6 +56,17 @@ void Node::rebuildModelMatrix()
     const auto S = glm::scale(glm::mat4(1.f), m_scale);
 
     m_modelMatrix = T * R * S;
+}
+
+//------------------------------------------------------------------------------
+
+void Node::setModelMatrix(const glm::mat4& mtx)
+{
+    m_modelMatrix = mtx;
+
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    glm::decompose(mtx, m_scale, m_rotation, m_translation, skew, perspective);
 }
 
 //------------------------------------------------------------------------------
@@ -76,7 +111,10 @@ void Node::draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
 
 void Node::update(const glm::mat4& transformation, float deltaTime)
 {
-    rebuildModelMatrix();
+    if (m_modelMatrixDirty) {
+        rebuildModelMatrix();
+        m_modelMatrixDirty = false;
+    }
 
     const auto& worldMatrix = transformation * m_modelMatrix;
 

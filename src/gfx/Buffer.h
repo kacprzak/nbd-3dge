@@ -42,16 +42,7 @@ OSTREAM_IMPL_1(gfx::Buffer, m_bufferId)
 
 struct Accessor final
 {
-    enum Attribute {
-        Position,
-        Normal,
-        Tangent,
-        TexCoord_0,
-        TexCoord_1,
-        TexCoord_2,
-        TexCoord_3,
-        Size
-    };
+    enum Attribute { Position, Normal, Tangent, TexCoord_0, Color_0, Joints_0, Weights_0, Size };
 
     // clang-format off
     template <typename T> GLenum glTypeToEnum() const { return GL_INVALID_ENUM; }

@@ -44,6 +44,7 @@ void GltfLoader::load(const std::filesystem::path& file)
     loadAnimations(doc);
     loadCameras(doc);
     loadNodes(doc);
+    loadSkins(doc);
 
     for (auto& scene : doc.scenes) {
         m_scenes.push_back(scene.nodes);
@@ -63,6 +64,7 @@ std::shared_ptr<gfx::Model> GltfLoader::model() const
     model->m_textures   = m_textures;
     model->m_meshes     = m_meshes;
     model->m_animations = m_animations;
+    model->m_skins      = m_skins;
 
     model->m_nodes = m_nodes;
     for (auto& n : model->m_nodes)
@@ -231,6 +233,18 @@ void GltfLoader::loadMeshes(const fx::gltf::Document& doc)
             if (attr != std::end(prim.attributes))
                 attributes[Accessor::Attribute::TexCoord_0] = m_accessors[attr->second];
 
+            attr = prim.attributes.find("COLOR_0");
+            if (attr != std::end(prim.attributes))
+                attributes[Accessor::Attribute::Color_0] = m_accessors[attr->second];
+
+            attr = prim.attributes.find("JOINTS_0");
+            if (attr != std::end(prim.attributes))
+                attributes[Accessor::Attribute::Joints_0] = m_accessors[attr->second];
+
+            attr = prim.attributes.find("WEIGHTS_0");
+            if (attr != std::end(prim.attributes))
+                attributes[Accessor::Attribute::Weights_0] = m_accessors[attr->second];
+
             // Missing tangent vectors!
             if (!attributes[Accessor::Attribute::Tangent].buffer)
                 attributes[Accessor::Attribute::Tangent] = calculateTangents(attributes, indices);
@@ -341,6 +355,7 @@ void GltfLoader::loadNodes(const fx::gltf::Document& doc)
 
         node.setMesh(n.mesh);
         node.setCamera(n.camera);
+        node.setSkin(n.skin);
 
         node.name = n.name;
 
@@ -353,6 +368,20 @@ void GltfLoader::loadNodes(const fx::gltf::Document& doc)
         for (auto nodeIdx : gltfNode.children) {
             m_nodes[i].addChild(nodeIdx);
         }
+    }
+}
+
+void GltfLoader::loadSkins(const fx::gltf::Document& doc)
+{
+    for (auto& s : doc.skins) {
+        gfx::Skin skin;
+
+        skin.m_inverseBindMatrices = m_accessors[s.inverseBindMatrices];
+        std::copy(std::cbegin(s.joints), std::cend(s.joints), std::back_inserter(skin.m_joints));
+        skin.m_skeleton = s.skeleton;
+        skin.name       = s.name;
+
+        m_skins.push_back(skin);
     }
 }
 

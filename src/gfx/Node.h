@@ -29,23 +29,16 @@ class Node final
 
     ~Node() = default;
 
-    void setTranslation(glm::vec3 translation) { m_translation = translation; }
+    void setTranslation(glm::vec3 translation);
     glm::vec3 getTranslation() const { return m_translation; }
 
-    void setRotation(glm::quat rotation) { m_rotation = rotation; }
+    void setRotation(glm::quat rotation);
     glm::quat getRotation() const { return m_rotation; }
 
-    void setScale(glm::vec3 scale) { m_scale = scale; }
+    void setScale(glm::vec3 scale);
     glm::vec3 getScale() const { return m_scale; }
 
-    void setModelMatrix(const glm::mat4& mtx)
-    {
-        m_modelMatrix = mtx;
-
-        glm::vec3 skew;
-        glm::vec4 perspective;
-        glm::decompose(mtx, m_scale, m_rotation, m_translation, skew, perspective);
-    }
+    void setModelMatrix(const glm::mat4& mtx);
 
     void draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
               std::array<Light*, 8>& lights) const;
@@ -72,6 +65,9 @@ class Node final
     void setMesh(int mesh) { m_mesh = mesh; }
     void removeMesh(int mesh) { m_mesh = -1; }
 
+    void setSkin(int skin) { m_skin = skin; }
+    void removeSkin(int skin) { m_skin = -1; }
+
     void setCamera(int camera) { m_camera = camera; }
     void removeCamera() { m_camera = -1; }
 
@@ -94,16 +90,18 @@ class Node final
     glm::vec3 m_scale{1.0f, 1.0f, 1.0f};
 
     glm::mat4 m_modelMatrix{1.0f};
+    bool m_modelMatrixDirty = true;
 
     Model* m_model = nullptr;
     int m_mesh     = -1;
+    int m_skin     = -1;
     int m_camera   = -1;
     int m_light    = -1;
     std::vector<int> m_children;
 
     bool m_castsShadows = false;
 
-    std::vector<float> m_weights;
+    std::vector<float> m_weights; //< Morph targets weights
 };
 
 } // namespace gfx

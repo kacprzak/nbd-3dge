@@ -33,6 +33,7 @@ class GltfLoader
     void loadAnimations(const fx::gltf::Document& doc);
     void loadCameras(const fx::gltf::Document& doc);
     void loadNodes(const fx::gltf::Document& doc);
+    void loadSkins(const fx::gltf::Document& doc);
 
     const std::filesystem::path m_rootDirectory;
 
@@ -46,6 +47,7 @@ class GltfLoader
     std::vector<gfx::Animation> m_animations;
     std::vector<gfx::Camera> m_cameras;
     std::vector<gfx::Node> m_nodes;
+    std::vector<gfx::Skin> m_skins;
     std::vector<std::vector<unsigned>> m_scenes;
 
     std::string m_name;
