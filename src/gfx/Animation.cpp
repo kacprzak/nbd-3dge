@@ -11,21 +11,28 @@ std::pair<int, int> Animation::Sampler::findKeyFrames(float time,
     int nextIdx   = std::distance(input.cbegin(), it);
     int prevIndex = nextIdx - 1;
 
-    // If animation is not starting at time 0 then set it on first keyFrame
-    prevIndex = std::max(prevIndex, 0);
-
     return {prevIndex, nextIdx};
 }
 
 //------------------------------------------------------------------------------
 
 template <typename T>
-void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
+void Animation::Sampler::lookup(float time, bool wrap, T* result, std::size_t size) const
 {
-    const auto& in = input.getData<float>();
-    time           = glm::mod(time, in.back());
+    if (wrap) time = glm::mod(time, input.max[0]);
 
-    auto keyFrames = findKeyFrames(time, in);
+    std::pair<int, int> keyFrames;
+    const auto& in = input.getData<float>();
+
+    if (time < input.min[0])
+        // If animation is not starting at time 0 then set it on first keyFrame
+        keyFrames = {0, 0};
+    else if (time >= input.max[0])
+        // If behind last frame then clamp to last frame
+        keyFrames = {input.count - 1, input.count - 1};
+    else {
+        keyFrames = findKeyFrames(time, in);
+    }
 
     const float prevFrameTime = in.at(keyFrames.first);
     const float nextFrameTime = in.at(keyFrames.second);
@@ -46,14 +53,14 @@ void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
         }
     } else if (interpolation == CubicSpline) {
         // +1 -1 to not load in-tangen 0 and out-tangent 1
-        const auto& values = output.getElements<T>((keyFrames.first * 3) * size + 1,
-                                                   ((keyFrames.second + 1) * 3) * size - 1);
+        const auto& values = output.getElements<T>((keyFrames.first * 3 + 1) * size,
+                                                   ((keyFrames.second + 1) * 3 - 1) * size);
         for (std::size_t i = 0u; i < size; ++i) {
-            v0 = values[i * 3];
-            v1 = values[(i + kfd * size) * 3];
+            v0 = values[i];
+            v1 = values[i + 3 * size * kfd];
             if (kfd > 0) {
-                b0 = values[i * 3 + 1];
-                a1 = values[(i + kfd * size) * 3 - 1];
+                b0 = values[i + 1 * size];
+                a1 = values[i + 2 * size];
             }
             result[i] = interpolate(v0, b0, a1, v1, dt, t);
         }
@@ -63,7 +70,7 @@ void Animation::Sampler::lookup(float time, T* result, std::size_t size) const
 
         for (std::size_t i = 0u; i < size; ++i) {
             v0        = values[i];
-            v1        = values[i + kfd * size];
+            v1        = values[i + size * kfd];
             result[i] = interpolate(v0, b0, a1, v1, dt, t);
         }
     }
@@ -97,6 +104,8 @@ T Animation::Sampler::interpolate(T v0, T b0, T a1, T v1, float dt, float t) con
 
 void Animation::update(float delta, std::vector<Node>& nodes)
 {
+    bool loop = true;
+
     for (const auto& channel : m_channels) {
         Node& node = nodes.at(channel.node);
 
@@ -105,23 +114,23 @@ void Animation::update(float delta, std::vector<Node>& nodes)
         switch (channel.path) {
         case Channel::Translation: {
             glm::vec3 translation;
-            channel.sampler.lookup(progress, &translation);
+            channel.sampler.lookup(progress, loop, &translation);
             node.setTranslation(translation);
         } break;
         case Channel::Rotation: {
             glm::quat rotation;
-            channel.sampler.lookup(progress, &rotation);
+            channel.sampler.lookup(progress, loop, &rotation);
             node.setRotation(glm::normalize(rotation));
         } break;
         case Channel::Scale: {
             glm::vec3 scale;
-            channel.sampler.lookup(progress, &scale);
+            channel.sampler.lookup(progress, loop, &scale);
             node.setScale(scale);
         } break;
         case Channel::Weights: {
             auto weightsSize = node.getWeightsSize();
             std::vector<float> weights(weightsSize);
-            channel.sampler.lookup(progress, weights.data(), weights.size());
+            channel.sampler.lookup(progress, loop, weights.data(), weights.size());
             node.setWeights(weights);
         } break;
         }

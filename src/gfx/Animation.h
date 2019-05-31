@@ -20,7 +20,7 @@ class Animation final
         std::pair<int, int> findKeyFrames(float time, const std::vector<float>& input) const;
 
         template <typename T>
-        void lookup(float time, T* result, std::size_t size = 1u) const;
+        void lookup(float time, bool wrap, T* result, std::size_t size = 1u) const;
 
       private:
         // v0	first point
