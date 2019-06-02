@@ -21,12 +21,7 @@ class Skybox final
         m_shaderProgram = shaderProgram;
     }
 
-    void setTextures(const TexturePack& textures)
-    {
-        m_textures = textures;
-        for (auto& tex : m_textures)
-            if (tex) tex->sampler()->setClampToEdge();
-    }
+    void setTextures(const TexturePack& textures) { m_textures = textures; }
 
     TexturePack textures() { return m_textures; };
 

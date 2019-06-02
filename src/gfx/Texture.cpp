@@ -4,8 +4,10 @@
 #include <gli/gli.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <array>
+#include <map>
 
 namespace gfx {
 
@@ -63,7 +65,21 @@ void Sampler::setParameter(GLenum param, GLint value)
     glSamplerParameteri(m_samplerId, param, value);
 }
 
-//------------------------------------------------------------------------------
+std::shared_ptr<Sampler> Sampler::getDefault(bool mipmaps)
+{
+    static std::array<std::weak_ptr<Sampler>, 2> defaultSamplers;
+    auto& wp = mipmaps ? defaultSamplers[0] : defaultSamplers[1];
+
+    auto sp = wp.lock();
+    if (!sp) {
+        sp = std::make_shared<Sampler>();
+        if (mipmaps) sp->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+        wp = sp;
+    }
+    return sp;
+}
+
+//==============================================================================
 
 Texture::Texture(GLenum target, const std::string& _name)
     : m_target{target}
@@ -79,6 +95,14 @@ Texture::Texture(const std::filesystem::path& file, const std::string& _name)
     createTexture(file.string().c_str());
 }
 
+Texture::Texture(glm::vec3 color)
+    : Texture{GL_TEXTURE_2D, glm::to_string(color)}
+{
+    m_w = m_h = 1;
+    glBindTexture(m_target, m_textureId);
+    glTexImage2D(m_target, 0, GL_RGB, m_w, m_h, 0, GL_RGB, GL_FLOAT, glm::value_ptr(color));
+}
+
 Texture::Texture(Texture&& other)
 {
     std::swap(m_target, other.m_target);
@@ -86,7 +110,10 @@ Texture::Texture(Texture&& other)
     std::swap(m_w, other.m_w);
     std::swap(m_h, other.m_h);
     std::swap(m_sampler, other.m_sampler);
+    std::swap(name, other.name);
 }
+
+//------------------------------------------------------------------------------
 
 Texture::~Texture()
 {
@@ -94,6 +121,8 @@ Texture::~Texture()
 
     if (m_textureId) LOG_RELEASED;
 }
+
+//------------------------------------------------------------------------------
 
 Texture Texture::createShadowMap(glm::ivec2 size)
 {
@@ -133,22 +162,34 @@ Texture Texture::createShadowMap(glm::ivec3 size)
     return tex;
 }
 
+//------------------------------------------------------------------------------
+
+// std::shared_ptr<Texture> Texture::getOnePixel(glm::vec3 color)
+// {
+//     static std::map<std::string, std::weak_ptr<Texture>> onePixTexMap;
+
+//     const auto& name = glm::to_string(color);
+//     auto sp          = onePixTexMap[name].lock();
+//     if (!sp) {
+//         sp                 = std::make_shared<Texture>();
+//         onePixTexMap[name] = sp;
+//     }
+
+//     return sp;
+// }
+
+//------------------------------------------------------------------------------
+
 void Texture::bind(int textureUnit)
 {
-    if (!m_sampler) createSampler();
+    if (!m_sampler) m_sampler = Sampler::getDefault(m_levels > 1);
 
     m_sampler->bind(textureUnit);
     glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(m_target, m_textureId);
 }
 
-void Texture::createSampler()
-{
-    m_sampler = std::make_shared<Sampler>();
-    if (m_levels > 1) {
-        m_sampler->setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    }
-}
+//------------------------------------------------------------------------------
 
 // Filename can be KTX or DDS files
 void Texture::createTexture(const char* filename)

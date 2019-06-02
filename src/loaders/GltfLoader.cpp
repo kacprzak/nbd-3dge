@@ -155,8 +155,16 @@ void GltfLoader::loadMaterials(const fx::gltf::Document& doc)
 {
     using namespace gfx;
 
+    auto white = std::make_shared<Texture>(glm::vec3{1.0f, 1.0f, 1.0f});
+    auto blue  = std::make_shared<Texture>(glm::vec3{0.5f, 0.5f, 1.0f});
+
     for (auto& mtl : doc.materials) {
         Material material;
+        material.textures[TextureUnit::BaseColor]         = white;
+        material.textures[TextureUnit::Normal]            = blue;
+        material.textures[TextureUnit::MetallicRoughness] = white;
+        material.textures[TextureUnit::Occlusion]         = white;
+        material.textures[TextureUnit::Emissive]          = white;
 
         // BaseColor
         for (int i = 0; i < 4; ++i)
@@ -376,10 +384,9 @@ void GltfLoader::loadSkins(const fx::gltf::Document& doc)
     for (auto& s : doc.skins) {
         gfx::Skin skin;
 
-        skin.m_inverseBindMatrices = m_accessors[s.inverseBindMatrices];
-        std::copy(std::cbegin(s.joints), std::cend(s.joints), std::back_inserter(skin.m_joints));
-        skin.m_skeleton = s.skeleton;
-        skin.name       = s.name;
+        skin.setIBMatrix(m_accessors[s.inverseBindMatrices]);
+        skin.setJoints(s.joints, s.skeleton);
+        skin.name = s.name;
 
         m_skins.push_back(skin);
     }

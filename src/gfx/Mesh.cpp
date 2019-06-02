@@ -52,15 +52,17 @@ Primitive::Primitive(Primitive&& other)
     std::swap(m_targets, other.m_targets);
     std::swap(m_activeTargets, other.m_activeTargets);
     std::swap(m_activeTargetsDirty, other.m_activeTargetsDirty);
+    std::swap(m_material, other.m_material);
 }
 
 //------------------------------------------------------------------------------
 
 Primitive::~Primitive()
 {
-    glDeleteVertexArrays(1, &m_vao);
-
-    LOG_RELEASED;
+    if (m_vao) {
+        glDeleteVertexArrays(1, &m_vao);
+        LOG_RELEASED;
+    }
 }
 
 //------------------------------------------------------------------------------

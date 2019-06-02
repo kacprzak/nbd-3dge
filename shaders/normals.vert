@@ -1,10 +1,9 @@
 #version 330
 
-uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat3 normalMatrix;
 
-uniform mat4 jointMatrices[12];
+uniform mat4 jointMatrices[20];
 
 uniform vec3 weights;
 
@@ -44,8 +43,8 @@ void main()
         in_weights_0.z * jointMatrices[int(in_joints_0.z)] +
         in_weights_0.w * jointMatrices[int(in_joints_0.w)];
 
-    vs_out.normal  = normalize(skinMatrix * vec4(normal, 0.0)).xyz;
-    vs_out.tangent = normalize(skinMatrix * vec4(tangent, 0.0)).xyz;
+    vs_out.normal  = normalize(normalMatrix * mat3(skinMatrix) * normal);
+    vs_out.tangent = normalize(normalMatrix * mat3(skinMatrix) * tangent);
     vs_out.bitangent = cross(normal, tangent);
-    gl_Position    = skinMatrix * vec4(pos, 1.0);
+    gl_Position    = modelViewMatrix * skinMatrix * vec4(pos, 1.0);
 }

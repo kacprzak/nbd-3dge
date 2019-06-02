@@ -8,7 +8,8 @@ gs_out;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
+uniform mat4 viewMatrixInv;
+uniform mat4 modelViewMatrix;
 
 uniform vec3 minimum;
 uniform vec3 maximum;
@@ -87,7 +88,7 @@ void main()
     aabb2cube(vec4(minimum, 1.0), vec4(maximum, 1.0), corners);
 
     for (int i = 0; i < 8; ++i) {
-        corners[i] = modelMatrix * corners[i];
+        corners[i] = viewMatrixInv * modelViewMatrix * corners[i];
     }
 
     drawCube(corners, color_m);

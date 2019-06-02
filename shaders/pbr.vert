@@ -1,10 +1,10 @@
 #version 330
 
 uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat3 normalMatrix;
 
-uniform mat4 jointMatrices[12];
+uniform mat4 jointMatrices[20];
 
 uniform vec3 weights;
 
@@ -27,13 +27,13 @@ out mat3 TBN;
 void main()
 {
     vec3 pos = in_position + in_morph_0[0] * weights[0] + in_morph_1[0] * weights[1] +
-               in_morph_2[0] * weights[2];
+        in_morph_2[0] * weights[2];
 
     vec3 normal = in_normal + in_morph_0[1] * weights[0] + in_morph_1[1] * weights[1] +
-                  in_morph_2[1] * weights[2];
+        in_morph_2[1] * weights[2];
 
     vec3 tangent = in_tangent + in_morph_0[2] * weights[0] + in_morph_1[2] * weights[1] +
-                   in_morph_2[2] * weights[2];
+        in_morph_2[2] * weights[2];
 
     mat4 skinMatrix =
         in_weights_0.x * jointMatrices[int(in_joints_0.x)] +
@@ -41,14 +41,14 @@ void main()
         in_weights_0.z * jointMatrices[int(in_joints_0.z)] +
         in_weights_0.w * jointMatrices[int(in_joints_0.w)];
 
-    vec3 N = normalize(vec3(modelMatrix * skinMatrix * vec4(normal, 0.0)));
-    vec3 T = normalize(vec3(modelMatrix * skinMatrix * vec4(tangent, 0.0)));
+    vec3 N = normalize(normalMatrix * mat3(skinMatrix) * normal);
+    vec3 T = normalize(normalMatrix * mat3(skinMatrix) * tangent);
     vec3 B = cross(N, T);
     TBN    = mat3(T, B, N);
 
     texCoord_0 = in_texCoord_0;
     // texCoord_0 = vec2(in_texCoord_0.s, 1.0 - in_texCoord_0.t);
 
-    position    = modelMatrix * skinMatrix * vec4(pos, 1.0);
-    gl_Position = projectionMatrix * viewMatrix * position;
+    position    = modelViewMatrix * skinMatrix * vec4(pos, 1.0);
+    gl_Position = projectionMatrix * position;
 }

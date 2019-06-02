@@ -43,7 +43,7 @@ class Primitive final
     void setVertexAttribute(int index, const Accessor& acc);
     void updateActiveTargets();
 
-    GLuint m_vao;
+    GLuint m_vao = 0u;
 
     Attributes m_attributes;
     Accessor m_indices;

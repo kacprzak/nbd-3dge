@@ -34,6 +34,8 @@ class Sampler final
 
     void setParameter(GLenum param, GLint value);
 
+    static std::shared_ptr<Sampler> getDefault(bool mipmaps);
+
   private:
     GLuint m_samplerId = 0;
 };
@@ -49,6 +51,8 @@ class Texture final
 
   public:
     Texture(const std::filesystem::path& file, const std::string& name = "");
+    // Creates one pixel texture
+    Texture(glm::vec3 color);
     Texture(const Texture&) = delete;
     Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;
@@ -63,18 +67,12 @@ class Texture final
     int height() const { return m_h; }
 
     void setSampler(std::shared_ptr<Sampler> sampler) { m_sampler = sampler; }
-
-    std::shared_ptr<Sampler> sampler()
-    {
-        if (!m_sampler) createSampler();
-        return m_sampler;
-    }
+    std::shared_ptr<Sampler> sampler() { return m_sampler; }
 
     std::string name;
 
   private:
     void createTexture(const char* filename);
-    void createSampler();
 
     Texture(GLenum target, const std::string& name = "");
 

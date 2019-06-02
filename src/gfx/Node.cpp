@@ -74,7 +74,8 @@ void Node::setModelMatrix(const glm::mat4& mtx)
 void Node::draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
                 std::array<Light*, 8>& lights) const
 {
-    const auto& worldMatrix = transformation * m_modelMatrix;
+    const auto& worldMatrix  = transformation * m_modelMatrix;
+    const auto& normalMatrix = glm::transpose(glm::inverse(glm::mat3(worldMatrix)));
 
     if (m_model && m_mesh != -1) {
         auto mesh = m_model->getMesh(m_mesh);
@@ -92,20 +93,22 @@ void Node::draw(const glm::mat4& transformation, ShaderProgram* shaderProgram,
             }
         }
 
-        shaderProgram->setUniform("modelMatrix", worldMatrix);
-
-        std::array<glm::mat4, 12> jointMatrices{};
+        std::array<glm::mat4, 20> jointMatrices{};
         for (auto& m : jointMatrices)
             m = glm::mat4{1.0f};
 
         if (m_skin != -1) {
-            m_model->getSkin(m_skin)->calculateJointMatrices(jointMatrices, this);
+            const Skin* skin = m_model->getSkin(m_skin);
+            skin->calculateJointMatrices(jointMatrices, this);
         }
 
         for (int i = 0; i < jointMatrices.size(); ++i) {
             const auto& jointMatIndex = "jointMatrices[" + std::to_string(i) + "]";
             shaderProgram->setUniform(jointMatIndex, jointMatrices[i]);
         }
+
+        shaderProgram->setUniform("modelViewMatrix", worldMatrix);
+        shaderProgram->setUniform("normalMatrix", normalMatrix);
 
         if (!m_weights.empty())
             mesh->draw(shaderProgram, m_weights);
@@ -158,14 +161,16 @@ Aabb Node::aabb() const
 
 void Node::drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgram) const
 {
-    const auto& worldMatrix = transformation * m_modelMatrix;
+    const auto& worldMatrix  = transformation * m_modelMatrix;
+    const auto& normalMatrix = glm::transpose(glm::inverse(glm::mat3(worldMatrix)));
 
     if (m_model && m_mesh != -1) {
         auto mesh = m_model->getMesh(m_mesh);
 
         shaderProgram->use();
 
-        shaderProgram->setUniform("modelMatrix", worldMatrix);
+        shaderProgram->setUniform("modelViewMatrix", worldMatrix);
+        shaderProgram->setUniform("normalMatrix", normalMatrix);
         shaderProgram->setUniform("minimum", mesh->aabb().minimum);
         shaderProgram->setUniform("maximum", mesh->aabb().maximum);
 

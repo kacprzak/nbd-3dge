@@ -258,8 +258,6 @@ const glm::mat4& Camera::projectionMatrix(int cascadeIndex) const
 void Camera::applyTo(ShaderProgram* shaderProgram) const
 {
     shaderProgram->setUniform("projectionMatrix", projectionMatrix());
-    shaderProgram->setUniform("viewMatrix", viewMatrix());
-    shaderProgram->setUniform("cameraPosition", worldTranslation());
 }
 
 } // namespace gfx

@@ -3,10 +3,9 @@
 #define HAS_OCCLUSIONMAP
 #define HAS_EMISSIVE
 #define USE_IBL
+//#define USE_POINT_LIGHTS
 
 out vec4 fragColor;
-
-uniform vec4 cameraPosition;
 
 struct Material
 {
@@ -41,6 +40,7 @@ in mat3 TBN;
 const float PI    = 3.14159265359;
 const float GAMMA = 2.2;
 
+#ifdef USE_POINT_LIGHTS
 struct Light
 {
     vec4 position;
@@ -50,6 +50,7 @@ struct Light
 #define MAX_LIGHTS 1
 
 uniform Light lights[MAX_LIGHTS];
+#endif
 
 float distributionGGX(vec3 N, vec3 H, float roughness);
 float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
@@ -64,7 +65,7 @@ void main()
     N      = normalize(TBN * N);
     //fragColor = vec4(N, 1.0); return;
 
-    vec3 V = normalize(cameraPosition.xyz - position.xyz);
+    vec3 V = normalize(-position.xyz);
     float NdotV = max(dot(N, V), 0.0);
     vec3 R = reflect(-V, N);
 
@@ -83,6 +84,8 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
+
+ #ifdef USE_POINT_LIGHTS
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         vec3 L = normalize(lights[i].position - position).xyz;
         vec3 H = normalize(V + L);
@@ -117,6 +120,7 @@ void main()
         // add to outgoing radiance Lo
         Lo += (kD * baseColor.rgb / PI + specular) * radiance * NdotL;
     }
+#endif
 
 #ifdef USE_IBL
     vec3 F = fresnelSchlickRoughness(NdotV, F0, roughness);

@@ -40,12 +40,35 @@
     ],
     "actors": [
         {
+            "name": "brainStem",
+            "render": {
+                "model": "BrainStem/glTF/BrainStem.gltf"
+            },
+            "transformation": {
+                "position": "5 0 0",
+                "orientation": "-90 0 0",
+                "scale": "2 2 2"
+            }
+        },
+        {
+            "name": "riggedFigure",
+            "render": {
+                "model": "RiggedFigure/glTF/RiggedFigure.gltf"
+            },
+            "transformation": {
+                "position": "5 -6 0",
+                "orientation": "-90 0 0",
+                "scale": "2 2 2"
+            }
+        },
+        {
             "name": "riggedSimple",
             "render": {
                 "model": "RiggedSimple/glTF/RiggedSimple.gltf"
             },
             "transformation": {
-                "position": "5 0 0"
+                "position": "5 5 0",
+                "scale": "0.25 0.25 0.25"
             }
         },
         {

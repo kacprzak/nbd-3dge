@@ -64,11 +64,15 @@ void RenderSystem::loadCommonResources(const ResourcesMgr& resourcesMgr)
     auto skybox    = std::make_shared<Skybox>();
     auto skyboxMtl = resourcesMgr.getMaterial("skybox_mtl");
 
+    auto sampler = std::make_shared<gfx::Sampler>();
+    sampler->setClampToEdge();
     std::array<std::shared_ptr<Texture>, TextureUnit::Size> textures;
     textures[TextureUnit::BaseColor]  = skyboxMtl->textures[0];
     textures[TextureUnit::Irradiance] = skyboxMtl->textures[1];
     textures[TextureUnit::Radiance]   = skyboxMtl->textures[2];
     textures[TextureUnit::BrdfLUT]    = skyboxMtl->textures[3];
+    for (auto& tex : textures)
+        if (tex) tex->setSampler(sampler);
 
     skybox->setTextures(textures);
     skybox->setShaderProgram(resourcesMgr.getShaderProgram("skybox"));
@@ -169,7 +173,8 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
 
     for (const auto& a : m_actors) {
         if (auto model = a.model.lock()) {
-            model->draw(a.transformation(), shaderProgram, lights, environment);
+            model->draw(camera->viewMatrix() * a.transformation(), shaderProgram, lights,
+                        environment);
         }
     }
 
@@ -207,7 +212,7 @@ void RenderSystem::drawNormals(ShaderProgram* shaderProgram, const Camera* camer
 
     for (const auto& a : m_actors) {
         if (auto model = a.model.lock()) {
-            model->draw(a.transformation(), shaderProgram, lights, {});
+            model->draw(camera->viewMatrix() * a.transformation(), shaderProgram, lights, {});
         }
     }
 }
@@ -267,11 +272,14 @@ void RenderSystem::drawAabb(ShaderProgram* shaderProgram, const Camera* camera) 
     shaderProgram->use();
     camera->applyTo(shaderProgram);
 
+    shaderProgram->setUniform("viewMatrix", camera->viewMatrix());
+    shaderProgram->setUniform("viewMatrixInv", glm::inverse(camera->viewMatrix()));
+
     glBindVertexArray(m_emptyVao);
 
     for (const auto& a : m_actors) {
         if (auto model = a.model.lock()) {
-            model->drawAabb(a.transformation(), shaderProgram);
+            model->drawAabb(camera->viewMatrix() * a.transformation(), shaderProgram);
         }
     }
 }
