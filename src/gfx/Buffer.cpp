@@ -46,15 +46,17 @@ template <typename T>
 Accessor _calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes,
                             const Accessor& indicesAcc)
 {
-    auto texcoords = attributes[Accessor::Attribute::TexCoord_0].getData<glm::vec2>();
+    using namespace glm;
+
+    auto texcoords = attributes[Accessor::Attribute::TexCoord_0].getData<vec2>();
 
     if (texcoords.empty()) return {};
 
     auto indices   = indicesAcc.getData<T>();
-    auto positions = attributes[Accessor::Attribute::Normal].getData<glm::vec3>();
-    auto normals   = attributes[Accessor::Attribute::Normal].getData<glm::vec3>();
+    auto positions = attributes[Accessor::Attribute::Position].getData<vec3>();
+    auto normals   = attributes[Accessor::Attribute::Normal].getData<vec3>();
 
-    std::vector<glm::vec3> tangents;
+    std::vector<vec4> tangents;
 
     tangents.resize(normals.size());
 
@@ -65,32 +67,33 @@ Accessor _calculateTangents(const std::array<Accessor, Accessor::Attribute::Size
         auto index1 = indices[i - 1];
         auto index2 = indices[i - 0];
         // Shortcuts for positions
-        glm::vec3 v0 = positions[index0];
-        glm::vec3 v1 = positions[index1];
-        glm::vec3 v2 = positions[index2];
+        vec3 v0 = positions[index0];
+        vec3 v1 = positions[index1];
+        vec3 v2 = positions[index2];
 
         // Shortcuts for UVs
-        glm::vec2 st0 = texcoords[index0];
-        glm::vec2 st1 = texcoords[index1];
-        glm::vec2 st2 = texcoords[index2];
+        vec2 st0 = texcoords[index0];
+        vec2 st1 = texcoords[index1];
+        vec2 st2 = texcoords[index2];
 
         // Edges of the triangle : postion delta
-        glm::vec3 deltaPos1 = v1 - v0;
-        glm::vec3 deltaPos2 = v2 - v0;
+        vec3 deltaPos1 = v1 - v0;
+        vec3 deltaPos2 = v2 - v0;
 
         // ST delta
-        glm::vec2 deltaST1 = st1 - st0;
-        glm::vec2 deltaST2 = st2 - st0;
+        vec2 deltaST1 = st1 - st0;
+        vec2 deltaST2 = st2 - st0;
 
-        float r           = 1.0f / (deltaST1.x * deltaST2.y - deltaST1.y * deltaST2.x);
-        glm::vec3 tangent = (deltaPos1 * deltaST2.y - deltaPos2 * deltaST1.y) * r;
-        // glm::vec3 bitangent = (deltaPos2 * deltaST1.x - deltaPos1 * deltaST2.x) * r;
+        float r      = 1.0f / (deltaST1.x * deltaST2.y - deltaST1.y * deltaST2.x);
+        vec3 tangent = (deltaPos1 * deltaST2.y - deltaPos2 * deltaST1.y) * r;
+        // vec3 bitangent = (deltaPos2 * deltaST1.x - deltaPos1 * deltaST2.x) * r;
 
-        tangent = glm::normalize(tangent);
+        tangent = normalize(tangent);
+        float w = 1.0f;
 
-        tangents[index0] = tangent;
-        tangents[index1] = tangent;
-        tangents[index2] = tangent;
+        tangents[index0] = vec4(tangent, w);
+        tangents[index1] = vec4(tangent, w);
+        tangents[index2] = vec4(tangent, w);
     }
 
     auto tangentsBuffer = std::make_shared<Buffer>();

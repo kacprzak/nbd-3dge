@@ -60,7 +60,8 @@ vec4 srgb2linear(vec4 srgb);
 
 void main()
 {
-    vec3 N = TBN[2];
+     // The TBN matrix is linearly interpolated, so we need to re-normalize
+    vec3 N = normalize(TBN[2]);
 
     if (length(TBN[0]) > 0.0) {
         N = texture(normalSampler, texCoord_0).rgb;

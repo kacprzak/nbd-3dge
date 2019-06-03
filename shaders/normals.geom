@@ -24,7 +24,7 @@ void generateVector(vec4 position, vec3 vector, float len, vec3 color)
     gl_Position  = projectionMatrix * position;
     gs_out.color = color;
     EmitVertex();
-    gl_Position  = projectionMatrix * (position + vec4(vector, 0.0) * len * mag_scale);
+    gl_Position  = projectionMatrix * (position + vec4(vector * len * mag_scale, 0.0));
     gs_out.color = color;
     EmitVertex();
     EndPrimitive();
