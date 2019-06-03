@@ -41,8 +41,8 @@ void main()
                       in_weights_0.w * jointMatrices[int(in_joints_0.w)];
 
     vec3 N = normalize(normalMatrix * mat3(skinMatrix) * normal);
-    vec3 T = normalize(normalMatrix * mat3(skinMatrix) * tangent * in_tangent.w);
-    vec3 B = cross(N, T) * in_tangent.w;
+    vec3 T = normalize(normalMatrix * mat3(skinMatrix) * tangent);
+    vec3 B = normalize(cross(N, T) * in_tangent.w);
     TBN    = mat3(T, B, N);
 
     texCoord_0 = in_texCoord_0;

@@ -43,7 +43,7 @@ void main()
                       in_weights_0.w * jointMatrices[int(in_joints_0.w)];
 
     vs_out.normal    = normalize(normalMatrix * mat3(skinMatrix) * normal);
-    vs_out.tangent   = normalize(normalMatrix * mat3(skinMatrix) * tangent * in_tangent.w);
-    vs_out.bitangent = cross(vs_out.normal, vs_out.tangent) * in_tangent.w;
+    vs_out.tangent   = normalize(normalMatrix * mat3(skinMatrix) * tangent);
+    vs_out.bitangent = normalize(cross(vs_out.normal, vs_out.tangent) * in_tangent.w);
     gl_Position      = modelViewMatrix * skinMatrix * vec4(pos, 1.0);
 }
