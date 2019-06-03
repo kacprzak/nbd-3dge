@@ -46,14 +46,15 @@ template <typename T>
 Accessor _calculateTangents(const std::array<Accessor, Accessor::Attribute::Size>& attributes,
                             const Accessor& indicesAcc)
 {
+    auto texcoords = attributes[Accessor::Attribute::TexCoord_0].getData<glm::vec2>();
+
+    if (texcoords.empty()) return {};
+
     auto indices   = indicesAcc.getData<T>();
     auto positions = attributes[Accessor::Attribute::Normal].getData<glm::vec3>();
     auto normals   = attributes[Accessor::Attribute::Normal].getData<glm::vec3>();
-    auto texcoords = attributes[Accessor::Attribute::TexCoord_0].getData<glm::vec2>();
 
     std::vector<glm::vec3> tangents;
-
-    if (texcoords.empty()) return {};
 
     tangents.resize(normals.size());
 

@@ -60,18 +60,22 @@ vec4 srgb2linear(vec4 srgb);
 
 void main()
 {
-    vec3 N = texture(normalSampler, texCoord_0).rgb;
-    N      = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
-    N      = normalize(TBN * N);
+    vec3 N = TBN[2];
+
+    if (length(TBN[0]) > 0.0) {
+        N = texture(normalSampler, texCoord_0).rgb;
+        N = (2.0 * N - 1.0) * vec3(material.normalScale, material.normalScale, 1.0);
+        N = normalize(TBN * N);
+    }
     //fragColor = vec4(N, 1.0); return;
 
-    vec3 V = normalize(-position.xyz);
+    vec3 V      = normalize(-position.xyz);
     float NdotV = max(dot(N, V), 0.0);
-    vec3 R = reflect(-V, N);
+    vec3 R      = reflect(-V, N);
 
     vec4 baseColor = material.baseColorFactor * srgb2linear(texture(baseColorSampler, texCoord_0));
-    //fragColor = baseColor; return;
-    
+    // fragColor = baseColor; return;
+
     vec3 occRghMet; // occlusion, roughness, metallic
     occRghMet.gb = vec2(material.roughnessFactor, material.metallicFactor) *
                    texture(metallicRoughnessSampler, texCoord_0).gb;
@@ -85,7 +89,7 @@ void main()
     // reflectance equation
     vec3 Lo = vec3(0.0);
 
- #ifdef USE_POINT_LIGHTS
+#ifdef USE_POINT_LIGHTS
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         vec3 L = normalize(lights[i].position - position).xyz;
         vec3 H = normalize(V + L);
@@ -130,14 +134,15 @@ void main()
     kD *= 1.0 - metallic;
     vec3 irradiance = srgb2linear(texture(irradianceCube, N)).rgb;
     vec3 diffuse    = irradiance * baseColor.rgb;
-    //fragColor = vec4(irradiance, 1.0); return;
+    // fragColor = vec4(irradiance, 1.0); return;
 
-    //roughness = 0.0;
+    // roughness = 0.0;
     const float MAX_REFLECTION_LOD = 9.0;
-    vec3 radianceColor = srgb2linear(textureLod(radianceCube, R, roughness * MAX_REFLECTION_LOD)).rgb;   
-    vec2 envBRDF       = texture(brdfLUT, vec2(NdotV, roughness)).rg;
-    vec3 specular      = radianceColor * (F * envBRDF.x + envBRDF.y);
-    //fragColor = vec4(specular, 1.0); return;
+    vec3 radianceColor =
+        srgb2linear(textureLod(radianceCube, R, roughness * MAX_REFLECTION_LOD)).rgb;
+    vec2 envBRDF  = texture(brdfLUT, vec2(NdotV, roughness)).rg;
+    vec3 specular = radianceColor * (F * envBRDF.x + envBRDF.y);
+    // fragColor = vec4(specular, 1.0); return;
 
     vec3 ambient = kD * diffuse + specular;
 #else
@@ -199,14 +204,11 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
+vec3 fresnelSchlick(float cosTheta, vec3 F0) { return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); }
 
 vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-}  
+}
 
 vec4 srgb2linear(vec4 srgb) { return vec4(pow(srgb.xyz, vec3(GAMMA)), srgb.a); }
