@@ -368,7 +368,7 @@ for (auto& camera : m_cameras) {
 
 //------------------------------------------------------------------------------
 
-void RenderSystem::setDrawDebug(bool enable, glm::vec3 ntbLengths)
+void RenderSystem::setDrawDebug(bool enable, glm::vec4 ntbLengths)
 {
     if (m_normalsShader) {
         m_normalsShader->use();

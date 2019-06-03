@@ -49,7 +49,7 @@ class RenderSystem final
     void update(float delta);
     void setNextPolygonMode();
 
-    void setDrawDebug(bool enable, glm::vec3 ntbLengths);
+    void setDrawDebug(bool enable, glm::vec4 ntbLengths);
     bool isDrawDebug() const { return m_drawDebug; }
 
     Camera* getCamera() { return m_camera; }

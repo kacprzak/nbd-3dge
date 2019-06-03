@@ -118,7 +118,7 @@ void GameClient::draw()
     static bool showNormals    = false;
     static float normalLength  = 1.0f;
     static float tangentLength = 1.0f;
-    static glm::vec3 ntbLenghts{1.0f, 1.0f, 1.0f};
+    static glm::vec4 ntbLenghts{1.0f, 1.0f, 1.0f, 1.0f};
     static bool vsync = true;
 
     ImGui::Begin("Debug");
@@ -134,6 +134,11 @@ void GameClient::draw()
     if (ImGui::Checkbox("Draw debug", &showNormals)) {
         m_renderSystem.setDrawDebug(!m_renderSystem.isDrawDebug(), ntbLenghts);
     }
+    ImGui::Text("Vertex");
+    if (ImGui::SliderFloat("Normal ", &ntbLenghts[3], 0.0f, 10.0f)) {
+        m_renderSystem.setDrawDebug(m_renderSystem.isDrawDebug(), ntbLenghts);
+    }
+    ImGui::Text("Face");
     if (ImGui::SliderFloat("Normal", &ntbLenghts[0], 0.0f, 10.0f)) {
         m_renderSystem.setDrawDebug(m_renderSystem.isDrawDebug(), ntbLenghts);
     }
