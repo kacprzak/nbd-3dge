@@ -144,15 +144,16 @@ void Node::update(const glm::mat4& transformation, float deltaTime)
 
 //------------------------------------------------------------------------------
 
-Aabb Node::aabb() const
+Aabb Node::aabb(const glm::mat4& transformation) const
 {
     Aabb aabb;
+    const auto& tm = transformation * m_modelMatrix;
 
-    if (m_model && m_mesh != -1) aabb = aabb.mbr(m_modelMatrix * m_model->getMesh(m_mesh)->aabb());
+    if (m_model && m_mesh != -1) aabb = aabb.mbr(m_model->getMesh(m_mesh)->aabb(tm));
 
     for (auto& child : m_children) {
         auto n = m_model->getNode(child);
-        aabb   = aabb.mbr(m_modelMatrix * n->aabb());
+        aabb   = aabb.mbr(n->aabb(tm));
     }
     return aabb;
 }
@@ -169,10 +170,12 @@ void Node::drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgra
 
         shaderProgram->use();
 
+        const auto& box = mesh->aabb(glm::mat4{1.0f});
+
         shaderProgram->setUniform("modelViewMatrix", worldMatrix);
         shaderProgram->setUniform("normalMatrix", normalMatrix);
-        shaderProgram->setUniform("minimum", mesh->aabb().minimum);
-        shaderProgram->setUniform("maximum", mesh->aabb().maximum);
+        shaderProgram->setUniform("minimum", box.minimum);
+        shaderProgram->setUniform("maximum", box.maximum);
 
         glDrawArrays(GL_POINTS, 0, 1);
     }

@@ -135,14 +135,6 @@ void Camera::update(const glm::mat4& parentModelMatrix, float /*delta*/)
 
 //------------------------------------------------------------------------------
 
-bool Camera::isVisible(const Aabb& aabb) const
-{
-    const Aabb& homogeneous = m_projectionMatrix * m_viewMatrix * aabb;
-    return Aabb::unit().intersects(homogeneous);
-}
-
-//------------------------------------------------------------------------------
-
 Camera::Frustum Camera::perspectiveArgsToFrustum(float fov, float ratio, float near,
                                                  float far) const
 {

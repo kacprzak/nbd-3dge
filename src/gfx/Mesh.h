@@ -31,7 +31,7 @@ class Primitive final
     void draw(ShaderProgram* shaderProgram);
 
     std::vector<glm::vec3> positions() const;
-    Aabb aabb() const;
+    Aabb aabb(const glm::mat4& transformation) const;
 
     void setMaterial(const Material& material);
 
@@ -77,7 +77,7 @@ class Mesh final
     void draw(ShaderProgram* shaderProgram, const std::vector<float>& weights);
 
     std::vector<glm::vec3> positions() const;
-    Aabb aabb() const;
+    Aabb aabb(const glm::mat4& transformation) const;
 
     void setWeights(const std::vector<float>& weights);
     std::size_t getWeightsSize() const;

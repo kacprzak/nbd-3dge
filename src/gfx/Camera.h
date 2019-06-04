@@ -42,8 +42,6 @@ class Camera
 
     glm::vec4 worldTranslation() const { return glm::inverse(viewMatrix())[3]; }
 
-    bool isVisible(const Aabb& aabb) const;
-
     //! Returns view frustum in world space.
     Frustum frustum() const;
     Frustum frustum(int cascadeIndex) const;

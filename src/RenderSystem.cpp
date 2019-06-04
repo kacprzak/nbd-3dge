@@ -173,8 +173,10 @@ void RenderSystem::draw(ShaderProgram* shaderProgram, const Camera* camera,
 
     for (const auto& a : m_actors) {
         if (auto model = a.model.lock()) {
-            model->draw(camera->viewMatrix() * a.transformation(), shaderProgram, lights,
-                        environment);
+            if (isVisible(*camera, a)) {
+                model->draw(camera->viewMatrix() * a.transformation(), shaderProgram, lights,
+                            environment);
+            }
         }
     }
 
@@ -423,12 +425,24 @@ void RenderSystem::lookAtAll()
 
     for (const auto& a : m_actors) {
         if (auto model = a.model.lock()) {
-            aabb = aabb.mbr(a.transformation() * model->aabb());
+            aabb = aabb.mbr(model->aabb(a.transformation()));
         }
     }
 
     glm::vec3 pos = aabb.maximum + glm::vec3{m_camera->zNear()};
     m_camera->update(glm::inverse(glm::lookAt(pos, {0.f, 0.f, 0.f}, {0.f, 1.f, 0.f})), 0);
+}
+
+//------------------------------------------------------------------------------
+
+bool RenderSystem::isVisible(const Camera& camera, const Actor& actor) const
+{
+    if (auto sp = actor.model.lock()) {
+        const Aabb& box =
+            sp->aabb(camera.projectionMatrix() * camera.viewMatrix() * actor.transformation());
+        return Aabb::unit().intersects(box);
+    }
+    return false;
 }
 
 //------------------------------------------------------------------------------

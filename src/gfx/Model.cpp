@@ -52,12 +52,12 @@ gfx::Node* Model::findNode(const std::string& node)
     return nullptr;
 }
 
-Aabb Model::aabb() const
+Aabb Model::aabb(const glm::mat4& transformation) const
 {
     Aabb aabb;
     for (const auto& scene : m_scenes)
         for (auto rootIdx : scene)
-            aabb = aabb.mbr(getNode(rootIdx)->aabb());
+            aabb = aabb.mbr(getNode(rootIdx)->aabb(transformation));
 
     return aabb;
 }

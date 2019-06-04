@@ -49,7 +49,7 @@ class Node final
 
     void update(const glm::mat4& transformation, float delta);
 
-    Aabb aabb() const;
+    Aabb aabb(const glm::mat4& transformation) const;
 
     void setCastShadows(bool castsShadows) { m_castsShadows = castsShadows; }
     bool castsShadows() const { return m_castsShadows; }

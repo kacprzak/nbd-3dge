@@ -80,6 +80,7 @@ class RenderSystem final
                                         int cascadeIndex) const;
     void updateCameraText();
     void lookAtAll();
+    bool isVisible(const Camera& camera, const Actor& actor) const;
 
     GLenum m_polygonMode = GL_FILL;
     GLuint m_emptyVao    = 0; // For drawing with no data

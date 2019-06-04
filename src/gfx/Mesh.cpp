@@ -97,12 +97,13 @@ std::vector<glm::vec3> Primitive::positions() const
 
 //------------------------------------------------------------------------------
 
-Aabb Primitive::aabb() const
+Aabb Primitive::aabb(const glm::mat4& transformation) const
 {
     auto minPos = m_attributes[Accessor::Attribute::Position].min;
     auto maxPos = m_attributes[Accessor::Attribute::Position].max;
 
-    return {{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[2]}};
+    return transformation *
+           Aabb{{minPos[0], minPos[1], minPos[2]}, {maxPos[0], maxPos[1], maxPos[2]}};
 }
 
 //------------------------------------------------------------------------------
@@ -210,11 +211,11 @@ std::vector<glm::vec3> Mesh::positions() const
 
 //------------------------------------------------------------------------------
 
-Aabb Mesh::aabb() const
+Aabb Mesh::aabb(const glm::mat4& transformation) const
 {
     Aabb aabb;
     for (const auto& primitive : m_primitives)
-        aabb = aabb.mbr(primitive.aabb());
+        aabb = aabb.mbr(primitive.aabb(transformation));
     return aabb;
 }
 

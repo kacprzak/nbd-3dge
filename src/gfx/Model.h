@@ -25,7 +25,7 @@ class Model
               std::array<Light*, 8>& lights, const TexturePack& environment);
     void drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgram);
 
-    Aabb aabb() const;
+    Aabb aabb(const glm::mat4& transformation) const;
 
     Node* findNode(const std::string& node);
 
