@@ -44,7 +44,7 @@ void Model::update(float delta)
             getNode(rootIdx)->update(identity, delta);
 }
 
-gfx::Node* Model::findNode(const std::string& node)
+Node* Model::findNode(const std::string& node)
 {
     for (auto& n : m_nodes) {
         if (n.name == node) return &n;
@@ -60,6 +60,30 @@ Aabb Model::aabb(const glm::mat4& transformation) const
             aabb = aabb.mbr(getNode(rootIdx)->aabb(transformation));
 
     return aabb;
+}
+
+int Model::addNode(Node node, Node* parent)
+{
+    if (parent->getModel() != this) throw std::invalid_argument{"parent not part of model"};
+
+    m_nodes.push_back(node);
+    int idx = m_nodes.size() - 1;
+
+    parent->addChild(idx);
+
+    return idx;
+}
+
+Node* Model::getNode(int idx)
+{
+    if (idx >= 0 || idx < m_nodes.size()) return &m_nodes[idx];
+    return nullptr;
+}
+
+const Node* Model::getNode(int idx) const
+{
+    if (idx >= 0 || idx < m_nodes.size()) return &m_nodes[idx];
+    return nullptr;
 }
 
 } // namespace gfx

@@ -55,7 +55,7 @@ MeshData MeshData::fromWavefrontObj(const std::string& objfileName)
 {
     MeshData meshData;
 
-    ObjLoader objLoader;
+    loaders::ObjLoader objLoader;
     objLoader.load(objfileName);
 
     meshData.primitive = GLenum(objLoader.primitive());

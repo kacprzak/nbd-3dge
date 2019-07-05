@@ -15,7 +15,7 @@ class GltfLoader;
 
 namespace gfx {
 
-class Model
+class Model final
 {
     friend class loaders::GltfLoader;
 
@@ -26,8 +26,6 @@ class Model
     void drawAabb(const glm::mat4& transformation, ShaderProgram* shaderProgram);
 
     Aabb aabb(const glm::mat4& transformation) const;
-
-    Node* findNode(const std::string& node);
 
     Buffer* getBuffer(int idx) { return m_buffers.at(idx).get(); }
     Sampler* getSampler(int idx) { return m_samplers.at(idx).get(); }
@@ -50,29 +48,10 @@ class Model
 
     Light* getLight(int idx) { return nullptr; }
 
-    int addNode(Node node, Node* parent)
-    {
-        if (parent->getModel() != this) throw std::invalid_argument{"parent not part of model"};
-
-        m_nodes.push_back(node);
-        int idx = m_nodes.size() - 1;
-
-        parent->addChild(idx);
-
-        return idx;
-    }
-
-    Node* getNode(int idx)
-    {
-        if (idx >= 0 || idx < m_nodes.size()) return &m_nodes[idx];
-        return nullptr;
-    }
-
-    const Node* getNode(int idx) const
-    {
-        if (idx >= 0 || idx < m_nodes.size()) return &m_nodes[idx];
-        return nullptr;
-    }
+    Node* findNode(const std::string& node);
+    int addNode(Node node, Node* parent);
+    Node* getNode(int idx);
+    const Node* getNode(int idx) const;
 
     std::string name;
 

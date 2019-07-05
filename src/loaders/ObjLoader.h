@@ -3,10 +3,14 @@
 
 #include "Loader.h"
 
+#include "../gfx/Model.h"
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-class ObjLoader : public Loader
+namespace loaders {
+
+class ObjLoader final : public Loader
 {
     struct Face
     {
@@ -33,7 +37,7 @@ class ObjLoader : public Loader
     };
 
   public:
-    ObjLoader() {}
+    std::shared_ptr<gfx::Model> model() const;
 
     std::vector<glm::vec3> positions() const;
     std::vector<glm::vec3> normals() const;
@@ -56,5 +60,7 @@ class ObjLoader : public Loader
     std::vector<OpenGlVertex> m_oglVertices;
     std::vector<OpenGlFace> m_oglFaces;
 };
+
+} // namespace loaders
 
 #endif // OBJLOADER_H

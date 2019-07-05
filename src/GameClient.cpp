@@ -9,6 +9,7 @@
 #include "gfx/Texture.h"
 
 #include "loaders/GltfLoader.h"
+#include "loaders/ObjLoader.h"
 
 #include <imgui.h>
 
@@ -82,10 +83,20 @@ void GameClient::addActor(int id, TransformationComponent* tr, RenderComponent* 
     if (rd) {
         auto model = m_renderSystem.findModel(rd->model);
         if (!model) {
-            loaders::GltfLoader loader{m_settings.dataFolder};
-            loader.load(rd->model);
-            model = loader.model();
-            m_renderSystem.addModel(model);
+            std::filesystem::path fullPath{m_settings.dataFolder};
+            fullPath /= rd->model;
+
+            if (fullPath.extension() == ".gltf") {
+                loaders::GltfLoader loader;
+                loader.load(fullPath);
+                model = loader.model();
+            } else if (fullPath.extension() == ".obj") {
+                loaders::ObjLoader loader;
+                loader.load(fullPath);
+                model = loader.model();
+            }
+            model->name = rd->model;
+            if (model) m_renderSystem.addModel(model);
         }
     }
 

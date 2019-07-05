@@ -21,24 +21,16 @@ int typeToSize(fx::gltf::Accessor::Type type)
 
 //------------------------------------------------------------------------------
 
-GltfLoader::GltfLoader(const std::filesystem::path& rootDirectory)
-    : m_rootDirectory{rootDirectory}
-{
-}
-
-//------------------------------------------------------------------------------
-
 void GltfLoader::load(const std::filesystem::path& file)
 {
     using namespace gfx;
 
-    auto fullPath          = m_rootDirectory / file;
-    fx::gltf::Document doc = fx::gltf::LoadFromText(fullPath.string());
+    fx::gltf::Document doc = fx::gltf::LoadFromText(file.string());
 
     loadBuffers(doc);
     loadAccessors(doc);
     loadSamplers(doc);
-    loadTextures(doc, fullPath);
+    loadTextures(doc, file);
     loadMaterials(doc);
     loadMeshes(doc);
     loadAnimations(doc);
@@ -50,7 +42,7 @@ void GltfLoader::load(const std::filesystem::path& file)
         m_scenes.push_back(scene.nodes);
     }
 
-    m_name = file.string();
+    m_name = file.filename().string();
 }
 
 //------------------------------------------------------------------------------

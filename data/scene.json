@@ -36,6 +36,12 @@
             "render": {
                 "model": "FlightHelmet/glTF/FlightHelmet.gltf"
             }
+        },
+        {
+            "name": "TeddyPrototype",
+            "render": {
+                "model": "teddy2.obj"
+            }
         }
     ],
     "actors": [
@@ -139,6 +145,15 @@
             "render": { },
             "transformation": {
                 "position": "0 -5 -5",
+                "scale": "100 100 100"
+            }
+        },
+        {
+            "name": "actor_4",
+            "prototype": "TeddyPrototype",
+            "render": { },
+            "transformation": {
+                "position": "0 -8 -8",
                 "scale": "100 100 100"
             }
         }
