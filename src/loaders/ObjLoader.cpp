@@ -3,6 +3,8 @@
 #include "../Util.h"
 #include <algorithm>
 
+namespace loaders {
+
 std::vector<glm::vec3> ObjLoader::positions() const
 {
     if (!m_oglFaces.empty()) {
@@ -18,6 +20,8 @@ std::vector<glm::vec3> ObjLoader::positions() const
     return m_positions;
 }
 
+//------------------------------------------------------------------------------
+
 std::vector<glm::vec3> ObjLoader::normals() const
 {
     if (!m_oglFaces.empty()) {
@@ -32,6 +36,8 @@ std::vector<glm::vec3> ObjLoader::normals() const
 
     return m_normals;
 }
+
+//------------------------------------------------------------------------------
 
 std::vector<unsigned short> ObjLoader::indices() const
 {
@@ -49,6 +55,8 @@ std::vector<unsigned short> ObjLoader::indices() const
     return indices_a;
 }
 
+//------------------------------------------------------------------------------
+
 std::vector<glm::vec2> ObjLoader::texCoords() const
 {
     if (!m_oglFaces.empty()) {
@@ -63,6 +71,8 @@ std::vector<glm::vec2> ObjLoader::texCoords() const
 
     return m_texCoords;
 }
+
+//------------------------------------------------------------------------------
 
 void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& args)
 {
@@ -135,6 +145,8 @@ void ObjLoader::command(const std::string& cmd, const std::vector<std::string>& 
     }
 }
 
+//------------------------------------------------------------------------------
+
 void ObjLoader::fileLoaded()
 {
     if (!m_faces.empty()) {
@@ -169,3 +181,14 @@ void ObjLoader::fileLoaded()
         m_texCoords.clear();
     }
 }
+
+//------------------------------------------------------------------------------
+
+std::shared_ptr<gfx::Model> ObjLoader::model() const
+{
+    auto model = std::make_shared<gfx::Model>();
+
+    return model;
+}
+
+} // namespace loaders

@@ -15,11 +15,9 @@ struct Document;
 
 namespace loaders {
 
-class GltfLoader
+class GltfLoader final
 {
   public:
-    explicit GltfLoader(const std::filesystem::path& rootDirectory);
-
     void load(const std::filesystem::path& file);
     std::shared_ptr<gfx::Model> model() const;
 
@@ -34,8 +32,6 @@ class GltfLoader
     void loadCameras(const fx::gltf::Document& doc);
     void loadNodes(const fx::gltf::Document& doc);
     void loadSkins(const fx::gltf::Document& doc);
-
-    const std::filesystem::path m_rootDirectory;
 
     std::vector<std::shared_ptr<gfx::Buffer>> m_buffers;
     std::vector<std::shared_ptr<gfx::Sampler>> m_samplers;
