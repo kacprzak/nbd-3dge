@@ -5,6 +5,7 @@
 -/data
 -/bin
 -/build
+-/.clangd
 -GPATH
 -GRTAGS
 -GTAGS

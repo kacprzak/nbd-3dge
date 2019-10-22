@@ -2,6 +2,7 @@ build/
 release/
 debug/
 .vs/
+.clangd/
 
 CMakeCache.txt
 CMakeFiles
