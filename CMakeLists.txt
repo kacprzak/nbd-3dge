@@ -22,11 +22,11 @@ if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     CONAN_PKG::CLI11)
 else()
   find_package(SDL2 REQUIRED CONFIG)
-  
+
   add_library(sdl2 INTERFACE)
   target_include_directories(sdl2 INTERFACE ${SDL2_INCLUDE_DIRS})
   target_link_libraries(sdl2 INTERFACE ${SDL2_LIBRARIES})
-  
+
   find_package(spdlog REQUIRED)
   #find_package(nlohmann_json REQUIRED)
   find_package(Bullet REQUIRED CONFIG)
@@ -40,7 +40,7 @@ else()
   find_package(OpenGL)
   find_package(GLEW)
   find_package(fmt)
-  
+
   set(nbd-3dge_DEPS
     sdl2
     Bullet
@@ -61,7 +61,10 @@ endif()
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    list(APPEND nbd-3dge_DEPS c++abi c++fs)
+    list(APPEND nbd-3dge_DEPS c++abi)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8)
+      list(APPEND nbd-3dge_DEPS c++fs)
+    endif()
     list(APPEND nbd-3dge_DEPS sndio)
   elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     list(APPEND nbd-3dge_DEPS stdc++fs)

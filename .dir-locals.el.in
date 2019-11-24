@@ -4,5 +4,9 @@
          (projectile-project-compilation-cmd . "cd @CMAKE_BINARY_DIR@ && cmake --build .")
          (projectile-project-test-cmd . "cd @CMAKE_BINARY_DIR@ && ctest")
          (projectile-project-run-cmd . "cd @CMAKE_BINARY_DIR@/bin && @nbd-3dge_OUTPUT_NAME@")
-         ))
- )
+         (eval . (dap-register-debug-template "LLDB::Run nbd-3dge"
+                                              (list :type "lldb"
+                                                    :cwd "@CMAKE_BINARY_DIR@/bin"
+                                                    :request "launch"
+                                                    :program "@CMAKE_BINARY_DIR@/bin/@nbd-3dge_OUTPUT_NAME@"
+                                                    :name "LLDB::Run nbd-3dge"))))))
