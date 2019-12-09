@@ -3,6 +3,7 @@
 #include "Logger.h"
 //#include "network/BaseSocketMgr.h"
 
+#include <SDL_video.h>
 #include <cstdlib> // exit
 #include <sstream>
 
@@ -47,6 +48,13 @@ void Engine::initializeSDL()
 
     if (m_initVideo) {
         LOG_INFO("Current video driver: {}", SDL_GetCurrentVideoDriver());
+
+        std::ostringstream ss;
+        ss << "Video displays available: ";
+        for (int i = 0; i < SDL_GetNumVideoDisplays(); ++i) {
+            ss << SDL_GetDisplayName(i) << ' ';
+        }
+        LOG_INFO(ss.str());
     }
 
     LOG_INFO("SDL initialized");
@@ -67,14 +75,14 @@ void Engine::logSDLInfo()
     LOG_INFO("Running with SDL: {}.{}.{}", (uint32_t)linked.major, (uint32_t)linked.minor,
              (uint32_t)linked.patch);
 
-    std::ostringstream ss;
     if (m_initVideo) {
+        std::ostringstream ss;
         ss << "Video drivers available: ";
         for (int i = 0; i < SDL_GetNumVideoDrivers(); ++i) {
             ss << SDL_GetVideoDriver(i) << ' ';
         }
+        LOG_INFO(ss.str());
     }
-    LOG_INFO(ss.str());
 }
 
 //------------------------------------------------------------------------------
