@@ -20,8 +20,10 @@ class ShaderProgram final
 
   public:
     ShaderProgram();
-    ShaderProgram(const ShaderProgram& other) = delete;
+    ShaderProgram(const ShaderProgram&) = delete;
     ShaderProgram(ShaderProgram&& other);
+    ShaderProgram& operator=(const ShaderProgram&) = delete;
+    ShaderProgram& operator=(ShaderProgram&&) = delete;
     ~ShaderProgram();
 
     void link(const std::vector<Shader*>& shaders);

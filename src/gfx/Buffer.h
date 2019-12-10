@@ -20,8 +20,9 @@ class Buffer final
   public:
     Buffer();
     Buffer(const Buffer&) = delete;
-    Buffer& operator=(const Buffer&) = delete;
     Buffer(Buffer&& other);
+    Buffer& operator=(const Buffer&) = delete;
+    Buffer& operator=(Buffer&&) = delete;
     ~Buffer();
 
     void bind(GLenum target);

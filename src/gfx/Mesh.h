@@ -25,6 +25,7 @@ class Primitive final
     Primitive(Primitive&& other);
     Primitive(const Primitive&) = delete;
     Primitive& operator=(const Primitive&) = delete;
+    Primitive& operator=(Primitive&&) = delete;
 
     ~Primitive();
 
@@ -72,6 +73,7 @@ class Mesh final
     Mesh(Mesh&& other);
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
+    Mesh& operator=(Mesh&&) = delete;
 
     void draw(ShaderProgram* shaderProgram);
     void draw(ShaderProgram* shaderProgram, const std::vector<float>& weights);

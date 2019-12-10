@@ -22,6 +22,7 @@ class Sampler final
     Sampler(const Sampler&) = delete;
     Sampler(Sampler&& other);
     Sampler& operator=(const Sampler&) = delete;
+    Sampler& operator=(Sampler&&) = delete;
     ~Sampler();
 
     void bind(int textureUnit);
@@ -56,6 +57,7 @@ class Texture final
     Texture(const Texture&) = delete;
     Texture(Texture&& other);
     Texture& operator=(const Texture&) = delete;
+    Texture& operator=(Texture&&) = delete;
     ~Texture();
 
     static Texture createShadowMap(glm::ivec2 size);
